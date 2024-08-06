@@ -34,10 +34,10 @@
 
     <!-- 풀스크린 오버레이 메뉴 -->
     <div id="fullscreenOverlay" class="fullscreen-overlay hidden fixed inset-0 flex flex-col justify-center items-center text-center">
-        <h3 class="mt-2">Log in / Log out</h3>
-        <p class="mt-2">마이 페이지</p>
-        <p class="mt-2">공지사항</p>
-        <p class="mt-2">자주 묻는 질문</p>
+        <h3 class="mt-2 cursor-pointer" id="loginLink1">Log in / Log out</h3>
+        <p class="mt-2 cursor-pointer" id="loginLink">마이 페이지</p>
+        <p class="mt-2 cursor-pointer" id="noticeLink">공지사항</p>
+        <p class="mt-2 cursor-pointer" id="faqLink">자주 묻는 질문</p>
     </div>
 
     <!-- 스크립트 -->
@@ -45,6 +45,27 @@
         document.getElementById('menuToggle').addEventListener('click', function () {
             document.getElementById('mainContent').classList.toggle('blurred-background');
             document.getElementById('fullscreenOverlay').classList.toggle('hidden');
+        });
+
+        // 마이페이지 클릭 시 login.html로 이동
+        document.getElementById('loginLink1').addEventListener('click', function () {
+            window.location.href = 'login.html';
+        });
+        
+
+        // 마이페이지 클릭 시 login.html로 이동
+        document.getElementById('loginLink').addEventListener('click', function () {
+            window.location.href = 'login.html';
+        });
+
+        // 자주 묻는 질문 클릭 시 qna.html로 이동
+        document.getElementById('faqLink').addEventListener('click', function () {
+            window.location.href = 'qna.html';
+        });
+
+        // 공지사항 클릭 시 notice.html로 이동
+        document.getElementById('noticeLink').addEventListener('click', function () {
+            window.location.href = 'notice.html';
         });
     </script>
 </body>
