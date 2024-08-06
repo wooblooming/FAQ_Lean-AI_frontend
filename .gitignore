@@ -11,12 +11,14 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-
-
 <<<<<<< HEAD
+*.log
+=======
+*.tmp
+>>>>>>> origin/develop
 
 =======
->>>>>>> origin/main
+>>>>>>> 8858965223ac100fb9709ecb7c4f231dba2bb668
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
