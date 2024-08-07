@@ -42,6 +42,9 @@
 
     <!-- 스크립트 -->
     <script>
+        // 가상 로그인 상태 변수 (true이면 로그인 상태, false이면 비로그인 상태)
+        var isLoggedIn = false; // 실제로는 이 값을 서버나 로컬 스토리지에서 가져오게 됩니다.
+
         document.getElementById('menuToggle').addEventListener('click', function () {
             document.getElementById('mainContent').classList.toggle('blurred-background');
             document.getElementById('fullscreenOverlay').classList.toggle('hidden');
@@ -52,20 +55,31 @@
             window.location.href = 'login.html';
         });
         
-
         // 마이페이지 클릭 시 login.html로 이동
         document.getElementById('loginLink').addEventListener('click', function () {
-            window.location.href = 'login.html';
+            if (isLoggedIn) {
+                window.location.href = 'mypage.html'; // 마이 페이지로 이동
+            } else {
+                window.location.href = 'login.html'; // 로그인 페이지로 이동
+            }
         });
 
         // 자주 묻는 질문 클릭 시 qna.html로 이동
         document.getElementById('faqLink').addEventListener('click', function () {
-            window.location.href = 'qna.html';
+            if (isLoggedIn) {
+                window.location.href = 'qna.html'; // Q&A 페이지로 이동
+            } else {
+                window.location.href = 'login.html'; // 로그인 페이지로 이동
+            }
         });
 
         // 공지사항 클릭 시 notice.html로 이동
         document.getElementById('noticeLink').addEventListener('click', function () {
-            window.location.href = 'notice.html';
+            if (isLoggedIn) {
+                window.location.href = 'notice.html'; // 공지사항 페이지로 이동
+            } else {
+                window.location.href = 'login.html'; // 로그인 페이지로 이동
+            }
         });
     </script>
 </body>
