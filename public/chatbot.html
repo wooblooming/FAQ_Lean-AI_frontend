@@ -9,12 +9,82 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 말풍선 CSS-->
+    <link rel="stylesheet" href="../src/bubble.css">
 </head>
 
-<body>
-    <div>
-        챗봇 페이지
+<body class="bg-white font-sans m-0 p-5">
+    <div class="max-w-lg mx-auto bg-white border-blue-300 border p-5 rounded-lg shadow-lg">
+        <img src="chatbot.png" class="w-24 h-24 object-cover mx-auto mb-4">
+        <p class="text-center mb-2">안녕하세요 찬혁 떡볶이입니다!<br>
+            찬혁 떡볶이에 대해 무엇이 궁금하신가요?
+        </p>
+        <div class="w-full h-72 border border-gray-300 p-2 overflow-y-auto mb-4" id="chat-box"></div>
+        <div class="flex justify-between">
+            <input type="text" class="flex-grow p-2 border border-gray-300 rounded mr-2" id="chat-input" placeholder="무엇이든 물어보세요!">
+            <button onclick="sendMessage()" class="flex items-center justify-center p-2 rounded hover:bg-blue-600 text-white">
+                <img src="send.png" class="w-5 h-5">
+            </button>
+            <button onclick="retryMessage()" class="flex items-center justify-center p-2 rounded hover:bg-yellow-600 text-white">
+                <img src="retry.png" class="w-5 h-5">
+            </button>
+            <button onclick="undoMessage()" class="flex items-center justify-center p-2 rounded hover:bg-red-600 text-white">
+                <img src="delete.png" class="w-5 h-5">
+            </button>
+        </div>
     </div>
+
+    <script>
+        let history = [];
+
+        function sendMessage() {
+            const chatInput = document.getElementById('chat-input');
+            const additionalInput = document.getElementById('additional-input');
+            const chatBox = document.getElementById('chat-box');
+
+            const message = chatInput.value;
+
+            if (message.trim() === "") return;
+
+            history.push({ message: message, response: "" });
+            chatBox.innerHTML += `<div class="text-right"><div class="user-bubble"><strong>You:</strong> ${message}</div></div>`;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message, additional_input_info: additionalInput ? additionalInput.value : '' })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    chatBox.innerHTML += `<div class="text-left"><div class="bot-bubble"><strong>Bot:</strong> ${data.response}</div></div>`;
+                    history[history.length - 1].response = data.response;
+                    chatInput.value = "";
+                    if (additionalInput) additionalInput.value = "";
+                });
+        }
+
+        function retryMessage() {
+            if (history.length === 0) return;
+            const lastMessage = history[history.length - 1].message;
+            document.getElementById('chat-input').value = lastMessage;
+        }
+
+        function undoMessage() {
+            if (history.length === 0) return;
+            history.pop();
+            renderChat();
+        }
+
+        function renderChat() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = history.map(item => 
+                `<div class="text-right"><div class="user-bubble"><strong>You:</strong> ${item.message}</div></div>
+                 <div class="text-left"><div class="bot-bubble"><strong>Bot:</strong> ${item.response}</div></div>`
+            ).join('');
+        }
+    </script>
 </body>
 
 </html>
