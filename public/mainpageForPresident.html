@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>서비스 안내</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>메인페이지</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" rel="stylesheet">
     <style>
-        .hidden-menu {
-            display: none;
-        }
     </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gray-100 p-4 relative">
 
     <!-- 상단 네비게이션 바 -->
     <nav class="flex justify-between items-center mb-6">
-        <div class="text-lg font-bold">서비스</div>
+        <div class="text-lg font-bold"></div>
         <div class="flex space-x-4">
-            <button class="text-xl"><i class="bell-icon">🔔</i></button>
-            <button id="menu-button" class="text-xl"><i class="menu-icon">☰</i></button>
+            <button class="text-xl flex items-center justify-center w-8 h-8">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button id="menu-button" class="text-xl flex items-center justify-center w-8 h-8">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
 
-    <!-- 숨겨진 메뉴 -->
-    <div id="hidden-menu" class="hidden-menu bg-white p-4 absolute top-0 left-0 right-0 h-full z-10 flex items-center justify-center">
-        <ul class="space-y-4 text-lg text-center">
-            <li>Log in / Log out</li>
-            <li>마이페이지</li>
-            <li>공지사항</li>
-            <li>자주 묻는 질문</li>
+    <!-- 메뉴바-->
+    <div id="fullscreenOverlay" class="fullscreen-overlay hidden fixed inset-0 flex flex-col justify-center items-center text-center bg-gray-800 bg-opacity-75 backdrop-blur-md">
+        <button id="closeBtn" class="absolute top-4 right-4 text-white text-2xl">&times;</button>
+        <ul class="space-y-4 text-lg text-white text-center">
+            <li><a href="login.html">Log in / Log out</a></li>
+            <li><a href="mypage.html">마이페이지</a></li>
+            <li><a href="notice.html">공지사항</a></li>
+            <li><a href="qna.html">자주 묻는 질문</a></li>
         </ul>
     </div>
 
@@ -56,17 +59,15 @@
 
     <script>
         const menuButton = document.getElementById('menu-button');
-        const hiddenMenu = document.getElementById('hidden-menu');
-        const mainContent = document.getElementById('main-content');
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+        const closeBtn = document.getElementById('closeBtn');
 
         menuButton.addEventListener('click', () => {
-            if (hiddenMenu.classList.contains('hidden-menu')) {
-                hiddenMenu.classList.remove('hidden-menu');
-                mainContent.classList.add('hidden');
-            } else {
-                hiddenMenu.classList.add('hidden-menu');
-                mainContent.classList.remove('hidden');
-            }
+            fullscreenOverlay.classList.remove('hidden');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            fullscreenOverlay.classList.add('hidden');
         });
     </script>
 </body>
