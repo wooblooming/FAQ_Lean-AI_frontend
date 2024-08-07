@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서비스 안내</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .hidden-menu {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 p-4 relative">
+
+    <!-- 상단 네비게이션 바 -->
+    <nav class="flex justify-between items-center mb-6">
+        <div class="text-lg font-bold">서비스</div>
+        <div class="flex space-x-4">
+            <button class="text-xl"><i class="bell-icon">🔔</i></button>
+            <button id="menu-button" class="text-xl"><i class="menu-icon">☰</i></button>
+        </div>
+    </nav>
+
+    <!-- 숨겨진 메뉴 -->
+    <div id="hidden-menu" class="hidden-menu bg-white p-4 absolute top-0 left-0 right-0 h-full z-10 flex items-center justify-center">
+        <ul class="space-y-4 text-lg text-center">
+            <li>Log in / Log out</li>
+            <li>마이페이지</li>
+            <li>공지사항</li>
+            <li>자주 묻는 질문</li>
+        </ul>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <main id="main-content" class="text-center">
+        <h1 class="text-lg font-bold mb-4">사람이 답할 시간은 끝났습니다.<br>이제는 로봇이 응답합니다</h1>
+
+        <!-- 상단 배너 -->
+        <div class="bg-gray-300 rounded-lg h-40 flex items-center justify-center mb-6">
+            <span class="text-lg">상단 배너</span>
+        </div>
+
+        <!-- 사용자 안내 메시지 -->
+        <div class="mb-6">
+            <h2 class="text-xl font-bold">찬혁떡볶이님을</h2>
+            <p class="text-lg">위한 서비스를 준비했어요.</p>
+        </div>
+
+        <!-- 버튼들 -->
+        <div class="grid grid-cols-2 gap-4">
+            <button class="bg-gray-300 rounded-lg py-4">기본 정보 등록</button>
+            <button class="bg-gray-300 rounded-lg py-4">FAQ 데이터 등록</button>
+        </div>
+    </main>
+
+    <script>
+        const menuButton = document.getElementById('menu-button');
+        const hiddenMenu = document.getElementById('hidden-menu');
+        const mainContent = document.getElementById('main-content');
+
+        menuButton.addEventListener('click', () => {
+            if (hiddenMenu.classList.contains('hidden-menu')) {
+                hiddenMenu.classList.remove('hidden-menu');
+                mainContent.classList.add('hidden');
+            } else {
+                hiddenMenu.classList.add('hidden-menu');
+                mainContent.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
