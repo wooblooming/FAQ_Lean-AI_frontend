@@ -8,7 +8,7 @@ const LoadingPage = () => {
   useEffect(() => {
     // 3초 후에 페이지 이동
     const timer = setTimeout(() => {
-      navigate('store-introduce'); // 리다이렉션할 경로
+      navigate('/store-introduce'); // 리다이렉션할 경로
     }, 3000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
