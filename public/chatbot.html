@@ -23,14 +23,7 @@
         <div class="flex justify-between">
             <input type="text" class="flex-grow p-2 border border-gray-300 rounded mr-2" id="chat-input" placeholder="무엇이든 물어보세요!">
             <button onclick="sendMessage()" class="flex items-center justify-center p-2 rounded hover:bg-blue-600 text-white">
-                <img src="send.png" class="w-5 h-5">
-            </button>
-            <button onclick="retryMessage()" class="flex items-center justify-center p-2 rounded hover:bg-yellow-600 text-white">
-                <img src="retry.png" class="w-5 h-5">
-            </button>
-            <button onclick="undoMessage()" class="flex items-center justify-center p-2 rounded hover:bg-red-600 text-white">
-                <img src="delete.png" class="w-5 h-5">
-            </button>
+                <img src="send.png" class="w-7 h-7">
         </div>
     </div>
 
@@ -63,26 +56,6 @@
                     chatInput.value = "";
                     if (additionalInput) additionalInput.value = "";
                 });
-        }
-
-        function retryMessage() {
-            if (history.length === 0) return;
-            const lastMessage = history[history.length - 1].message;
-            document.getElementById('chat-input').value = lastMessage;
-        }
-
-        function undoMessage() {
-            if (history.length === 0) return;
-            history.pop();
-            renderChat();
-        }
-
-        function renderChat() {
-            const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML = history.map(item => 
-                `<div class="text-right"><div class="user-bubble"><strong>You:</strong> ${item.message}</div></div>
-                 <div class="text-left"><div class="bot-bubble"><strong>Bot:</strong> ${item.response}</div></div>`
-            ).join('');
         }
     </script>
 </body>
