@@ -21,7 +21,7 @@ const StoreIntroductionPage = () => {
           각 종 튀김 : 700원 <br />
         </p>
       </div>
-      <Link to="/chatbot" target="_blank" rel="noopener noreferrer">
+      <Link to="/chatbot">
         <img src="chatbot.png" alt="Chatbot" className="fixed-bottom-right w-24 h-24 object-cover" />
       </Link>
     </div>
