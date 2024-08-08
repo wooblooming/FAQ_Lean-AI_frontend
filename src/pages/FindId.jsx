@@ -15,7 +15,7 @@ function FindIdPassword() {
 
         <div className="flex border-b">
           <button className="w-1/2 py-2 text-center text-red-500 border-b-2 border-red-500 font-semibold">아이디 찾기</button>
-          <a href="/findingPassword" className="w-1/2 py-2 text-center text-gray-500">비밀번호 찾기</a>
+          <a href="/findpassword" className="w-1/2 py-2 text-center text-gray-500">비밀번호 찾기</a>
         </div>
 
         <div className="mt-4">

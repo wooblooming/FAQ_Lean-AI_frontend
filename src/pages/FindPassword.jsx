@@ -26,7 +26,7 @@ function FindPassword() {
 
         {/* 탭 */}
         <div className="flex border-b mb-4">
-          <a href="/findingID" className="w-1/2 py-2 text-center text-black border-b-2 border-black font-semibold">아이디 찾기</a>
+          <a href="/findid" className="w-1/2 py-2 text-center text-black border-b-2 border-black font-semibold">아이디 찾기</a>
           <button className="w-1/2 py-2 text-center text-red-500 border-b-2 border-transparent font-semibold">비밀번호 찾기</button>
         </div>
 
