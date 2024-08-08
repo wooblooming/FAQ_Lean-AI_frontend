@@ -11,8 +11,8 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoadingPage />} />
-        <Route path="/store-introduce" element={<StoreIntroductionPage />} />
+        <Route path="/customer" element={<LoadingPage />} />
+        <Route path="/customer-introduce" element={<StoreIntroductionPage />} />
         <Route path="/chatbot" element={<ChatbotPage />} />
         {/* 다른 라우트 추가 */}
       </Routes>
