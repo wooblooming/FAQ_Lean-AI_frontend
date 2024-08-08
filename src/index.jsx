@@ -1,24 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import LandingMenu from './pages/LandingMenu';
+import Login from './pages/Login';
 import FindIdPassword from './pages/FindId';
-import LoadingPage from './pages/LoadingPage'; // 로딩 페이지 컴포넌트 import
-import StoreIntroductionPage from './pages/StoreIntroductionPage'; // 매장 소개 페이지 컴포넌트 import
-import ChatbotPage from './pages/ChatbotPage'; // Chatbot 페이지 컴포넌트 import
+import FindPassword from './pages/FindPassword';
+import Loading from './pages/Loading'; 
+import StoreIntroduction from './pages/StoreIntroduction'; 
+import Chatbot from './pages/Chatbot'; 
 
 function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/findidpassword" component={FindIdPassword} />
-        <Route path="/" exact>
-          <h1>홈페이지</h1>
-        </Route>
+      <Routes>
+        <Route path="/" element={<LandingMenu/>} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/findidpassword" element={<FindIdPassword/>} />
+        <Route path="/findpassword" element={<FindPassword/>} />
 
         {/* customer site */}
-        <Route path="/customer" element={<LoadingPage />} />
-        <Route path="/customer-introduce" element={<StoreIntroductionPage />} />
-        <Route path="/chatbot" element={<ChatbotPage />} />
+        <Route path="/customer" element={<Loading />} />
+        <Route path="/customer-introduce" element={<StoreIntroduction />} />
+        <Route path="/chatbot" element={<Chatbot />} />
+      </Routes>
       </Switch>
     </Router>
   );
