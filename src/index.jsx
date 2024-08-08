@@ -19,6 +19,11 @@ function App() {
         <Route path="/findid" element={<FindId/>} />
         <Route path="/findpassword" element={<FindPassword/>} />
 
+        <Route path="/mypage" element={<h1>마이페이지</h1>} />
+        <Route path="/notice" element={<h1>공지사항</h1>} />
+        <Route path="/qna" element={<h1>FQA</h1>} />
+
+
         {/* customer site */}
         <Route path="/customer" element={<Loading />} />
         <Route path="/customer-introduce" element={<StoreIntroduction />} />

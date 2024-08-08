@@ -36,7 +36,7 @@ const Login = () => {
         <div className="mt-6 text-center text-gray-500">
           <p>계정이 없나요? <Link to="/signup" className="underline">회원가입</Link></p>
           <p className="mt-2">
-            <a href="/findid" className="text-blue-500">아이디 찾기</a> |
+            <a href="/findid" className="text-blue-500">아이디 찾기 / </a>
             <a href="/findpassword" className="text-blue-500">비밀번호 찾기</a>
           </p>
         </div>
