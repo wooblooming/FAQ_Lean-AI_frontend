@@ -1,20 +1,12 @@
-// src/ChatbotPage.js
 import React, { useState, useRef } from 'react';
-import './bubble.css'; // 말풍선 CSS를 import 합니다.
+import '../bubble.css'; // 말풍선 CSS를 import 합니다.
 
 const ChatbotPage = () => {
   const [message, setMessage] = useState('');
-  const [history, setHistory] = useState([]);
   const chatBoxRef = useRef(null);
 
   const sendMessage = () => {
     if (message.trim() === "") return;
-
-    // Update chat history with user's message
-    setHistory(prevHistory => [
-      ...prevHistory,
-      { message: message, response: "" }
-    ]);
 
     // Display user's message in the chat box
     if (chatBoxRef.current) {
@@ -38,13 +30,6 @@ const ChatbotPage = () => {
     })
       .then(response => response.json())
       .then(data => {
-        // Update chat history with bot's response
-        setHistory(prevHistory => {
-          const updatedHistory = [...prevHistory];
-          updatedHistory[updatedHistory.length - 1].response = data.response;
-          return updatedHistory;
-        });
-
         // Display bot's response in the chat box
         if (chatBoxRef.current) {
           chatBoxRef.current.innerHTML += `
