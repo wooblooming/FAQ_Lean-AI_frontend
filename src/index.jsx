@@ -16,7 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingMenu/>} />
         <Route path="/login" element={<Login/>} />
-        <Route path="/FindId" element={<FindId/>} />
+        <Route path="/findid" element={<FindId/>} />
         <Route path="/findpassword" element={<FindPassword/>} />
 
         {/* customer site */}
