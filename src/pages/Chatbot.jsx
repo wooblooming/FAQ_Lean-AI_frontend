@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-import '../bubble.css'; // 말풍선 CSS를 import 합니다.
+import '../bubble.css'; // 말풍선 CSS를 import
 
-const ChatbotPage = () => {
+const Chatbot = () => {
   const [message, setMessage] = useState('');
   const chatBoxRef = useRef(null);
 
@@ -42,7 +42,7 @@ const ChatbotPage = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white border-blue-300 border p-5 rounded-lg shadow-lg font-sans mt-6">
+    <div className="max-w-lg mx-auto bg-white border-blue-300 border p-5 rounded-lg shadow-lg font-sans mt-6"> {/* className은 css 설정 내용*/}
       <img src="chatbot.png" alt="Chatbot" className="w-24 h-24 object-cover mx-auto mb-4" />
       <p className="text-center mb-2">안녕하세요 찬혁 떡볶이입니다!<br />
         찬혁 떡볶이에 대해 무엇이 궁금하신가요?
@@ -71,4 +71,4 @@ const ChatbotPage = () => {
   );
 };
 
-export default ChatbotPage;
+export default Chatbot;
