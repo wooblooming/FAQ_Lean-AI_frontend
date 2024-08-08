@@ -10,6 +10,8 @@ import FindPassword from './pages/FindPassword';
 import Loading from './pages/Loading'; 
 import StoreIntroduction from './pages/StoreIntroduction'; 
 import Chatbot from './pages/Chatbot'; 
+import IdFinder from './pages/IdFinder';
+import PsFinder from './pages/PsFinder';
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
         <Route path="/login" element={<Login/>} />
         <Route path="/findid" element={<FindId/>} />
         <Route path="/findpassword" element={<FindPassword/>} />
+        <Route path='/idfinder'element={<IdFinder/>} />
+        <Route path='/PsFinder'element={<PsFinder/>} />
 
         {/* customer site */}
         <Route path="/customer" element={<Loading />} />
