@@ -48,6 +48,39 @@ function LandingMenu() {
     setShowLogoutModal(false); 
   };
 
+  {/* 로그인 여부에 따라 마이페이지로 이동 */}
+  const goToMypage = () => {
+    if (isLoggedIn)
+      navigate('/mypage');
+
+    else {
+      {/*  로그인 페이지로 이동 */}
+      navigate('/login');
+    }
+  };
+
+  {/* 로그인 여부에 따라 공지사항 페이지로 이동 */}
+  const goToNotice = () => {
+    if (isLoggedIn)
+      navigate('/notice');
+
+    else {
+      {/*  로그인 페이지로 이동 */}
+      navigate('/login');
+    }
+  };
+
+  {/* 로그인 여부에 따라 fqa페이지로 이동 */}
+  const goToQnA = () => {
+    if (isLoggedIn)
+      navigate('/qna');
+
+    else {
+      {/*  로그인 페이지로 이동 */}
+      navigate('/login');
+    }
+  };
+
   return (
     <div>
       {/* 햄버거 메뉴 */}
@@ -68,9 +101,9 @@ function LandingMenu() {
       {/* 풀스크린 오버레이 메뉴 */}
       <div id="fullscreenOverlay" className={`fullscreen-overlay ${menuOpen ? 'flex' : 'hidden'} fixed inset-0 flex-col justify-center items-center text-center`}>
         <p className="mt-2 cursor-pointer" onClick={handleLoginLogoutClick}>Log in / Log out</p>
-        <p className="mt-2 cursor-pointer">마이 페이지</p>
-        <p className="mt-2 cursor-pointer">공지사항</p>
-        <p className="mt-2 cursor-pointer">자주 묻는 질문</p>
+        <p className="mt-2 cursor-pointer" onClick={goToMypage}>마이 페이지</p>
+        <p className="mt-2 cursor-pointer" onClick={goToNotice}>공지사항</p>
+        <p className="mt-2 cursor-pointer" onClick={goToQnA}>자주 묻는 질문</p>
       </div>
 
       {/* 로그아웃 모달 창 */}
