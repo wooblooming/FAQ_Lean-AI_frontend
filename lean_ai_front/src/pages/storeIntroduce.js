@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const StoreIntroduction = () => {
+const storeIntroduce = () => {
   return (
     <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative">
       {/* className은 css 설정 내용 */}
@@ -37,4 +37,4 @@ const StoreIntroduction = () => {
   );
 };
 
-export default StoreIntroduction;
+export default storeIntroduce;

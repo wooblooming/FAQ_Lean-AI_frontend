@@ -66,9 +66,9 @@ const Login = () => {
             <Link href="/signup" className="underline">회원가입</Link> {/* 회원가입 링크 */}
           </p>
           <p className="mt-2">
-            <Link href="/findid" className="text-blue-500">아이디 찾기</Link> {/* 아이디 찾기 링크 */}
+            <Link href="/findId" className="text-blue-500">아이디 찾기</Link> {/* 아이디 찾기 링크 */}
             {" | "}
-            <Link href="/findpassword" className="text-blue-500">비밀번호 찾기</Link> {/* 비밀번호 찾기 링크 */}
+            <Link href="/findPassword" className="text-blue-500">비밀번호 찾기</Link> {/* 비밀번호 찾기 링크 */}
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import '../styles/bubble.css'; {/* 말풍선 CSS를 import */}
+import '../styles/bubble.module.css'; {/* 말풍선 CSS를 import */}
 
 const Chatbot = () => {
   {/* useState : 가변적인 상태를 지니고 있을 수 있게 해 줌 */ }
