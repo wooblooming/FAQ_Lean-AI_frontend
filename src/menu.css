@@ -1,7 +1,0 @@
-.blurred-background {
-    filter: blur(20px);
-    -webkit-filter: blur(20px);
-}
-.fullscreen-overlay {
-    background: rgba(255, 255, 255, 0.8);
-}
