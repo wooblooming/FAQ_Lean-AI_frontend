@@ -33,7 +33,7 @@ function FindId() {
           <button className="w-1/2 py-2 text-center text-red-500 border-b-2 border-red-500 font-semibold">
             아이디 찾기
           </button>
-          <a href="/findpassword" className="w-1/2 py-2 text-center text-gray-500">
+          <a href="/findPassword" className="w-1/2 py-2 text-center text-gray-500">
             비밀번호 찾기
           </a>
         </div>
