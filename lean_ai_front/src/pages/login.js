@@ -1,22 +1,44 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router'; // Next.js의 useRouter 훅 사용
 import Link from 'next/link'; // Next.js의 Link 컴포넌트를 사용하여 클라이언트 사이드 네비게이션 처리
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // FontAwesome 아이콘 컴포넌트 사용
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'; // 사용될 아이콘 임포트
 
 const Login = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 
-    
-    // login 처리
-    const handleLoginClick = () => {
-        // 로그인이 되면 main 페이지로 이동
-        if (isLoggedIn) {
-            router.push('/mainPageForPresident');
-        } 
-        // 로그인이 안되면 다시 시도
-        else {
-          router.push('/login');
+    const [username, setUsername] = useState(''); // 사용자 입력 상태
+    const [password, setPassword] = useState(''); // 비밀번호 입력 상태
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
+    const router = useRouter(); // Next.js 라우터 훅
+
+    const handleLoginClick = async () => {
+        // 입력 검증 (간단한 예제)
+        if (!username || !password) {
+            alert('아이디와 비밀번호를 입력해 주세요.');
+            return;
         }
-      };
+
+        // 로그인 처리 (서버에 요청)
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setIsLoggedIn(true);
+                router.push('/mainPageForPresident'); // 로그인 성공 시 리디렉션
+            } else {
+                alert('로그인에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('로그인 오류:', error);
+            alert('로그인 요청 중 오류가 발생했습니다.');
+        }
+    };
 
     return (
         <div className="bg-blue-100 flex justify-center items-center h-screen">
@@ -34,6 +56,8 @@ const Login = () => {
                         <input
                             type="text"
                             placeholder="아이디"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             className="ml-2 w-full border-none focus:ring-0"
                         />
                     </div>
@@ -44,12 +68,17 @@ const Login = () => {
                         <input
                             type="password"
                             placeholder="비밀번호"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             className="ml-2 w-full border-none focus:ring-0"
                         />
                     </div>
 
                     {/* 로그인 버튼 */}
-                    <button className="bg-blue-200 text-black font-bold py-2 px-4 rounded-md w-full " onClick={handleLoginClick}>
+                    <button 
+                        className="bg-blue-200 text-black font-bold py-2 px-4 rounded-md w-full"
+                        onClick={handleLoginClick}
+                    >
                         로그인
                     </button>
 
@@ -78,7 +107,7 @@ const Login = () => {
                 <div className="mt-6 text-center text-gray-500">
                     <p>계정이 없나요?
                         {/* 회원가입 링크 */}
-                        <Link href="/signup" className="underline">회원가입</Link> 
+                        <Link href="/signForm" className="underline p-1 m-1">회원가입</Link> 
                     </p>
                     <p className="mt-2">
                         {/* 아이디 찾기 링크 */}
