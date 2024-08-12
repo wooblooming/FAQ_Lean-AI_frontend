@@ -1,31 +1,23 @@
 import React, { useState, useRef } from 'react';
-import '../styles/bubble.module.css'; // 말풍선 CSS를 import
+import styles from '../styles/bubble.module.css'; // 말풍선 CSS 모듈을 import
 
 const Chatbot = () => {
-  // useState : 가변적인 상태를 지니고 있을 수 있게 해 줌
   const [message, setMessage] = useState('');
-
-  // useRef : 랜더링 시 내부 변수 유지할 수 있게 해줌
   const chatBoxRef = useRef(null);
 
-  // 메시지 전송 
   const sendMessage = () => {
-    // 공백일 경우 
-    if (message.trim() === "") return; 
+    if (message.trim() === "") return;
 
-    // 채팅 박스에 고객의 메시지 내용 출력 
     if (chatBoxRef.current) {
       chatBoxRef.current.innerHTML += `
         <div class="text-right">
-          <div class="user-bubble"><strong>You:</strong> ${message}</div>
+          <div class="${styles['user-bubble']}"><strong>You:</strong> ${message}</div>
         </div>
       `;
     }
 
-    // 메시지 전송 창 clear 
     setMessage('');
 
-    // AI 챗봇 응답 가져오기
     fetch('/chat', {
       method: 'POST',
       headers: {
@@ -35,11 +27,10 @@ const Chatbot = () => {
     })
       .then(response => response.json())
       .then(data => {
-        // 채팅 박스에 챗봇의 응답 메시지 내용 출력 
         if (chatBoxRef.current) {
           chatBoxRef.current.innerHTML += `
             <div class="text-left">
-              <div class="bot-bubble"><strong>Bot:</strong> ${data.response}</div>
+              <div class="${styles['bot-bubble']}"><strong>Bot:</strong> ${data.response}</div>
             </div>
           `;
         }
@@ -47,25 +38,25 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white border-blue-300 border p-5 rounded-lg shadow-lg font-sans mt-6"> {/* className은 css 설정 내용*/}
-      {/* 챗봇 이미지 */}
+    <div className="max-w-lg mx-auto bg-white border-blue-300 border p-5 rounded-lg shadow-lg font-sans mt-6">
+      {/* 뒤로가기 기능 */}
+      <div className="flex items-center mb-4">
+        <a href="/storeIntroduce" className="text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </a>
+      </div>
       <img src="chatbot.png" alt="Chatbot" className="w-24 h-24 object-cover mx-auto mb-4" />
-
-      {/* 인사 멘트 출력 */}
       <p className="text-center mb-2">안녕하세요 찬혁 떡볶이입니다!<br />
         찬혁 떡볶이에 대해 무엇이 궁금하신가요?
       </p>
-
-      {/* 채팅 박스 */}
       <div
         className="w-full h-72 border border-gray-300 p-2 overflow-y-auto mb-4"
         id="chat-box"
         ref={chatBoxRef}
       >
-
       </div>
-
-      {/* 메시지 창 */}
       <div className="flex justify-between">
         <input
           type="text"
@@ -74,8 +65,6 @@ const Chatbot = () => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="무엇이든 물어보세요!"
         />
-
-      {/* 메시지 전송 버튼 */}
         <button
           onClick={sendMessage}
           className="flex items-center justify-center p-2 rounded text-white"

@@ -1,5 +1,5 @@
 .user-bubble {
-    background-color: #e0e0e0;
+    background-color: #95e1eb;
     border-radius: 10px;
     padding: 10px;
     display: inline-block;
@@ -12,14 +12,14 @@
     position: absolute;
     top: 50%;
     right: -10px;
-    border-width: 10px 0 10px 10px;
+    border-width: 10px 1px 2px 10px;
     border-style: solid;
-    border-color: transparent transparent transparent #42d2e5;
+    border-color: transparent transparent transparent #95e1eb;
     transform: translateY(-50%);
 }
 
 .bot-bubble {
-    background-color: #e0e0e0;
+    background-color: #9ed4f3;
     border-radius: 10px;
     padding: 10px;
     display: inline-block;
@@ -32,8 +32,8 @@
     position: absolute;
     top: 50%;
     left: -10px;
-    border-width: 10px 10px 10px 0;
+    border-width: 10px 10px 10px 1px;
     border-style: solid;
-    border-color: transparent #4c8fed transparent transparent;
+    border-color: transparent #9ed4f3 transparent transparent;
     transform: translateY(-50%);
 }
