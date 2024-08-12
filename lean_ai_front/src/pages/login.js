@@ -78,11 +78,7 @@ const Login = () => {
                 <div className="mt-6 text-center text-gray-500">
                     <p>계정이 없나요?
                         {/* 회원가입 링크 */}
-<<<<<<< HEAD
                         <Link href="/signForm" className="underline">회원가입</Link> 
-=======
-                        <Link href="/signup" className="underline">회원가입</Link> 
->>>>>>> 4d96f8cc0e1c58315fee01a3e84fcc518aed14ed
                     </p>
                     <p className="mt-2">
                         {/* 아이디 찾기 링크 */}
