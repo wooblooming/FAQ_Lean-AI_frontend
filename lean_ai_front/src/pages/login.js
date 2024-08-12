@@ -11,13 +11,14 @@ const Login = () => {
     const router = useRouter(); // Next.js 라우터 훅
 
     const handleLoginClick = async () => {
-        // 입력 검증 (간단한 예제)
+        // 입력 검증 
+        // 아이디, 비밀번호 입력 안하면 에러 창
         if (!username || !password) {
             alert('아이디와 비밀번호를 입력해 주세요.');
             return;
         }
 
-        // 로그인 처리 (서버에 요청)
+        // 로그인 처리 백엔드 코드 보며 다시 작성해야 함
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
