@@ -47,7 +47,8 @@ const Chatbot = () => {
           </svg>
         </a>
       </div>
-      <img src="chatbot.png" alt="Chatbot" className="w-24 h-24 object-cover mx-auto mb-4" />
+      <h1 className="text-4xl font-bold text-center mb-2">LEAN AI</h1>
+      <img src="chatbot.png" alt="Chatbot" className="w-32 h-32 object-cover mx-auto mb-2" />
       <p className="text-center mb-2">안녕하세요 찬혁 떡볶이입니다!<br />
         찬혁 떡볶이에 대해 무엇이 궁금하신가요?
       </p>
