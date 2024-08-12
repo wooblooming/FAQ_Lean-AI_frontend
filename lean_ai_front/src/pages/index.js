@@ -1,26 +1,60 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 function LandingMenu() {
-  // 메뉴의 열림/닫힘 상태를 관리하는 state
-  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
 
-  // 메뉴 열림/닫힘 상태를 토글하는 함수
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
+  const handleLoginLogoutClick = () => {
+    if (isLoggedIn) {
+      setShowLogoutModal(true);
+    } else {
+      router.push('/login');
+    }
+  };
+
+  const handleLogoutConfirm = () => {
+    setIsLoggedIn(false);
+    setShowLogoutModal(false);
+    router.push('/');
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutModal(false);
+  };
+
+  const goToMypage = () => {
+    if (isLoggedIn) router.push('/mypage');
+    else router.push('/login');
+  };
+
+  const goToNotice = () => {
+    if (isLoggedIn) router.push('/notice');
+    else router.push('/login');
+  };
+
+  const goToQnA = () => {
+    if (isLoggedIn) router.push('/qna');
+    else router.push('/login');
+  };
+
   return (
     <div>
-      {/* 햄버거 메뉴 버튼 */}
       <div className="absolute top-4 right-4 z-20">
-        <button 
-          id="menuToggle" 
-          className="text-3xl focus:outline-none" 
-          onClick={toggleMenu} // 버튼 클릭 시 메뉴를 토글
+        <button
+          id="menuToggle"
+          className="text-3xl focus:outline-none"
+          onClick={toggleMenu}
         >
           <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
-            {/* 햄버거 메뉴의 막대들을 구성하는 div들 */}
             <div></div>
             <div></div>
             <div></div>
@@ -28,43 +62,56 @@ function LandingMenu() {
         </button>
       </div>
 
-      {/* 메인 콘텐츠 영역 */}
       <div id="mainContent" className="flex flex-col justify-center items-start h-screen p-6">
-        {/* 메인 타이틀 */}
         <h1 className="text-4xl font-bold">LEAN AI</h1>
-        {/* 서브 타이틀 */}
         <h2 className="text-3xl font-bold mt-2">당신의 번거로움을 줄여주는 챗봇</h2>
-        {/* 설명 문구 */}
-        <p className="mt-4">AI 기술을 이용해 각종 이용객들의 질문을 더는 고민하지 않게 해드립니다.</p>
-        {/* 로그인 페이지로 이동하는 버튼 */}
+        <p className="mt-4">
+          AI 기술을 이용해 각종 이용객들의 질문을 더는 고민하지 않게 해드립니다.
+        </p>
         <Link href="/login">
           <button className="mt-6 bg-red-500 text-white px-4 py-2 rounded">체험하러가기</button>
         </Link>
       </div>
 
-      {/* 풀스크린 오버레이 메뉴 - 메뉴가 열릴 때만 표시됨 */}
       {menuOpen && (
-        <div 
-          id="fullscreenOverlay" 
+        <div
+          id="fullscreenOverlay"
           className="fullscreen-overlay fixed inset-0 flex flex-col justify-center items-center text-center z-30"
         >
-          {/* 오버레이 메뉴의 닫기 버튼 (햄버거 아이콘과 동일) */}
           <button
             className="absolute top-4 right-4 text-3xl text-white focus:outline-none no-blur"
-            onClick={toggleMenu} // 클릭 시 메뉴 닫기
+            onClick={toggleMenu}
           >
             <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
-              {/* X자 모양을 만드는 막대들 */}
               <div></div>
               <div></div>
               <div></div>
             </span>
           </button>
-          {/* 오버레이 메뉴의 링크들 */}
-          <p className="mt-2 cursor-pointer text-white" id="loginLink1">Log in / Log out</p>
-          <p className="mt-2 cursor-pointer text-white" id="loginLink">마이 페이지</p>
-          <p className="mt-2 cursor-pointer text-white" id="noticeLink">공지사항</p>
-          <p className="mt-2 cursor-pointer text-white" id="faqLink">자주 묻는 질문</p>
+          <p className="mt-2 cursor-pointer text-white" onClick={handleLoginLogoutClick}>Log in / Log out</p>
+          <p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p>
+          <p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p>
+          <p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p>
+        </div>
+      )}
+
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p className="mb-4">로그아웃하시겠습니까?</p>
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+              onClick={handleLogoutConfirm}
+            >
+              로그아웃
+            </button>
+            <button
+              className="bg-gray-300 px-4 py-2 rounded"
+              onClick={handleLogoutCancel}
+            >
+              취소
+            </button>
+          </div>
         </div>
       )}
 
