@@ -29,7 +29,7 @@ const storeIntroduce = () => {
         </div>
 
         {/* Link : 특정 주소로 넘어갈 수 있게 함 */}
-        <Link href="/chatbot" >
+        <Link href="/chatBot" >
           <img src="/chatbot.png" alt="Chatbot" className="fixed bottom-4 right-4 w-24 h-24 object-cover" />
         </Link>
       </div>
