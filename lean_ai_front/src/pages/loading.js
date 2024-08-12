@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-const Customer = () => {
+const Loading = () => {
   // useRouter : 페이지를 이동할 때 사용
   const router = useRouter();
 
@@ -31,4 +31,4 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default Loading;

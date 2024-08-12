@@ -35,7 +35,7 @@ const Login = () => {
           </div>
 
           {/* 로그인 버튼 */}
-          <button className="bg-blue-200 text-black font-bold py-2 px-4 rounded-md w-full" >
+          <button className="bg-blue-200 text-black font-bold py-2 px-4 rounded-md w-full">
             로그인
           </button>
 
@@ -63,15 +63,12 @@ const Login = () => {
         {/* 하단의 추가 링크들: 회원가입, 아이디 찾기, 비밀번호 찾기 */}
         <div className="mt-6 text-center text-gray-500">
           <p>계정이 없나요? 
-            {/* 회원가입 링크 */}
-            <Link href="/siginform(temporary)" className="underline">회원가입</Link> 
+            <Link href="/signup" className="underline">회원가입</Link> {/* 회원가입 링크 */}
           </p>
           <p className="mt-2">
-            {/* 아이디 찾기 링크 */}
-            <Link href="/findingId" className="text-blue-500"> 아이디 찾기</Link> 
+            <Link href="/findId" className="text-blue-500">아이디 찾기</Link> {/* 아이디 찾기 링크 */}
             {" | "}
-            {/* 비밀번호 찾기 링크 */}
-            <Link href="/findingPassword" className="text-blue-500">비밀번호 찾기</Link> 
+            <Link href="/findPassword" className="text-blue-500">비밀번호 찾기</Link> {/* 비밀번호 찾기 링크 */}
           </p>
         </div>
       </div>
