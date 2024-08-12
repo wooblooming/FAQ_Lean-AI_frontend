@@ -16,9 +16,11 @@ const MainPageWithMenu = () => {
       <nav className="flex justify-between items-center mb-6">
         <div className="text-lg font-bold">LEAN AI</div>
         <div className="flex space-x-4">
-          <button className="text-xl flex items-center justify-center w-8 h-8">
-            <i className="fas fa-bell"></i>
-          </button>
+          <Link href="/notification">
+            <p className="text-xl flex items-center justify-center w-8 h-8">
+              <i className="fas fa-bell"></i>
+            </p>
+          </Link>
           <button 
             id="menuToggle" 
             className="text-xl flex items-center justify-center w-8 h-8 focus:outline-none" 
@@ -35,27 +37,31 @@ const MainPageWithMenu = () => {
 
       {/* 메인 콘텐츠 영역 */}
       <main id="main-content" className="text-center">
-        <h1 className="text-lg font-bold mb-4">
+        <h1 className="text-xl font-bold mb-4">
           사람이 답할 시간은 끝났습니다.
           <br />
           이제는 로봇이 응답합니다
         </h1>
 
         {/* 상단 배너 */}
-        <div className="bg-gray-300 rounded-lg h-40 flex items-center justify-center mb-6">
-          <span className="text-lg">상단 배너</span>
+        <div className="bg-gray-300 rounded-lg flex items-center justify-center mb-6 mx-auto" style={{ width: '100%', maxWidth: '500px' }}>
+          <img src="banner.png" alt="상단 배너 이미지" className="w-full object-cover rounded-lg" />
         </div>
 
         {/* 사용자 안내 메시지 */}
-        <div className="mb-6">
+        <div className="mb-6 mt-8">
           <h2 className="text-xl font-bold">찬혁떡볶이님을</h2>
           <p className="text-lg">위한 서비스를 준비했어요.</p>
         </div>
 
         {/* 버튼들 */}
-        <div className="grid grid-cols-2 gap-4">
-          <button className="bg-gray-300 rounded-lg py-4">기본 정보 등록</button>
-          <button className="bg-gray-300 rounded-lg py-4">FAQ 데이터 등록</button>
+        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+          <Link href="/changeInfo" passHref>
+            <p className="bg-gray-300 rounded-lg py-8 w-full text-center">기본 정보 등록</p>
+          </Link>
+          <Link href="/editData" passHref>
+            <p className="bg-gray-300 rounded-lg py-8 w-full text-center">FAQ 데이터 등록</p>
+          </Link>
         </div>
       </main>
 
