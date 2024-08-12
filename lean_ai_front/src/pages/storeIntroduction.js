@@ -3,7 +3,7 @@ import Link from 'next/link';
 const storeIntroduce = () => {
   return (
     <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
-      <div className=" bg-white bg-cover border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3">
+      <div className="border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3">
         <div className=" rounded-lg p-8 w-full max-w-md text-center mb-2">
           {/* 매장 로고 이미지 또는 상표 이미지 */}
           <img src="/test image.png" alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
@@ -29,7 +29,7 @@ const storeIntroduce = () => {
         </div>
 
         {/* Link : 특정 주소로 넘어갈 수 있게 함 */}
-        <Link href="/chatbot" >
+        <Link href="/chatBot" >
           <img src="/chatbot.png" alt="Chatbot" className="fixed bottom-4 right-4 w-24 h-24 object-cover" />
         </Link>
       </div>
