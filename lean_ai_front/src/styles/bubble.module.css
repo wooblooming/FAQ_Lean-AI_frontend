@@ -1,5 +1,5 @@
 .user-bubble {
-    background-color: #e0f7fa;
+    background-color: #e0e0e0;
     border-radius: 10px;
     padding: 10px;
     display: inline-block;
@@ -14,7 +14,7 @@
     right: -10px;
     border-width: 10px 0 10px 10px;
     border-style: solid;
-    border-color: transparent transparent transparent #e0f7fa;
+    border-color: transparent transparent transparent #42d2e5;
     transform: translateY(-50%);
 }
 
@@ -34,6 +34,6 @@
     left: -10px;
     border-width: 10px 10px 10px 0;
     border-style: solid;
-    border-color: transparent #e0e0e0 transparent transparent;
+    border-color: transparent #4c8fed transparent transparent;
     transform: translateY(-50%);
 }

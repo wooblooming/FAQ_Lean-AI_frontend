@@ -1,19 +1,19 @@
 import React, { useState, useRef } from 'react';
-import '../styles/bubble.module.css'; {/* 말풍선 CSS를 import */}
+import '../styles/bubble.module.css'; // 말풍선 CSS를 import
 
 const Chatbot = () => {
-  {/* useState : 가변적인 상태를 지니고 있을 수 있게 해 줌 */ }
+  // useState : 가변적인 상태를 지니고 있을 수 있게 해 줌
   const [message, setMessage] = useState('');
 
-  {/* useRef : 랜더링 시 내부 변수 유지할 수 있게 해줌 */ }
+  // useRef : 랜더링 시 내부 변수 유지할 수 있게 해줌
   const chatBoxRef = useRef(null);
 
-  {/* 메시지 전송 */ }
+  // 메시지 전송 
   const sendMessage = () => {
-    {/* 공백일 경우 */ }
+    // 공백일 경우 
     if (message.trim() === "") return; 
 
-    {/* 채팅 박스에 고객의 메시지 내용 출력 */ }
+    // 채팅 박스에 고객의 메시지 내용 출력 
     if (chatBoxRef.current) {
       chatBoxRef.current.innerHTML += `
         <div class="text-right">
@@ -22,10 +22,10 @@ const Chatbot = () => {
       `;
     }
 
-    {/* 메시지 전송 창 clear */ }
+    // 메시지 전송 창 clear 
     setMessage('');
 
-    {/* AI 챗봇 응답 가져오기 */ }
+    // AI 챗봇 응답 가져오기
     fetch('/chat', {
       method: 'POST',
       headers: {
@@ -35,7 +35,7 @@ const Chatbot = () => {
     })
       .then(response => response.json())
       .then(data => {
-        {/* 채팅 박스에 챗봇의 응답 메시지 내용 출력 */ }
+        // 채팅 박스에 챗봇의 응답 메시지 내용 출력 
         if (chatBoxRef.current) {
           chatBoxRef.current.innerHTML += `
             <div class="text-left">
@@ -78,7 +78,7 @@ const Chatbot = () => {
       {/* 메시지 전송 버튼 */}
         <button
           onClick={sendMessage}
-          className="flex items-center justify-center p-2 rounded hover:bg-blue-600 text-white"
+          className="flex items-center justify-center p-2 rounded text-white"
         >
           <img src="send.png" alt="Send" className="w-7 h-7" />
         </button>
