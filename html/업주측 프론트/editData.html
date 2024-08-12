@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데이터 수정하기</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gray-200 flex items-center justify-center">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs">
+        <!-- 뒤로가기 버튼 및 제목을 동일선상에 배치 -->
+        <div class="mb-4 flex items-center">
+            <a href="myPage.html" class="text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg> 
+            </a>
+            <h1 class="text-xl font-bold flex-grow text-center">데이터 수정하기</h1>
+        </div>
+
+        <!-- 설명 텍스트 -->
+        <p class="text-sm text-gray-600 mb-6 text-center">아래 버튼을 눌러 파일을 첨부해주세요.</p>
+
+        <!-- 파일 첨부 버튼 -->
+        <div class="mb-6">
+            <!-- 실제 파일 입력 요소는 화면에 보이지 않도록 숨김 -->
+            <input type="file" id="fileInput" class="hidden" onchange="showFileName()" />
+
+            <!-- 파일 첨부 버튼 -->
+            <button 
+                class="w-full bg-red-500 text-white py-3 rounded-lg font-bold" 
+                onclick="document.getElementById('fileInput').click()"
+            >
+                파일 첨부
+            </button>
+
+            <!-- 선택된 파일 이름을 표시할 영역 -->
+            <p id="fileName" class="mt-2 text-sm text-gray-700"></p>
+        </div>
+
+        <!-- 요청 사항 폼 -->
+        <div class="mb-6">
+            <label class="block mb-2 text-left font-semibold">요청 사항</label>
+            <input type="text" placeholder="제목 남기기" class="w-full p-3 rounded-lg border mb-4">
+            <textarea placeholder="내용 입력" class="w-full p-3 rounded-lg border h-32"></textarea>
+            <p class="text-sm text-gray-500 mt-2">*파일이 없으시더라도 수정 요청이 가능합니다.</p>
+        </div>
+
+        <!-- 요청하기 버튼 -->
+        <div class="text-center">
+            <button class="bg-red-500 text-white py-3 px-6 rounded-lg font-bold" onclick="openModal()">요청하기</button>
+        </div>
+    </div>
+
+    <!-- 모달 창 -->
+    <div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 class="text-xl font-bold mb-4 text-center">요청되었습니다!</h2>
+            <div class="text-center">
+                <button class="bg-red-500 text-white py-2 px-4 rounded-lg" onclick="closeModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 파일 선택 시 파일 이름을 표시하는 함수
+        function showFileName() {
+            const fileInput = document.getElementById('fileInput');
+            const fileName = document.getElementById('fileName');
+            
+            if (fileInput.files.length > 0) {
+                fileName.textContent = `선택된 파일: ${fileInput.files[0].name}`;
+            } else {
+                fileName.textContent = '';
+            }
+        }
+
+        // 모달 열기
+        function openModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('hidden');
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.add('hidden');
+        }
+    </script>
+
+</body>
+</html>
