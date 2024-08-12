@@ -5,42 +5,41 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // FontAwesome
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'; // 사용될 아이콘 임포트
 
 const Login = () => {
-    const [username, setUsername] = useState(''); // 사용자 입력 상태
+    // 사용자 입력 상태를 관리하는 useState 훅
+    const [username, setUsername] = useState(''); // 아이디 입력 상태
     const [password, setPassword] = useState(''); // 비밀번호 입력 상태
     const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
-    const router = useRouter(); // Next.js 라우터 훅
 
+    const router = useRouter(); // Next.js 라우터 훅을 통해 페이지 이동 처리
+
+    // 로그인 버튼 클릭 시 호출되는 함수
     const handleLoginClick = async () => {
-        // 입력 검증 
-        // 아이디, 비밀번호 입력 안하면 에러 창
-
+        // 입력 검증: 아이디 또는 비밀번호가 입력되지 않은 경우 경고 메시지 표시
         if (!username || !password) {
             alert('아이디와 비밀번호를 입력해 주세요.');
             return;
         }
 
-
-        // 로그인 처리 백엔드 코드 보며 다시 작성해야 함
-
+        // 로그인 처리 요청: 서버의 로그인 API를 호출
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, password }), // 아이디와 비밀번호를 JSON 형태로 서버에 전송
             });
 
-            const data = await response.json();
+            const data = await response.json(); // 서버 응답을 JSON 형태로 변환
             if (data.success) {
-                setIsLoggedIn(true);
-                router.push('/mainPageForPresident'); // 로그인 성공 시 리디렉션
+                setIsLoggedIn(true); // 로그인 성공 시 상태 업데이트
+                router.push('/mainPageForPresident'); // 로그인 성공 시 메인 페이지로 리디렉션
             } else {
-                alert('로그인에 실패했습니다.');
+                alert('로그인에 실패했습니다.'); // 로그인 실패 시 경고 메시지 표시
             }
         } catch (error) {
-            console.error('로그인 오류:', error);
-            alert('로그인 요청 중 오류가 발생했습니다.');
+            console.error('로그인 오류:', error); // 오류 발생 시 콘솔에 출력
+            alert('로그인 요청 중 오류가 발생했습니다.'); // 오류 메시지 표시
         }
     };
 
@@ -53,7 +52,6 @@ const Login = () => {
 
                 {/* 입력 필드 및 로그인 옵션들을 감싸는 컨테이너 */}
                 <div className="space-y-4">
-
                     {/* 아이디 입력 필드 */}
                     <div className="flex items-center border rounded-md px-4 py-2">
                         <FontAwesomeIcon icon={faUser} /> {/* 사용자 아이콘 */}
@@ -61,7 +59,7 @@ const Login = () => {
                             type="text"
                             placeholder="아이디"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => setUsername(e.target.value)} // 아이디 입력 시 상태 업데이트
                             className="ml-2 w-full border-none focus:ring-0"
                         />
                     </div>
@@ -73,7 +71,7 @@ const Login = () => {
                             type="password"
                             placeholder="비밀번호"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => setPassword(e.target.value)} // 비밀번호 입력 시 상태 업데이트
                             className="ml-2 w-full border-none focus:ring-0"
                         />
                     </div>
@@ -81,7 +79,7 @@ const Login = () => {
                     {/* 로그인 버튼 */}
                     <button 
                         className="bg-blue-200 text-black font-bold py-2 px-4 rounded-md w-full"
-                        onClick={handleLoginClick}
+                        onClick={handleLoginClick} // 로그인 버튼 클릭 시 handleLoginClick 함수 호출
                     >
                         로그인
                     </button>
@@ -115,10 +113,10 @@ const Login = () => {
                     </p>
                     <p className="mt-2">
                         {/* 아이디 찾기 링크 */}
-                        <Link href="/findId" className="text-blue-500">아이디 찾기</Link> 
+                        <Link href="/findingId" className="text-blue-500">아이디 찾기</Link> 
                         {" | "}
                         {/* 비밀번호 찾기 링크 */}
-                        <Link href="/findPassword" className="text-blue-500">비밀번호 찾기</Link> 
+                        <Link href="/findingPassword" className="text-blue-500">비밀번호 찾기</Link> 
                     </p>
                 </div>
             </div>

@@ -28,7 +28,7 @@ const storeIntroduce = () => {
           </p>
         </div>
 
-        {/* Link : 특정 주소로 넘어갈 수 있게 함 */}
+        {/* Link : 이벤트 없을 시 페이지 이동 */}
         <Link href="/chatBot" >
           <img src="/chatbot.png" alt="Chatbot" className="fixed bottom-4 right-4 w-24 h-24 object-cover" />
         </Link>
