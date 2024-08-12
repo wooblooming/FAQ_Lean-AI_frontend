@@ -290,7 +290,7 @@ const Signup = () => {
     **부칙**
 
     1.이 약관은 2024년 9월 1일부터 적용됩니다.
-    `;
+   ` ;
 
     // 개인 정보 동의
     const informationOfService = `
@@ -327,7 +327,18 @@ const Signup = () => {
     - 동의를 거부할 권리 및 거부 경우의 불이익
 
     귀하께서는 “플랫폼”이 위와 같이 수집하는 개인정보에 대해, 동의하지 않거나 개인정보를 기재하지 않음으로써 거부할 수 있습니다. 다만, 이때 회원에게 제공되는 서비스가 제한될 수 있습니다.
+    ` ;
+
+    const marketingOfService = `
+    ㈜린에이아이는 정보통신망의 이용촉진 및 정보보호 등에 관한 법률 제50조 제1항에 따라 광고성 정보를 전송하기 위해 수신자의 사전 동의를 받고 있으며, 수신 동의여부를 정기적으로 확인합니다.
+
+    광고성 정보 수신에 동의하실 경우, ㈜린에이아이가 제공하는 이벤트/혜택 등 다양한 정보 및 기타 유용한 광고성 정보가 휴대전화(카카오톡 알림 또는 문자), 이메일을 통해 발송됩니다.
+
+    본 광고성 정보수신 동의 항목은 선택사항이므로 동의를 거부하는 경우에도 ㈜린에이아이 서비스의 이용에는 영향이 없습니다. 다만 거부 시 동의를 통해 제공 가능한 각종 혜택 이벤트 안내를 받아 보실 수 없습니다. 단, 결제 정보, 정기 결제 알림 등 광고성 정보 이외 의무적으로 안내되어야 하는 정보성 내용은 수신동의 여부와 무관하게 제공됩니다.
+
+    수신동의의 의사표시 이후에도 마이페이지 접속을 통해 이용자의 의사에 따라 수신동의 상태를 변경(동의/철회)할 수 있습니다.
     `;
+
 
     const handleSignup = async () => {
         if (!username || !password || !confirmPassword || !name || !dob || !phone || !verificationCode || !email || !businessName || !address) {
@@ -579,8 +590,8 @@ const Signup = () => {
                 onClose={() => setShowMarketingModal(false)}
                 title="마케팅 활용 동의 및 광고 수신 동의"
             >
-                <p className='text-l font-semibold'>개인정보 수집 및 이용 동의</p>
-                <pre>{informationOfService}</pre>
+                <p className='text-l font-semibold'>마케팅 활용 동의 및 광고 수신 동의</p>
+                <pre>{marketingOfService}</pre>
 
                 <div className='flex flex-row items-center justify-center mb-3'>
                     <button
