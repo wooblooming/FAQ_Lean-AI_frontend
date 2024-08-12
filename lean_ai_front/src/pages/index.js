@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 function LandingMenu() {
+  // useRouter : 이벤트 있는 페이지 이동시 이용
   const router = useRouter();
 
   const [menuOpen, setMenuOpen] = useState(false);
