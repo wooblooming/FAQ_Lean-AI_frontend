@@ -6,10 +6,10 @@ const storeIntroduce = () => {
       <div className="border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3">
         <div className=" rounded-lg p-8 w-full max-w-md text-center mb-2">
           {/* 매장 로고 이미지 또는 상표 이미지 */}
-          <img src="/test image.png" alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
+          <img src="/banner_1.png" alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
 
           {/* 매장 이름 출력 */}
-          <p className="font-bold text-2xl">찬혁 떡볶이</p>
+          <p className="font-bold text-2xl">무물떡볶이</p>
         </div>
 
         {/* 매장 기본정보 출력 */}
