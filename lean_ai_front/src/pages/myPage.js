@@ -3,25 +3,25 @@ import Link from 'next/link';
 
 const myPage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
-        {/* 뒤로가기 버튼 */}
-        <Link href="/mainPageForPresident" className="absolute top-4 left-4 text-gray-500 focus:outline-none">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-        </Link>
+  <div className="min-h-screen bg-gray-100 flex items-center justify-center relative">
+    <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center relative">
+      {/* 뒤로가기 버튼 */}
+      <Link href="/mainPageForPresident" className="absolute top-4 left-4 text-gray-500 focus:outline-none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className="w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </Link>
 
         {/* 프로필 이미지 */}
         <div className="mb-4">
