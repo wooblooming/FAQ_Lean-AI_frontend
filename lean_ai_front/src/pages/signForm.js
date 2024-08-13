@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import IdDuplicateCheckModal from '../components/IdDuplicateCheckModal'; // 아이디 중복 검사 컴포넌트
-import VerificationCode from '../components/verificationCode'; // 인증코드 컴포넌트
+import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이디 중복 검사 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
 import Modal from '../components/modal'; // 일반 모달 컴포넌트
@@ -97,6 +96,55 @@ const Signup = () => {
         router.push('/login');
     };
 
+    // 인증번호 받기 버튼 클릭 시 auth 페이지로 이동
+    /* 백엔드 연동시 이용
+    const handleAuthPageOpen = async () => {
+        try {
+            const response = await fetch('/api/start-auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    phone: formData.phone,
+                    returnUrl: `${window.location.origin}/complete`,
+                }),
+            });
+    
+            const data = await response.json();
+            if (data.success) {
+                router.push('/auth'); // or open auth page in a new window
+            } else {
+                setErrorMessage('인증 요청 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('본인인증 요청 오류:', error);
+            setErrorMessage('본인인증 요청 중 오류가 발생했습니다.');
+        }
+    };
+    */
+    const handleAuthPageOpen = async () => {
+        try {
+            // 시뮬레이션용 데이터 처리
+            const mockResponse = {
+                success: true,
+                authToken: 'mockAuthToken12345', // 실제로는 서버에서 받아야 하는 값
+            };
+    
+            if (mockResponse.success) {
+                // 인증 페이지로 이동 (모의)
+                console.log('Auth page opened with token:', mockResponse.authToken);
+                router.push('/auth'); // 실제 인증 페이지로 이동
+            } else {
+                setErrorMessage('인증 요청 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('본인인증 요청 오류:', error);
+            setErrorMessage('본인인증 요청 중 오류가 발생했습니다.');
+        }
+    };
+    
+
     return (
         <div className="bg-blue-100 flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
             <div className="bg-white p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3 text-sm font-bold mb-2">
@@ -170,7 +218,21 @@ const Signup = () => {
                         </label>
                     </div>
 
-                    <VerificationCode formData={formData} setFormData={setFormData} />
+                    {/* 본인 인증 */}
+                    <div className="flex space-x-2">
+                        <label className="flex-grow border rounded-md px-4 py-2">
+                            <input
+                                type="text"
+                                name="phone"
+                                placeholder="휴대폰 번호"
+                                value={formData.phone}
+                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                className="w-full border-none focus:ring-0 outline-none"
+                            />
+                        </label>
+
+                        <button className="text-white bg-purple-400 rounded-md px-4 py-2" onClick={handleAuthPageOpen}>인증번호 받기</button>
+                    </div>
 
                     <label className="flex items-center border rounded-md px-4 py-2">
                         <input
