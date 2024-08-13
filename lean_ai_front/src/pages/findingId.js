@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 
 // Findid라는 함수형 컴포넌트 선언
 function FindId() {
+
+  const router = useRouter();
+
   // 모달이 열려있는지 여부를 관리하는 상태 (초기 상태를 닫는 상태로 함)
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -13,6 +17,7 @@ function FindId() {
   // 모달 내 확인 버튼을 클릭했을 때 모달을 닫는 함수
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    router.push('/findingIdResult');
   };
 
   return (
