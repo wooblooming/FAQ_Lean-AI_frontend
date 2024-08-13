@@ -74,7 +74,7 @@ function LandingMenu() {
 
       {/* 메인 컨텐츠 영역 */}
       <div id="mainContent" className="flex flex-col justify-center items-start h-screen p-6">
-        <h1 className="text-4xl font-bold">LEAN AI</h1>
+        <h1 className="text-4xl font-bold">MUMUL</h1>
         <h2 className="text-3xl font-bold mt-2">당신의 번거로움을 줄여주는 챗봇</h2>
         <p className="mt-4">
           AI 기술을 이용해 각종 이용객들의 질문을 더는 고민하지 않게 해드립니다.
