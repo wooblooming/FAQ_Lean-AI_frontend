@@ -1,8 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const PsFinder = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     // 페이지 배경 및 창 설정
@@ -20,14 +20,14 @@ const PsFinder = () => {
         </div>
         
         {/* 탭 내비게이션 바 */}
-        <div className="flex justify-between mb-4 border-b">
+        <div className="flex justify-between mb-4 border-b" >
           <button
-            className="flex-grow py-2 text-center"
-            onClick={() => navigate('/IdFinder')}
+            className="flex-grow py-2 text-center font-medium"
+            onClick={() => router.push('/findingId')}
           >
             아이디 찾기
           </button>
-          <button className="flex-grow py-2 text-center text-red-500 border-b-2 border-red-500">
+          <button className="flex-grow py-2 font-bold text-center text-red-500 border-b-2 border-red-500">
             비밀번호 찾기
           </button>
         </div>
@@ -42,12 +42,12 @@ const PsFinder = () => {
           </div>
         </div>
         {/* 확인 버튼 */}
-        <a
-          href="/login"
+        <button
+          onClick={() => router.push('/login')}
           className="w-full py-2 border border-black text-center block rounded-full cursor-pointer"
         >
           확인
-        </a>
+        </button>
       </div>
     </div>
   );
