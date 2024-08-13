@@ -1,13 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 
-const MyPage = () => {
+const myPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
         {/* 뒤로가기 버튼 */}
-        <Link href="/mainPageForPresident">
-          <p className="absolute top-4 left-4 text-gray-500 focus:outline-none">
+        <Link href="/mainPageForPresident" className="absolute top-4 left-4 text-gray-500 focus:outline-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -22,7 +21,6 @@ const MyPage = () => {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-          </p>
         </Link>
 
         {/* 프로필 이미지 */}
@@ -40,12 +38,10 @@ const MyPage = () => {
 
         {/* 버튼들 */}
         <div className="space-y-4 mt-6">
-          <Link href="/editData">
-            <p className="w-full">
+          <Link href="/editData" className="w-full">
               <button className="bg-gray-200 w-full text-lg py-4 rounded-lg">
                 데이터 입력하러 가기
               </button>
-            </p>
           </Link>
           <Link href="/changeInfo">
           <button className="bg-gray-200 w-full text-lg py-4 rounded-lg mt-4">
@@ -58,4 +54,4 @@ const MyPage = () => {
   );
 };
 
-export default MyPage;
+export default myPage;
