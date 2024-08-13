@@ -97,7 +97,7 @@ const Signup = () => {
     };
 
     // 인증번호 받기 버튼 클릭 시 auth 페이지로 이동
-    /* 백엔드 연동시 이용
+    /* 백엔드 연동 했을 때 확인
     const handleAuthPageOpen = async () => {
         try {
             const response = await fetch('/api/start-auth', {
