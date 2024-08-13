@@ -1,14 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const IdFinder = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     // 페이지 배경 및 창 설정
     <div className="bg-gray-100 flex items-center justify-center h-screen">
       <div className="bg-white w-full max-w-md mx-auto p-4 rounded-md shadow-md">
-        {/* 뒤로가기 기능 */}
         <div className="flex items-center mb-4">
           <a href="/login" className="text-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
@@ -18,24 +17,24 @@ const IdFinder = () => {
           {/* 페이지 제목 */}
           <h1 className="text-xl font-bold flex-grow text-center">아이디/비밀번호 찾기</h1>
         </div>
-        
+
         {/* 탭 내비게이션 바 */}
-        <div className="flex justify-between mb-4 border-b">
+        <div className="flex justify-between mb-4 border-b" >
           <button
-            className="flex-grow py-2 text-center text-red-500 border-b-2 border-red-500"
+            className="flex-grow py-2 font-bold text-center text-red-500 border-b-2 border-red-500"
           >
             아이디 찾기
           </button>
           <button
-            className="flex-grow py-2 text-center"
-            onClick={() => navigate('/findpassword')}
+            className="flex-grow py-2 text-center font-medium"
+            onClick={() => router.push('/findingPassword')}
           >
             비밀번호 찾기
           </button>
         </div>
 
         {/* 아이디 알림 내용 */}
-        <div className="text-center">
+        <div className="mt-4 text-center">
           <p className="mb-4">휴대전화번호 정보와 일치하는 아이디 입니다.</p>
           {/* 박스 설정 및 박스 내용 */}
           <div className="border p-4 mb-4">
@@ -46,7 +45,7 @@ const IdFinder = () => {
         
         {/* 확인 버튼 */}
         <button
-          onClick={() => navigate('/login')}
+          onClick={() => router.push('/login')}
           className="w-full py-2 border border-black text-center block rounded-full cursor-pointer"
         >
           확인

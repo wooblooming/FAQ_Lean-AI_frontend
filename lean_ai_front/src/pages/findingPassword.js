@@ -1,8 +1,11 @@
 //useState라는 훅 불러오기
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 
 // FindPassword 함수형 컨포넌트 정의
 function FindPassword() {
+  const router = useRouter();
+
   //모달이 열려있는지 여부를 관리하는 상태 (초기 상태를 닫는 상태로 함)
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -14,6 +17,7 @@ function FindPassword() {
   // 모달 내 확인 버튼을 클릭했을 때 모달을 닫는 함수
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    router.push('/findingPasswordResult');
   };
 
   // 배경 및 창 설정
