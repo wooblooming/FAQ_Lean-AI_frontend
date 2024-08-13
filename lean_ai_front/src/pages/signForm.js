@@ -5,6 +5,7 @@ import IdDuplicateCheckModal from '../components/IdDuplicateCheckModal'; // 아�
 import VerificationCode from '../components/verificationCode'; // 인증코드 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
+import Modal from '../components/modal'; // 일반 모달 컴포넌트
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -16,35 +17,43 @@ const Signup = () => {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [marketingAccepted, setMarketingAccepted] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [showIdDulicateModal, setIdDulicateModal] = useState(false);
+    const [showIdDulicateModal, setShowIdDulicateModal] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showMarketingModal, setShowMarketingModal] = useState(false);
+    const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 회원가입 성공 모달 상태
 
     const router = useRouter();
 
-    // 아이디 중복 검사 결과 모달
+    // 아이디 중복 검사 모달 열기
     const IdDuplicateCheck = () => {
-        setIdDulicateModal(true);
+        setShowIdDulicateModal(true);
     };
-    
-    // 이용 약관 모달
+
+    // 이용 약관 모달 열기
     const handleTermsCheckboxChange = () => {
         setShowTermsModal(true);
     };
 
+    // 입력 필드 값 변경 처리
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
         });
-    };    
+    };
 
+    // 회원가입 처리 함수
     const handleSignup = async () => {
         const { username, password, confirmPassword, name, dob, phone, verificationCode, email, businessName, address } = formData;
 
         if (!username || !password || !confirmPassword || !name || !dob || !phone || !verificationCode || !email || !businessName || !address) {
             setErrorMessage('모든 필드를 입력해 주세요.');
+            return;
+        }
+
+        if (!idDuplicateChecked) {
+            setErrorMessage('아이디 중복 확인을 해주세요.');
             return;
         }
 
@@ -72,7 +81,7 @@ const Signup = () => {
 
             const data = await response.json();
             if (data.success) {
-                router.push('/login');
+                setShowWelcomeModal(true); // 회원가입 성공 시 환영 모달 열기
             } else {
                 setErrorMessage(data.message || '회원가입에 실패했습니다.');
             }
@@ -80,6 +89,12 @@ const Signup = () => {
             console.error('회원가입 오류:', error);
             setErrorMessage('회원가입 요청 중 오류가 발생했습니다.');
         }
+    };
+
+    // 환영 모달 닫기 시 로그인 페이지로 이동
+    const handleWelcomeModalClose = () => {
+        setShowWelcomeModal(false);
+        router.push('/login');
     };
 
     return (
@@ -92,9 +107,10 @@ const Signup = () => {
                         <label className="flex items-center block text-gray-700" htmlFor="username">
                             <input
                                 type="text"
-                                value={username}
-                                onChange={handleUsernameChange}
+                                name="username"
                                 placeholder="아이디"
+                                value={formData.username}
+                                onChange={handleInputChange}
                                 className="flex-grow border rounded-l-md px-4 py-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
                             />
                             <button className="text-white bg-purple-400 rounded-md px-4 py-2 border-l border-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2" onClick={IdDuplicateCheck}>
@@ -236,23 +252,37 @@ const Signup = () => {
                 </div>
             </div>
 
+            { /* ID 중복성 검사 결과 모달 */}
             <IdDuplicateCheckModal
                 show={showIdDulicateModal}
-                onClose={() => setIdDulicateModal(false)}
+                onClose={() => setShowIdDulicateModal(false)}
                 idDuplicateChecked={(isCheck) => setIdDuplicateChecked(isCheck)}
+                username={formData.username} // username을 모달에 전달
             />
 
+            { /* 이용약관 모달 */}
             <TermsOfServiceModal
                 show={showTermsModal}
                 onClose={() => setShowTermsModal(false)}
                 onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
             />
 
+            { /* 마케팅 및 광고 모달 */}
             <MarketingModal
                 show={showMarketingModal}
                 onClose={() => setShowMarketingModal(false)}
                 onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
             />
+
+            {/* 회원가입 성공 모달 */}
+            <Modal show={showWelcomeModal} onClose={handleWelcomeModalClose} title="">
+                <p>{formData.username}님 환영합니다!</p>
+                <div className="flex justify-center mt-4">
+                    <button onClick={handleWelcomeModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        확인
+                    </button>
+                </div>
+            </Modal>
         </div>
     );
 };
