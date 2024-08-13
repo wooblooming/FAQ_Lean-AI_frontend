@@ -26,7 +26,7 @@ const myPage = () => {
         {/* 프로필 이미지 */}
         <div className="mb-4">
           <img
-            src="/user img2.jpg"
+            src="/user_img2.jpg"
             alt="프로필 이미지"
             className="w-24 h-24 rounded-full mx-auto mb-4"
           />
