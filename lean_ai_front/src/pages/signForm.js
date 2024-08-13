@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import IdDuplicateCheckModal from '../components/IdDuplicateCheckModal'; // 아이디 중복 검사 컴포넌트
 import VerificationCode from '../components/verificationCode'; // 인증코드 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
@@ -11,13 +12,25 @@ const Signup = () => {
         phone: '', verificationCode: '', email: '', businessName: '', address: ''
     });
 
+    const [idDuplicateChecked, setIdDuplicateChecked] = useState(false);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [marketingAccepted, setMarketingAccepted] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showIdDulicateModal, setIdDulicateModal] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showMarketingModal, setShowMarketingModal] = useState(false);
 
     const router = useRouter();
+
+    // 아이디 중복 검사 결과 모달
+    const IdDuplicateCheck = () => {
+        setIdDulicateModal(true);
+    };
+    
+    // 이용 약관 모달
+    const handleTermsCheckboxChange = () => {
+        setShowTermsModal(true);
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -25,7 +38,7 @@ const Signup = () => {
             ...formData,
             [name]: value,
         });
-    };
+    };    
 
     const handleSignup = async () => {
         const { username, password, confirmPassword, name, dob, phone, verificationCode, email, businessName, address } = formData;
@@ -69,10 +82,6 @@ const Signup = () => {
         }
     };
 
-    const handleTermsCheckboxChange = () => {
-        setShowTermsModal(true);
-    };
-
     return (
         <div className="bg-blue-100 flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
             <div className="bg-white p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3 text-sm font-bold mb-2">
@@ -83,13 +92,12 @@ const Signup = () => {
                         <label className="flex items-center block text-gray-700" htmlFor="username">
                             <input
                                 type="text"
-                                name="username"
+                                value={username}
+                                onChange={handleUsernameChange}
                                 placeholder="아이디"
-                                value={formData.username}
-                                onChange={handleInputChange}
                                 className="flex-grow border rounded-l-md px-4 py-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
                             />
-                            <button className="text-white bg-purple-400 rounded-md px-4 py-2 border-l border-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2">
+                            <button className="text-white bg-purple-400 rounded-md px-4 py-2 border-l border-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2" onClick={IdDuplicateCheck}>
                                 중복확인
                             </button>
                         </label>
@@ -227,6 +235,12 @@ const Signup = () => {
                     </p>
                 </div>
             </div>
+
+            <IdDuplicateCheckModal
+                show={showIdDulicateModal}
+                onClose={() => setIdDulicateModal(false)}
+                idDuplicateChecked={(isCheck) => setIdDuplicateChecked(isCheck)}
+            />
 
             <TermsOfServiceModal
                 show={showTermsModal}
