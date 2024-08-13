@@ -1,7 +1,7 @@
 // pages/auth.js
 
 
-/* 백엔드 연동시 이용
+/* 백엔드 연동 했을 때 확인
 import { useEffect } from 'react';
 
 export async function getServerSideProps(context) {

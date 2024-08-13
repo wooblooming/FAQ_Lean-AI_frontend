@@ -39,7 +39,7 @@ function LandingMenu() {
 
   // 마이 페이지 이동 함수
   const goToMypage = () => {
-    if (isLoggedIn) router.push('/mypage'); // 로그인 상태면 마이페이지로 이동
+    if (isLoggedIn) router.push('/myPage'); // 로그인 상태면 마이페이지로 이동
     else router.push('/login'); // 아니면 로그인 페이지로 이동
   };
 

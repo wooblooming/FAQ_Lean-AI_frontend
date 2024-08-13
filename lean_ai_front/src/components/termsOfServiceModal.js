@@ -300,13 +300,13 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
     return (
         <Modal show={show} onClose={onClose} title="이용약관 및 개인정보 수집 동의">
             <p className='text-l font-semibold'>이용약관</p>
-            <div ref={termsOfServiceRef} className="h-60 overflow-y-auto border rounded-md p-2">
-                <pre>{termsOfService}</pre>
+            <div ref={termsOfServiceRef} className="h-60 overflow-y-auto border rounded-md p-2  whitespace-pre text-wrap mb-4" >
+                <p>{termsOfService}</p>
             </div>
 
             <p className='text-l font-semibold'>개인정보 수집 및 이용 동의</p>
-            <div className="h-60 overflow-y-auto border rounded-md p-2">
-                <pre>{informationOfService}</pre>
+            <div className="h-60 overflow-y-auto border rounded-md p-2 whitespace-pre text-wrap">
+                <p>{informationOfService}</p>
             </div>
 
             <div className='flex flex-row items-center justify-center mt-3 mb-3'>
