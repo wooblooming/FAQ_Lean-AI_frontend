@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Modal from '../components/modal'; // Modal 컴포넌트를 import
@@ -17,6 +17,13 @@ const Signup = () => {
         businessName: '', // 업소명
         address: '', // 주소
     });
+
+    // 인증번호 상태 관리 
+    const [verificationCode, setVerificationCode] = useState(false);
+
+    // 인증번호 타이머 상태 관리 -> 초 기준
+    const [remainingTime, setRemainingTime] = useState(180);
+    
     // 이용약관 동의 상태 관리
     const [termsAccepted, setTermsAccepted] = useState(false);
     // 마케팅 활용 동의 상태 관리
@@ -34,12 +41,59 @@ const Signup = () => {
     // 마케팅 동의 여부 관리
     const [marketingAgreed, setMarketingAgreed] = useState(false);
 
-    // 이용약관에 동의했을 때 호출되는 함수
-    const handleTermsAgree = () => {
-        setTermsAgreed(true); // 이용약관 동의 상태 업데이트
-        setTermsAccepted(true); // 이용약관 체크박스 상태 업데이트
-        setShowTermsModal(false); // 이용약관 모달 닫기
+    // 인증 번호  
+    const clickVerificationCodeButton = () => {
+        // 인증번호 인증 과정
+
+        // 상태 업데이트
+        setVerificationCode(true);
+
+        if(setVerificationCode(false))
+            alert("핸드폰 인증을 다시 해주세요");
     };
+
+    // 인증 번호 타이머
+    useEffect(() => {
+        // useEffect를 사용하여 컴포넌트가 마운트될 때 타이머 시작.
+        const timer = setInterval(() => {
+            // 남은 시간이 0보다 크면 1초씩 감소시킴.
+            if (remainingTime > 0) {
+                setRemainingTime((prevTime) => prevTime - 1);
+            } else {
+                // 남은 시간이 0이 되면 타이머 정지.
+                clearInterval(timer);
+            }
+        }, 1000);
+
+        // 컴포넌트가 언마운트되면 타이머 정지
+        return () => clearInterval(timer);
+        
+    }, [remainingTime]); // remainingTime이 변경될 때마다 useEffect가 다시 실행됨.
+
+    // 시간을 분과 초로 변환하는 함수 정의.
+    const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+
+    // 재전송 버튼을 클릭했을 때 호출되는 함수 정의.
+    const handleResendClick = () => {
+        // 남은 시간을 초기값으로 설정하여 타이머 재설정.
+        setRemainingTime(180);
+    };
+
+
+    // 이용약관에 동의했을 때 호출되는 함수
+    function handleTermsAgree(isAgreed) {
+        if (isAgreed) {
+            setTermsAgreed(true); // 이용약관 동의 상태 업데이트
+            setTermsAccepted(true); // 이용약관 체크박스 상태 업데이트
+            setShowTermsModal(false); // 이용약관 모달 닫기
+        } else {
+            alert("이용 약관을 동의를 누르셔야 합니다!");
+        }
+    }
 
     // 마케팅 동의했을 때 호출되는 함수
     const handleMarketingAgree = () => {
@@ -347,19 +401,18 @@ const Signup = () => {
 
     // 마케팅 및 광고 수신 동의
     const marketingOfService = `
-        **마케팅 활용 동의 및 광고성 정보 수신 동의(선택)**
+    **마케팅 활용 동의 및 광고성 정보 수신 동의(선택)**
+    ㈜린에이아이는 정보통신망의 이용촉진 및 정보보호 등에 관한 법률 제50조 제1항에 따라 광고성 정보를 전송하기 위해 수신자의 사전 동의를 받고 있으며, 수신 동의여부를 정기적으로 확인합니다.
 
-        ㈜린에이아이는 정보통신망의 이용촉진 및 정보보호 등에 관한 법률 제50조 제1항에 따라 광고성 정보를 전송하기 위해 수신자의 사전 동의를 받고 있으며, 수신 동의여부를 정기적으로 확인합니다.
+    광고성 정보 수신에 동의하실 경우, (주)린에이아이가 제공하는 이벤트/혜택 등 다양한 정보 및 기타 유용한 광고성 정보가 휴대전화(카카오톡 알림 또는 문자), 이메일을 통해 발송됩니다.
 
-        광고성 정보 수신에 동의하실 경우, (주)린에이아이가 제공하는 이벤트/혜택 등 다양한 정보 및 기타 유용한 광고성 정보가 휴대전화(카카오톡 알림 또는 문자), 이메일을 통해 발송됩니다.
-
-        본 광고성 정보수신 동의 항목은 선택사항이므로 동의를 거부하는 경우에도 ㈜린에이아이 서비스의 이용에는 영향이 없습니다. 
+    본 광고성 정보수신 동의 항목은 선택사항이므로 동의를 거부하는 경우에도 ㈜린에이아이 서비스의 이용에는 영향이 없습니다. 
         
-        다만 거부 시 동의를 통해 제공 가능한 각종 혜택 이벤트 안내를 받아 보실 수 없습니다.
+    다만 거부 시 동의를 통해 제공 가능한 각종 혜택 이벤트 안내를 받아 보실 수 없습니다.
         
-        단, 결제 정보, 정기 결제 알림 등 광고성 정보 이외 의무적으로 안내되어야 하는 정보성 내용은 수신동의 여부와 무관하게 제공됩니다.
+    단, 결제 정보, 정기 결제 알림 등 광고성 정보 이외 의무적으로 안내되어야 하는 정보성 내용은 수신동의 여부와 무관하게 제공됩니다.
 
-        수신동의의 의사표시 이후에도 마이페이지 접속을 통해 이용자의 의사에 따라 수신동의 상태를 변경(동의/철회)할 수 있습니다.
+    수신동의의 의사표시 이후에도 마이페이지 접속을 통해 이용자의 의사에 따라 수신동의 상태를 변경(동의/철회)할 수 있습니다.
     `;
 
     // 회원가입 버튼 클릭 시 호출되는 함수
@@ -375,6 +428,12 @@ const Signup = () => {
         // 비밀번호와 비밀번호 확인이 일치하는지 검증
         if (password !== confirmPassword) {
             setErrorMessage('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        // 핸드폰 인증 여부 검증
+        if (!verificationCode) {
+            setErrorMessage('핸드폰 인증을 해야 합니다.');
             return;
         }
 
@@ -502,7 +561,7 @@ const Signup = () => {
                                 className="w-full border-none focus:ring-0 outline-none"
                             />
                         </label>
-                        <button className="text-white bg-purple-400 rounded-md px-4 py-2">인증번호 받기</button>
+                        <button className="text-white bg-purple-400 rounded-md px-4 py-2" onClick={clickVerificationCodeButton}>인증번호 받기</button>
                     </div>
 
                     {/* 인증번호 확인 필드 */}
@@ -517,7 +576,7 @@ const Signup = () => {
                                 className="w-full border-none focus:ring-0 outline-none"
                             />
                         </label>
-                        <p className="text-red-500">03:00</p>
+                        <p className="text-red-500">{formatTime(remainingTime)}</p>
                     </div>
 
                     {/* 이메일 입력 필드 */}
@@ -564,7 +623,7 @@ const Signup = () => {
                             onChange={() => setTermsAccepted(!termsAccepted)} // 클릭 시 상태 반전
                             className="form-checkbox h-4 w-4 text-blue-600"
                         />
-                        <label className="text-sm underline" onClick={() => setShowTermsModal(true)}>이용약관 및 개인정보 수집 동의(필수)</label>
+                        <label className="text-sm underline hover:text-blue-600 " onClick={() => setShowTermsModal(true)}>이용약관 및 개인정보 수집 동의(필수)</label>
                     </div>
 
                     {/* 마케팅 활용 동의 체크박스 */}
@@ -575,7 +634,7 @@ const Signup = () => {
                             onChange={() => setMarketingAccepted(!marketingAccepted)} // 클릭 시 상태 반전
                             className="form-checkbox h-4 w-4 text-blue-600"
                         />
-                        <label className="text-sm underline" onClick={() => setShowMarketingModal(true)}>마케팅 활용 동의 및 광고 수신 동의(선택)</label>
+                        <label className="text-sm underline hover:text-blue-600" onClick={() => setShowMarketingModal(true)}>마케팅 활용 동의 및 광고 수신 동의(선택)</label>
                     </div>
 
                     {/* 에러 메시지 표시 */}
@@ -608,25 +667,28 @@ const Signup = () => {
                 onClose={() => setShowTermsModal(false)} // 모달 닫기 함수
                 title="이용약관 및 개인정보 수집 동의"
             >
-                <p className='text-l font-semibold'>이용약관</p>
-                <pre>{termsOfService}</pre>
+                <div>
+                    <p className='text-l font-semibold'>이용약관</p>
+                    <pre>{termsOfService}</pre>
 
-                <p className='text-l font-semibold'>개인정보 수집 및 이용 동의</p>
-                <pre>{informationOfService}</pre>
+                    <p className='text-l font-semibold'>개인정보 수집 및 이용 동의</p>
+                    <pre>{informationOfService}</pre>
+                </div>
 
                 <div className='flex flex-row items-center justify-center mb-3'>
                     <button
-                        onClick={handleTermsAgree} // 동의 버튼 클릭 시 호출되는 함수
-                        className="text-white bg-purple-400 rounded-md px-4 py-2 border-l border-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2"
+                        onClick={() => handleTermsAgree(true)} // 함수 호출을 이벤트 핸들러에 래핑
+                        className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2"
                     >
                         동의합니다
                     </button>
                     <button
-                        onClick={() => setShowTermsModal(false)} // 비동의 버튼 클릭 시 모달 닫기
-                        className="text-white bg-purple-400 rounded-md px-4 py-2 border-l border-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2"
+                        onClick={() => handleTermsAgree(false)} // 함수 호출을 이벤트 핸들러에 래핑
+                        className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2"
                     >
                         동의하지 않습니다
                     </button>
+
                 </div>
             </Modal>
 
@@ -638,21 +700,6 @@ const Signup = () => {
             >
                 <p className='text-l font-semibold'>마케팅 활용 동의 및 광고 수신 동의</p>
                 <pre>{marketingOfService}</pre>
-
-                <div className='flex flex-row items-center justify-center mb-3'>
-                    <button
-                        onClick={handleMarketingAgree} // 동의 버튼 클릭 시 호출되는 함수
-                        className="text-white bg-purple-400 rounded-md px-4 py-2 border-l border-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2"
-                    >
-                        동의합니다
-                    </button>
-                    <button
-                        onClick={() => setShowMarketingModal(false)} // 비동의 버튼 클릭 시 모달 닫기
-                        className="text-white bg-purple-400 rounded-md px-4 py-2 border-l border-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 ml-2"
-                    >
-                        동의하지 않습니다
-                    </button>
-                </div>
             </Modal>
         </div>
     );
