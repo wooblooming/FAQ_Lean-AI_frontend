@@ -48,7 +48,7 @@ const Login = () => {
             {/* 로그인 폼을 중앙에 배치하는 전체 창 */}
             <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
                 {/* 앱의 타이틀 */}
-                <h1 className="text-3xl font-bold text-center mb-8">LEAN AI</h1>
+                <h1 className="text-3xl font-bold text-center mb-8">MUMUL</h1>
 
                 {/* 입력 필드 및 로그인 옵션들을 감싸는 컨테이너 */}
                 <div className="space-y-4">
