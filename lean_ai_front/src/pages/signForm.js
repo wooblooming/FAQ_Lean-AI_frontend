@@ -135,7 +135,7 @@ const Signup = () => {
     return (
         <div className="bg-blue-100 flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
             <div className="bg-white p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3 text-sm font-bold mb-2">
-                <h1 className="text-3xl font-bold text-center mb-8 text-blue-400 mt-12">LEAN AI</h1>
+                <h1 className="text-3xl font-bold text-center mb-8 text-blue-400 mt-12">MUMUL</h1>
 
                 <div className="space-y-4">
                     <div>
