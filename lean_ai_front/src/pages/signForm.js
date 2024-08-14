@@ -4,7 +4,7 @@ import Link from 'next/link';
 import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이디 중복 검사 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
-import Modal from '../components/modalText'; // 일반 모달 컴포넌트
+import ModalMSG from '../components/modalMSG'; // 일반 모달 컴포넌트
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -19,6 +19,7 @@ const Signup = () => {
     const [showIdDulicateModal, setShowIdDulicateModal] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showMarketingModal, setShowMarketingModal] = useState(false);
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 상태명 수정
     const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 회원가입 성공 모달 상태
 
     const router = useRouter();
@@ -48,21 +49,25 @@ const Signup = () => {
 
         if (!username || !password || !confirmPassword || !name || !dob || !phone || !verificationCode || !email || !businessName || !address) {
             setErrorMessage('모든 필드를 입력해 주세요.');
+            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             return;
         }
 
         if (!idDuplicateChecked) {
             setErrorMessage('아이디 중복 확인을 해주세요.');
+            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             return;
         }
 
         if (password !== confirmPassword) {
             setErrorMessage('비밀번호가 일치하지 않습니다.');
+            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             return;
         }
 
         if (!termsAccepted) {
             setErrorMessage('이용약관 및 개인정보 수집 동의를 해야 합니다.');
+            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             return;
         }
 
@@ -83,11 +88,19 @@ const Signup = () => {
                 setShowWelcomeModal(true); // 회원가입 성공 시 환영 모달 열기
             } else {
                 setErrorMessage(data.message || '회원가입에 실패했습니다.');
+                setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             }
         } catch (error) {
             console.error('회원가입 오류:', error);
             setErrorMessage('회원가입 요청 중 오류가 발생했습니다.');
+            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
         }
+    };
+    
+    // 에러 메시지 모달 닫기
+    const handleErrorMessageModalClose = () => {
+        setShowErrorMessageModal(false);
+        setErrorMessage(''); // 에러 메시지 초기화
     };
 
     // 환영 모달 닫기 시 로그인 페이지로 이동
@@ -96,33 +109,7 @@ const Signup = () => {
         router.push('/login');
     };
 
-    // 인증번호 받기 버튼 클릭 시 auth 페이지로 이동
-    /* 백엔드 연동 했을 때 확인
-    const handleAuthPageOpen = async () => {
-        try {
-            const response = await fetch('/api/start-auth', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phone: formData.phone,
-                    returnUrl: `${window.location.origin}/complete`,
-                }),
-            });
-    
-            const data = await response.json();
-            if (data.success) {
-                router.push('/auth'); // or open auth page in a new window
-            } else {
-                setErrorMessage('인증 요청 중 오류가 발생했습니다.');
-            }
-        } catch (error) {
-            console.error('본인인증 요청 오류:', error);
-            setErrorMessage('본인인증 요청 중 오류가 발생했습니다.');
-        }
-    };
-    */
+    // 인증번호 받기 버튼 클릭 시 auth 페이지로 이동 (시뮬레이션)
     const handleAuthPageOpen = async () => {
         try {
             // 시뮬레이션용 데이터 처리
@@ -132,19 +119,19 @@ const Signup = () => {
             };
     
             if (mockResponse.success) {
-                // 인증 페이지로 이동 (모의)
                 console.log('Auth page opened with token:', mockResponse.authToken);
                 router.push('/auth'); // 실제 인증 페이지로 이동
             } else {
                 setErrorMessage('인증 요청 중 오류가 발생했습니다.');
+                setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             }
         } catch (error) {
             console.error('본인인증 요청 오류:', error);
             setErrorMessage('본인인증 요청 중 오류가 발생했습니다.');
+            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
         }
     };
     
-
     return (
         <div className="bg-blue-100 flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
             <div className="bg-white p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3 text-sm font-bold mb-2">
@@ -292,9 +279,7 @@ const Signup = () => {
                         />
                         <label className="text-sm underline hover:text-blue-600" onClick={() => setShowMarketingModal(true)}>마케팅 활용 동의 및 광고 수신 동의(선택)</label>
                     </div>
-
-                    {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
-
+                    
                     <button
                         className="bg-gradient-to-r from-purple-400 to-blue-400 text-white font-bold py-2 px-4 rounded-md w-full mt-6"
                         onClick={handleSignup}
@@ -336,15 +321,25 @@ const Signup = () => {
                 onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
             />
 
+            {/* 에러 메시지 모달 */}
+            <ModalMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose} title="Error">
+                <p>{errorMessage}</p>
+                <div className="flex justify-center mt-4">
+                    <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        확인
+                    </button>
+                </div>
+            </ModalMSG>
+
             {/* 회원가입 성공 모달 */}
-            <Modal show={showWelcomeModal} onClose={handleWelcomeModalClose} title="">
+            <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
                 <p>{formData.username}님 환영합니다!</p>
                 <div className="flex justify-center mt-4">
                     <button onClick={handleWelcomeModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
                         확인
                     </button>
                 </div>
-            </Modal>
+            </ModalMSG>
         </div>
     );
 };
