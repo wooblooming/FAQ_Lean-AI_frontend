@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import Modal from './modal';
+import ModalText from './modalText';
 
 const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
     const termsOfServiceRef = useRef(null);
@@ -298,9 +298,9 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
     };
 
     return (
-        <Modal show={show} onClose={onClose} title="이용약관 및 개인정보 수집 동의">
+        <ModalText show={show} onClose={onClose} title="이용약관 및 개인정보 수집 동의">
             <p className='text-l font-semibold'>이용약관</p>
-            <div ref={termsOfServiceRef} className="h-60 overflow-y-auto border rounded-md p-2  whitespace-pre text-wrap mb-4" >
+            <div ref={termsOfServiceRef} className="h-60 overflow-y-auto border rounded-md p-2 whitespace-pre text-wrap mb-4" >
                 <p>{termsOfService}</p>
             </div>
 
@@ -325,7 +325,7 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
                     </button>
                 </div>
             </div>
-        </Modal>
+        </ModalText>
     );
 };
 
