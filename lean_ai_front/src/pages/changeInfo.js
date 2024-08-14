@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
+// Material-UI의 Edit 및 CameraAlt 아이콘 임포트
+import EditIcon from '@mui/icons-material/Edit';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 
 export default function StoreIntroPage() {
   const [storeName, setStoreName] = useState('무물 떡볶이');
@@ -13,15 +16,18 @@ export default function StoreIntroPage() {
   const [editText, setEditText] = useState('');
   const [currentEditElement, setCurrentEditElement] = useState(null);
 
-  const openImageModal = () => {
+  // 모달을 여는 함수 - useCallback으로 메모이제이션
+  const openImageModal = useCallback(() => {
     setIsImageModalOpen(true);
-  };
+  }, []);
 
-  const closeImageModal = () => {
+  // 모달을 닫는 함수 - useCallback으로 메모이제이션
+  const closeImageModal = useCallback(() => {
     setIsImageModalOpen(false);
-  };
+  }, []);
 
-  const chooseImage = () => {
+  // 이미지 선택 함수
+  const chooseImage = useCallback(() => {
     closeImageModal();
     const input = document.createElement('input');
     input.type = 'file';
@@ -36,14 +42,16 @@ export default function StoreIntroPage() {
       }
     };
     input.click();
-  };
+  }, [closeImageModal]);
 
-  const applyDefaultImage = () => {
+  // 기본 이미지를 설정하는 함수
+  const applyDefaultImage = useCallback(() => {
     closeImageModal();
-    setStoreImage('/test_image.png'); // 기본 이미지 경로 설정
-  };
+    setStoreImage('/test_image.png');
+  }, [closeImageModal]);
 
-  const openEditModal = (elementId) => {
+  // 텍스트 수정 모달을 여는 함수
+  const openEditModal = useCallback((elementId) => {
     setCurrentEditElement(elementId);
     setEditText(
       elementId === 'storeName'
@@ -53,22 +61,30 @@ export default function StoreIntroPage() {
         : menuPrices
     );
     setIsEditModalOpen(true);
-  };
+  }, [storeName, storeHours, menuPrices]);
 
-  const closeEditModal = () => {
+  // 텍스트 수정 모달을 닫는 함수
+  const closeEditModal = useCallback(() => {
     setIsEditModalOpen(false);
-  };
+  }, []);
 
-  const saveChanges = () => {
-    if (currentEditElement === 'storeName') {
-      setStoreName(editText);
-    } else if (currentEditElement === 'storeHours') {
-      setStoreHours(editText);
-    } else if (currentEditElement === 'menuPrices') {
-      setMenuPrices(editText);
+  // 수정된 텍스트를 저장하는 함수
+  const saveChanges = useCallback(() => {
+    switch (currentEditElement) {
+      case 'storeName':
+        setStoreName(editText);
+        break;
+      case 'storeHours':
+        setStoreHours(editText);
+        break;
+      case 'menuPrices':
+        setMenuPrices(editText);
+        break;
+      default:
+        break;
     }
     closeEditModal();
-  };
+  }, [currentEditElement, editText, closeEditModal]);
 
   return (
     <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative">
@@ -105,7 +121,8 @@ export default function StoreIntroPage() {
               className="camera-icon absolute bottom-2 right-2 bg-white rounded-full p-2 shadow cursor-pointer"
               onClick={openImageModal}
             >
-              <i className="fas fa-camera"></i>
+              {/* Material-UI의 CameraAlt 아이콘 사용 */}
+              <CameraAltIcon />
             </div>
           </div>
         </div>
@@ -114,12 +131,13 @@ export default function StoreIntroPage() {
           <p id="storeName" className="font-bold text-2xl">
             {storeName}
           </p>
-          {/* 가게 이름 수정 아이콘 */}
+          {/* 가게 이름 수정 아이콘 버튼 */}
           <button
             onClick={() => openEditModal('storeName')}
             className="ml-2 text-gray-500"
           >
-            <i className="fas fa-edit"></i>
+            {/* Material-UI의 Edit 아이콘 사용 */}
+            <EditIcon />
           </button>
         </div>
       </div>
@@ -128,12 +146,12 @@ export default function StoreIntroPage() {
         <p id="storeHours" className="mt-4 mb-4 text-xl whitespace-pre-line">
           {storeHours}
         </p>
-        {/* 영업 시간 및 위치 수정 아이콘 */}
+        {/* 영업 시간 및 위치 수정 아이콘 버튼 */}
         <button
           onClick={() => openEditModal('storeHours')}
           className="absolute top-2 right-2 text-gray-500"
         >
-          <i className="fas fa-edit"></i>
+          <EditIcon />
         </button>
       </div>
       <div className="bg-sky-100 flex flex-col items-center text-center w-64 px-2 relative">
@@ -141,21 +159,18 @@ export default function StoreIntroPage() {
         <p id="menuPrices" className="mt-4 mb-4 text-xl whitespace-pre-line">
           {menuPrices}
         </p>
-        {/* 메뉴 및 가격 수정 아이콘 */}
+        {/* 메뉴 및 가격 수정 아이콘 버튼 */}
         <button
           onClick={() => openEditModal('menuPrices')}
           className="absolute top-2 right-2 text-gray-500"
         >
-          <i className="fas fa-edit"></i>
+          <EditIcon />
         </button>
       </div>
-    
       <Link href="/myPage">
-      <button
-          className="mt-4 w-48 py-2 border border-black text-center block rounded-full cursor-pointer"
-        >
+        <button className="mt-4 w-48 py-2 border border-black text-center block rounded-full cursor-pointer">
           확인
-      </button>
+        </button>
       </Link>
 
       {/* 이미지 변경 모달 */}
@@ -217,22 +232,6 @@ export default function StoreIntroPage() {
           </div>
         </div>
       )}
-
-      {/* 페이지 하단 오른쪽에 위치한 챗봇 이미지 링크 */}
-      {/* 
-      <a
-        href="chatbot.html"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-4 right-4"
-      >
-        <img
-          src="chatbot.png"
-          alt="Chatbot"
-          className="w-24 h-24 object-cover"
-        />
-      </a> 
-      */}
     </div>
   );
 }
