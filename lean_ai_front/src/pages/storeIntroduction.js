@@ -2,8 +2,8 @@ import Link from 'next/link';
 
 const storeIntroduce = () => {
   return (
-    <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
-      <div className="border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-2 mb-4 py-1.5 w-1/3">
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-4 mb-2 w-10/12 h-3/6">
         <div className=" rounded-lg p-8 w-full max-w-md text-center mb-2">
           {/* 매장 로고 이미지 또는 상표 이미지 */}
           <img src="/banner_1.png" alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
@@ -26,11 +26,12 @@ const storeIntroduce = () => {
             날치알 주먹밥 : 2500원 <br />
             각 종 튀김 : 700원 <br />
           </p>
+          
         </div>
 
         {/* Link : 이벤트 없을 시 페이지 이동 */}
         <Link href="/chatBot" >
-          <img src="/chatbot.png" alt="Chatbot" className="fixed bottom-4 right-4 w-24 h-24 object-cover" />
+          <img src="/chatbot.png" alt="Chatbot" className="fixed bottom-4 right-4 w-20 h-20 object-fill" />
         </Link>
       </div>
     </div>
