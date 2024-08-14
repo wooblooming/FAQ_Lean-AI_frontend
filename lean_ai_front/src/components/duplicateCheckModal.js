@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Modal from './modal';
+import ModalMSG from './modalMSG';
 
 const IdDuplicateCheckModal = ({ show, onClose, username }) => {
     const [message, setMessage] = useState('');
@@ -26,14 +26,14 @@ const IdDuplicateCheckModal = ({ show, onClose, username }) => {
     }
 
     return (
-        <Modal show={show} onClose={onClose} title=" ">
+        <ModalMSG show={show} onClose={onClose} title=" ">
             <p>{message}</p>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 overflow-hidden">
                 <button onClick={onClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
                     확인
                 </button>
             </div>
-        </Modal>
+        </ModalMSG>
     );
 };
 
