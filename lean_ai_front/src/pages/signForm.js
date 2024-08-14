@@ -4,7 +4,7 @@ import Link from 'next/link';
 import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이디 중복 검사 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
-import Modal from '../components/modal'; // 일반 모달 컴포넌트
+import Modal from '../components/modalText'; // 일반 모달 컴포넌트
 
 const Signup = () => {
     const [formData, setFormData] = useState({

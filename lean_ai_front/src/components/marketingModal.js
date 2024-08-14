@@ -1,15 +1,13 @@
 import React from 'react';
-import Modal from './modal';
+import ModalText from './modalText';
 
 const MarketingModal = ({ show, onClose, onAgree }) => {
     const marketingOfService = `
-     **마케팅 활용 동의 및 광고성 정보 수신 동의(선택)**
-
-        ㈜린에이아이는 정보통신망의 이용촉진 및 정보보호 등에 관한 법률 제50조 제1항에 따라 광고성 정보를 전송하기 위해 수신자의 사전 동의를 받고 있으며, 수신 동의여부를 정기적으로 확인합니다.
+        ㈜린에이아이는 정보통신망의 이용촉진 및 정보보호 등에 관한 법률 제50조 제1항에 따라 광고성 정보를 전송하기 위해 수신자의 사전 동의를 받고 있으며, 수신 동의여부를 정기적으로 확인합니다.
 
         광고성 정보 수신에 동의하실 경우, (주)린에이아이가 제공하는 이벤트/혜택 등 다양한 정보 및 기타 유용한 광고성 정보가 휴대전화(카카오톡 알림 또는 문자), 이메일을 통해 발송됩니다.
 
-        본 광고성 정보수신 동의 항목은 선택사항이므로 동의를 거부하는 경우에도 ㈜린에이아이 서비스의 이용에는 영향이 없습니다. 
+        본 광고성 정보수신 동의 항목은 선택사항이므로 동의를 거부하는 경우에도 ㈜린에이아이 서비스의 이용에는 영향이 없습니다. 
         
         다만 거부 시 동의를 통해 제공 가능한 각종 혜택 이벤트 안내를 받아 보실 수 없습니다.
         
@@ -25,10 +23,10 @@ const MarketingModal = ({ show, onClose, onAgree }) => {
     };
 
     return (
-        <Modal show={show} onClose={onClose} title="마케팅 활용 동의 및 광고 수신 동의">
-            <p className='text-l font-semibold'>마케팅 활용 동의 및 광고 수신 동의</p>
-            <pre>{marketingOfService}</pre>
-
+        <ModalText show={show} onClose={onClose} title="마케팅 활용 동의 및 광고 수신 동의 선택">
+            <div className=" border rounded-md p-2 whitespace-pre text-wrap">
+                <p>{marketingOfService}</p>
+            </div>
             <div className='flex flex-row items-center justify-center mt-3 mb-3'>
                 <div className='flex space-x-2'>
                     <button
@@ -45,7 +43,7 @@ const MarketingModal = ({ show, onClose, onAgree }) => {
                     </button>
                 </div>
             </div>
-        </Modal>
+        </ModalText>
     );
 };
 
