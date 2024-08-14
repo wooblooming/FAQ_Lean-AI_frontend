@@ -46,9 +46,9 @@ const Login = () => {
     return (
         <div className="bg-blue-100 flex justify-center items-center h-screen">
             {/* 로그인 폼을 중앙에 배치하는 전체 창 */}
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md " style={{width : '400px'}}>
                 {/* 앱의 타이틀 */}
-                <h1 className="text-3xl font-bold text-center mb-8">MUMUL</h1>
+                <h1 className="text-3xl font-bold text-blue-400 text-center mb-8">MUMUL</h1>
 
                 {/* 입력 필드 및 로그인 옵션들을 감싸는 컨테이너 */}
                 <div className="space-y-4">
@@ -88,7 +88,7 @@ const Login = () => {
                     <div className="text-center text-gray-500 my-4">
                         <span>또는</span>
                     </div>
-
+                    
                     {/* 카카오 계정으로 로그인 버튼 */}
                     <button className="bg-yellow-400 text-black font-bold py-2 px-4 rounded-md w-full flex items-center justify-center">
                         카카오 계정으로 로그인
@@ -106,7 +106,7 @@ const Login = () => {
                 </div>
 
                 {/* 하단의 추가 링크들: 회원가입, 아이디 찾기, 비밀번호 찾기 */}
-                <div className="mt-6 text-center text-gray-500">
+                <div className="mt-6 text-center text-gray-500 ">
                     <p>계정이 없나요?
                         {/* 회원가입 링크 */}
                         <Link href="/signForm" className="underline p-1 m-1">회원가입</Link> 
