@@ -1,54 +1,68 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-// Material-UI의 Edit 및 CameraAlt 아이콘 임포트
+import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import { useStore } from '../contexts/storeContext';
 
-export default function StoreIntroPage() {
-  const [storeName, setStoreName] = useState('무물 떡볶이');
-  const [storeHours, setStoreHours] = useState('영업 시간 : 9:00 ~ 18:00');
-  const [menuPrices, setMenuPrices] = useState(
-    '메뉴 및 가격\n매운 떡볶이 : 3000원\n로제 떡볶이 : 5000원\n마라 떡볶이 : 5000원\n날치알 주먹밥 : 2500원\n각 종 튀김 : 700원'
-  );
-  const [storeImage, setStoreImage] = useState('/banner_1.png');
+export default function ChangeInfo() {
+  const { storeName, setStoreName, storeHours, setStoreHours, menuPrices, setMenuPrices, storeImage, setStoreImage } = useStore();
+
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editText, setEditText] = useState('');
   const [currentEditElement, setCurrentEditElement] = useState(null);
 
-  // 모달을 여는 함수 - useCallback으로 메모이제이션
+  // 데이터를 API에서 가져오는 함수
+  const fetchStoreInfo = useCallback(async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/storeinfo/1/');
+      const data = response.data;
+      setStoreName(data.store_name);
+      setStoreHours(data.store_hours);
+      setMenuPrices(data.menu_prices);
+      setStoreImage(data.store_image);
+    } catch (error) {
+      console.error("Error fetching store info:", error);
+    }
+  }, [setStoreName, setStoreHours, setMenuPrices, setStoreImage]);
+
+  // 컴포넌트가 마운트될 때 데이터를 가져옴
+  useEffect(() => {
+    fetchStoreInfo();
+  }, [fetchStoreInfo]);
+
+  // 모달을 여는 함수
   const openImageModal = useCallback(() => {
     setIsImageModalOpen(true);
   }, []);
 
-  // 모달을 닫는 함수 - useCallback으로 메모이제이션
+  // 모달을 닫는 함수
   const closeImageModal = useCallback(() => {
     setIsImageModalOpen(false);
   }, []);
 
   // 이미지 선택 함수
   const chooseImage = useCallback(() => {
-    closeImageModal();
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
+    
     input.onchange = function (event) {
       if (event.target.files && event.target.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          setStoreImage(e.target.result);
-        };
-        reader.readAsDataURL(event.target.files[0]);
+        setStoreImage(URL.createObjectURL(event.target.files[0]));  // 미리보기용 URL 생성
+        closeImageModal();
       }
     };
+    
     input.click();
-  }, [closeImageModal]);
+  }, [setStoreImage, closeImageModal]);
 
   // 기본 이미지를 설정하는 함수
   const applyDefaultImage = useCallback(() => {
-    closeImageModal();
     setStoreImage('/test_image.png');
-  }, [closeImageModal]);
+    closeImageModal();
+  }, [setStoreImage, closeImageModal]);
 
   // 텍스트 수정 모달을 여는 함수
   const openEditModal = useCallback((elementId) => {
@@ -84,7 +98,49 @@ export default function StoreIntroPage() {
         break;
     }
     closeEditModal();
-  }, [currentEditElement, editText, closeEditModal]);
+  }, [currentEditElement, editText, setStoreName, setStoreHours, setMenuPrices, closeEditModal]);
+
+
+
+//전체저장
+  const saveAllChanges = useCallback(async () => {
+    try {
+      const formData = new FormData();
+      formData.append('store_name', storeName);
+      formData.append('store_hours', storeHours);
+      formData.append('menu_prices', menuPrices);
+  
+      if (storeImage) {
+        // URL인 경우 Blob으로 변환
+        if (typeof storeImage === 'string' && storeImage.startsWith('blob:')) {
+          const response = await fetch(storeImage);
+          const blob = await response.blob();
+          formData.append('store_image', blob, 'image.jpg');
+        } 
+        // File 객체인 경우 그대로 사용
+        else if (storeImage instanceof File) {
+          formData.append('store_image', storeImage);
+        }
+        // Base64 문자열인 경우
+        else if (typeof storeImage === 'string' && storeImage.startsWith('data:')) {
+          const response = await fetch(storeImage);
+          const blob = await response.blob();
+          formData.append('store_image', blob, 'image.jpg');
+        }
+      }
+  
+      const response = await axios.put('http://127.0.0.1:8000/api/storeinfo/1/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Store info updated:', response.data);
+      alert('정보가 성공적으로 저장되었습니다.');
+    } catch (error) {
+      console.error('Error updating store info:', error);
+      alert('정보 저장에 실패했습니다.');
+    }
+  }, [storeName, storeHours, menuPrices, storeImage]);
 
   return (
     <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative">
@@ -121,7 +177,6 @@ export default function StoreIntroPage() {
               className="camera-icon absolute bottom-2 right-2 bg-white rounded-full p-2 shadow cursor-pointer"
               onClick={openImageModal}
             >
-              {/* Material-UI의 CameraAlt 아이콘 사용 */}
               <CameraAltIcon />
             </div>
           </div>
@@ -136,7 +191,6 @@ export default function StoreIntroPage() {
             onClick={() => openEditModal('storeName')}
             className="ml-2 text-gray-500"
           >
-            {/* Material-UI의 Edit 아이콘 사용 */}
             <EditIcon />
           </button>
         </div>
@@ -167,11 +221,12 @@ export default function StoreIntroPage() {
           <EditIcon />
         </button>
       </div>
-      <Link href="/myPage">
-        <button className="mt-4 w-48 py-2 border border-black text-center block rounded-full cursor-pointer">
-          확인
-        </button>
-      </Link>
+      <button
+        onClick={saveAllChanges}
+        className="mt-4 w-48 py-2 bg-blue-500 text-white text-center block rounded-full cursor-pointer"
+      >
+        모든 변경사항 저장
+      </button>
 
       {/* 이미지 변경 모달 */}
       {isImageModalOpen && (
@@ -219,15 +274,9 @@ export default function StoreIntroPage() {
             />
             <button
               onClick={saveChanges}
-              className="block w-full py-2 mt-4 text-blue-500"
+              className="block w-full py-2 mt-4 bg-blue-500 text-white rounded"
             >
-              저장
-            </button>
-            <button
-              onClick={closeEditModal}
-              className="block w-full py-2 text-red-500"
-            >
-              취소
+              확인
             </button>
           </div>
         </div>
