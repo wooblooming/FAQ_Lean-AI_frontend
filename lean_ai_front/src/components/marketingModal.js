@@ -24,10 +24,10 @@ const MarketingModal = ({ show, onClose, onAgree }) => {
 
     return (
         <ModalText show={show} onClose={onClose} title="마케팅 활용 동의 및 광고 수신 동의 선택">
-            <div className=" border rounded-md p-2 whitespace-pre text-wrap">
+            <div className=" border rounded-md p-2 whitespace-pre text-wrap font-normal">
                 <p>{marketingOfService}</p>
             </div>
-            <div className='flex flex-row items-center justify-center mt-3 mb-3'>
+            <div className='flex flex-row items-center justify-center mt-3 mb-3 font-normal'>
                 <div className='flex space-x-2'>
                     <button
                         onClick={() => handleAgree(true)}

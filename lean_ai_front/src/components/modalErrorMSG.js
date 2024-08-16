@@ -3,6 +3,7 @@ import React from 'react';
 // ModalMSG 컴포넌트: 짧은 메시지가 있는 모달 창을 렌더링하는 컴포넌트
 const ModalMSG = ({ show, onClose, title, children }) => {
     // 모달이 보이지 않아야 할 때(null 반환)
+    title='Error';
     if (!show) return null;
 
     return (
