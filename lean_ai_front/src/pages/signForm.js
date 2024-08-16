@@ -136,7 +136,7 @@ const Signup = () => {
                     </div>
                     <div>
                         <label className="block text-gray-700" htmlFor="username">
-                            <div className="flex items-center justify-end space-x-4">
+                            <div className="flex items-center justify-end space-x-2.5">
                                 <div className="relative flex-grow">
                                     <input
                                         type="text"
@@ -144,16 +144,16 @@ const Signup = () => {
                                         placeholder="아이디"
                                         value={formData.username}
                                         onChange={handleInputChange}
-                                        className="border px-4 py-2 border-gray-300 rounded-md w-56 "
+                                        className="border px-4 py-2 border-gray-300 rounded-md w-64 "
                                     />
                                     <label htmlFor="user-id" className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                                 </div>
-                                <button className="text-white bg-purple-400 rounded-md px-4 py-2 font-medium hover:bg-purple-500 ">
+                                <button className="text-white bg-purple-400 rounded-md px-4 py-2 font-medium hover:bg-purple-500 w-28">
                                     중복확인
                                 </button>
                             </div>
                         </label>
-                        <p className="text-red-500 text-sm mt-2 font-medium text-start mb-3">영문 소문자와 숫자만을 사용해, 영문 소문자로 시작하는 4~12자의 아이디를 입력해주세요.</p>
+                        <p className="text-red-500 text-xs mt-2 font-medium text-start mb-3">영문 소문자와 숫자만을 사용해, 영문 소문자로 시작하는 4~12자의 아이디를 입력해주세요.</p>
                     </div>
                 </div>
 
@@ -171,7 +171,7 @@ const Signup = () => {
                             <label htmlFor="user-pw" className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                         </div>
                     </label>
-                    <p className="text-red-500 text-sm mt-1 font-medium text-start mb-3">영문 대문자와 소문자, 숫자, 특수문자 중 2가지 이상을 조합하여 8자~20자로 입력해주세요.</p>
+                    <p className="text-red-500 text-xs mt-1 font-medium text-start mb-3">영문 대문자와 소문자, 숫자, 특수문자 중 2가지 이상을 조합하여 8자~20자로 입력해주세요.</p>
                 </div>
 
                 <div>
@@ -222,7 +222,7 @@ const Signup = () => {
                 {/* 본인 인증 */}
                 <div className="flex mb-3">
                     <label className="block text-gray-700">
-                        <div className="flex items-center justify-end space-x-12">
+                        <div className="flex items-center justify-end space-x-2.5">
                             <div className="relative">
                                 <input
                                     type="text"
@@ -230,12 +230,13 @@ const Signup = () => {
                                     placeholder="휴대폰 번호"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    className="border px-4 py-2 border-gray-300 rounded-md w-56 "
+                                    className="border px-4 py-2 border-gray-300 rounded-md w-64 "
                                 />
                                 <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                             </div>
-                            <button className="text-white bg-purple-400 rounded-md px-4 py-2 font-medium hover:bg-purple-500 ">
-                                인증번호
+                            <button className="text-white bg-purple-400 rounded-md py-2 font-medium hover:bg-purple-500 w-24 whitespace-nowrap"
+                            >
+                                인증번호 받기
                             </button>
                         </div>
                     </label>
@@ -284,7 +285,7 @@ const Signup = () => {
                 </label>
 
                 {/* 이용약관 체크박스와 라벨 */}
-                <div className="flex items-center space-x-2 mt-4">
+                <div className="flex items-center justify-center space-x-2 mt-4">
                     <input
                         type="checkbox"
                         checked={termsAccepted}
@@ -295,11 +296,11 @@ const Signup = () => {
                         className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
                         onClick={handleTermsCheckboxChange}
                     >
-                        이용약관 및 개인정보 수집 동의(필수)
+                        이용약관 및 개인정보 수집 동의(필수) 
                     </label>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-center space-x-2">
                     <input
                         type="checkbox"
                         checked={marketingAccepted}
@@ -307,11 +308,12 @@ const Signup = () => {
                         className="form-checkbox h-4 w-4 text-blue-600"
                     />
                     <label className="text-sm font-medium underline hover:text-blue-600" onClick={() => setShowMarketingModal(true)}>
-                        마케팅 활용 동의 및 광고 수신 동의(선택)</label>
+                        마케팅 활용 동의 및 광고 수신 동의(선택) 
+                    </label>
                 </div>
 
                 <button
-                    className="bg-gradient-to-r from-purple-400 to-blue-400 text-white font-bold py-2 px-4 rounded-md w-full mt-3"
+                    className="bg-gradient-to-r from-purple-400 to-blue-400 text-white py-2 px-4 rounded-md w-full mt-3 font-medium"
                     onClick={handleSignup}
                 >
                     회원가입

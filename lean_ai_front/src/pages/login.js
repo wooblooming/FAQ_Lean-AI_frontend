@@ -3,6 +3,11 @@ import { useRouter } from 'next/router'; // Next.js의 useRouter 훅 사용
 import Link from 'next/link'; // Next.js의 Link 컴포넌트를 사용하여 클라이언트 사이드 네비게이션 처리
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // FontAwesome 아이콘 컴포넌트 사용
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'; // 사용될 아이콘 임포트
+import Image from 'next/image';
+import naverIcon from '../../public/btn_naver.svg';
+import kakaoIcon from '../../public/btn_kakao.svg';
+import googleIcon from '../../public/btn_google.svg';
+
 
 const Login = () => {
     // 사용자 입력 상태를 관리하는 useState 훅
@@ -90,18 +95,18 @@ const Login = () => {
                     </div>
                     
                     {/* 카카오 계정으로 로그인 버튼 */}
-                    <button className="bg-yellow-400 text-black font-bold py-2 px-4 rounded-md w-full flex items-center justify-center">
-                        카카오 계정으로 로그인
+                    <button className="text-black font-bold py-2 px-4 rounded-md w-full flex items-center justify-center" style={{backgroundColor :'#FEE500'}}>
+                        <span><Image src={kakaoIcon} className='mr-2 w-4 h-4' alt="kakao" /></span>카카오 계정으로 로그인
                     </button>
 
                     {/* 구글 계정으로 로그인 버튼 */}
                     <button className="bg-white border text-black font-bold py-2 px-4 rounded-md w-full flex items-center justify-center">
-                        구글 계정으로 로그인
+                    <span><Image src={googleIcon} className='mr-2 w-3 h-3 ' alt="google" /></span> 구글 계정으로 로그인
                     </button>
 
                     {/* 네이버 계정으로 로그인 버튼 */}
                     <button className="bg-green-500 text-white font-bold py-2 px-4 rounded-md w-full flex items-center justify-center">
-                        네이버 계정으로 로그인
+                    <span><Image src={naverIcon} className='mr-2 w-4 h-4' alt="naver" /></span>네이버 계정으로 로그인
                     </button>
                 </div>
 
