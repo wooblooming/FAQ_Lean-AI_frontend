@@ -4,7 +4,7 @@ import Link from 'next/link';
 import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이디 중복 검사 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
-import ModalMSG from '../components/modalMSG'; // 일반 모달 컴포넌트
+import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -45,10 +45,10 @@ const Signup = () => {
 
     // 회원가입 처리 함수
     const handleSignup = async () => {
-        const { username, password, confirmPassword, name, dob, phone, verificationCode, email, businessName, address } = formData;
+        const { username, password, confirmPassword, name, dob, phone, verificationCode, businessName, address } = formData;
 
-        if (!username || !password || !confirmPassword || !name || !dob || !phone || !verificationCode || !email || !businessName || !address) {
-            setErrorMessage('모든 필드를 입력해 주세요.');
+        if (!username || !password || !confirmPassword || !name || !dob || !phone || !verificationCode || !businessName || !address) {
+            setErrorMessage('모든 항목들을 기입해 주세요.');
             setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             return;
         }
@@ -61,12 +61,6 @@ const Signup = () => {
 
         if (password !== confirmPassword) {
             setErrorMessage('비밀번호가 일치하지 않습니다.');
-            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
-            return;
-        }
-
-        if (!termsAccepted) {
-            setErrorMessage('이용약관 및 개인정보 수집 동의를 해야 합니다.');
             setShowErrorMessageModal(true); // 모달을 표시하도록 설정
             return;
         }
