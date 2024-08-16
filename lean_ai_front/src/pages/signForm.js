@@ -5,6 +5,7 @@ import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
+import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -148,7 +149,8 @@ const Signup = () => {
                                     />
                                     <label htmlFor="user-id" className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                                 </div>
-                                <button className="text-white bg-purple-400 rounded-md px-4 py-2 font-medium hover:bg-purple-500 w-28">
+                                <button className="text-white bg-purple-400 rounded-md px-4 py-2 font-medium hover:bg-purple-500 w-28"
+                                        onClick={IdDuplicateCheck}>
                                     중복확인
                                 </button>
                             </div>
@@ -235,6 +237,7 @@ const Signup = () => {
                                 <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                             </div>
                             <button className="text-white bg-purple-400 rounded-md py-2 font-medium hover:bg-purple-500 w-24 whitespace-nowrap"
+                                    onClick={handleAuthPageOpen}
                             >
                                 인증번호 받기
                             </button>
@@ -353,14 +356,17 @@ const Signup = () => {
             />
 
             {/* 에러 메시지 모달 */}
-            <ModalMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose} title="Error">
+            <ModalErrorMSG 
+                show={showErrorMessageModal} 
+                onClose={handleErrorMessageModalClose} 
+            >
                 <p>{errorMessage}</p>
                 <div className="flex justify-center mt-4">
                     <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
                         확인
                     </button>
                 </div>
-            </ModalMSG>
+            </ModalErrorMSG>
 
             {/* 회원가입 성공 모달 */}
             <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
