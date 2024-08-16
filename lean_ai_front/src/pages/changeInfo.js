@@ -50,7 +50,8 @@ export default function ChangeInfo() {
     
     input.onchange = function (event) {
       if (event.target.files && event.target.files[0]) {
-        setStoreImage(URL.createObjectURL(event.target.files[0]));  // 미리보기용 URL 생성
+        const file = event.target.files[0];
+        setStoreImage(file);  // File 객체를 직접 저장
         closeImageModal();
       }
     };
@@ -100,35 +101,28 @@ export default function ChangeInfo() {
     closeEditModal();
   }, [currentEditElement, editText, setStoreName, setStoreHours, setMenuPrices, closeEditModal]);
 
-
-
-//전체저장
+  // 모든 변경사항을 서버에 저장하는 함수
   const saveAllChanges = useCallback(async () => {
     try {
       const formData = new FormData();
       formData.append('store_name', storeName);
       formData.append('store_hours', storeHours);
       formData.append('menu_prices', menuPrices);
-  
+
       if (storeImage) {
-        // URL인 경우 Blob으로 변환
-        if (typeof storeImage === 'string' && storeImage.startsWith('blob:')) {
-          const response = await fetch(storeImage);
-          const blob = await response.blob();
-          formData.append('store_image', blob, 'image.jpg');
-        } 
-        // File 객체인 경우 그대로 사용
-        else if (storeImage instanceof File) {
+        if (storeImage instanceof File) {
           formData.append('store_image', storeImage);
-        }
-        // Base64 문자열인 경우
-        else if (typeof storeImage === 'string' && storeImage.startsWith('data:')) {
-          const response = await fetch(storeImage);
-          const blob = await response.blob();
-          formData.append('store_image', blob, 'image.jpg');
+        } else if (typeof storeImage === 'string') {
+          if (storeImage.startsWith('data:') || storeImage.startsWith('blob:')) {
+            const response = await fetch(storeImage);
+            const blob = await response.blob();
+            formData.append('store_image', blob, 'image.jpg');
+          } else {
+            // 이미 서버에 있는 이미지 URL인 경우, 변경되지 않았으므로 전송하지 않음
+          }
         }
       }
-  
+
       const response = await axios.put('http://127.0.0.1:8000/api/storeinfo/1/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -168,7 +162,7 @@ export default function ChangeInfo() {
             {/* 가게 이미지 */}
             <img
               id="storeImage"
-              src={storeImage}
+              src={storeImage instanceof File ? URL.createObjectURL(storeImage) : storeImage}
               className="mx-auto mb-4 w-64 h-52 object-contain cursor-pointer"
               alt="Store"
             />
