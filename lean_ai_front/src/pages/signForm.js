@@ -25,8 +25,15 @@ const Signup = () => {
 
     const router = useRouter();
 
-    // 아이디 중복 검사 모달 열기
+    // ID 중복 검사 모달 열기
     const IdDuplicateCheck = () => {
+        if (!formData.username) {
+            setErrorMessage('아이디를 입력해 주세요.');
+            setShowErrorMessageModal(true);
+            return;
+        }
+
+        // console.log("ID Duplicate Check Modal Opened"); 
         setShowIdDulicateModal(true);
     };
 

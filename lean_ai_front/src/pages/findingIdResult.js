@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from'next/link';
 import { useRouter } from 'next/router';
 
 const IdFinder = () => {
@@ -25,12 +26,11 @@ const IdFinder = () => {
           >
             아이디 찾기
           </button>
-          <button
-            className="flex-grow py-2 text-center font-medium"
-            onClick={() => router.push('/findingPassword')}
-          >
-            비밀번호 찾기
-          </button>
+          <Link href="/findingPassword">
+            <button className="w-1/2 py-2 text-center text-gray-500 border-b-2 border-transparent hover:border-gray-500">
+              비밀번호 찾기
+            </button>
+          </Link>
         </div>
 
         {/* 아이디 알림 내용 */}

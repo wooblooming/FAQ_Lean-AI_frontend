@@ -25,7 +25,7 @@ const Loading = () => {
         <img src="/loading.png" className="w-3/5 object-fill mb-6 " alt="Loading" />         
         
         {/* 로딩 중 멘트 출력 */}
-        <p className="font-bold text-2xl mt-20"> 잠시만 기다려주세요 <br />해당 페이지로 이동 중입니다!!</p>
+        <p className="font-bold text-2xl mt-20"> 잠시만 기다려주세요. <br />해당 페이지로 이동 중입니다.</p>
       </div>
     </div>
   );

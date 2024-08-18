@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
+import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 
-// Findid라는 함수형 컴포넌트 선언
 function FindId() {
-
-  const router = useRouter();
-
   // 모달이 열려있는지 여부를 관리하는 상태 (초기 상태를 닫는 상태로 함)
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -38,9 +35,11 @@ function FindId() {
           <button className="w-1/2 py-2 text-center text-red-500 border-b-2 border-red-500 font-semibold">
             아이디 찾기
           </button>
-          <a href="/findingPassword" className="w-1/2 py-2 text-center text-gray-500">
-            비밀번호 찾기
-          </a>
+          <Link href="/findingPassword">
+            <button className="w-1/2 py-2 text-center text-gray-500 border-b-2 border-transparent hover:border-gray-500">
+              비밀번호 찾기
+            </button>
+          </Link>
         </div>
 
         {/* 인증번호 전송 */}
@@ -60,21 +59,11 @@ function FindId() {
       </div>
 
       {/* 모달창 */}
-      {isModalOpen && (
-        <div id="modal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-md shadow-md text-center">
-            <p className="text-lg">
-              인증번호가 발송되었습니다!
-            </p>
-            <button onClick={handleCloseModal} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-              확인
-            </button>
-          </div>
-        </div>
-      )}
+      <ModalMSG show={isModalOpen} onClose={handleCloseModal} title="알림">
+        인증번호가 발송되었습니다!
+      </ModalMSG>
     </div>
   );
 }
 
-// Findid내보내기
 export default FindId;
