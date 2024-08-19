@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const MyPage = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState('/default_profile.jpg'); // 기본 프로필 이미지 경로
+  const [profileImage, setProfileImage] = useState('/user_img2.jpg'); // 기본 프로필 이미지 경로
 
   const toggleImageModal = () => {
     setIsImageModalOpen(!isImageModalOpen);
@@ -24,7 +24,7 @@ const MyPage = () => {
   };
 
 
-  
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center relative">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center relative">
