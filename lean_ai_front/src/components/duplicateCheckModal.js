@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ModalMSG from './modalMSG';
 
-const IdDuplicateCheckModal = ({ show, onClose, username, setIdDuplicateChecked }) => {
+const IdDuplicateCheckModal = ({ show, onClose, username, onIdCheckComplete }) => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -14,16 +14,21 @@ const IdDuplicateCheckModal = ({ show, onClose, username, setIdDuplicateChecked 
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username }),
+                body: JSON.stringify({ username }), // username: username의 단축형
             });
-            const data = await response.json();
 
-            if (data.is_duplicate) {
-                setMessage('이미 사용 중인 아이디입니다.');
-                setIdDuplicateChecked(false);  // 중복 확인 실패
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.is_duplicate) {
+                onIdCheckComplete(false); // 상위 컴포넌트에 아이디 중복 결과 전달
+                setMessage('아이디를 사용할 수 없습니다.');
             } else {
-                setMessage('사용 가능한 아이디입니다.');
-                setIdDuplicateChecked(true);  // 중복 확인 성공
+                onIdCheckComplete(true); // 상위 컴포넌트에 아이디 중복 결과 전달
+                setMessage('아이디를 사용할 수 있습니다.');
             }
         } catch (error) {
             setMessage('아이디 중복 검사 중 오류가 발생했습니다.');
@@ -37,7 +42,7 @@ const IdDuplicateCheckModal = ({ show, onClose, username, setIdDuplicateChecked 
         if (show) {
             handleIdCheck();
         }
-    }, [show]);
+    }, [show, username]); // username도 의존성에 추가
 
     return (
         <ModalMSG show={show} onClose={onClose} title="ID 중복 확인">
