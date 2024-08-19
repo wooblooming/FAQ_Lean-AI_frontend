@@ -61,7 +61,7 @@ export default function DataEditPage() {
         <div className="mb-6">
           <label className="block mb-2 text-left font-semibold">요청 사항</label>
           <input type="text" placeholder="제목 남기기" className="w-full p-3 rounded-lg border mb-4" />
-          <textarea placeholder="내용 입력" className="w-full p-3 rounded-lg border h-32"></textarea>
+          <textarea placeholder="내용 입력" className="w-full p-3 rounded-lg border h-32 resize-none"></textarea>
           <p className="text-sm text-gray-500 mt-2">*파일이 없으시더라도 수정 요청이 가능합니다.</p>
         </div>
 
