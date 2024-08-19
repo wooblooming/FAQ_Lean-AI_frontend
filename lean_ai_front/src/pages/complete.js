@@ -1,6 +1,4 @@
 // pages/complete.js
-
-/* 백엔드 연동 했을 때 확인
 import { useEffect } from 'react';
 export async function getServerSideProps(context) {
     const { token_version_id, enc_data, integrity_value } = context.query;
@@ -39,8 +37,8 @@ export default function CompletePage({ authResult }) {
 
     return <div>인증이 완료되었습니다. 창이 자동으로 닫힙니다...</div>;
 }
-*/
 
+/*
 import { useRouter } from 'next/router';
 
 const CompletePage = () => {
@@ -60,3 +58,4 @@ const CompletePage = () => {
 };
 
 export default CompletePage;
+*/
