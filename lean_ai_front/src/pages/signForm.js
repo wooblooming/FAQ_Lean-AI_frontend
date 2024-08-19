@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이디 중복 검사 컴포넌트
+import AuthModal from '../components/authModal'; // 인증 모달 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
@@ -12,15 +13,16 @@ const Signup = () => {
         username: '', password: '', confirmPassword: '', name: '', dob: '',
         phone: '', verificationCode: '', email: '', businessName: '', address: ''
     });
-
-    const [idDuplicateChecked, setIdDuplicateChecked] = useState(false);
+    const [idDuplicateChecked, setIdDuplicateChecked] = useState(false); // ID 중복성
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [marketingAccepted, setMarketingAccepted] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showIdDulicateModal, setShowIdDulicateModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false); // 인증 모달 상태
+    const [authData, setAuthData] = useState(null); // 인증 데이터 저장
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showMarketingModal, setShowMarketingModal] = useState(false);
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 상태명 수정
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
     const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 회원가입 성공 모달 상태
 
     const router = useRouter();
@@ -34,9 +36,10 @@ const Signup = () => {
         }
 
         // console.log("ID Duplicate Check Modal Opened"); 
+
         setShowIdDulicateModal(true);
     };
-
+    
     // 이용 약관 모달 열기
     const handleTermsCheckboxChange = () => {
         setShowTermsModal(true);
@@ -114,29 +117,33 @@ const Signup = () => {
     // 인증번호 받기 버튼 클릭 시 auth 페이지로 이동 (시뮬레이션)
     const handleAuthPageOpen = async () => {
         try {
-            // 시뮬레이션용 데이터 처리
-            const mockResponse = {
-                success: true,
-                authToken: 'mockAuthToken12345', // 실제로는 서버에서 받아야 하는 값
-            };
+            const response = await fetch('/api/nice-auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone: formData.phone }),
+            });
 
-            if (mockResponse.success) {
-                console.log('Auth page opened with token:', mockResponse.authToken);
-                router.push('/auth'); // 실제 인증 페이지로 이동
+            const data = await response.json();
+
+            if (data.success) {
+                setAuthData(data); // 인증 데이터를 상태에 저장
+                setShowAuthModal(true); // 인증 모달을 엽니다
             } else {
                 setErrorMessage('인증 요청 중 오류가 발생했습니다.');
-                setShowErrorMessageModal(true); // 모달을 표시하도록 설정
+                setShowErrorMessageModal(true);
             }
         } catch (error) {
             console.error('본인인증 요청 오류:', error);
             setErrorMessage('본인인증 요청 중 오류가 발생했습니다.');
-            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
+            setShowErrorMessageModal(true);
         }
     };
 
     return (
         <div className="bg-blue-100 flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
-            <div className="bg-white p-5 rounded-lg shadow-lg flex flex-col mt-2 py-1.5 text-sm font-bold mb-2 " style={{ width: '400px' }}>
+            <div className="bg-white p-5 rounded-lg shadow-lg flex flex-col mt-2 py-1.5 text-sm font-medium mb-2 " style={{ width: '400px' }}>
                 <h1 className="text-3xl font-bold text-center mb-5 text-blue-400 mt-8">MUMUL</h1>
                 <div className="space-y-2">
                     <div className='flex justify-start'>
@@ -345,7 +352,14 @@ const Signup = () => {
                 show={showIdDulicateModal}
                 onClose={() => setShowIdDulicateModal(false)}
                 idDuplicateChecked={(isCheck) => setIdDuplicateChecked(isCheck)}
-                username={formData.username} // username을 모달에 전달
+                username={formData.username} // 이 값이 제대로 전달되는지 확인
+            />
+
+            {/* 인증 모달 */}
+            <AuthModal
+                show={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                authData={authData}
             />
 
             {/* 이용약관 모달 */}
