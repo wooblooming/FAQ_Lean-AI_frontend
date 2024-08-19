@@ -3,23 +3,28 @@ import Link from 'next/link';
 
 const MyPage = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState('/default_profile.jpg'); // 기본 프로필 이미지 경로
 
   const toggleImageModal = () => {
     setIsImageModalOpen(!isImageModalOpen);
   };
 
-  const chooseImage = () => {
-    // 앨범에서 사진/동영상 선택 로직 추가
-    console.log("앨범에서 사진/동영상 선택");
+  const chooseImage = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+    }
     toggleImageModal(); // 선택 후 모달 닫기
   };
 
   const applyDefaultImage = () => {
-    // 기본 이미지 적용 로직 추가
-    console.log("기본 이미지 적용");
+    setProfileImage('/user_img.jpg'); // 기본 이미지 경로로 설정
     toggleImageModal(); // 적용 후 모달 닫기
   };
 
+
+  
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center relative">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center relative">
@@ -44,7 +49,7 @@ const MyPage = () => {
         {/* 프로필 이미지 */}
         <div className="mb-4">
           <img
-            src="/user_img2.jpg"
+            src={profileImage}
             alt="프로필 이미지"
             className="w-24 h-24 rounded-full mx-auto mb-4"
           />
@@ -80,8 +85,15 @@ const MyPage = () => {
         >
           <div className="modal-content bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 className="font-bold text-lg mb-4">프로필 사진 설정</h2>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              id="fileInput"
+              onChange={chooseImage}
+            />
             <button
-              onClick={chooseImage}
+              onClick={() => document.getElementById('fileInput').click()}
               className="block w-full mb-2 py-2 text-black"
             >
               앨범에서 사진/동영상 선택
@@ -92,7 +104,6 @@ const MyPage = () => {
             >
               기본 이미지 적용
             </button>
-            {/* 취소 버튼을 제외했습니다. */}
           </div>
         </div>
       )}
