@@ -55,10 +55,10 @@ const MainPageWithMenu = () => {
         {/* 버튼들 */}
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
           <Link href="/changeInfo" className="bg-gray-300 rounded-lg py-8 w-full text-center">
-          기본 정보 등록
+          업종 정보 변경
           </Link>
           <Link href="/editData" className="bg-gray-300 rounded-lg py-8 w-full text-center">
-          FAQ 데이터 등록
+          FAQ 데이터 수정하기
           </Link>
         </div>
       </main>
