@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이디 중복 검사 컴포넌트
-import AuthModal from '../components/authModal'; // 인증 모달 컴포넌트
+import VerificationModal from '../components/verificationModal'; // 인증번호 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
@@ -18,8 +18,9 @@ const Signup = () => {
     const [marketingAccepted, setMarketingAccepted] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showIdDulicateModal, setShowIdDulicateModal] = useState(false);
-    const [showAuthModal, setShowAuthModal] = useState(false); // 인증 모달 상태
-    const [authData, setAuthData] = useState(null); // 인증 데이터 저장
+    const [CodeSent, setCodeSent] = useState(false); // 인증번호 전송 여부 확인
+    const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 모달 열림 상태
+    const [verificationError, setVerificationError] = useState(null); // 인증 오류 메시지
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [showMarketingModal, setShowMarketingModal] = useState(false);
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
@@ -35,8 +36,7 @@ const Signup = () => {
             return;
         }
 
-        // console.log("ID Duplicate Check Modal Opened"); 
-
+        console.log("ID Duplicate Check Modal Opened"); // 이 로그가 출력되는지 확인하세요 fh
         setShowIdDulicateModal(true);
     };
     
@@ -114,10 +114,10 @@ const Signup = () => {
         router.push('/login');
     };
 
-    // 인증번호 받기 버튼 클릭 시 auth 페이지로 이동 (시뮬레이션)
-    const handleAuthPageOpen = async () => {
+    // 인증번호 전송
+    const handleSendCode = async () => {
         try {
-            const response = await fetch('/api/nice-auth', {
+            const response = await fetch('http://127.0.0.1:8000/api/send-code/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,16 +128,39 @@ const Signup = () => {
             const data = await response.json();
 
             if (data.success) {
-                setAuthData(data); // 인증 데이터를 상태에 저장
-                setShowAuthModal(true); // 인증 모달을 엽니다
+                alert('인증 번호가 발송되었습니다.');
+                setCodeSent(true);
+                setShowCodeModal(true); // 인증 번호 전송 후 모달 열기
             } else {
-                setErrorMessage('인증 요청 중 오류가 발생했습니다.');
-                setShowErrorMessageModal(true);
+                alert(data.message);
             }
         } catch (error) {
-            console.error('본인인증 요청 오류:', error);
-            setErrorMessage('본인인증 요청 중 오류가 발생했습니다.');
-            setShowErrorMessageModal(true);
+            console.error('인증 번호 요청 오류:', error);
+            alert('인증 번호 요청 중 오류가 발생했습니다.');
+        }
+    };
+
+    const handleVerifyCode = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/verify-code/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone: formData.phone, code: formData.verificationCode }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('인증이 완료되었습니다.');
+                setShowCodeModal(false); // 인증 성공 시 모달 닫기
+            } else {
+                setVerificationError(data.message);
+            }
+        } catch (error) {
+            console.error('인증 확인 오류:', error);
+            setVerificationError('인증 확인 중 오류가 발생했습니다.');
         }
     };
 
@@ -245,13 +268,13 @@ const Signup = () => {
                                     name="phone"
                                     placeholder="휴대폰 번호"
                                     value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    onChange={handleInputChange}
                                     className="border px-4 py-2 border-gray-300 rounded-md w-64 "
                                 />
                                 <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                             </div>
                             <button className="text-white bg-purple-400 rounded-md py-2 font-medium hover:bg-purple-500 w-24 whitespace-nowrap"
-                                    onClick={handleAuthPageOpen}
+                                    onClick={handleSendCode}
                             >
                                 인증번호 받기
                             </button>
@@ -356,10 +379,13 @@ const Signup = () => {
             />
 
             {/* 인증 모달 */}
-            <AuthModal
-                show={showAuthModal}
-                onClose={() => setShowAuthModal(false)}
-                authData={authData}
+            <VerificationModal
+                isOpen={showCodeModal}
+                onClose={() => setShowCodeModal(false)}
+                onSubmit={handleVerifyCode}
+                verificationCode={formData.verificationCode}
+                onChange={handleInputChange}
+                errorMessage={verificationError}
             />
 
             {/* 이용약관 모달 */}
