@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ModalMSG from './modalMSG';
 
-const IdDuplicateCheckModal = ({ show, onClose, username }) => {
+const IdDuplicateCheckModal = ({ show, onClose, username, setIdDuplicateChecked }) => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -9,13 +9,21 @@ const IdDuplicateCheckModal = ({ show, onClose, username }) => {
     const handleIdCheck = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/check-username?username=${username}`);
-            const result = await response.json();
+            const response = await fetch('http://127.0.0.1:8000/api/check-username/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username }),
+            });
+            const data = await response.json();
 
-            if (result.exists) {
-                setMessage('아이디를 사용할 수 없습니다.');
+            if (data.is_duplicate) {
+                setMessage('이미 사용 중인 아이디입니다.');
+                setIdDuplicateChecked(false);  // 중복 확인 실패
             } else {
-                setMessage('아이디를 사용할 수 있습니다.');
+                setMessage('사용 가능한 아이디입니다.');
+                setIdDuplicateChecked(true);  // 중복 확인 성공
             }
         } catch (error) {
             setMessage('아이디 중복 검사 중 오류가 발생했습니다.');

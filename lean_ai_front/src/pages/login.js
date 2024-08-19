@@ -8,7 +8,6 @@ import naverIcon from '../../public/btn_naver.svg';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import googleIcon from '../../public/btn_google.svg';
 
-
 const Login = () => {
     // 사용자 입력 상태를 관리하는 useState 훅
     const [username, setUsername] = useState(''); // 아이디 입력 상태
@@ -27,7 +26,7 @@ const Login = () => {
 
         // 로그인 처리 요청: 서버의 로그인 API를 호출
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://localhost:8000/api/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
