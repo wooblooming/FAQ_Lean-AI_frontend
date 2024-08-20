@@ -15,7 +15,7 @@ const NoticePage = () => {
       >
         <nav className="flex items-center mb-4">
           {/* 뒤로가기 버튼 */}
-          <Link href="/mainPageForPresident" cclassName="text-gray-600">
+          <Link href="/mainPageForPresident" className="text-gray-600">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
