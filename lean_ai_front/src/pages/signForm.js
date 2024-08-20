@@ -109,7 +109,6 @@ const Signup = () => {
             });
 
             const data = await response.json();
-            console.log('서버 응답:', data);  // 서버 응답을 콘솔에 출력하여 확인
 
             if (data.success) {
                 setShowWelcomeModal(true);
@@ -118,7 +117,7 @@ const Signup = () => {
                 setShowErrorMessageModal(true);
             }
         } catch (error) {
-            console.error('회원가입 오류:', error);
+            // console.error('회원가입 오류:', error);
             setErrorMessage('회원가입 요청 중 오류가 발생했습니다.');
             setShowErrorMessageModal(true);
         }
@@ -144,21 +143,22 @@ const Signup = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ phone: formData.phone }),
+                body: JSON.stringify({ phone: formData.phone, type: 'signup' }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                alert('인증 번호가 발송되었습니다.');
                 setCodeSent(true);
                 setShowCodeModal(true); // 인증 번호 전송 후 모달 열기
             } else {
-                alert(data.message);
-            }
+                setErrorMessage(data.message);
+                setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+        }
         } catch (error) {
-            console.error('인증 번호 요청 오류:', error);
-            alert('인증 번호 요청 중 오류가 발생했습니다.');
+            // console.error('인증 번호 요청 오류:', error);
+            setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+            setShowErrorMessageModal(true);
         }
     };
 
@@ -169,13 +169,16 @@ const Signup = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ phone: formData.phone, code: formData.verificationCode }),
+                body: JSON.stringify({
+                    phone: formData.phone,
+                    code: formData.verificationCode,
+                    type: 'signup' 
+                }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                alert('인증이 완료되었습니다.');
                 setShowCodeModal(false); // 인증 성공 시 모달 닫기
             } else {
                 setVerificationError(data.message);
