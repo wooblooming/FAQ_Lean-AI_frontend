@@ -27,7 +27,7 @@ const Login = () => {
 
         // 로그인 처리 요청: 서버의 로그인 API를 호출
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://127.0.0.1:8000/api/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

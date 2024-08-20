@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import IdDuplicateCheckModal from '../components/duplicateCheckModal'; // 아이디 중복 검사 컴포넌트
-import VerificationModal from '../components/verificationModal'; // 인증번호 컴포넌트
+import VerificationModal from '../components/verificationModal';     // 인증 모달 컴포넌트
 import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용약관 컴포넌트
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
@@ -36,10 +36,15 @@ const Signup = () => {
             return;
         }
 
-        console.log("ID Duplicate Check Modal Opened"); // 이 로그가 출력되는지 확인하세요 fh
+        console.log("ID Duplicate Check Modal Opened");
         setShowIdDulicateModal(true);
     };
-    
+
+    // ID 중복 검사 결과를 받아 처리하는 함수
+    const handleIdCheckComplete = (isCheck) => {
+        setIdDuplicateChecked(isCheck);
+    };
+
     // 이용 약관 모달 열기
     const handleTermsCheckboxChange = () => {
         setShowTermsModal(true);
@@ -56,49 +61,65 @@ const Signup = () => {
 
     // 회원가입 처리 함수
     const handleSignup = async () => {
-        const { username, password, confirmPassword, name, dob, phone, verificationCode, businessName, address } = formData;
+        const { username, password, confirmPassword, name, dob, phone, email, businessName, address } = formData;
 
-        if (!username || !password || !confirmPassword || !name || !dob || !phone || !verificationCode || !businessName || !address) {
+        if (!username || !password || !confirmPassword || !name || !dob || !phone || !email || !businessName || !address) {
             setErrorMessage('모든 항목들을 기입해 주세요.');
-            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
+            setShowErrorMessageModal(true);
             return;
         }
 
         if (!idDuplicateChecked) {
             setErrorMessage('아이디 중복 확인을 해주세요.');
-            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
+            setShowErrorMessageModal(true);
             return;
         }
 
         if (password !== confirmPassword) {
             setErrorMessage('비밀번호가 일치하지 않습니다.');
-            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
+            setShowErrorMessageModal(true);
             return;
+        }
+        // 새로운 변수 dobFormatted로 변환된 날짜를 저장
+        let dobFormatted = dob;
+
+        // 날짜 형식 변환: YYMMDD -> YYYY-MM-DD
+        if (dob.length === 6) {
+            const yearPrefix = parseInt(dob.substring(0, 2)) > 50 ? '19' : '20'; // 예: 80년대 이전은 19XX, 이후는 20XX
+            dobFormatted = `${yearPrefix}${dob.substring(0, 2)}-${dob.substring(2, 4)}-${dob.substring(4, 6)}`;
         }
 
         try {
-            const response = await fetch('/api/signup', {
+            const response = await fetch('http://127.0.0.1:8000/api/signup/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    ...formData,
-                    marketingAccepted,
+                    username,
+                    password,
+                    name,
+                    dob: dobFormatted,  // 변환된 날짜 형식 사용
+                    phone,
+                    email,
+                    businessName,
+                    address,
+                    termsAccepted,
                 }),
             });
 
             const data = await response.json();
+
             if (data.success) {
-                setShowWelcomeModal(true); // 회원가입 성공 시 환영 모달 열기
+                setShowWelcomeModal(true);
             } else {
                 setErrorMessage(data.message || '회원가입에 실패했습니다.');
-                setShowErrorMessageModal(true); // 모달을 표시하도록 설정
+                setShowErrorMessageModal(true);
             }
         } catch (error) {
-            console.error('회원가입 오류:', error);
+            // console.error('회원가입 오류:', error);
             setErrorMessage('회원가입 요청 중 오류가 발생했습니다.');
-            setShowErrorMessageModal(true); // 모달을 표시하도록 설정
+            setShowErrorMessageModal(true);
         }
     };
 
@@ -122,21 +143,22 @@ const Signup = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ phone: formData.phone }),
+                body: JSON.stringify({ phone: formData.phone, type: 'signup' }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                alert('인증 번호가 발송되었습니다.');
                 setCodeSent(true);
                 setShowCodeModal(true); // 인증 번호 전송 후 모달 열기
             } else {
-                alert(data.message);
-            }
+                setErrorMessage(data.message);
+                setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+        }
         } catch (error) {
-            console.error('인증 번호 요청 오류:', error);
-            alert('인증 번호 요청 중 오류가 발생했습니다.');
+            // console.error('인증 번호 요청 오류:', error);
+            setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+            setShowErrorMessageModal(true);
         }
     };
 
@@ -147,13 +169,16 @@ const Signup = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ phone: formData.phone, code: formData.verificationCode }),
+                body: JSON.stringify({
+                    phone: formData.phone,
+                    code: formData.verificationCode,
+                    type: 'signup' 
+                }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                alert('인증이 완료되었습니다.');
                 setShowCodeModal(false); // 인증 성공 시 모달 닫기
             } else {
                 setVerificationError(data.message);
@@ -187,7 +212,7 @@ const Signup = () => {
                                     <label htmlFor="user-id" className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                                 </div>
                                 <button className="text-white bg-purple-400 rounded-md px-4 py-2 font-medium hover:bg-purple-500 w-28"
-                                        onClick={IdDuplicateCheck}>
+                                    onClick={IdDuplicateCheck}>
                                     중복확인
                                 </button>
                             </div>
@@ -274,7 +299,7 @@ const Signup = () => {
                                 <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                             </div>
                             <button className="text-white bg-purple-400 rounded-md py-2 font-medium hover:bg-purple-500 w-24 whitespace-nowrap"
-                                    onClick={handleSendCode}
+                                onClick={handleSendCode}
                             >
                                 인증번호 받기
                             </button>
@@ -336,7 +361,7 @@ const Signup = () => {
                         className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
                         onClick={handleTermsCheckboxChange}
                     >
-                        이용약관 및 개인정보 수집 동의(필수) 
+                        이용약관 및 개인정보 수집 동의(필수)
                     </label>
                 </div>
 
@@ -348,7 +373,7 @@ const Signup = () => {
                         className="form-checkbox h-4 w-4 text-blue-600"
                     />
                     <label className="text-sm font-medium underline hover:text-blue-600" onClick={() => setShowMarketingModal(true)}>
-                        마케팅 활용 동의 및 광고 수신 동의(선택) 
+                        마케팅 활용 동의 및 광고 수신 동의(선택)
                     </label>
                 </div>
 
@@ -358,72 +383,80 @@ const Signup = () => {
                 >
                     회원가입
                 </button>
-            
 
-            <div className="mt-4 text-center text-gray-500">
-                <p>이미 계정이 있나요?
-                    <Link href="/login" className="underline text-blue-500 p-1 m-1">로그인</Link>
-                </p>
-                <p className="mt-2 mb-2">
-                    계정을 잊어버리셨나요?
-                    <Link href="/findingId" className="underline text-blue-500 p-1 m-1">계정찾기</Link>
-                </p>
-            </div>
 
-            {/* ID 중복성 검사 결과 모달 */}
-            <IdDuplicateCheckModal
-                show={showIdDulicateModal}
-                onClose={() => setShowIdDulicateModal(false)}
-                idDuplicateChecked={(isCheck) => setIdDuplicateChecked(isCheck)}
-                username={formData.username} // 이 값이 제대로 전달되는지 확인
-            />
-
-            {/* 인증 모달 */}
-            <VerificationModal
-                isOpen={showCodeModal}
-                onClose={() => setShowCodeModal(false)}
-                onSubmit={handleVerifyCode}
-                verificationCode={formData.verificationCode}
-                onChange={handleInputChange}
-                errorMessage={verificationError}
-            />
-
-            {/* 이용약관 모달 */}
-            <TermsOfServiceModal
-                show={showTermsModal}
-                onClose={() => setShowTermsModal(false)}
-                onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
-            />
-
-            {/* 마케팅 및 광고 모달 */}
-            <MarketingModal
-                show={showMarketingModal}
-                onClose={() => setShowMarketingModal(false)}
-                onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
-            />
-
-            {/* 에러 메시지 모달 */}
-            <ModalErrorMSG 
-                show={showErrorMessageModal} 
-                onClose={handleErrorMessageModalClose} 
-            >
-                <p>{errorMessage}</p>
-                <div className="flex justify-center mt-4">
-                    <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
-                        확인
-                    </button>
+                <div className="mt-4 text-center text-gray-500">
+                    <p>이미 계정이 있나요?
+                        <Link href="/login" className="underline text-blue-500 p-1 m-1">로그인</Link>
+                    </p>
+                    <p className="mt-2 mb-2">
+                        계정을 잊어버리셨나요?
+                        <Link href="/findingId" className="underline text-blue-500 p-1 m-1">계정찾기</Link>
+                    </p>
                 </div>
-            </ModalErrorMSG>
 
-            {/* 회원가입 성공 모달 */}
-            <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
-                <p>{formData.username}님 환영합니다!</p>
-                <div className="flex justify-center mt-4">
-                    <button onClick={handleWelcomeModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
-                        확인
-                    </button>
-                </div>
-            </ModalMSG>
+                {/* ID 중복성 검사 결과 모달 */}
+                <IdDuplicateCheckModal
+                    show={showIdDulicateModal}
+                    onClose={() => setShowIdDulicateModal(false)}
+                    onIdCheckComplete={handleIdCheckComplete} // 중복 체크 결과를 전달받음
+                    username={formData.username}
+                />
+
+                {/* 인증 모달 */}
+                <VerificationModal
+                    isOpen={showCodeModal}
+                    onClose={() => setShowCodeModal(false)}
+                    onSubmit={handleVerifyCode}
+                    verificationCode={formData.verificationCode}
+                    onChange={handleInputChange}
+                    errorMessage={verificationError}
+                />
+
+                {/* 이용약관 모달 */}
+                <TermsOfServiceModal
+                    show={showTermsModal}
+                    onClose={() => setShowTermsModal(false)}
+                    onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
+                />
+
+                {/* 마케팅 및 광고 모달 */}
+                <MarketingModal
+                    show={showMarketingModal}
+                    onClose={() => setShowMarketingModal(false)}
+                    onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
+                />
+
+                {/* 에러 메시지 모달 */}
+                <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
+                    <p>
+                        {typeof errorMessage === 'object' ? (
+                            Object.entries(errorMessage).map(([key, value]) => (
+                                <span key={key}>
+                                    {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+                                </span>
+                            ))
+                        ) : (
+                            errorMessage
+                        )}
+                    </p>
+                    <div className="flex justify-center mt-4">
+                        <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                            확인
+                        </button>
+                    </div>
+                </ModalErrorMSG>
+
+
+                {/* 회원가입 성공 모달 */}
+                <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
+                    <p>{formData.username}님 환영합니다!</p>
+                    <div className="flex justify-center mt-4">
+                        <button onClick={handleWelcomeModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                            확인
+                        </button>
+                    </div>
+                </ModalMSG>
             </div>
         </div>
     );
