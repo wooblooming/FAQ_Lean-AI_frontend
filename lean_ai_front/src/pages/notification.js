@@ -9,30 +9,28 @@ const NoticePage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="max-w-lg mx-auto bg-white border p-5 rounded-lg shadow-lg font-sans mt-4 mb-2 w-10/12 "
-            style={{ minHeight: '550px' }}
-      >
-        <nav className="flex items-center mb-4">
-          {/* 뒤로가기 버튼 */}
-          <Link href="/mainPageForPresident" cclassName="text-gray-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </Link>
-          <h1 className="text-xl font-bold ml-12">공지사항</h1>
-        </nav>
+    <div className="min-h-screen bg-gray-100 p-4">
+      {/* 상단 네비게이션 바 */}
+      <nav className="flex items-center mb-4">
+        {/* 뒤로가기 버튼 */}
+        <Link href="/mainPageForPresident" className="absolute top-4 left-4 text-gray-500 focus:outline-none">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </Link>
+        <h1 className="text-xl font-bold ml-12">공지사항</h1>
+      </nav>
 
         {/* 알림 전체 */}
         <div className="mb-4">
