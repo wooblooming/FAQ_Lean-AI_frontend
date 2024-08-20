@@ -85,7 +85,7 @@ const Signup = () => {
 
         // 날짜 형식 변환: YYMMDD -> YYYY-MM-DD
         if (dob.length === 6) {
-            const yearPrefix = parseInt(dob.substring(0, 2)) > 50 ? '19' : '20'; // 예: 80년대 이전은 19XX, 이후는 20XX
+            const yearPrefix = parseInt(dob.substring(0, 2)) > 24 ? '19' : '20'; 
             dobFormatted = `${yearPrefix}${dob.substring(0, 2)}-${dob.substring(2, 4)}-${dob.substring(4, 6)}`;
         }
 
