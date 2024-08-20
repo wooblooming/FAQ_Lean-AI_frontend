@@ -72,14 +72,12 @@ function FindPassword() {
       const data = await response.json();
 
       if (data.success) {
-        // 비밀번호 찾기 결과 페이지로 이동하면서 데이터 전달
-        router.push({
-          pathname: '/findingPasswordResult',
-          query: {
-            userPassword: data.user_password,
-            dateJoined: data.date_joined,
-          },
-        });
+        // 세션 스토리지에 데이터 저장
+        sessionStorage.setItem('userPassword', data.user_password);
+        sessionStorage.setItem('dateJoined', data.date_joined);
+
+        // 다음 페이지로 이동
+        router.push('/findingPasswordResult');
       } else {
         setErrorMessage(data.message);
         setShowErrorMessageModal(true); // 인증 오류 메시지를 모달에 표시

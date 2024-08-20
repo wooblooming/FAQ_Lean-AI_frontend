@@ -4,8 +4,10 @@ import Link from 'next/link';
 
 
 const PsFinder = () => {
-  const router = useRouter();
-  const { userPassword, dateJoined } = router.query;
+  
+  // 세션에 저장한 값 가져오기
+  const userPassword = sessionStorage.getItem('userPassword');
+  const dateJoined = sessionStorage.getItem('dateJoined');
 
   return (
     // 페이지 배경 및 창 설정

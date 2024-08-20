@@ -3,8 +3,10 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 const IdFinder = () => {
-  const router = useRouter();
-  const { userId, dateJoined } = router.query;
+  
+  // 세션에 저장한 값 가져오기
+  const userId = sessionStorage.getItem('userId');
+  const dateJoined = sessionStorage.getItem('dateJoined');
 
   return (
     <div className="bg-gray-100 flex items-center justify-center h-screen">
