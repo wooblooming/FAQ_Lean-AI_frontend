@@ -71,14 +71,12 @@ function FindId() {
       const data = await response.json();
 
       if (data.success) {
-        // 아이디 찾기 결과 페이지로 이동하면서 데이터 전달
-        router.push({
-          pathname: '/findingIdResult',
-          query: {
-            userId: data.user_id,
-            dateJoined: data.date_joined,
-          },
-        });
+        // 세션 스토리지에 데이터 저장
+        sessionStorage.setItem('userId', data.user_id);
+        sessionStorage.setItem('dateJoined', data.date_joined);
+
+        // 다음 페이지로 이동
+        router.push('/findingIdResult');
       } else {
         setErrorMessage(data.message);
         setShowErrorMessageModal(true); // 인증 오류 메시지를 모달에 표시
