@@ -29,7 +29,7 @@ const Chatbot = () => {
     setMessage('');
 
     // 서버로 메시지 전송 및 응답 받기
-    fetch('/chat', {
+    fetch('http://127.0.0.1:8000/chatbot/chating/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
