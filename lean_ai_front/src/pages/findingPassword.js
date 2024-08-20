@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
+import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 // FindPassword 함수형 컨포넌트 정의
 function FindPassword() {
@@ -10,7 +11,9 @@ function FindPassword() {
   const [modalMessage, setModalMessage] = useState(''); // 모달에 표시할 메시지
   const [formData, setFormData] = useState({ phone: '', verificationCode: '' });
   const [CodeSent, setCodeSent] = useState(false); // 인증번호 전송 여부 확인
-  const [verificationError, setVerificationError] = useState(null); // 인증 오류 메시지
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+
 
   const router = useRouter();
 
@@ -31,7 +34,7 @@ function FindPassword() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phone: formData.phone }),
+        body: JSON.stringify({ phone: formData.phone, type: 'findidpw' }),
       });
 
       const data = await response.json();
@@ -41,13 +44,13 @@ function FindPassword() {
         setModalMessage('인증번호가 발송되었습니다!');
         setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
       } else {
-        setModalMessage(data.message);
-        setIsModalOpen(true); // 오류 메시지를 모달에 표시
+        setErrorMessage(data.message);
+        setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
       }
     } catch (error) {
       console.error('인증 번호 요청 오류:', error);
-      setModalMessage('인증 번호 요청 중 오류가 발생했습니다.');
-      setIsModalOpen(true); // 오류 메시지를 모달에 표시
+      setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+      setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
     }
   };
 
@@ -59,24 +62,32 @@ function FindPassword() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phone: formData.phone, code: formData.verificationCode }),
+        body: JSON.stringify({
+          phone: formData.phone,
+          code: formData.verificationCode,
+          type: 'findidpw'
+        }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setModalMessage('인증이 완료되었습니다.');
-        setIsModalOpen(true); // 인증 성공 메시지를 모달에 표시
-        // 비밀번호 찾기 결과 페이지로 이동
-        router.push('/findingPasswordResult');
+        // 비밀번호 찾기 결과 페이지로 이동하면서 데이터 전달
+        router.push({
+          pathname: '/findingPasswordResult',
+          query: {
+            userPassword: data.user_password,
+            dateJoined: data.date_joined,
+          },
+        });
       } else {
-        setModalMessage(data.message);
-        setIsModalOpen(true); // 인증 오류 메시지를 모달에 표시
+        setErrorMessage(data.message);
+        setShowErrorMessageModal(true); // 인증 오류 메시지를 모달에 표시
       }
     } catch (error) {
       console.error('인증 확인 오류:', error);
-      setModalMessage('인증 확인 중 오류가 발생했습니다.');
-      setIsModalOpen(true); // 인증 오류 메시지를 모달에 표시
+      setErrorMessage('인증 확인 중 오류가 발생했습니다.');
+      setShowErrorMessageModal(true); // 인증 오류 메시지를 모달에 표시
     }
   };
 
@@ -85,6 +96,13 @@ function FindPassword() {
     setIsModalOpen(false);
     setModalMessage(''); // 모달 메시지 초기화
   };
+
+  // 에러 메시지 모달 닫기
+  const handleErrorMessageModalClose = () => {
+    setShowErrorMessageModal(false);
+    setErrorMessage(''); // 에러 메시지 초기화
+  };
+
 
   // 배경 및 창 설정
   return (
@@ -157,7 +175,32 @@ function FindPassword() {
       {/* 모달창 */}
       <ModalMSG show={isModalOpen} onClose={handleCloseModal} title="알림">
         {modalMessage}
+        <div className="flex justify-center mt-4">
+          <button onClick={handleCloseModal} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+            확인
+          </button>
+        </div>
       </ModalMSG>
+
+      {/* 에러 메시지 모달 */}
+      <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
+        <p>
+          {typeof errorMessage === 'object' ? (
+            Object.entries(errorMessage).map(([key, value]) => (
+              <span key={key}>
+                {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+              </span>
+            ))
+          ) : (
+            errorMessage
+          )}
+        </p>
+        <div className="flex justify-center mt-4">
+          <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+            확인
+          </button>
+        </div>
+      </ModalErrorMSG>
     </div>
   );
 }
