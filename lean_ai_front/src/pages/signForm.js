@@ -63,8 +63,8 @@ const Signup = () => {
     const handleSignup = async () => {
         const { username, password, confirmPassword, name, dob, phone, email, businessName, address } = formData;
 
-        if (!username || !password || !confirmPassword || !name || !dob || !phone || !email || !businessName || !address) {
-            setErrorMessage('모든 항목들을 기입해 주세요.');
+        if (!username || !password || !confirmPassword || !name || !dob || !phone || !businessName || !address) {
+            setErrorMessage('필수 항목들을 기입해주시길 바랍니다');
             setShowErrorMessageModal(true);
             return;
         }

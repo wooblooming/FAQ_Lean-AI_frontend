@@ -25,10 +25,10 @@ const IdDuplicateCheckModal = ({ show, onClose, username, onIdCheckComplete }) =
 
             if (result.is_duplicate) {
                 onIdCheckComplete(false); // 상위 컴포넌트에 아이디 중복 결과 전달
-                setMessage('아이디를 사용할 수 없습니다.');
+                setMessage('사용 불가능한 아이디입니다.');
             } else {
                 onIdCheckComplete(true); // 상위 컴포넌트에 아이디 중복 결과 전달
-                setMessage('아이디를 사용할 수 있습니다.');
+                setMessage('사용 가능한 아이디 입니다.');
             }
         } catch (error) {
             setMessage('아이디 중복 검사 중 오류가 발생했습니다.');

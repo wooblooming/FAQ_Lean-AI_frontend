@@ -30,11 +30,22 @@ const Login = () => {
     // 로그인 버튼 클릭 시 호출되는 함수
     const handleLoginClick = async () => {
         // 입력 검증: 아이디 또는 비밀번호가 입력되지 않은 경우 경고 메시지 표시
-        if (!username || !password) {
+        if (!username) {
+            setErrorMessage('아이디를 입력해 주세요.');
+            setShowErrorMessageModal(true);
+            return;
+        }
+        else if (!password) {
+            setErrorMessage('비밀번호를 입력해 주세요.');
+            setShowErrorMessageModal(true);
+            return;
+        }
+        if (!username && !password) {
             setErrorMessage('아이디와 비밀번호를 입력해 주세요.');
             setShowErrorMessageModal(true);
             return;
         }
+
 
         // 로그인 처리 요청: 서버의 로그인 API를 호출
         try {
@@ -51,7 +62,7 @@ const Login = () => {
                 setIsLoggedIn(true); // 로그인 성공 시 상태 업데이트
                 router.push('/mainPageForPresident'); // 로그인 성공 시 메인 페이지로 리디렉션
             } else {
-                setErrorMessage('로그인에 실패했습니다.'); // 로그인 실패 시 경고 메시지 표시
+                setErrorMessage('아이디 또는 비밀번호를 잘못 입력하였습니다. \n 입력하신 내용을 확인해주세요.'); // 로그인 실패 시 경고 메시지 표시
                 setShowErrorMessageModal(true);
             }
         } catch (error) {
@@ -140,7 +151,7 @@ const Login = () => {
 
                 {/* 에러 메시지 모달 */}
                 <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
-                    <p>
+                    <p style={{ whiteSpace: 'pre-line' }}>
                         {typeof errorMessage === 'object' ? (
                             Object.entries(errorMessage).map(([key, value]) => (
                                 <span key={key}>

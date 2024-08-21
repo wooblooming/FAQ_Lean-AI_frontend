@@ -1,7 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import ModalText from './modalText';
+import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+
 
 const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+
     const termsOfServiceRef = useRef(null);
 
     const termsOfService = `
@@ -293,8 +298,15 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
             onAgree(isAgreed); // 동의 여부를 상위 컴포넌트에 전달
             onClose(); // 모달 닫기
         } else {
-            alert("동의 버튼을 누르셔야 합니다.");
+            setErrorMessage("필수 약관에 동의해주셔야 \n 서비스 이용이 가능합니다.");
+            setShowErrorMessageModal(true);
         }
+    };
+
+    // 에러 메시지 모달 닫기
+    const handleErrorMessageModalClose = () => {
+        setShowErrorMessageModal(false);
+        setErrorMessage(''); // 에러 메시지 초기화
     };
 
     return (
@@ -325,6 +337,27 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
                     </button>
                 </div>
             </div>
+
+            {/* 에러 메시지 모달 */}
+            <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
+                <p style={{ whiteSpace: 'pre-line' }}>
+                    {typeof errorMessage === 'object' ? (
+                        Object.entries(errorMessage).map(([key, value]) => (
+                            <span key={key}>
+                                {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+                            </span>
+                        ))
+                    ) : (
+                        errorMessage
+                    )}
+                </p>
+                <div className="flex justify-center mt-4">
+                    <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        확인
+                    </button>
+                </div>
+            </ModalErrorMSG>
+
         </ModalText>
     );
 };
