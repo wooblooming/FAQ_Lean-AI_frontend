@@ -163,7 +163,9 @@ const Login = () => {
                         )}
                     </p>
                     <div className="flex justify-center mt-4">
-                        <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        <button onClick={handleErrorMessageModalClose} 
+                                className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
+                        >
                             확인
                         </button>
                     </div>

@@ -17,16 +17,16 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, verificationCode, onChan
                     className="w-full p-2 border border-gray-300 rounded mb-4 font-normal text-base"
                 />
                 {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
-                <div className="flex justify-end">
+                <div className="flex justify-center">
                     <button
                         onClick={onSubmit}
-                        className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                        className=" text-blue-500 px-4 py-2 rounded mr-2"
                     >
                         확인
                     </button>
                     <button
                         onClick={onClose}
-                        className="bg-gray-300 text-black px-4 py-2 rounded"
+                        className=" text-red-500 px-4 py-2 rounded"
                     >
                         취소
                     </button>

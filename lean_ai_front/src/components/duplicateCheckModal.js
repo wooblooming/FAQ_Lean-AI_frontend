@@ -49,12 +49,12 @@ const IdDuplicateCheckModal = ({ show, onClose, username, onIdCheckComplete }) =
             {loading ? (
                 <p>확인 중...</p>
             ) : (
-                <p>{message}</p>
+                <p className='text-center mt-2'>{message}</p>
             )}
             <div className="flex justify-center mt-4 overflow-hidden">
                 <button
                     onClick={onClose}
-                    className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
                 >
                     확인
                 </button>
