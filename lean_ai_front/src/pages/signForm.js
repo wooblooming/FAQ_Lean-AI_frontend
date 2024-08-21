@@ -63,8 +63,8 @@ const Signup = () => {
     const handleSignup = async () => {
         const { username, password, confirmPassword, name, dob, phone, email, businessName, address } = formData;
 
-        if (!username || !password || !confirmPassword || !name || !dob || !phone || !email || !businessName || !address) {
-            setErrorMessage('모든 항목들을 기입해 주세요.');
+        if (!username || !password || !confirmPassword || !name || !dob || !phone || !businessName || !address) {
+            setErrorMessage('필수 항목들을 기입해주시길 바랍니다');
             setShowErrorMessageModal(true);
             return;
         }
@@ -440,7 +440,7 @@ const Signup = () => {
                         )}
                     </p>
                     <div className="flex justify-center mt-4">
-                        <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        <button onClick={handleErrorMessageModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
                             확인
                         </button>
                     </div>
@@ -451,7 +451,7 @@ const Signup = () => {
                 <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
                     <p>{formData.username}님 환영합니다!</p>
                     <div className="flex justify-center mt-4">
-                        <button onClick={handleWelcomeModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                        <button onClick={handleWelcomeModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
                             확인
                         </button>
                     </div>

@@ -23,7 +23,7 @@ export default function DataEditPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-200 flex items-center justify-center font-sans">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs">
         {/* 뒤로가기 버튼 및 제목을 동일선상에 배치 */}
         <div className="mb-4 flex items-center">
