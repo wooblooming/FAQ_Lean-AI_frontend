@@ -69,7 +69,7 @@ const Chatbot = () => {
 
         {/* 채팅 박스: 사용자와 챗봇의 대화를 표시 */}
         <div
-          className="w-full border border-gray-300 p-2 overflow-y-auto mt-4 mb-4 relative"
+          className="w-full border border-gray-300 p-2 overflow-y-auto mt-4 mb-4 relative font-sans text-base"
           id="chat-box"
           ref={chatBoxRef} // 스크롤 위치를 제어하기 위해 참조
           style={{height:'550px'}}
@@ -88,7 +88,7 @@ const Chatbot = () => {
               {msg.image ? (
                 <div className="flex flex-col items-center mb-2 ">
                   <img src={msg.image} alt="Chatbot" className="w-20 h-20 object-fill mt-2 bg-yellow-300 rounded-full" />
-                  <p className="text-center mb-3 font-semibold" style={{ whiteSpace: 'pre-line' }}>
+                  <p className="text-center mb-3 font-semibold text-2xl mt-2" style={{ whiteSpace: 'pre-line' }}>
                   {`무물 떡볶이에 대해 
                   무엇이 궁금하신가요?`}
                   </p>
@@ -120,7 +120,7 @@ const Chatbot = () => {
         <div className="flex justify-between">
           <input
             type="text"
-            className="flex-grow p-2 border border-gray-300 rounded mr-2"
+            className="flex-grow p-2 border border-gray-300 rounded mr-2 text-base"
             value={message} // 사용자의 입력 값을 바인딩
             onChange={(e) => setMessage(e.target.value)} // 입력값 변경 시 상태 업데이트
             placeholder="메시지를 입력해주세요!" // 입력 필드의 플레이스홀더

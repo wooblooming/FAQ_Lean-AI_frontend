@@ -8,7 +8,7 @@ const ModalMSG = ({ show, onClose, title, children }) => {
 
     return (
         // 모달의 배경과 위치를 설정하는 컨테이너
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center ">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center font-sans">
             {/* 모달의 콘텐츠를 담는 컨테이너 */}
             <div className="bg-white rounded-lg shadow-lg w-1/3 p-4 relative max-h-fit">
                 {/* 모달 닫기 버튼 */}
@@ -20,9 +20,9 @@ const ModalMSG = ({ show, onClose, title, children }) => {
                     &times;  
                 </button>
                 {/* 모달의 제목이 있을 경우 렌더링 */}
-                {title && <h2 className="text-lg font-semibold mb-4">{title}</h2>}
+                {title && <h2 className="text-2xl font-bold mb-4">{title}</h2>}
                 {/* 모달의 자식 요소들을 표시하는 영역 */}
-                <div className="max-h-[calc(80vh-4rem)] font-medium">
+                <div className="max-h-[calc(80vh-4rem)] font-normal text-base">
                     {children}  {/* 모달의 본문 내용 */}
                 </div>
             </div>

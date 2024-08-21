@@ -73,10 +73,10 @@ function LandingMenu() {
       </div>
 
       {/* 메인 컨텐츠 영역 */}
-      <div id="mainContent" className="flex flex-col justify-center items-start h-screen p-6">
+      <div id="mainContent" className="flex flex-col justify-center items-start h-screen p-6 font-sans">
         <h1 className="text-4xl font-bold text-blue-300">MUMUL</h1>
         <h2 className="text-3xl font-bold mt-2">당신의 번거로움을 줄여주는 챗봇</h2>
-        <p className="mt-4">
+        <p className="my-2">
           AI 기술을 이용해 각종 이용객들의 질문을 더는 고민하지 않게 해드립니다.
         </p>
         <Link href="/login">
@@ -102,10 +102,12 @@ function LandingMenu() {
             </span>
           </button>
           {/* 메뉴 아이템들 */}
-          <p className="mt-2 cursor-pointer text-white" onClick={handleLoginLogoutClick}>Log in / Log out</p>
-          <p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p>
-          <p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p>
-          <p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p>
+          <div className='font-sans'>
+            <p className="mt-2 cursor-pointer text-white" onClick={handleLoginLogoutClick}>Log in / Log out</p>
+            <p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p>
+            <p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p>
+            <p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p>
+          </div>
         </div>
       )}
 

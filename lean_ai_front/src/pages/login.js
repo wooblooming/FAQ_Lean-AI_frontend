@@ -7,21 +7,32 @@ import Image from 'next/image';
 import naverIcon from '../../public/btn_naver.svg';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import googleIcon from '../../public/btn_google.svg';
+import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 
 const Login = () => {
     // 사용자 입력 상태를 관리하는 useState 훅
     const [username, setUsername] = useState(''); // 아이디 입력 상태
     const [password, setPassword] = useState(''); // 비밀번호 입력 상태
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리\
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+
 
     const router = useRouter(); // Next.js 라우터 훅을 통해 페이지 이동 처리
+
+    // 에러 메시지 모달 닫기
+    const handleErrorMessageModalClose = () => {
+        setShowErrorMessageModal(false);
+        setErrorMessage(''); // 에러 메시지 초기화
+    };
 
     // 로그인 버튼 클릭 시 호출되는 함수
     const handleLoginClick = async () => {
         // 입력 검증: 아이디 또는 비밀번호가 입력되지 않은 경우 경고 메시지 표시
         if (!username || !password) {
-            alert('아이디와 비밀번호를 입력해 주세요.');
+            setErrorMessage('아이디와 비밀번호를 입력해 주세요.');
+            setShowErrorMessageModal(true);
             return;
         }
 
@@ -40,11 +51,13 @@ const Login = () => {
                 setIsLoggedIn(true); // 로그인 성공 시 상태 업데이트
                 router.push('/mainPageForPresident'); // 로그인 성공 시 메인 페이지로 리디렉션
             } else {
-                alert('로그인에 실패했습니다.'); // 로그인 실패 시 경고 메시지 표시
+                setErrorMessage('로그인에 실패했습니다.'); // 로그인 실패 시 경고 메시지 표시
+                setShowErrorMessageModal(true);
             }
         } catch (error) {
-            console.error('로그인 오류:', error); // 오류 발생 시 콘솔에 출력
-            alert('로그인 요청 중 오류가 발생했습니다.'); // 오류 메시지 표시
+            // console.error('로그인 오류:', error); // 오류 발생 시 콘솔에 출력
+            setErrorMessage('로그인 요청 중 오류가 발생했습니다.'); // 오류 메시지 표시        
+            setShowErrorMessageModal(true);
         }
     };
 
@@ -124,6 +137,26 @@ const Login = () => {
                         <Link href="/findingPassword" className="text-blue-500">비밀번호 찾기</Link> 
                     </p>
                 </div>
+
+                {/* 에러 메시지 모달 */}
+                <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
+                    <p>
+                        {typeof errorMessage === 'object' ? (
+                            Object.entries(errorMessage).map(([key, value]) => (
+                                <span key={key}>
+                                    {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+                                </span>
+                            ))
+                        ) : (
+                            errorMessage
+                        )}
+                    </p>
+                    <div className="flex justify-center mt-4">
+                        <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                            확인
+                        </button>
+                    </div>
+                </ModalErrorMSG>
             </div>
         </div>
     );
