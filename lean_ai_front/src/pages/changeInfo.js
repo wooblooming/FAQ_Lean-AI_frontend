@@ -137,7 +137,7 @@ export default function ChangeInfo() {
   }, [storeName, storeHours, menuPrices, storeImage]);
 
   return (
-    <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative">
+    <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative font-sans">
       <div className="bg-white rounded-lg p-8 w-full max-w-md text-center mb-2">
         <div className="flex items-center justify-center mb-4">
           {/* 뒤로가기 버튼 */}
@@ -229,7 +229,7 @@ export default function ChangeInfo() {
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
         >
           <div className="modal-content bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="font-bold text-lg mb-4">배너 사진 설정</h2>
+            <h2 className="text-2xl font-bold mb-4">배너 사진 설정</h2>
             <button
               onClick={chooseImage}
               className="block w-full mb-2 py-2 text-black"
@@ -259,7 +259,7 @@ export default function ChangeInfo() {
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
         >
           <div className="modal-content bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="font-bold text-lg mb-4">내용 수정</h2>
+            <h2 className="text-2xl font-bold mb-4">내용 수정</h2>
             <textarea
               id="editTextArea"
               className="w-full h-32 p-2 border border-gray-300 rounded"
