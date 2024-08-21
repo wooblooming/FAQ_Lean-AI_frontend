@@ -1,13 +1,20 @@
-import React from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 
 const PsFinder = () => {
   
-  // 세션에 저장한 값 가져오기
-  const userPassword = sessionStorage.getItem('userPassword');
-  const dateJoined = sessionStorage.getItem('dateJoined');
+  const [userPassword, setUserPassword] = useState(null);
+  const [dateJoined, setDateJoined] = useState(null);
+
+  useEffect(() => {
+    // 클라이언트에서만 sessionStorage 접근
+    const storedUserPassword = sessionStorage.getItem('userPassword');
+    const storedDateJoined = sessionStorage.getItem('dateJoined');
+    
+    setUserPassword(storedUserPassword);
+    setDateJoined(storedDateJoined);
+  }, []); 
 
   return (
     // 페이지 배경 및 창 설정

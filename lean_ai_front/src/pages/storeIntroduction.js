@@ -26,7 +26,7 @@ const StoreIntroduce = () => {
         </div>
 
         <Link href="/chatBot">
-          <img src="/chatbot.png" alt="Chatbot" className="fixed bottom-4 right-4 w-20 h-20 object-fill" />
+          <img src="/chatbot.png" alt="Chatbot" className="fixed bottom-4 right-4 w-20 h-20 object-fill bg-yellow-300 rounded-full" />
         </Link>
       </div>
     </div>
