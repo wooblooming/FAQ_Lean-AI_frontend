@@ -102,9 +102,8 @@ const Signup = () => {
                     dob: dobFormatted,  // 변환된 날짜 형식 사용
                     phone,
                     email,
-                    businessName,
-                    address,
-                    termsAccepted,
+                    store_name: businessName,  // businessName을 store_name으로 변경
+                    store_address: address,    // address를 store_address로 변경
                 }),
             });
 
