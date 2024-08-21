@@ -16,8 +16,7 @@ const NoticePage = () => {
       >
         <nav className="flex items-center mb-4">
           {/* 뒤로가기 버튼 */}
-          <Link href="/mainPageForPresident">
-            <a className="text-gray-600">
+          <Link href="/mainPageForPresident" className="text-gray-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -32,7 +31,6 @@ const NoticePage = () => {
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-            </a>
           </Link>
           <h1 className="text-xl font-bold ml-12">공지사항</h1>
         </nav>
