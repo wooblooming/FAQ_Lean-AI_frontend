@@ -58,9 +58,11 @@ const Login = () => {
             });
 
             const data = await response.json(); // 서버 응답을 JSON 형태로 변환
-            if (data.success) {
-                setIsLoggedIn(true); // 로그인 성공 시 상태 업데이트
-                router.push('/mainPageForPresident'); // 로그인 성공 시 메인 페이지로 리디렉션
+            
+            if (response.ok && data.access) {  // 서버 응답이 성공적이고 access 토큰이 존재하는 경우
+                localStorage.setItem('token', data.access);  // 서버가 반환한 JWT 토큰 저장
+                setIsLoggedIn(true);
+                router.push('/mainPageForPresident');
             } else {
                 setErrorMessage('아이디 또는 비밀번호를 잘못 입력하였습니다. \n 입력하신 내용을 확인해주세요.'); // 로그인 실패 시 경고 메시지 표시
                 setShowErrorMessageModal(true);
