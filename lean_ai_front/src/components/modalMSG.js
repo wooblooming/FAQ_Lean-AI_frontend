@@ -21,7 +21,7 @@ const ModalMSG = ({ show, onClose, title, children }) => {
                 {/* 모달의 제목이 있을 경우 렌더링 */}
                 {title && <h2 className="text-2xl font-bold mb-4">{title}</h2>}
                 {/* 모달의 자식 요소들을 표시하는 영역 */}
-                <div className="max-h-[calc(80vh-4rem)] font-normal text-base">
+                <div className="max-h-[calc(80vh-4rem)] text-center font-normal text-base">
                     {children}  {/* 모달의 본문 내용 */}
                 </div>
             </div>

@@ -156,10 +156,10 @@ function FindId() {
       </div>
 
       {/* 모달창 */}
-      <ModalMSG show={isModalOpen} onClose={handleCloseModal} title="알림">
+      <ModalMSG show={isModalOpen} onClose={handleCloseModal} title=" ">
         {modalMessage}
         <div className="flex justify-center mt-4">
-          <button onClick={handleCloseModal} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+          <button onClick={handleCloseModal} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
             확인
           </button>
         </div>
@@ -179,7 +179,7 @@ function FindId() {
           )}
         </p>
         <div className="flex justify-center mt-4">
-          <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
+          <button onClick={handleErrorMessageModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
             확인
           </button>
         </div>

@@ -114,8 +114,10 @@ const Login = () => {
                     </button>
 
                     {/* 소셜 로그인 옵션 구분선 */}
-                    <div className="text-center text-gray-500 my-4">
-                        <span>또는</span>
+                    <div className="flex flex-row items-center justify-center flex-nowrap">
+                        <hr className="border-gray-300 my-4 w-2/5" />
+                        <span className="text-gray-400 text-sm mx-2 whitespace-nowrap">또는</span>
+                        <hr className="border-gray-300 my-4 w-2/5" />
                     </div>
                     
                     {/* 카카오 계정으로 로그인 버튼 */}

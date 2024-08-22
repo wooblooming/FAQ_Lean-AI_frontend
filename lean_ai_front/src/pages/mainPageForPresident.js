@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
@@ -9,6 +9,12 @@ const MainPageWithMenu = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 표시 여부 관리
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (showLogoutModal) {
+      setMenuOpen(false); // 로그아웃 모달이 열리면 메뉴를 닫음
+    }
+  }, [showLogoutModal]);
 
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
@@ -31,52 +37,65 @@ const MainPageWithMenu = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 relative">
-      <nav className="flex justify-between items-center mb-6">
-        <div className="text-lg font-bold">LEAN AI</div>
-        <div className="flex space-x-4">
-          <Link href="/notification" className="text-xl flex items-center justify-center w-8 h-8">
-            <i className="fas fa-bell"></i>
-          </Link>
-          <button
-            id="menuToggle"
-            className="text-xl flex items-center justify-center w-8 h-8 focus:outline-none"
-            onClick={toggleMenu}
-          >
-            <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
-              <div></div>
-              <div></div>
-              <div></div>
-            </span>
-          </button>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-100 relative w-full flex flex-col">
+      <div id='main' className="flex-grow">
+        <nav className="flex justify-between items-center mb-6">
+          <div className="text-lg font-bold p-4">LEAN AI</div>
+          <div className="flex space-x-4">
+            <Link href="/notification" className="text-xl flex items-center justify-center w-8 h-8">
+              <i className="fas fa-bell"></i>
+            </Link>
+            <button
+              id="menuToggle"
+              className="text-xl flex items-center justify-center w-8 h-8 focus:outline-none"
+              onClick={toggleMenu}
+              style={{ marginRight: '10px' }}
+            >
+              <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
+                <div></div>
+                <div></div>
+                <div></div>
+              </span>
+            </button>
+          </div>
+        </nav>
 
-      <main id="main-content" className="text-center">
-        <h1 className="text-xl font-bold mb-4">
-          사람이 답할 시간은 끝났습니다.
-          <br />
-          이제는 로봇이 응답합니다
-        </h1>
+        <main id="main-content" className="text-center">
+          <h1 className="text-xl font-bold mb-4">
+            사람이 답할 시간은 끝났습니다.
+            <br />
+            이제는 로봇이 응답합니다
+          </h1>
 
-        <div className="bg-gray-300 rounded-lg flex items-center justify-center mb-6 mx-auto" style={{ width: '100%', maxWidth: '500px' }}>
-          <img src="banner_2.png" alt="상단 배너 이미지" className="w-full object-cover rounded-lg" />
-        </div>
+          <div className="bg-gray-300 rounded-lg flex items-center justify-center mb-6 mx-auto" style={{ width: '100%', maxWidth: '500px' }}>
+            <img src="banner_2.png" alt="상단 배너 이미지" className="w-full object-cover rounded-lg" />
+          </div>
 
-        <div className="mb-6 mt-8">
-          <h2 className="text-xl font-bold">무물떡볶이님을</h2>
-          <p className="text-lg">위한 서비스를 준비했어요.</p>
-        </div>
+          <div className="mb-6 mt-8">
+            <h2 className="text-xl font-bold">무물떡볶이님을</h2>
+            <p className="text-lg">위한 서비스를 준비했어요.</p>
+          </div>
 
-        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-          <Link href="/changeInfo" className="bg-gray-300 rounded-lg py-8 w-full text-center">
-            업종 정보 변경
-          </Link>
-          <Link href="/editData" className="bg-gray-300 rounded-lg py-8 w-full text-center">
-            FAQ 데이터 수정하기
-          </Link>
-        </div>
-      </main>
+          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+            <Link href="/changeInfo" className="bg-gray-300 rounded-lg py-8 w-full text-center">
+              업종 정보 변경
+            </Link>
+            <Link href="/editData" className="bg-gray-300 rounded-lg py-8 w-full text-center">
+              FAQ 데이터 수정하기
+            </Link>
+          </div>
+        </main>
+      </div>
+
+      {/* footer */}
+      <footer className='bg-black text-gray-400 text-xs font-sans p-4 w-full flex justify-start items-center mt-8'>
+        <img src='Lean-AI logo.png' className='h-12 mr-4' />
+        <p className='whitespace-pre-line'>
+          {`LEAN AI
+          (우)08789 서울 관악구 봉천로 545 2층 
+          © LEAN AI All Rights Reserved.`}
+        </p>
+      </footer>
 
       {/* 오버레이 메뉴 */}
       {menuOpen && (
@@ -107,19 +126,19 @@ const MainPageWithMenu = () => {
       <ModalMSG 
         show={showLogoutModal} // 모달 표시 여부
         onClose={handleLogoutCancel} // 모달 닫기 함수
-        title="Logout" // 모달 제목
+        title=" " // 모달 제목
       >
-        <div className="flex flex-col items-center z-40">
+        <div className="flex flex-col items-center z-50 relative">
           <p className="mb-4 text-center">로그아웃하시겠습니까?</p>
           <div className="flex space-x-4 mt-2">
             <button
-              className="bg-red-500 text-white px-4 py-2 rounded"
+              className="bg-red-300 text-white px-4 py-2 rounded hover:bg-red-500"
               onClick={handleLogoutConfirm} // 로그아웃 확인 버튼 클릭 시 handleLogoutConfirm 함수 호출
             >
               로그아웃
             </button>
             <button
-              className="bg-gray-300 px-4 py-2 rounded"
+              className="bg-gray-300 text-white px-4 py-2 rounded rounded hover:bg-gray-400"
               onClick={handleLogoutCancel} // 로그아웃 취소 버튼 클릭 시 handleLogoutCancel 함수 호출
             >
               취소
@@ -165,7 +184,7 @@ const MainPageWithMenu = () => {
         .fullscreen-overlay {
           background: rgba(0, 0, 0, 0.5);
           backdrop-filter: blur(10px);
-          z-index: 30;
+          z-index: 20;
         }
 
         .no-blur {
