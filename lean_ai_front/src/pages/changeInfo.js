@@ -4,6 +4,8 @@ import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { useStore } from '../contexts/storeContext';
+import ModalMSG from '../components/modalMSG'; // 에러메시지 모달 컴포넌트
+import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 export default function ChangeInfo() {
   const { storeName, setStoreName, storeHours, setStoreHours, menuPrices, setMenuPrices, storeImage, setStoreImage } = useStore();
@@ -12,6 +14,10 @@ export default function ChangeInfo() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editText, setEditText] = useState('');
   const [currentEditElement, setCurrentEditElement] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [message, setMessage] = useState('');
+  const [showMessageModal, setShowMessageModal] = useState(false); // 에러 메시지 모달 상태
 
   // 데이터를 API에서 가져오는 함수
   const fetchStoreInfo = useCallback(async () => {
@@ -24,6 +30,8 @@ export default function ChangeInfo() {
       setStoreImage(data.store_image);
     } catch (error) {
       console.error("Error fetching store info:", error);
+      setErrorMessage('업장 정보를 불러오는 데 실패했습니다.');
+      setShowErrorMessageModal(true);
     }
   }, [setStoreName, setStoreHours, setMenuPrices, setStoreImage]);
 
@@ -42,12 +50,24 @@ export default function ChangeInfo() {
     setIsImageModalOpen(false);
   }, []);
 
+  // 메시지 모달 닫기
+  const handleMessageModalClose = () => {
+    setShowMessageModal(false);
+    setMessage(''); // 에러 메시지 초기화
+  };
+
+  // 에러 메시지 모달 닫기
+  const handleErrorMessageModalClose = () => {
+    setShowErrorMessageModal(false);
+    setErrorMessage(''); // 에러 메시지 초기화
+  };
+
   // 이미지 선택 함수
   const chooseImage = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    
+
     input.onchange = function (event) {
       if (event.target.files && event.target.files[0]) {
         const file = event.target.files[0];
@@ -55,7 +75,7 @@ export default function ChangeInfo() {
         closeImageModal();
       }
     };
-    
+
     input.click();
   }, [setStoreImage, closeImageModal]);
 
@@ -72,8 +92,8 @@ export default function ChangeInfo() {
       elementId === 'storeName'
         ? storeName
         : elementId === 'storeHours'
-        ? storeHours
-        : menuPrices
+          ? storeHours
+          : menuPrices
     );
     setIsEditModalOpen(true);
   }, [storeName, storeHours, menuPrices]);
@@ -87,19 +107,34 @@ export default function ChangeInfo() {
   const saveChanges = useCallback(() => {
     switch (currentEditElement) {
       case 'storeName':
+        if (!editText.trim()) {
+          setErrorMessage('업장 이름을 입력해주세요.');
+          setShowErrorMessageModal(true);
+          return;
+        }
         setStoreName(editText);
         break;
       case 'storeHours':
+        if (!editText.trim()) {
+          setErrorMessage('영업 시간을 입력해주세요.');
+          setShowErrorMessageModal(true);
+          return;
+        }
         setStoreHours(editText);
         break;
       case 'menuPrices':
+        if (!editText.trim()) {
+          setErrorMessage('메뉴 및 가격 정보를 입력해주세요.');
+          setShowErrorMessageModal(true);
+          return;
+        }
         setMenuPrices(editText);
         break;
       default:
         break;
     }
     closeEditModal();
-  }, [currentEditElement, editText, setStoreName, setStoreHours, setMenuPrices, closeEditModal]);
+  }, [currentEditElement, editText, setStoreName, setStoreHours, setMenuPrices]);
 
   // 모든 변경사항을 서버에 저장하는 함수
   const saveAllChanges = useCallback(async () => {
@@ -129,10 +164,12 @@ export default function ChangeInfo() {
         },
       });
       console.log('Store info updated:', response.data);
-      alert('정보가 성공적으로 저장되었습니다.');
+      setMessage('정보가 성공적으로 저장되었습니다.');
+      setShowMessageModal(true);
     } catch (error) {
       console.error('Error updating store info:', error);
-      alert('정보 저장에 실패했습니다.');
+      setErrorMessage('정보 저장에 실패했습니다. 다시 시도해주세요.');
+      setShowErrorMessageModal(true);
     }
   }, [storeName, storeHours, menuPrices, storeImage]);
 
@@ -275,6 +312,41 @@ export default function ChangeInfo() {
           </div>
         </div>
       )}
+
+      {/* 메시지 모달 */}
+      <ModalMSG
+        show={showMessageModal}
+        onClose={handleMessageModalClose}
+        title=" "
+      >
+        <p style={{ whiteSpace: 'pre-line' }}>
+          {message}
+        </p>
+        <div className="flex justify-center mt-4">
+          <button onClick={handleMessageModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
+            확인
+          </button>
+        </div>
+
+      </ModalMSG>
+
+
+      {/* 에러 메시지 모달 */}
+      <ModalErrorMSG
+        show={showErrorMessageModal}
+        onClose={handleErrorMessageModalClose}
+        title="Error"
+      >
+        <p style={{ whiteSpace: 'pre-line' }}>
+          {errorMessage}
+        </p>
+        <div className="flex justify-center mt-4">
+          <button onClick={handleErrorMessageModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
+            확인
+          </button>
+        </div>
+      </ModalErrorMSG>
+
     </div>
   );
 }
