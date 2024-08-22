@@ -2,17 +2,28 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
+import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 const MainPageWithMenu = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 상태 관리
   const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 표시 여부 관리
   const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 관리
+  const [storeName, setStoreName] = useState(''); // 스토어 이름을 저장할 상태 추가
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
   const router = useRouter();
 
+  // 에러 메시지 모달 닫기
+  const handleErrorMessageModalClose = () => {
+    setShowErrorMessageModal(false);
+    setErrorMessage(''); // 에러 메시지 초기화
+  };
+
   // 스토어 정보를 가져오는 함수
   const fetchStoreInfo = async () => {
+
     try {
       const token = localStorage.getItem('token'); // 저장된 JWT 토큰을 가져옴
       console.log('Token:', token);
@@ -22,17 +33,19 @@ const MainPageWithMenu = () => {
       }
 
       const response = await fetch('http://127.0.0.1:8000/api/user-stores/', {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // 토큰을 헤더에 포함
-        }
+          'Authorization': `Bearer ${token}`, // 토큰을 헤더에 포함
+        },
       });
+      
       if (response.status === 401) {
-        // 토큰 만료 또는 인증 실패
-        
-        
-        
+       // 토큰 만료 또는 인증 실패
+        setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
+        setShowErrorMessageModal(true);
+        localStorage.removeItem('token'); // 만료된 토큰 삭제
+        router.push('/login'); // 로그인 페이지로 리디렉션
         return;
       }
 
@@ -44,11 +57,12 @@ const MainPageWithMenu = () => {
       if (storeData && storeData.length > 0) {
         setStoreName(storeData[0].store_name); // 첫 번째 스토어의 이름을 설정
       } else {
-        setStoreName('No Store Available'); // 스토어가 없을 경우 처리
+        setStoreName(' '); // 스토어가 없을 경우 처리
       }
     } catch (error) {
       console.error('Error:', error);
-      setStoreName('Error loading store data');
+      setErrorMessage('로딩 중에 에러가 발생 했습니다.');
+      setShowErrorMessageModal(true);
     }
   };
 
@@ -204,6 +218,28 @@ const MainPageWithMenu = () => {
           </div>
         </div>
       </ModalMSG>
+
+      {/* 에러 메시지 모달 */}
+      <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
+        <p style={{ whiteSpace: 'pre-line' }}>
+          {typeof errorMessage === 'object' ? (
+            Object.entries(errorMessage).map(([key, value]) => (
+              <span key={key}>
+                {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+              </span>
+            ))
+          ) : (
+            errorMessage
+          )}
+        </p>
+        <div className="flex justify-center mt-4">
+          <button onClick={handleErrorMessageModalClose}
+            className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
+          >
+            확인
+          </button>
+        </div>
+      </ModalErrorMSG>
 
       <style jsx>{`
         .menu-icon {
