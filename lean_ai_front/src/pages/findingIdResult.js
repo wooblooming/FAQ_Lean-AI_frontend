@@ -1,12 +1,18 @@
-import React from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const IdFinder = () => {
-  
-  // 세션에 저장한 값 가져오기
-  const userId = sessionStorage.getItem('userId');
-  const dateJoined = sessionStorage.getItem('dateJoined');
+  const [userId, setUserId] = useState(null);
+  const [dateJoined, setDateJoined] = useState(null);
+
+  useEffect(() => {
+    // 클라이언트에서만 sessionStorage 접근
+    const storedUserId = sessionStorage.getItem('userId');
+    const storedDateJoined = sessionStorage.getItem('dateJoined');
+    
+    setUserId(storedUserId);
+    setDateJoined(storedDateJoined);
+  }, []);
 
   return (
     <div className="bg-gray-100 flex items-center justify-center h-screen">
