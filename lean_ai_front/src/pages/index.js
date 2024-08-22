@@ -9,33 +9,16 @@ function LandingMenu() {
   // useState를 사용해 상태를 관리
   const [menuOpen, setMenuOpen] = useState(false); // 메뉴가 열려 있는지 상태 관리
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 표시 여부 관리
 
   // 메뉴 열기/닫기 토글 함수
   const toggleMenu = () => {
     setMenuOpen(!menuOpen); // menuOpen 상태를 반전시켜 메뉴 열림/닫힘을 제어
   };
 
-  // 로그인/로그아웃 버튼 클릭 시 호출되는 함수
-  const handleLoginLogoutClick = () => {
-    if (isLoggedIn) {
-      setShowLogoutModal(true); // 로그인 상태이면 로그아웃 모달을 표시
-    } else {
-      router.push('/login'); // 로그인이 안 되어있으면 로그인 페이지로 이동
-    }
-  };
-
-  // 로그아웃 확인 버튼 클릭 시 호출되는 함수
-  const handleLogoutConfirm = () => {
-    setIsLoggedIn(false); // 로그인 상태를 false로 변경
-    setShowLogoutModal(false); // 로그아웃 모달을 숨김
-    router.push('/'); // 홈 페이지로 이동
-  };
-
-  // 로그아웃 취소 버튼 클릭 시 호출되는 함수
-  const handleLogoutCancel = () => {
-    setShowLogoutModal(false); // 로그아웃 모달을 숨김
-  };
+   // 로그인 이동 함수
+   const goToLogin = () => {
+    router.push('/login');
+  }
 
   // 마이 페이지 이동 함수
   const goToMypage = () => {
@@ -73,10 +56,10 @@ function LandingMenu() {
       </div>
 
       {/* 메인 컨텐츠 영역 */}
-      <div id="mainContent" className="flex flex-col justify-center items-start h-screen p-6">
+      <div id="mainContent" className="flex flex-col justify-center items-start h-screen p-6 font-sans">
         <h1 className="text-4xl font-bold text-blue-300">MUMUL</h1>
         <h2 className="text-3xl font-bold mt-2">당신의 번거로움을 줄여주는 챗봇</h2>
-        <p className="mt-4">
+        <p className="my-2">
           AI 기술을 이용해 각종 이용객들의 질문을 더는 고민하지 않게 해드립니다.
         </p>
         <Link href="/login">
@@ -102,30 +85,11 @@ function LandingMenu() {
             </span>
           </button>
           {/* 메뉴 아이템들 */}
-          <p className="mt-2 cursor-pointer text-white" onClick={handleLoginLogoutClick}>Log in / Log out</p>
-          <p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p>
-          <p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p>
-          <p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p>
-        </div>
-      )}
-
-      {/* 로그아웃 모달 */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <p className="mb-4">로그아웃하시겠습니까?</p>
-            <button
-              className="bg-red-500 text-white px-4 py-2 rounded mr-2"
-              onClick={handleLogoutConfirm} // 로그아웃 확인 버튼 클릭 시 handleLogoutConfirm 함수 호출
-            >
-              로그아웃
-            </button>
-            <button
-              className="bg-gray-300 px-4 py-2 rounded"
-              onClick={handleLogoutCancel} // 로그아웃 취소 버튼 클릭 시 handleLogoutCancel 함수 호출
-            >
-              취소
-            </button>
+          <div className='font-sans'>
+            <p className="mt-2 cursor-pointer text-white" onClick={goToLogin}>Log in / Log out</p>
+            <p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p>
+            <p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p>
+            <p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p>
           </div>
         </div>
       )}

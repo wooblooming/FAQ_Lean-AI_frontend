@@ -26,7 +26,7 @@ const MyPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center relative">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center relative font-sans">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center relative">
         {/* 뒤로가기 버튼 */}
         <Link href="/mainPageForPresident" className="absolute top-4 left-4 text-gray-500 focus:outline-none">
@@ -81,10 +81,10 @@ const MyPage = () => {
       {isImageModalOpen && (
         <div
           id="imageModal"
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 "
         >
           <div className="modal-content bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="font-bold text-lg mb-4">프로필 사진 설정</h2>
+            <h2 className="text-2xl font-bold mb-4">프로필 사진 설정</h2>
             <input
               type="file"
               accept="image/*"
