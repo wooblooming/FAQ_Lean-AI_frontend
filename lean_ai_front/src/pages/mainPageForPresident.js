@@ -7,8 +7,63 @@ const MainPageWithMenu = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 상태 관리
   const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 표시 여부 관리
+  const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 관리
 
   const router = useRouter();
+
+  // 스토어 정보를 가져오는 함수
+  const fetchStoreInfo = async () => {
+    try {
+      const token = localStorage.getItem('token'); // 저장된 JWT 토큰을 가져옴
+      console.log('Token:', token);
+      if (!token) {
+        router.push('/login'); // 토큰이 없으면 로그인 페이지로 리디렉션
+        return;
+      }
+
+      const response = await fetch('http://127.0.0.1:8000/api/user-stores/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // 토큰을 헤더에 포함
+        }
+      });
+      if (response.status === 401) {
+        // 토큰 만료 또는 인증 실패
+        
+        
+        
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch store information: ${response.statusText}`);
+      }
+
+      const storeData = await response.json();
+      if (storeData && storeData.length > 0) {
+        setStoreName(storeData[0].store_name); // 첫 번째 스토어의 이름을 설정
+      } else {
+        setStoreName('No Store Available'); // 스토어가 없을 경우 처리
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setStoreName('Error loading store data');
+    }
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768); // 화면 너비가 768px 이하이면 모바일로 간주
+    };
+
+    handleResize(); // 컴포넌트 마운트 시 초기화
+    window.addEventListener('resize', handleResize); // 화면 크기 변경 시 이벤트 리스너 등록
+
+    fetchStoreInfo(); // 컴포넌트가 마운트될 때 스토어 정보를 가져옴
+
+    return () => window.removeEventListener('resize', handleResize); // 클린업
+  }, []);
 
   useEffect(() => {
     if (showLogoutModal) {
@@ -36,9 +91,10 @@ const MainPageWithMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
+
   return (
-    <div className="min-h-screen bg-gray-100 relative w-full flex flex-col">
-      <div id='main' className="flex-grow">
+    <div className="min-h-screen bg-gray-100 relative w-full flex flex-col ">
+      <div id='main' className="flex-grow p-4">
         <nav className="flex justify-between items-center mb-6">
           <div className="text-lg font-bold p-4">LEAN AI</div>
           <div className="flex space-x-4">
@@ -72,7 +128,7 @@ const MainPageWithMenu = () => {
           </div>
 
           <div className="mb-6 mt-8">
-            <h2 className="text-xl font-bold">무물떡볶이님을</h2>
+            <h2 className="text-xl font-bold">{storeName}님을</h2>
             <p className="text-lg">위한 서비스를 준비했어요.</p>
           </div>
 
@@ -87,15 +143,17 @@ const MainPageWithMenu = () => {
         </main>
       </div>
 
-      {/* footer */}
-      <footer className='bg-black text-gray-400 text-xs font-sans p-4 w-full flex justify-start items-center mt-8'>
-        <img src='Lean-AI logo.png' className='h-12 mr-4' />
-        <p className='whitespace-pre-line'>
-          {`LEAN AI
-          (우)08789 서울 관악구 봉천로 545 2층 
-          © LEAN AI All Rights Reserved.`}
-        </p>
-      </footer>
+      {/* footer: 모바일에서는 표시하지 않음 */}
+      {!isMobile && (
+        <footer className='bg-black text-gray-400 text-xs font-sans p-4 w-full flex justify-start items-center mt-8'>
+          <img src='Lean-AI logo.png' className='h-12 mr-4' />
+          <p className='whitespace-pre-line'>
+            {`LEAN AI
+            (우)08789 서울 관악구 봉천로 545 2층 
+            © LEAN AI All Rights Reserved.`}
+          </p>
+        </footer>
+      )}
 
       {/* 오버레이 메뉴 */}
       {menuOpen && (
@@ -123,7 +181,7 @@ const MainPageWithMenu = () => {
       )}
 
       {/* 로그아웃 모달 */}
-      <ModalMSG 
+      <ModalMSG
         show={showLogoutModal} // 모달 표시 여부
         onClose={handleLogoutCancel} // 모달 닫기 함수
         title=" " // 모달 제목
@@ -190,7 +248,15 @@ const MainPageWithMenu = () => {
         .no-blur {
           backdrop-filter: none;
         }
+
+        /* 모바일에서 footer 숨기기 */
+        @media (max-width: 768px) {
+          footer {
+            display: none;
+          }
+        }
       `}</style>
+
     </div>
   );
 };
