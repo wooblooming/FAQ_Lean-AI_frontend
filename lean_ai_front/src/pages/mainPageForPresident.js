@@ -11,6 +11,47 @@ const MainPageWithMenu = () => {
 
   const router = useRouter();
 
+  // 스토어 정보를 가져오는 함수
+  const fetchStoreInfo = async () => {
+    try {
+      const token = localStorage.getItem('token'); // 저장된 JWT 토큰을 가져옴
+      console.log('Token:', token);
+      if (!token) {
+        router.push('/login'); // 토큰이 없으면 로그인 페이지로 리디렉션
+        return;
+      }
+
+      const response = await fetch('http://127.0.0.1:8000/api/user-stores/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // 토큰을 헤더에 포함
+        }
+      });
+      if (response.status === 401) {
+        // 토큰 만료 또는 인증 실패
+        
+        
+        
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch store information: ${response.statusText}`);
+      }
+
+      const storeData = await response.json();
+      if (storeData && storeData.length > 0) {
+        setStoreName(storeData[0].store_name); // 첫 번째 스토어의 이름을 설정
+      } else {
+        setStoreName('No Store Available'); // 스토어가 없을 경우 처리
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setStoreName('Error loading store data');
+    }
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768); // 화면 너비가 768px 이하이면 모바일로 간주
@@ -18,6 +59,8 @@ const MainPageWithMenu = () => {
 
     handleResize(); // 컴포넌트 마운트 시 초기화
     window.addEventListener('resize', handleResize); // 화면 크기 변경 시 이벤트 리스너 등록
+
+    fetchStoreInfo(); // 컴포넌트가 마운트될 때 스토어 정보를 가져옴
 
     return () => window.removeEventListener('resize', handleResize); // 클린업
   }, []);
