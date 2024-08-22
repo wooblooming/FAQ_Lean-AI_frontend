@@ -128,7 +128,7 @@ const MainPageWithMenu = () => {
           </div>
 
           <div className="mb-6 mt-8">
-            <h2 className="text-xl font-bold">무물떡볶이님을</h2>
+            <h2 className="text-xl font-bold">{storeName}님을</h2>
             <p className="text-lg">위한 서비스를 준비했어요.</p>
           </div>
 
