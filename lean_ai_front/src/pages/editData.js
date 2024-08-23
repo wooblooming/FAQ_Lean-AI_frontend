@@ -1,16 +1,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
-import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 export default function DataEditPage() {
   const [fileName, setFileName] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-  const [title, setTitle] = useState(''); // 제목 상태
-  const [content, setContent] = useState(''); // 내용 상태
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -21,46 +16,14 @@ export default function DataEditPage() {
     }
   };
 
-  const openModal = async () => {
-    // 제목이나 내용이 비어 있을 경우 에러 모달 표시
-    if (!title.trim() ) {
-      setErrorMessage('제목을 남겨주세요.');
-      setShowErrorMessageModal(true);
-      return;
-    }
-    if (!content.trim()) {
-      setErrorMessage('수정 요청 사항을 적어 주세요.');
-      setShowErrorMessageModal(true);
-      return;
-    }
-
-    try {
-      // 요청 처리 함수
-      await handleSubmit(); 
-
-      // 요청이 성공하면 확인 모달 표시
-      setIsModalOpen(true);
-    } catch (error) {
-      // 요청 실패 시 에러 모달 표시
-      setErrorMessage('수정 요청 사항이 전달되지 못했습니다. \n 다시 시도해주세요.');
-      setShowErrorMessageModal(true);
-    }
-  };
-
-  const handleSubmit = () => {
-    
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error('Request failed')); // 요청 실패 시 에러 발생
-      }, 1000);
-    });
+  const openModal = () => {
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-<<<<<<< HEAD
   // 1. 파일만 업로드
   const handleFileUpload = async () => {
     const formData = new FormData();
@@ -147,16 +110,10 @@ export default function DataEditPage() {
     } catch (error) {
       console.error('요청 전송 중 오류 발생:', error);
     }
-=======
-  // 에러 메시지 모달 닫기
-  const handleErrorMessageModalClose = () => {
-    setShowErrorMessageModal(false);
-    setErrorMessage(''); // 에러 메시지 초기화
->>>>>>> 47ef5010f967a4b4a59e740ab93def1250bdc017
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center font-sans">
+    <div className="min-h-screen bg-gray-200 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs">
         {/* 뒤로가기 버튼 및 제목을 동일선상에 배치 */}
         <div className="mb-4 flex items-center">
@@ -197,23 +154,14 @@ export default function DataEditPage() {
             type="text" 
             placeholder="제목 남기기" 
             className="w-full p-3 rounded-lg border mb-4" 
-<<<<<<< HEAD
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-=======
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} // 제목 상태 업데이트
->>>>>>> 47ef5010f967a4b4a59e740ab93def1250bdc017
           />
           <textarea 
             placeholder="내용 입력" 
             className="w-full p-3 rounded-lg border h-32 resize-none"
             value={content}
-<<<<<<< HEAD
             onChange={(e) => setContent(e.target.value)}
-=======
-            onChange={(e) => setContent(e.target.value)} // 내용 상태 업데이트
->>>>>>> 47ef5010f967a4b4a59e740ab93def1250bdc017
           ></textarea>
           <p className="text-sm text-gray-500 mt-2">*파일이 없으시더라도 수정 요청이 가능합니다.</p>
         </div>
@@ -226,7 +174,7 @@ export default function DataEditPage() {
         </div>
       </div>
 
-      {/* 요청 완료 모달 창 */}
+      {/* 모달 창 */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
@@ -239,22 +187,6 @@ export default function DataEditPage() {
           </div>
         </div>
       )}
-
-      {/* 에러 메시지 모달 */}
-      <ModalErrorMSG 
-        show={showErrorMessageModal} 
-        onClose={handleErrorMessageModalClose} 
-        title="Error"
-      >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {errorMessage}
-        </p>
-        <div className="flex justify-center mt-4">
-            <button onClick={handleErrorMessageModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
-              확인
-            </button>
-        </div>
-      </ModalErrorMSG>
     </div>
   );
 }
