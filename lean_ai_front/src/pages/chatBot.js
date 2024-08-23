@@ -124,7 +124,7 @@ const Chatbot = () => {
                       {msg.buttons.map((buttonText, buttonIndex) => (
                         <button 
                           key={buttonIndex} 
-                          className="text-white bg-blue-300 rounded-lg mx-1 mb-2 px-1 w-28 h-12"
+                          className="text-white bg-blue-300 rounded-lg mx-1 mb-2 px-1 min-h-14 min-w-24 whitespace-pre-wrap "
                           onClick={() => setMessage(buttonText)}  // 버튼 클릭 시 메시지에 해당 텍스트를 설정
                         >
                           {buttonText}
