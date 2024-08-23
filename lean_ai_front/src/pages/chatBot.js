@@ -38,7 +38,7 @@ const Chatbot = () => {
       const data = await response.json();
       setChatMessages(prevMessages => [
         ...prevMessages,
-        { sender: 'bot', text: data.response }
+        { sender: 'bot', text: data.response, buttons: data.chips }  // chips 데이터를 buttons로 추가
       ]);
 
     } catch (error) {
@@ -69,6 +69,13 @@ const Chatbot = () => {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [chatMessages]);
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // 기본 Enter 키의 동작(줄바꿈)을 방지
+      sendMessage(); // 메시지 전송 함수 호출
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -107,7 +114,7 @@ const Chatbot = () => {
               ) : (
                 <div className={msg.sender === 'user' ? 'text-right' : 'text-left'}>
                   <div
-                    className={`${styles[msg.error ? 'error-bubble' : msg.sender === 'user' ? 'user-bubble' : 'bot-bubble']}`}
+                    className={`${styles[msg.error ? 'error-bubble' : msg.sender === 'user' ? 'user-bubble' : 'bot-bubble']} whitespace-pre-wrap`}
                   >
                     {msg.text}
                   </div>
@@ -115,7 +122,11 @@ const Chatbot = () => {
                   {msg.buttons && (
                     <div className="flex flex-wrap justify-center items-center bg-transparent">
                       {msg.buttons.map((buttonText, buttonIndex) => (
-                        <button key={buttonIndex} className="text-white bg-blue-300 rounded-lg mx-1 mb-2 px-1 w-28 h-12">
+                        <button 
+                          key={buttonIndex} 
+                          className="text-white bg-blue-300 rounded-lg mx-1 mb-2 px-1 w-28 h-12"
+                          onClick={() => setMessage(buttonText)}  // 버튼 클릭 시 메시지에 해당 텍스트를 설정
+                        >
                           {buttonText}
                         </button>
                       ))}
@@ -133,6 +144,7 @@ const Chatbot = () => {
             className="flex-grow p-2 border border-gray-300 rounded mr-2 text-base"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}  // Enter 키를 처리하는 이벤트 핸들러 추가
             placeholder="메시지를 입력해주세요!"
           />
           <button
