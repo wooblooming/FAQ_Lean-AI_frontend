@@ -1,62 +1,85 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import { useStore } from '../contexts/storeContext';
 import ModalMSG from '../components/modalMSG'; // 에러메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
-export default function ChangeInfo() {
-  const { storeName, setStoreName, storeHours, setStoreHours, menuPrices, setMenuPrices, storeImage, setStoreImage } = useStore();
+export default function ChangeInfo({ }) {
+  // 상태 관리
+  const [storeId, setStoreId] = useState(null);
+  const [storeName, setStoreName] = useState('');
+  const [storeHours, setStoreHours] = useState('');
+  const [menuPrices, setMenuPrices] = useState('');
+  const [storeImage, setStoreImage] = useState('');
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editText, setEditText] = useState('');
   const [currentEditElement, setCurrentEditElement] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [message, setMessage] = useState('');
-  const [showMessageModal, setShowMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
-  // 데이터를 API에서 가져오는 함수
+  // 첫 번째 스토어의 데이터를 API에서 가져오는 함수
   const fetchStoreInfo = useCallback(async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/storeinfo/1/');
-      const data = response.data;
-      setStoreName(data.store_name);
-      setStoreHours(data.store_hours);
-      setMenuPrices(data.menu_prices);
-      setStoreImage(data.store_image);
+      const response = await fetch('http://127.0.0.1:8000/api/user-stores/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+  
+      console.log("응답 상태 코드:", response.status);  // 상태 코드 출력
+  
+      if (!response.ok) {
+        const errorDetail = await response.text();  // 오류 응답 본문 출력
+        console.error("오류 응답 본문:", errorDetail);
+        throw new Error('첫 번째 업장 정보를 불러오는 데 실패했습니다.');
+      }
+  
+      const data = await response.json();
+      console.log("API 응답 데이터:", data);  // 데이터 구조 확인
+  
+      // store_id 필드를 올바르게 참조
+      if (data && data.store_id) {
+        setStoreId(data.store_id);  // store_id를 API 응답에서 가져와 설정
+        setStoreName(data.store_name || ""); // 빈 문자열로 설정
+        setStoreHours(data.opening_hours || ""); // 빈 문자열로 설정
+        setMenuPrices(data.menu_price || ""); // 빈 문자열로 설정
+        setStoreImage(data.banner || ""); // 빈 문자열로 설정
+      } else {
+        throw new Error('스토어 ID를 가져오지 못했습니다.');
+      }
     } catch (error) {
       console.error("Error fetching store info:", error);
-      setErrorMessage('업장 정보를 불러오는 데 실패했습니다.');
+      setErrorMessage('첫 번째 업장 정보를 불러오는 데 실패했습니다.');
       setShowErrorMessageModal(true);
     }
-  }, [setStoreName, setStoreHours, setMenuPrices, setStoreImage]);
+  }, []);
 
-  // 컴포넌트가 마운트될 때 데이터를 가져옴
+  // 컴포넌트가 마운트될 때 첫 번째 스토어의 데이터를 가져옴
   useEffect(() => {
     fetchStoreInfo();
   }, [fetchStoreInfo]);
 
-  // 모달을 여는 함수
+  // 모달을 여닫는 함수들
   const openImageModal = useCallback(() => {
     setIsImageModalOpen(true);
   }, []);
 
-  // 모달을 닫는 함수
   const closeImageModal = useCallback(() => {
     setIsImageModalOpen(false);
   }, []);
 
-  // 메시지 모달 닫기
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
     setMessage(''); // 에러 메시지 초기화
   };
 
-  // 에러 메시지 모달 닫기
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
     setErrorMessage(''); // 에러 메시지 초기화
@@ -77,13 +100,13 @@ export default function ChangeInfo() {
     };
 
     input.click();
-  }, [setStoreImage, closeImageModal]);
+  }, [closeImageModal]);
 
   // 기본 이미지를 설정하는 함수
   const applyDefaultImage = useCallback(() => {
     setStoreImage('/test_image.png');
     closeImageModal();
-  }, [setStoreImage, closeImageModal]);
+  }, [closeImageModal]);
 
   // 텍스트 수정 모달을 여는 함수
   const openEditModal = useCallback((elementId) => {
@@ -134,36 +157,45 @@ export default function ChangeInfo() {
         break;
     }
     closeEditModal();
-  }, [currentEditElement, editText, setStoreName, setStoreHours, setMenuPrices]);
+  }, [currentEditElement, editText]);
 
   // 모든 변경사항을 서버에 저장하는 함수
   const saveAllChanges = useCallback(async () => {
     try {
       const formData = new FormData();
-      formData.append('store_name', storeName);
-      formData.append('store_hours', storeHours);
-      formData.append('menu_prices', menuPrices);
-
+  
+      formData.append('store_name', storeName || "");       
+      formData.append('opening_hours', storeHours || "");   
+      formData.append('menu_price', menuPrices || "");      
+  
       if (storeImage) {
         if (storeImage instanceof File) {
-          formData.append('store_image', storeImage);
+          formData.append('banner', storeImage);  // 파일 객체로 banner에 추가
         } else if (typeof storeImage === 'string') {
-          if (storeImage.startsWith('data:') || storeImage.startsWith('blob:')) {
-            const response = await fetch(storeImage);
-            const blob = await response.blob();
-            formData.append('store_image', blob, 'image.jpg');
-          } else {
-            // 이미 서버에 있는 이미지 URL인 경우, 변경되지 않았으므로 전송하지 않음
-          }
+          // 이미 문자열로 된 이미지를 파일로 변환하여 업로드하는 로직
+          const response = await fetch(storeImage);
+          const blob = await response.blob();
+          formData.append('banner', blob, 'image.jpg');
+        } else {
+          console.error('Invalid image format');
+          return;
         }
       }
-
-      const response = await axios.put('http://127.0.0.1:8000/api/storeinfo/1/', formData, {
+  
+      const response = await fetch(`http://127.0.0.1:8000/api/user-stores/${storeId}/`, {
+        method: 'PUT',
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
+        body: formData,
       });
-      console.log('Store info updated:', response.data);
+  
+      if (!response.ok) {
+        throw new Error('정보 저장에 실패했습니다.');
+      }
+  
+      const result = await response.json();
+      console.log('Store info updated:', result);
       setMessage('정보가 성공적으로 저장되었습니다.');
       setShowMessageModal(true);
     } catch (error) {
@@ -171,7 +203,9 @@ export default function ChangeInfo() {
       setErrorMessage('정보 저장에 실패했습니다. 다시 시도해주세요.');
       setShowErrorMessageModal(true);
     }
-  }, [storeName, storeHours, menuPrices, storeImage]);
+  }, [storeId, storeName, storeHours, menuPrices, storeImage]);
+  
+
 
   return (
     <div className="bg-white flex flex-col items-center min-h-screen overflow-y-auto relative font-sans">
