@@ -13,11 +13,12 @@ const Chatbot = () => {
   const chatBoxRef = useRef(null);
 
   const sendMessage = async () => {
-    if (message.trim() === '') return;
+    const trimmedMessage = message.trim(); // 공백을 제거한 메시지를 사용
+    if (trimmedMessage === '') return;  // 공백 메시지를 필터링
 
     setChatMessages(prevMessages => [
       ...prevMessages,
-      { sender: 'user', text: message }
+      { sender: 'user', text: trimmedMessage }
     ]);
 
     setMessage('');
@@ -28,7 +29,7 @@ const Chatbot = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message }) 
+        body: JSON.stringify({ message: trimmedMessage }) 
       });
 
       if (!response.ok) {
@@ -36,31 +37,24 @@ const Chatbot = () => {
       }
 
       const data = await response.json();
+
+      // 공백이 아닌 bot 응답을 개별적으로 추가
+      const newMessages = data.responses
+        .filter(text => text && text.trim() !== '')  // 공백 메시지를 필터링
+        .map(text => ({ sender: 'bot', text }));
+
       setChatMessages(prevMessages => [
         ...prevMessages,
-        { sender: 'bot', text: data.response, buttons: data.chips }  // chips 데이터를 buttons로 추가
+        ...newMessages,
+        ...(data.chips.length > 0 ? [{ sender: 'bot', buttons: data.chips }] : [])
       ]);
 
     } catch (error) {
-      if (error.name === 'TypeError') {
-        console.error('There was a problem with the fetch operation:', error);
-        setChatMessages(prevMessages => [
-          ...prevMessages,
-          { sender: 'bot', text: '네트워크 문제로 인해 요청을 처리할 수 없습니다. 다시 시도해주세요.', error: true }
-        ]);
-      } else if (error.message.startsWith('HTTP error')) {
-        console.error('Server returned an error:', error);
-        setChatMessages(prevMessages => [
-          ...prevMessages,
-          { sender: 'bot', text: `서버에서 오류가 발생했습니다. 상태 코드: ${error.message.split(': ')[1]}`, error: true }
-        ]);
-      } else {
-        console.error('Unexpected error:', error);
-        setChatMessages(prevMessages => [
-          ...prevMessages,
-          { sender: 'bot', text: '예기치 않은 오류가 발생했습니다. 다시 시도해주세요.', error: true }
-        ]);
-      }
+      console.error('Unexpected error:', error);
+      setChatMessages(prevMessages => [
+        ...prevMessages,
+        { sender: 'bot', text: '예기치 않은 오류가 발생했습니다. 다시 시도해주세요.', error: true }
+      ]);
     }
   };
 
@@ -113,18 +107,20 @@ const Chatbot = () => {
                 </div>
               ) : (
                 <div className={msg.sender === 'user' ? 'text-right' : 'text-left'}>
-                  <div
-                    className={`${styles[msg.error ? 'error-bubble' : msg.sender === 'user' ? 'user-bubble' : 'bot-bubble']} whitespace-pre-wrap`}
-                  >
-                    {msg.text}
-                  </div>
+                  {msg.text && msg.text.trim() !== '' && (
+                    <div
+                      className={`${styles[msg.error ? 'error-bubble' : msg.sender === 'user' ? 'user-bubble' : 'bot-bubble']} whitespace-pre-wrap`}
+                    >
+                      {msg.text}
+                    </div>
+                  )}
 
                   {msg.buttons && (
                     <div className="flex flex-wrap justify-center items-center bg-transparent">
                       {msg.buttons.map((buttonText, buttonIndex) => (
                         <button 
                           key={buttonIndex} 
-                          className="text-white bg-blue-300 rounded-lg mx-1 mb-2 px-1 w-28 h-12"
+                          className="text-white bg-blue-300 rounded-lg mx-1 mb-2 px-2 min-h-14 min-w-24 whitespace-pre-wrap"
                           onClick={() => setMessage(buttonText)}  // 버튼 클릭 시 메시지에 해당 텍스트를 설정
                         >
                           {buttonText}
