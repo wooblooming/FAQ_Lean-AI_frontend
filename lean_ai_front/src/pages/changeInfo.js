@@ -26,7 +26,7 @@ export default function ChangeInfo({ }) {
   const fetchStoreInfo = useCallback(async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/api/user-stores/', {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -44,13 +44,14 @@ export default function ChangeInfo({ }) {
       const data = await response.json();
       console.log("API 응답 데이터:", data);  // 데이터 구조 확인
   
-      // store_id 필드를 올바르게 참조
-      if (data && data.store_id) {
-        setStoreId(data.store_id);  // store_id를 API 응답에서 가져와 설정
-        setStoreName(data.store_name || ""); // 빈 문자열로 설정
-        setStoreHours(data.opening_hours || ""); // 빈 문자열로 설정
-        setMenuPrices(data.menu_price || ""); // 빈 문자열로 설정
-        setStoreImage(data.banner || ""); // 빈 문자열로 설정
+      // 첫 번째 스토어 데이터를 설정
+      if (Array.isArray(data) && data.length > 0) {
+        const firstStore = data[0];
+        setStoreId(firstStore.store_id || null);  // store_id를 API 응답에서 가져와 설정
+        setStoreName(firstStore.store_name || ""); // 빈 문자열로 설정
+        setStoreHours(firstStore.opening_hours || ""); // 빈 문자열로 설정
+        setMenuPrices(firstStore.menu_price || ""); // 빈 문자열로 설정
+        setStoreImage(firstStore.banner || ""); // 빈 문자열로 설정
       } else {
         throw new Error('스토어 ID를 가져오지 못했습니다.');
       }
