@@ -90,6 +90,10 @@ export default function Chatbot() {
             <style jsx global>{`
                 df-messenger {
                     --df-messenger-button-image-url: none; /* 기본 버튼 이미지를 숨김 */
+                    --df-messenger-font-color: #000;
+                    --df-messenger-chat-background: #f3f6fc;
+                    --df-messenger-message-user-background: #d3e3fd;
+                    --df-messenger-message-bot-background: #fff;
                 }
 
                 df-messenger .bubble {
