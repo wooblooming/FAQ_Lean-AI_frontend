@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import Loading from '../components/loading'; // loading 컴포넌트를 import
-
+import Loading from '../components/loading'; // 로딩 컴포넌트 import
+import Chatbot from './chatBotMSG'; // 챗봇 컴포넌트 import
 
 const StoreIntroduce = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const StoreIntroduce = () => {
       const fetchStoreData = async () => {
         try {
           const response = await axios.post(`http://127.0.0.1:8000/api/storesinfo/`, {
-            store_id: id,
+            store_id: id, // store_id를 POST 요청으로 전송
           });
           setStoreData(response.data);
         } catch (error) {
@@ -30,7 +30,7 @@ const StoreIntroduce = () => {
   }, [id]);
 
   if (isLoading) {
-    return <Loading />; // isLoading이 true일 때 Loading 컴포넌트를 렌더링
+    return <Loading />; // 로딩 중일 때 Loading 컴포넌트를 렌더링
   }
 
   if (!storeData) {
@@ -52,6 +52,8 @@ const StoreIntroduce = () => {
         <div className="bg-sky-100 flex flex-col rounded-lg items-center text-center w-64 mb-4 pt-3 px-2">
           <p className="mt-2 mb-4 text-xl">{storeData.menu_prices}</p>
         </div>
+        
+        <Chatbot />
       </div>
     </div>
   );
