@@ -26,32 +26,39 @@ function FindId() {
   };
 
   // 인증번호 전송
-  const handleSendCode = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/send-code/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phone: formData.phone, type: 'findidpw' }),
-      });
+const handleSendCode = async () => {
+  const phoneRegex = /^\d{11}$/;  // 숫자 11자리만 허용하는 정규식
+  if (!phoneRegex.test(formData.phone)) {
+    setErrorMessage('- 제외 숫자만 입력하세요');
+    setShowErrorMessageModal(true);
+    return;  // 유효성 검사를 통과하지 못하면 함수 종료
+  }
 
-      const data = await response.json();
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/send-code/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phone: formData.phone, type: 'findidpw' }),
+    });
 
-      if (data.success) {
-        setCodeSent(true);
-        setModalMessage('인증번호가 발송되었습니다!');
-        setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
-      } else {
-        setErrorMessage(data.message);
-        setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
-      }
-    } catch (error) {
-      console.error('인증 번호 요청 오류:', error);
-      setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+    const data = await response.json();
+
+    if (data.success) {
+      setCodeSent(true);
+      setModalMessage('인증번호가 발송되었습니다!');
+      setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
+    } else {
+      setErrorMessage(data.message);
       setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
     }
-  };
+  } catch (error) {
+    console.error('인증 번호 요청 오류:', error);
+    setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+    setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+  }
+};
 
   // 인증번호 확인
   const handleVerifyCode = async () => {
