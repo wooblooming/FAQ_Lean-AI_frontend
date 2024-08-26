@@ -87,19 +87,21 @@ export default function ChangeInfo({ }) {
 
   // 이미지 선택 함수
   const chooseImage = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    if (typeof window !== 'undefined') { // 클라이언트에서만 실행
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
 
-    input.onchange = function (event) {
-      if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        setStoreImage(file);  // File 객체를 직접 저장
-        closeImageModal();
-      }
-    };
+      input.onchange = function (event) {
+        if (event.target.files && event.target.files[0]) {
+          const file = event.target.files[0];
+          setStoreImage(file);  // File 객체를 직접 저장
+          closeImageModal();
+        }
+      };
 
-    input.click();
+      input.click();
+    }
   }, [closeImageModal]);
 
   // 기본 이미지를 설정하는 함수
@@ -169,7 +171,7 @@ export default function ChangeInfo({ }) {
       formData.append('menu_price', menuPrices || "");      
   
       if (storeImage) {
-        if (storeImage instanceof File) {
+        if (typeof window !== 'undefined' && storeImage instanceof File) {  // 클라이언트에서만 실행
           formData.append('banner', storeImage);  // 파일 객체로 banner에 추가
         } else if (typeof storeImage === 'string') {
           // 이미 문자열로 된 이미지를 파일로 변환하여 업로드하는 로직
@@ -233,7 +235,7 @@ export default function ChangeInfo({ }) {
             {/* 가게 이미지 */}
             <img
               id="storeImage"
-              src={storeImage instanceof File ? URL.createObjectURL(storeImage) : storeImage}
+              src={typeof window !== 'undefined' && storeImage instanceof File ? URL.createObjectURL(storeImage) : storeImage}
               className="mx-auto mb-4 w-64 h-52 object-contain cursor-pointer"
               alt="Store"
             />
