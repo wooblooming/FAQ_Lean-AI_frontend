@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import Loading from '../components/loading'; // loading 컴포넌트를 import
+
 
 const StoreIntroduce = () => {
   const router = useRouter();
-  const { id, qr } = router.query; // URL에서 store_id와 qr 파라미터 가져옴
+  const { id } = router.query; // URL에서 id 파라미터 가져옴
   const [storeData, setStoreData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -12,11 +14,8 @@ const StoreIntroduce = () => {
     if (id) {
       const fetchStoreData = async () => {
         try {
-          const response = await axios.get(`http://127.0.0.1:8000/api/storesinfo/`, {
-            params: {
-              store_id: 1,
-              qr: true,  // QR 코드로 접근한 경우 qr 파라미터 전달
-            },
+          const response = await axios.post(`http://127.0.0.1:8000/api/storesinfo/`, {
+            store_id: id,
           });
           setStoreData(response.data);
         } catch (error) {
@@ -28,10 +27,10 @@ const StoreIntroduce = () => {
 
       fetchStoreData();
     }
-  }, [id, qr]);
+  }, [id]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />; // isLoading이 true일 때 Loading 컴포넌트를 렌더링
   }
 
   if (!storeData) {
