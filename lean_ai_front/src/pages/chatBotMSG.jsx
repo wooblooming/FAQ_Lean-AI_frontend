@@ -2,28 +2,6 @@ import React, { useEffect } from 'react';
 
 export default function Chatbot() {
     useEffect(() => {
-        const waitForElement = (selector, timeout = 20000) => {
-            return new Promise((resolve, reject) => {
-                const start = Date.now();
-
-                (function checkElement() {
-                    const dfMessenger = document.querySelector('df-messenger');
-                    if (dfMessenger) {
-                        const element = dfMessenger.shadowRoot.querySelector(selector);
-                        if (element) {
-                            resolve(element);
-                        } else if (Date.now() - start >= timeout) {
-                            reject(new Error(`Element ${selector} not found within timeout`));
-                        } else {
-                            requestAnimationFrame(checkElement);
-                        }
-                    } else {
-                        requestAnimationFrame(checkElement);
-                    }
-                })();
-            });
-        };
-
         const applyStyles = async () => {
             try {
                 const dfMessenger = document.querySelector('df-messenger');
