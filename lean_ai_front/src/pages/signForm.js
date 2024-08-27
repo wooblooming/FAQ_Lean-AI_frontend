@@ -435,7 +435,7 @@ const handleSendCode = async () => {
 
                 {/* 에러 메시지 모달 */}
                 <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
-                    <p>
+                    <p className='whitespace-pre-line'>
                         {typeof errorMessage === 'object' ? (
                             Object.entries(errorMessage).map(([key, value]) => (
                                 <span key={key}>
