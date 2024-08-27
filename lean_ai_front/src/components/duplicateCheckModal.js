@@ -9,7 +9,7 @@ const IdDuplicateCheckModal = ({ show, onClose, username, onIdCheckComplete }) =
     const handleIdCheck = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/check-username/', {
+            const response = await fetch('http://4.230.17.234:8000/api/check-username/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -14,7 +14,7 @@ const StoreIntroduce = () => {
     if (id) {
       const fetchStoreData = async () => {
         try {
-          const response = await axios.post(`http://127.0.0.1:8000/api/storesinfo/`, {
+          const response = await axios.post(`http://4.230.17.234:8000/api/storesinfo/`, {
             store_id: id, // store_id를 POST 요청으로 전송
           });
           console.log(response.data.store_image); // 이미지 URL 확인

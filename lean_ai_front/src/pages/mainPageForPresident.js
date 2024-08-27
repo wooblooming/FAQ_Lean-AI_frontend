@@ -31,7 +31,7 @@ const MainPageWithMenu = () => {
         return;
       }
 
-      const response = await fetch('http://127.0.0.1:8000/api/user-stores/', {
+      const response = await fetch('http://4.230.17.234:8000/api/user-stores/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

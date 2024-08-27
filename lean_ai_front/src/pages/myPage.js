@@ -22,7 +22,7 @@ const MyPage = () => {
 
         try {
             const token = localStorage.getItem('token'); 
-            const response = await fetch('http://localhost:8000/api/update-profile-photo/', {
+            const response = await fetch('http://4.230.17.234:8000/api/update-profile-photo/', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, 
@@ -45,14 +45,14 @@ const MyPage = () => {
 };
 
   const applyDefaultImage = async () => {
-    const defaultImageUrl = 'http://localhost:8000/media/profile_photos/user_img.jpg';
+    const defaultImageUrl = 'http://4.230.17.234:8000/media/profile_photos/user_img.jpg';
     setProfileImage(defaultImageUrl);
 
     
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/update-profile-photo/', {
+      const response = await fetch('http://4.230.17.234:8000/api/update-profile-photo/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const MyPage = () => {
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/user-profile/', {
+      const response = await fetch('http://4.230.17.234:8000/api/user-profile/', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

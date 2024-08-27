@@ -24,7 +24,7 @@ const Chatbot = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/chatbot/chating/', {
+      const response = await fetch('http://4.230.17.234:8000/chatbot/chating/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -35,7 +35,7 @@ const handleSendCode = async () => {
   }
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/send-code/', {
+    const response = await fetch('http://4.230.17.234:8000/api/send-code/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ const handleSendCode = async () => {
   // 인증번호 확인
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/verify-code/', {
+      const response = await fetch('http://4.230.17.234:8000/api/verify-code/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
