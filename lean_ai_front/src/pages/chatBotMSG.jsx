@@ -106,6 +106,7 @@ export default function Chatbot() {
                     --df-messenger-chat-background: #f3f6fc;
                     --df-messenger-message-user-background: #d3e3fd;
                     --df-messenger-message-bot-background: #fff;
+                    --df-messenger-chat-window-width : 380px;
                 }
 
                 df-messenger .bubble {
@@ -133,7 +134,7 @@ export default function Chatbot() {
             <df-messenger
                 location="asia-northeast1"
                 project-id="lean-ai-faq"
-                agent-id="32293af4-f3fd-4102-8416-169801a34840"
+                agent-id="6b189043-1000-4cb8-aa3a-9adbe4aa02df"
                 language-code="ko"
                 session-persistence="false"
             ></df-messenger>
