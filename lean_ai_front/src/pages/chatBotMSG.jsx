@@ -103,6 +103,7 @@ export default function Chatbot() {
                     opacity: 0 !important;
                     visibility: hidden !important; /* 기본 버튼을 완전히 숨김 */
                 }
+                
             `}</style>
             <df-messenger
                 location="asia-northeast1"

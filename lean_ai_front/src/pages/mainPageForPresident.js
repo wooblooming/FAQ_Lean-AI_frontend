@@ -161,8 +161,8 @@ const MainPageWithMenu = () => {
         <footer className='bg-black text-gray-400 text-xs font-sans p-4 w-full flex justify-start items-center mt-8'>
           <img src='Lean-AI logo.png' className='h-12 mr-4' />
           <p className='whitespace-pre-line'>
-            {`LEAN AI
-            (우)08789 서울 관악구 봉천로 545 2층 
+            {`(주)린에이아이
+            (우)08789 서울 관악구 봉천로 545 201호
             © LEAN AI All Rights Reserved.`}
           </p>
         </footer>
