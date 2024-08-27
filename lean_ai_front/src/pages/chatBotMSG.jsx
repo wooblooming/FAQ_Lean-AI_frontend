@@ -18,7 +18,7 @@ export default function Chatbot() {
                                 bubbleButton.style.border = 'none';
                                 bubbleButton.style.boxShadow = 'none';
                                 bubbleButton.style.opacity = '0';
-                                bubbleButton.style.visibility = 'hidden';  // 완전히 숨김
+                                bubbleButton.style.visibility = 'hidden';
                                 console.log('Bubble button styles applied.');
                             } else {
                                 console.log('Bubble button not found.');
@@ -31,29 +31,41 @@ export default function Chatbot() {
                                     customButton.src = '/chatbot.png'; // 이미지 경로
                                     customButton.alt = 'Chatbot';
                                     customButton.className = 'custom-chatbot-icon';
+                                    customButton.style.backgroundColor = 'rgb(253 224 71)';
                                     customButton.style.position = 'fixed';
-                                    customButton.style.bottom = '16px';
-                                    customButton.style.right = '16px';
+                                    customButton.style.bottom = '20px';
+                                    customButton.style.right = '20px';
                                     customButton.style.width = '60px';
+                                    customButton.style.borderRadius = '50%';
                                     customButton.style.height = '60px';
                                     customButton.style.cursor = 'pointer';
                                     customButton.style.zIndex = '1000';
 
+                                    const clickMeText = document.createElement('p');
+                                    clickMeText.innerText = 'Click Me';
+                                    clickMeText.style.position = 'fixed';
+                                    clickMeText.style.bottom = '85px';
+                                    clickMeText.style.right = '25px';
+                                    clickMeText.style.color = 'black';
+                                    clickMeText.style.fontWeight = 'bold';
+                                    clickMeText.style.fontSize = '14px';
+                                    clickMeText.style.zIndex = '1001';
+                                    clickMeText.style.animation = 'sparkleText 2.5s infinite';
+
                                     customButton.onclick = () => {
                                         if (chatWrapper.classList.contains('expanded')) {
-                                            chatWrapper.classList.remove('expanded'); // chat-wrapper에서 expanded 클래스 제거 (채팅창 닫기)
+                                            chatWrapper.classList.remove('expanded');
                                             console.log('Chat wrapper closed.');
                                         } else {
-                                            chatWrapper.classList.add('expanded'); // chat-wrapper에 expanded 클래스 추가 (채팅창 열기)
+                                            chatWrapper.classList.add('expanded');
                                             console.log('Chat wrapper expanded.');
-
-                                            // 커스텀 버튼을 숨기고, df-messenger의 기본 버튼을 보여줌
-                                            bubbleWrapper.style.visibility = 'visible'; // df-messenger 기본 버튼을 다시 보이게
+                                            bubbleWrapper.style.visibility = 'visible';
                                             bubbleWrapper.style.opacity = '1';
                                         }
                                     };
 
                                     document.body.appendChild(customButton);
+                                    document.body.appendChild(clickMeText);
                                 }
                             } else {
                                 console.log('Chat wrapper not found.');
@@ -89,7 +101,11 @@ export default function Chatbot() {
         <>
             <style jsx global>{`
                 df-messenger {
-                    --df-messenger-button-image-url: none; /* 기본 버튼 이미지를 숨김 */
+                    --df-messenger-button-image-url: none;
+                    --df-messenger-font-color: #000;
+                    --df-messenger-chat-background: #f3f6fc;
+                    --df-messenger-message-user-background: #d3e3fd;
+                    --df-messenger-message-bot-background: #fff;
                 }
 
                 df-messenger .bubble {
@@ -97,8 +113,22 @@ export default function Chatbot() {
                     border: none !important;
                     box-shadow: none !important;
                     opacity: 0 !important;
-                    visibility: hidden !important; /* 기본 버튼을 완전히 숨김 */
+                    visibility: hidden !important;
                 }
+
+                @keyframes sparkleText {
+                    0%, 100% {
+                        color: black;
+                        text-shadow: none;
+                    }
+                    50% {
+                        color: white;
+                        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+                                     0 0 20px rgba(255, 255, 255, 0.6),
+                                     0 0 30px rgba(255, 255, 255, 0.5);
+                    }
+                }
+                
             `}</style>
             <df-messenger
                 location="asia-northeast1"

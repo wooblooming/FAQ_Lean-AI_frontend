@@ -55,6 +55,12 @@ const Login = () => {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLoginClick();
+        }
+    };
+
     return (
         <div className="bg-blue-100 flex justify-center items-center h-screen">
             <div className="bg-white rounded-lg shadow-lg p-8 max-w-md" style={{ width: '400px' }}>
@@ -78,6 +84,7 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="ml-2 w-full border-none focus:ring-0"
+                            onKeyPress={handleKeyPress} // Enter 키를 누를 때 handleLoginClick을 호출
                         />
                     </div>
                     <button
