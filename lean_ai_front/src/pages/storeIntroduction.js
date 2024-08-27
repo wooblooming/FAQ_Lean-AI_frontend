@@ -31,6 +31,13 @@ const StoreIntroduce = () => {
     }
   }, [id]);
 
+  // agentId가 변경될 때마다 콘솔에 출력
+  useEffect(() => {
+    if (agentId) {
+      console.log("Agent ID:", agentId);
+    }
+  }, [agentId]);
+
   if (isLoading) {
     return <Loading />; // 로딩 중일 때 Loading 컴포넌트를 렌더링
   }
