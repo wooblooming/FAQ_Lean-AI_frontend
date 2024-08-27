@@ -17,6 +17,7 @@ const StoreIntroduce = () => {
           const response = await axios.post(`http://127.0.0.1:8000/api/storesinfo/`, {
             store_id: id, // store_id를 POST 요청으로 전송
           });
+          console.log(response.data.store_image); // 이미지 URL 확인
           setStoreData(response.data);
         } catch (error) {
           console.error("Error fetching store data:", error);
@@ -41,7 +42,7 @@ const StoreIntroduce = () => {
     <div className="flex justify-center items-center min-h-screen">
       <div className="border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-4 mb-2 w-10/12 h-3/6">
         <div className="rounded-lg p-8 w-full max-w-md text-center mb-2 relative">
-          <img src={storeData.store_image} alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
+          <img src={`http://localhost:8000${storeData.store_image}`} alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
           <p className="font-bold text-2xl">{storeData.store_name}</p>
         </div>
 
