@@ -33,7 +33,7 @@ function ModalResetPassword({ show, onClose, phone }) {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/reset-password/', {
+            const response = await fetch('http://4.230.17.234:8000/api/reset-password/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

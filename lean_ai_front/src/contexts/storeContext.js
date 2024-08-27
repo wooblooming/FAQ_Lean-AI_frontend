@@ -13,7 +13,7 @@ export function StoreProvider({ children }) {
   const fetchStoreData = async (id) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/storesinfo/`, {
+      const response = await axios.get(`http://:8000/api/storesinfo/`, {
         params: {
           store_id: id,  // 쿼리 파라미터로 store_id 전달
         },
