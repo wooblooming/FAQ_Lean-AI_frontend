@@ -45,21 +45,8 @@ export default function Chatbot({ agentId }) {
 
             <style jsx global>{`
                 df-messenger {
-                    --df-messenger-chat-window-width: 540%;
+                    --df-messenger-chat-window-width: 500%;
                     --df-messenger-chat-bubble-background: #fde047;
-                }
-
-                @keyframes sparkleText {
-                    0%, 100% {
-                        color: black;
-                        text-shadow: none;
-                    }
-                    50% {
-                        color: white;
-                        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
-                                     0 0 20px rgba(255, 255, 255, 0.6),
-                                     0 0 30px rgba(255, 255, 255, 0.5);
-                    }
                 }
             `}</style>
         </>
