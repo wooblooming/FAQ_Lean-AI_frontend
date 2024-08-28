@@ -6,7 +6,9 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, verificationCode, onChan
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 font-sans">
-            <div className="bg-white p-5 rounded-lg shadow-lg max-w-md w-10/12">
+            <div className="bg-white p-5 rounded-lg shadow-lg max-w-md w-10/12"
+                style={{ maxWidth: '400px' }}
+            >
                 <h2 className="text-2xl font-bold mb-4">인증번호 확인</h2>
                 <input
                     type="text"

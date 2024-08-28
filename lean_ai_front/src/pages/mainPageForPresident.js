@@ -27,7 +27,7 @@ const MainPageWithMenu = () => {
   const fetchStoreInfo = async () => {
     try {
       const token = localStorage.getItem('token'); // 저장된 JWT 토큰을 가져옴
-      console.log('Token:', token);
+      // console.log('Token:', token);
       if (!token) {
         router.push('/login'); // 토큰이 없으면 로그인 페이지로 리디렉션
         return;

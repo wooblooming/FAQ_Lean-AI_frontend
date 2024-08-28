@@ -10,7 +10,7 @@ const ModalMSG = ({ show, onClose, title, children }) => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center font-sans">
             {/* 모달의 콘텐츠를 담는 컨테이너 */}
             <div className="bg-white rounded-lg shadow-lg w-10/12 p-4 relative max-h-fit"
-                style={{ minWidth: '350px' }}
+                style={{ maxWidth: '400px' }}
             >
                 {/* 모달 닫기 버튼 */}
                 <button 

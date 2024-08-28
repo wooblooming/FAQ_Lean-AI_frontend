@@ -38,7 +38,7 @@ const MyPage = () => {
             }
 
             const data = await response.json();
-            console.log('Server Response:', data.message);
+            //console.log('Server Response:', data.message);
         } catch (error) {
             console.error('Error uploading image:', error);
         }
@@ -66,7 +66,7 @@ const MyPage = () => {
       }
 
       const data = await response.json();
-      console.log('Server Response:', data.message);
+      // console.log('Server Response:', data.message);
     } catch (error) {
       console.error('Error updating profile image:', error);
     }
@@ -138,14 +138,14 @@ const MyPage = () => {
           </button>
         </div>
         <div className="space-y-4 mt-6">
-          <Link href="/editData" className="w-full">
-            <button className="bg-gray-200 w-full text-lg py-4 rounded-lg">
-              데이터 수정하기
-            </button>
-          </Link>
           <Link href="/changeInfo">
             <button className="bg-gray-200 w-full text-lg py-4 rounded-lg mt-4">
               업종 정보 수정하기
+            </button>
+          </Link>
+          <Link href="/editData" className="w-full">
+            <button className="bg-gray-200 w-full text-lg py-4 rounded-lg">
+              FAQ 데이터 수정하기
             </button>
           </Link>
         </div>

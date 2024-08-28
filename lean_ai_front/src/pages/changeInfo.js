@@ -155,11 +155,12 @@ export default function ChangeInfo({ }) {
   const saveAllChanges = useCallback(async () => {
     try {
       const formData = new FormData();
-
+  
+      // FormData에 데이터 추가
       formData.append('store_name', storeName || "");
       formData.append('opening_hours', storeHours || "");
       formData.append('menu_price', menuPrices || "");
-
+  
       if (storeImage) {
         if (storeImage instanceof File) {
           formData.append('banner', storeImage);
@@ -172,7 +173,7 @@ export default function ChangeInfo({ }) {
           return;
         }
       }
-
+  
       const response = await fetch(`${config.localhosts}/api/user-stores/${storeId}/`, {
         method: 'PUT',
         headers: {
@@ -180,11 +181,11 @@ export default function ChangeInfo({ }) {
         },
         body: formData,
       });
-
+  
       if (!response.ok) {
         throw new Error('정보 저장에 실패했습니다.');
       }
-
+  
       const result = await response.json();
       setMessage('정보가 성공적으로 저장되었습니다.');
       setShowMessageModal(true);
@@ -193,7 +194,7 @@ export default function ChangeInfo({ }) {
       setShowErrorMessageModal(true);
     }
   }, [storeId, storeName, storeHours, menuPrices, storeImage]);
-
+  
   return (
     <div className="bg-white flex flex-col items-center justify-center min-h-screen overflow-y-auto relative font-sans mx-2">
       <div className='flex flex-col justify-center items-center'>
@@ -332,7 +333,6 @@ export default function ChangeInfo({ }) {
           show={showMessageModal}
           onClose={handleMessageModalClose}
           title=" "
-          style={{ width: '350px' }}
         >
           <p style={{ whiteSpace: 'pre-line' }}>
             {message}

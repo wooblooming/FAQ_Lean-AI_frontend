@@ -9,7 +9,9 @@ const ModalText = ({ show, onClose, title, children }) => {
         // 모달의 배경과 위치를 설정하는 컨테이너
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center font-sans">
             {/* 모달의 콘텐츠를 담는 컨테이너 */}
-            <div className="bg-white rounded-lg shadow-lg w-10/12 h-5/6 p-4 relative overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg w-10/12 h-5/6 p-4 relative overflow-hidden"
+                 style={{ maxWidth: '385px' }}
+            >
                 {/* 모달 닫기 버튼 */}
                 <button 
                     onClick={onClose}  // 버튼 클릭 시 onClose 함수를 호출하여 모달을 닫음
