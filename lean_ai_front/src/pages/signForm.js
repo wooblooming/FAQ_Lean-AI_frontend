@@ -37,8 +37,6 @@ const Signup = () => {
             setShowErrorMessageModal(true);
             return;
         }
-
-        console.log("ID Duplicate Check Modal Opened");
         setShowIdDulicateModal(true);
     };
 
