@@ -33,12 +33,14 @@ const StoreIntroduce = () => {
     }
   }, [id]);
 
+  /*
   // agentId가 변경될 때마다 콘솔에 출력
   useEffect(() => {
     if (agentId) {
       console.log("Agent ID:", agentId);
     }
   }, [agentId]);
+  */
 
   if (isLoading) {
     return <Loading />; // 로딩 중일 때 Loading 컴포넌트를 렌더링
@@ -52,7 +54,7 @@ const StoreIntroduce = () => {
     <div className="flex justify-center items-center min-h-screen">
       <div className="border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-4 mb-2 w-10/12 h-3/6">
         <div className="rounded-lg p-8 w-full max-w-md text-center mb-2 relative">
-          <img src={storeData.store_image} alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
+          <img src={`${config.localhosts}${storeData.store_image}`} alt="Store" className="mx-auto mb-4 w-64 h-52 object-contain" />
           <p className="font-bold text-2xl">{storeData.store_name}</p>
         </div>
 
