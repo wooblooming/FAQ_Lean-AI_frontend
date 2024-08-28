@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import axios from 'axios';
 
 const StoreContext = createContext();
@@ -10,32 +10,34 @@ export function StoreProvider({ children }) {
   const [storeImage, setStoreImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStoreData = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/storeinfo/1/');
-        const data = response.data;
-        setStoreName(data.store_name);
-        setStoreHours(data.store_hours);
-        setMenuPrices(data.menu_prices);
-        setStoreImage(data.store_image);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching store data:", error);
-        setIsLoading(false);
-      }
-    };
-
-    fetchStoreData();
-  }, []);
+  const fetchStoreData = async (id) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://:8000/api/storesinfo/`, {
+        params: {
+          store_id: id,  // 쿼리 파라미터로 store_id 전달
+        },
+      });
+      const data = response.data;
+      setStoreName(data.store_name);
+      setStoreHours(data.store_hours);
+      setMenuPrices(data.store_prices);
+      setStoreImage(data.store_image);
+    } catch (error) {
+      console.error("Error fetching store data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <StoreContext.Provider value={{
-      storeName, setStoreName,
-      storeHours, setStoreHours,
-      menuPrices, setMenuPrices,
-      storeImage, setStoreImage,
-      isLoading
+      storeName,
+      storeHours,
+      menuPrices,
+      storeImage,
+      isLoading,
+      fetchStoreData,
     }}>
       {children}
     </StoreContext.Provider>

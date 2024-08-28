@@ -8,6 +8,8 @@ import naverIcon from '../../public/btn_naver.svg';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import googleIcon from '../../public/btn_google.svg';
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import config from '../../config';
+
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -30,7 +32,7 @@ const Login = () => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/login/', {
+            const response = await fetch(`${config.localhosts}/api/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,6 +54,12 @@ const Login = () => {
             console.error('로그인 오류:', error);
             setErrorMessage('로그인 요청 중 오류가 발생했습니다.');
             setShowErrorMessageModal(true);
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLoginClick();
         }
     };
 
@@ -78,6 +86,7 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="ml-2 w-full border-none focus:ring-0"
+                            onKeyPress={handleKeyPress} // Enter 키를 누를 때 handleLoginClick을 호출
                         />
                     </div>
                     <button

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import ModalResetPassword from '../components/resetPasswordModal'; // 비밀번호 재설정 모달 컴포넌트
 
 // FindPassword 함수형 컨포넌트 정의
 function FindPassword() {
@@ -10,12 +10,10 @@ function FindPassword() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState(''); // 모달에 표시할 메시지
   const [formData, setFormData] = useState({ phone: '', verificationCode: '' });
-  const [CodeSent, setCodeSent] = useState(false); // 인증번호 전송 여부 확인
+  const [codeSent, setCodeSent] = useState(false); // 인증번호 전송 여부 확인
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-
-
-  const router = useRouter();
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false); // 비밀번호 재설정 모달 상태
 
   // 입력 필드 값 변경 처리
   const handleInputChange = (e) => {
@@ -26,38 +24,45 @@ function FindPassword() {
     });
   };
 
-  // 인증번호 전송
-  const handleSendCode = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/send-code/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phone: formData.phone, type: 'findidpw' }),
-      });
+// 인증번호 전송
+const handleSendCode = async () => {
+  const phoneRegex = /^\d{11}$/;  // 숫자 11자리만 허용하는 정규식
+  if (!phoneRegex.test(formData.phone)) {
+    setErrorMessage('- 제외 숫자만 입력하세요');
+    setShowErrorMessageModal(true);
+    return;  // 유효성 검사를 통과하지 못하면 함수 종료
+  }
 
-      const data = await response.json();
+  try {
+    const response = await fetch(`${config.localhosts}/api/send-code/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phone: formData.phone, type: 'findidpw' }),
+    });
 
-      if (data.success) {
-        setCodeSent(true);
-        setModalMessage('인증번호가 발송되었습니다!');
-        setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
-      } else {
-        setErrorMessage(data.message);
-        setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
-      }
-    } catch (error) {
-      console.error('인증 번호 요청 오류:', error);
-      setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+    const data = await response.json();
+
+    if (data.success) {
+      setCodeSent(true);
+      setModalMessage('인증번호가 발송되었습니다!');
+      setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
+    } else {
+      setErrorMessage(data.message);
       setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
     }
-  };
+  } catch (error) {
+    console.error('인증 번호 요청 오류:', error);
+    setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+    setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+  }
+};
 
   // 인증번호 확인
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/verify-code/', {
+      const response = await fetch(`${config.localhosts}/api/verify-code/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,12 +77,7 @@ function FindPassword() {
       const data = await response.json();
 
       if (data.success) {
-        // 세션 스토리지에 데이터 저장
-        sessionStorage.setItem('userPassword', data.user_password);
-        sessionStorage.setItem('dateJoined', data.date_joined);
-
-        // 다음 페이지로 이동
-        router.push('/findingPasswordResult');
+        setShowResetPasswordModal(true); // 비밀번호 재설정 모달 열기
       } else {
         setErrorMessage(data.message);
         setShowErrorMessageModal(true); // 인증 오류 메시지를 모달에 표시
@@ -101,6 +101,10 @@ function FindPassword() {
     setErrorMessage(''); // 에러 메시지 초기화
   };
 
+  // 비밀번호 재설정 모달 닫기
+  const handleCloseResetPasswordModal = () => {
+    setShowResetPasswordModal(false);
+  };
 
   // 배경 및 창 설정
   return (
@@ -199,6 +203,9 @@ function FindPassword() {
           </button>
         </div>
       </ModalErrorMSG>
+
+      {/* 비밀번호 재설정 모달 */}
+      <ModalResetPassword show={showResetPasswordModal} onClose={handleCloseResetPasswordModal} phone={formData.phone} />
     </div>
   );
 }

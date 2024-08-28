@@ -1,29 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import config from '../../config';
+
 
 const MyPage = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState('/user_img2.jpg'); // 기본 프로필 이미지 경로
+  const [profileImage, setProfileImage] = useState(''); 
+  const [name, setName] = useState(''); 
 
   const toggleImageModal = () => {
     setIsImageModalOpen(!isImageModalOpen);
   };
 
-  const chooseImage = (event) => {
+  const chooseImage = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setProfileImage(imageUrl);
+        const imageUrl = URL.createObjectURL(file);
+        setProfileImage(imageUrl);
+
+
+        const formData = new FormData();
+        formData.append('profile_photo', file);
+
+        try {
+            const token = localStorage.getItem('token'); 
+            const response = await fetch(`${config.localhosts}/api/update-profile-photo/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`, 
+                    // 'Content-Type': 'application/json' 헤더 제거
+                },
+                body: formData,  // FormData 객체를 바디에 전송
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to upload image');
+            }
+
+            const data = await response.json();
+            console.log('Server Response:', data.message);
+        } catch (error) {
+            console.error('Error uploading image:', error);
+        }
     }
-    toggleImageModal(); // 선택 후 모달 닫기
+    toggleImageModal(); 
+};
+
+  const applyDefaultImage = async () => {
+    const defaultImageUrl = `${config.localhosts}/media/profile_photos/user_img.jpg`;
+    setProfileImage(defaultImageUrl); 
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${config.localhosts}/api/update-profile-photo/'`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ profile_photo: `profile_photos/user_img.jpg` }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile image');
+      }
+
+      const data = await response.json();
+      console.log('Server Response:', data.message);
+    } catch (error) {
+      console.error('Error updating profile image:', error);
+    }
+
+    toggleImageModal();
   };
 
-  const applyDefaultImage = () => {
-    setProfileImage('/user_img.jpg'); // 기본 이미지 경로로 설정
-    toggleImageModal(); // 적용 후 모달 닫기
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch( `${config.localhosts}/api/user-profile/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setName(data.name || '');
+        setProfileImage(data.profile_photo); 
+      } else {
+        console.error('Failed to fetch user profile');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
-
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center relative font-sans">
@@ -53,7 +129,7 @@ const MyPage = () => {
             alt="프로필 이미지"
             className="w-24 h-24 rounded-full mx-auto mb-4"
           />
-          <h2 className="text-xl font-bold">찬혁떡볶이</h2>
+          <h2 className="text-xl font-bold">{name}</h2> {/* 사용자 이름 표시 */}
           <button
             onClick={toggleImageModal}
             className="bg-blue-500 text-white text-sm px-4 py-2 rounded-lg mt-2"
@@ -61,8 +137,6 @@ const MyPage = () => {
             프로필 변경
           </button>
         </div>
-
-        {/* 버튼들 */}
         <div className="space-y-4 mt-6">
           <Link href="/editData" className="w-full">
             <button className="bg-gray-200 w-full text-lg py-4 rounded-lg">
@@ -77,7 +151,6 @@ const MyPage = () => {
         </div>
       </div>
 
-      {/* 이미지 변경 모달 */}
       {isImageModalOpen && (
         <div
           id="imageModal"

@@ -6,6 +6,7 @@ export default function DataEditPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState(''); // 모달 메시지 상태 추가
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -16,73 +17,31 @@ export default function DataEditPage() {
     }
   };
 
-  const openModal = () => {
+  const openModal = (message) => {
+    setModalMessage(message); // 모달 메시지 설정
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setModalMessage(''); // 모달 메시지 초기화
   };
 
-  // 1. 파일만 업로드
-  const handleFileUpload = async () => {
-    const formData = new FormData();
-    const fileInput = document.getElementById('fileInput');
-
-    if (fileInput.files[0]) {
-      formData.append('file', fileInput.files[0]);  // 파일만 추가
-    } else {
-      console.error('파일을 선택하세요.');
-      return;
-    }
-
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/edit/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (response.ok) {
-        openModal();
-      } else {
-        console.error('요청 전송 실패:', response.statusText);
-      }
-    } catch (error) {
-      console.error('요청 전송 중 오류 발생:', error);
-    }
-  };
-
-  // 2. 제목과 내용만 업로드
-  const handleTitleContentUpload = async () => {
-    const formData = new FormData();
-
-    formData.append('title', title);  // 제목 추가
-    formData.append('content', content);  // 내용 추가
-
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/edit/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (response.ok) {
-        openModal();
-      } else {
-        console.error('요청 전송 실패:', response.statusText);
-      }
-    } catch (error) {
-      console.error('요청 전송 중 오류 발생:', error);
-    }
+  // 폼과 파일 입력을 초기화하는 함수
+  const resetForm = () => {
+    setFileName('');
+    setTitle('');
+    setContent('');
+    document.getElementById('fileInput').value = ''; // 파일 입력 초기화
   };
 
   // 3. 파일, 제목, 내용 모두 업로드
   const handleSubmit = async () => {
+    if (!title && !content && !document.getElementById('fileInput').files[0]) {
+      openModal('요청 사항을 입력해주세요.'); // 입력이 없는 경우 경고 모달 표시
+      return;
+    }
+
     const formData = new FormData();
     const fileInput = document.getElementById('fileInput');
 
@@ -94,7 +53,7 @@ export default function DataEditPage() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/edit/', {
+      const response = await fetch(`${config.localhosts}/api/edit/`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -103,7 +62,8 @@ export default function DataEditPage() {
       });
 
       if (response.ok) {
-        openModal();
+        openModal('요청되었습니다!'); // 성공 메시지 모달
+        resetForm(); // 요청 성공 후 폼 초기화
       } else {
         console.error('요청 전송 실패:', response.statusText);
       }
@@ -178,7 +138,7 @@ export default function DataEditPage() {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-xl font-bold mb-4 text-center">요청되었습니다!</h2>
+            <h2 className="text-xl font-bold mb-4 text-center">{modalMessage}</h2>
             <div className="text-center">
               <button className="bg-red-500 text-white py-2 px-4 rounded-lg" onClick={closeModal}>
                 확인

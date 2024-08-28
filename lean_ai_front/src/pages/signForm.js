@@ -7,6 +7,8 @@ import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용�
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import config from '../../config';
+
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -90,7 +92,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/signup/', {
+            const response = await fetch(`${config.localhosts}/api/signup/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -135,35 +137,42 @@ const Signup = () => {
     };
 
     // 인증번호 전송
-    const handleSendCode = async () => {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/send-code/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ phone: formData.phone, type: 'signup' }),
-            });
+const handleSendCode = async () => {
+    const phoneRegex = /^\d{11}$/;  // 숫자 11자리만 허용하는 정규식
+    if (!phoneRegex.test(formData.phone)) {
+        setErrorMessage('- 제외 숫자만 입력하세요');
+        setShowErrorMessageModal(true);
+        return;
+    }
 
-            const data = await response.json();
+    try {
+        const response = await fetch(`${config.localhosts}/api/send-code/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ phone: formData.phone, type: 'signup' }),
+        });
 
-            if (data.success) {
-                setCodeSent(true);
-                setShowCodeModal(true); // 인증 번호 전송 후 모달 열기
-            } else {
-                setErrorMessage(data.message);
-                setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+        const data = await response.json();
+
+        if (data.success) {
+            setCodeSent(true);
+            setShowCodeModal(true); // 인증 번호 전송 후 모달 열기
+        } else {
+            setErrorMessage(data.message);
+            setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
         }
-        } catch (error) {
-            // console.error('인증 번호 요청 오류:', error);
-            setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
-            setShowErrorMessageModal(true);
-        }
-    };
+    } catch (error) {
+        // console.error('인증 번호 요청 오류:', error);
+        setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+        setShowErrorMessageModal(true);
+    }
+};
 
     const handleVerifyCode = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/verify-code/', {
+            const response = await fetch(`${config.localhosts}/api/verify-code/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -290,7 +299,7 @@ const Signup = () => {
                                 <input
                                     type="text"
                                     name="phone"
-                                    placeholder="휴대폰 번호"
+                                    placeholder="휴대폰 번호( - 제외숫자만)"
                                     value={formData.phone}
                                     onChange={handleInputChange}
                                     className="border px-4 py-2 border-gray-300 rounded-md w-64 "
@@ -428,7 +437,7 @@ const Signup = () => {
 
                 {/* 에러 메시지 모달 */}
                 <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
-                    <p>
+                    <p className='whitespace-pre-line'>
                         {typeof errorMessage === 'object' ? (
                             Object.entries(errorMessage).map(([key, value]) => (
                                 <span key={key}>
