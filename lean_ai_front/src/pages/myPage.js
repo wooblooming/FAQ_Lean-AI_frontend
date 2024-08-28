@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import config from '../../config';
+
 
 const MyPage = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -22,7 +24,7 @@ const MyPage = () => {
 
         try {
             const token = localStorage.getItem('token'); 
-            const response = await fetch('http://4.230.17.234:8000/api/update-profile-photo/', {
+            const response = await fetch(`${config.localhosts}/api/update-profile-photo/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, 
@@ -45,14 +47,12 @@ const MyPage = () => {
 };
 
   const applyDefaultImage = async () => {
-    const defaultImageUrl = 'http://4.230.17.234:8000/media/profile_photos/user_img.jpg';
-    setProfileImage(defaultImageUrl);
-
-    
+    const defaultImageUrl = `${config.localhosts}/media/profile_photos/user_img.jpg`;
+    setProfileImage(defaultImageUrl); 
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://4.230.17.234:8000/api/update-profile-photo/', {
+      const response = await fetch(`${config.localhosts}/api/update-profile-photo/'`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const MyPage = () => {
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://4.230.17.234:8000/api/user-profile/', {
+      const response = await fetch( `${config.localhosts}/api/user-profile/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

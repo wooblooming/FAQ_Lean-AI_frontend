@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import Loading from '../components/loading'; // 로딩 컴포넌트 import
 import Chatbot from './chatBotMSG'; // 챗봇 컴포넌트 import
+import config from '../../config';
+
 
 const StoreIntroduce = () => {
   const router = useRouter();
@@ -15,7 +17,7 @@ const StoreIntroduce = () => {
     if (id) {
       const fetchStoreData = async () => {
         try {
-          const response = await axios.post(`http://4.230.17.234:8000/api/storesinfo/`, {
+          const response = await axios.post(`${config.localhosts}/api/storesinfo/`, {
             store_id: id, // store_id를 POST 요청으로 전송
           });
           setStoreData(response.data);

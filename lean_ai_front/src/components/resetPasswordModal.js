@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import config from '../../config';
 
 function ModalResetPassword({ show, onClose, phone }) {
     const [newPassword, setNewPassword] = useState('');
@@ -33,7 +34,7 @@ function ModalResetPassword({ show, onClose, phone }) {
         }
 
         try {
-            const response = await fetch('http://4.230.17.234:8000/api/reset-password/', {
+            const response = await fetch(`${config.localhosts}/api/reset-password/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
