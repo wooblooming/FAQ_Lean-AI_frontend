@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
-import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트\
+import config from '../../config';
+
 
 const MainPageWithMenu = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -31,7 +33,7 @@ const MainPageWithMenu = () => {
         return;
       }
 
-      const response = await fetch('http://4.230.17.234:8000/api/user-stores/', {
+      const response = await fetch(`${config.localhosts}/api/user-stores/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

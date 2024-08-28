@@ -4,6 +4,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ModalMSG from '../components/modalMSG'; // 에러메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import config from '../../config';
+
 
 export default function ChangeInfo({ }) {
   const [storeId, setStoreId] = useState(null);
@@ -23,7 +25,7 @@ export default function ChangeInfo({ }) {
 
   const fetchStoreInfo = useCallback(async () => {
     try {
-      const response = await fetch('http://4.230.17.234:8000/api/user-stores/', {
+      const response = await fetch(`${config.localhosts}/api/user-stores/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,7 +173,7 @@ export default function ChangeInfo({ }) {
         }
       }
   
-      const response = await fetch(`http://4.230.17.234:8000/api/user-stores/${storeId}/`, {
+      const response = await fetch(`${config.localhosts}/api/user-stores/${storeId}/`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

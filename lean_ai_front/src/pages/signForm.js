@@ -7,6 +7,8 @@ import TermsOfServiceModal from '../components/termsOfServiceModal'; // 이용�
 import MarketingModal from '../components/marketingModal'; // 마켓팅 및 광고 약관 컴포넌트
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import config from '../../config';
+
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -90,7 +92,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await fetch('http://4.230.17.234:8000/api/signup/', {
+            const response = await fetch(`${config.localhosts}/api/signup/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -144,7 +146,7 @@ const handleSendCode = async () => {
     }
 
     try {
-        const response = await fetch('http://4.230.17.234:8000/api/send-code/', {
+        const response = await fetch(`${config.localhosts}/api/send-code/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -170,7 +172,7 @@ const handleSendCode = async () => {
 
     const handleVerifyCode = async () => {
         try {
-            const response = await fetch('http://4.230.17.234:8000/api/verify-code/', {
+            const response = await fetch(`${config.localhosts}/api/verify-code/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

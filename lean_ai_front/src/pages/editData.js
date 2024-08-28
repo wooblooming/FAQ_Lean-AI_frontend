@@ -53,7 +53,7 @@ export default function DataEditPage() {
     }
 
     try {
-      const response = await fetch('http://4.230.17.234:8000/api/edit/', {
+      const response = await fetch(`${config.localhosts}/api/edit/`, {
         method: 'POST',
         body: formData,
         headers: {

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../styles/bubble.module.css'; // 말풍선 스타일을 정의한 CSS 모듈을 import
+import config from '../../config';
 
 const Chatbot = () => {
   const [message, setMessage] = useState('');
@@ -24,7 +25,7 @@ const Chatbot = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://4.230.17.234:8000/chatbot/chating/', {
+      const response = await fetch(`${config.localhosts}/chatbot/chating/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

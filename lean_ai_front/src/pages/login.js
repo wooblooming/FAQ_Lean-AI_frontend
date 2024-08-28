@@ -8,6 +8,8 @@ import naverIcon from '../../public/btn_naver.svg';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import googleIcon from '../../public/btn_google.svg';
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import config from '../../config';
+
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -30,7 +32,7 @@ const Login = () => {
         }
 
         try {
-            const response = await fetch('http://4.230.17.234:8000/api/login/', {
+            const response = await fetch(`${config.localhosts}/api/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
