@@ -46,56 +46,64 @@ const MyPage = () => {
     toggleImageModal(); 
 };
 
-  const applyDefaultImage = async () => {
-    const defaultImageUrl = `${config.localhosts}/media/profile_photos/user_img.jpg`;
-    setProfileImage(defaultImageUrl); 
+const applyDefaultImage = async () => {
+  // 기본 이미지 경로 설정
+  const defaultImageUrl = '/user_img.jpg';
+  setProfileImage(defaultImageUrl);
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${config.localhosts}/api/update-profile-photo/'`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ profile_photo: `profile_photos/user_img.jpg` }),
-      });
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${config.localhosts}/api/update-profile-photo/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ profile_photo: '' }), // 빈 문자열로 전송
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to update profile image');
-      }
+    if (!response.ok) {
+      throw new Error('Failed to update profile image');
+    }
 
+    const data = await response.json();
+    // 서버 응답 처리 (필요한 경우)
+  } catch (error) {
+    console.error('Error updating profile image:', error);
+  }
+
+  toggleImageModal();
+};
+
+const fetchUserProfile = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${config.localhosts}/api/user-profile/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
       const data = await response.json();
-      // console.log('Server Response:', data.message);
-    } catch (error) {
-      console.error('Error updating profile image:', error);
-    }
 
-    toggleImageModal();
-  };
-
-  const fetchUserProfile = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch( `${config.localhosts}/api/user-profile/`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setName(data.name || '');
-        setProfileImage(data.profile_photo); 
-      } else {
-        console.error('Failed to fetch user profile');
+      let profilePhotoUrl = data.profile_photo;
+      if (profilePhotoUrl && !profilePhotoUrl.startsWith('http')) {
+        // 프로필 이미지 URL이 상대 경로일 경우, 서버 URL을 붙여줍니다.
+        profilePhotoUrl = `${config.localhosts}${profilePhotoUrl}`;
       }
-    } catch (error) {
-      console.error('Error:', error);
+
+      setName(data.name || '');
+      setProfileImage(profilePhotoUrl || ''); 
+    } else {
+      console.error('Failed to fetch user profile');
     }
-  };
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
 
   useEffect(() => {
     fetchUserProfile();
@@ -124,11 +132,15 @@ const MyPage = () => {
 
         {/* 프로필 이미지 */}
         <div className="mb-4">
-          <img
-            src={profileImage}
-            alt="프로필 이미지"
-            className="w-24 h-24 rounded-full mx-auto mb-4"
-          />
+        <img
+          src={
+            profileImage && profileImage !== ""
+              ? profileImage  // 사용자가 설정한 이미지 사용
+              : '/user_img.jpg'  // 기본 이미지 사용
+          }
+          alt="프로필 이미지"
+          className="w-24 h-24 rounded-full mx-auto mb-4"
+        />
           <h2 className="text-xl font-bold">{name}</h2> {/* 사용자 이름 표시 */}
           <button
             onClick={toggleImageModal}

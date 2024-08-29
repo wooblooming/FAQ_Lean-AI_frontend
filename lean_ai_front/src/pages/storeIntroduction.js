@@ -54,7 +54,11 @@ const StoreIntroduce = () => {
     <div className="flex justify-center items-center min-h-screen">
       <div className="border-blue-300 border p-5 rounded-lg shadow-lg flex flex-col items-center text-center mt-4 mb-2 w-10/12 h-3/6">
         <div className="rounded-lg p-8 w-full max-w-md text-center mb-2 relative">
-          <img src={`${config.localhosts}${storeData.store_image}`} alt="Store" className="mx-auto mb-4  w-72 h-56 object-contain" />
+          <img           src={
+            storeData.store_image
+              ? `${config.localhosts}${storeData.store_image}`
+              : '/testBanner.png'  // store_image가 null인 경우 기본 이미지 사용
+          } alt="Store" className="mx-auto mb-4  w-72 h-56 object-contain" />
           <p className="font-bold text-2xl">{storeData.store_name}</p>
         </div>
 

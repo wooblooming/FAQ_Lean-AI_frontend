@@ -22,6 +22,7 @@ export default function ChangeInfo({ }) {
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [message, setMessage] = useState('');
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const defaultImagePath = '/testBanner.png';
 
   const fetchStoreInfo = useCallback(async () => {
     try {
@@ -47,9 +48,11 @@ export default function ChangeInfo({ }) {
         setStoreHours(firstStore.opening_hours || "");
         setMenuPrices(firstStore.menu_price || "");
         const bannerPath = firstStore.banner || "";
-        const storeImageUrl = bannerPath.startsWith("/media/")
-          ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
-          : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`;
+        const storeImageUrl = bannerPath
+        ? bannerPath.startsWith("/media/")
+          ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`  // 사용자가 설정한 이미지
+          : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
+        : '/testBanner.png';  // 기본 이미지
 
         setStoreImage(storeImageUrl);
       } else {
@@ -100,7 +103,7 @@ export default function ChangeInfo({ }) {
   }, [closeImageModal]);
 
   const applyDefaultImage = useCallback(() => {
-    setStoreImage('/test_image.png');
+    setStoreImage('/testBanner.png');
     closeImageModal();
   }, [closeImageModal]);
 
@@ -156,12 +159,11 @@ export default function ChangeInfo({ }) {
     try {
       const formData = new FormData();
   
-      // FormData에 데이터 추가
       formData.append('store_name', storeName || "");
       formData.append('opening_hours', storeHours || "");
       formData.append('menu_price', menuPrices || "");
   
-      if (storeImage) {
+      if (storeImage && storeImage !== '/testBanner.png') {
         if (storeImage instanceof File) {
           formData.append('banner', storeImage);
         } else if (typeof storeImage === 'string') {
@@ -172,6 +174,8 @@ export default function ChangeInfo({ }) {
           console.error('Invalid image format');
           return;
         }
+      } else {
+        formData.append('banner', '');  // 기본 이미지일 경우 빈 문자열로 설정
       }
   
       const response = await fetch(`${config.localhosts}/api/user-stores/${storeId}/`, {
@@ -220,7 +224,13 @@ export default function ChangeInfo({ }) {
             <div className="image-container relative inline-block">
               <img
                 id="storeImage"
-                src={storeImage instanceof File ? URL.createObjectURL(storeImage) : storeImage}
+                src={
+                  storeImage && storeImage !== "" 
+                    ? storeImage instanceof File 
+                      ? URL.createObjectURL(storeImage) 
+                      : storeImage 
+                    : '/testBanner.png' // 기본 이미지 표시
+                }
                 className="mx-auto mb-4 w-72 h-56 object-contain cursor-pointer"
                 alt="Store"
               />
