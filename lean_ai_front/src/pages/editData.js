@@ -38,7 +38,7 @@ export default function DataEditPage() {
 
   // 3. 파일, 제목, 내용 모두 업로드
   const handleSubmit = async () => {
-    if (!title && !content && !document.getElementById('fileInput').files[0]) {
+    if (!title && !content) {
       openModal('요청 사항을 입력해주세요.'); // 입력이 없는 경우 경고 모달 표시
       return;
     }
@@ -84,7 +84,7 @@ export default function DataEditPage() {
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs">
         {/* 뒤로가기 버튼 및 제목을 동일선상에 배치 */}
         <div className="mb-4 flex items-center">
-          <Link href="/myPage" className="text-gray-500">
+          <Link href="/mainPageForPresident" className="text-gray-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
