@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import config from '../../config';
 
 export default function DataEditPage() {
   const [fileName, setFileName] = useState('');
@@ -65,10 +66,16 @@ export default function DataEditPage() {
         openModal('요청되었습니다!'); // 성공 메시지 모달
         resetForm(); // 요청 성공 후 폼 초기화
       } else {
-        console.error('요청 전송 실패:', response.statusText);
+        const errorData = await response.json(); // 서버에서 반환된 JSON 에러 메시지를 읽음
+        if (errorData && errorData.file) {
+          openModal(errorData.file[0]); // 서버에서 반환된 파일 관련 에러 메시지 표시
+        } else {
+          openModal('요청 전송 실패: ' + response.statusText); // 기타 에러 메시지 표시
+        }
       }
     } catch (error) {
       console.error('요청 전송 중 오류 발생:', error);
+      openModal('요청 전송 중 오류 발생: ' + error.message); // 네트워크 오류 등의 경우
     }
   };
 
