@@ -36,46 +36,51 @@ export default function DataEditPage() {
     document.getElementById('fileInput').value = ''; // 파일 입력 초기화
   };
 
-  // 3. 파일, 제목, 내용 모두 업로드
   const handleSubmit = async () => {
-    if (!title && !content) {
-      openModal('요청 사항을 입력해주세요.'); // 입력이 없는 경우 경고 모달 표시
-      return;
-    }
-
-    const formData = new FormData();
     const fileInput = document.getElementById('fileInput');
-
-    formData.append('title', title);
-    formData.append('content', content);
-    
-    if (fileInput.files[0]) {
-      formData.append('file', fileInput.files[0]);
-    }
-
-    try {
-      const response = await fetch(`${config.localhosts}/api/edit/`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (response.ok) {
-        openModal('요청되었습니다!'); // 성공 메시지 모달
-        resetForm(); // 요청 성공 후 폼 초기화
-      } else {
-        const errorData = await response.json(); // 서버에서 반환된 JSON 에러 메시지를 읽음
-        if (errorData && errorData.file) {
-          openModal(errorData.file[0]); // 서버에서 반환된 파일 관련 에러 메시지 표시
-        } else {
-          openModal('요청 전송 실패: ' + response.statusText); // 기타 에러 메시지 표시
-        }
+    const file = fileInput.files[0];
+  
+    // 업로드 가능 여부를 확인하는 조건문
+    if (
+      (file && !title && !content) ||  // 조건 1
+      (file && title && !content) ||   // 조건 2 -> 업로드 불가능
+      (file && title && content) ||    // 조건 3
+      (!file && title && content)      // 조건 6
+    ) {
+      const formData = new FormData();
+      formData.append('title', title || '');
+      formData.append('content', content || '');
+      
+      if (file) {
+        formData.append('file', file);
       }
-    } catch (error) {
-      console.error('요청 전송 중 오류 발생:', error);
-      openModal('요청 전송 중 오류 발생: ' + error.message); // 네트워크 오류 등의 경우
+  
+      try {
+        const response = await fetch(`${config.localhosts}/api/edit/`, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+  
+        if (response.ok) {
+          openModal('요청되었습니다!'); // 성공 메시지 모달
+          resetForm(); // 요청 성공 후 폼 초기화
+        } else {
+          const errorData = await response.json(); // 서버에서 반환된 JSON 에러 메시지를 읽음
+          if (errorData && errorData.file) {
+            openModal(errorData.file[0]); // 서버에서 반환된 파일 관련 에러 메시지 표시
+          } else {
+            openModal('요청 전송 실패: ' + response.statusText); // 기타 에러 메시지 표시
+          }
+        }
+      } catch (error) {
+        console.error('요청 전송 중 오류 발생:', error);
+        openModal('요청 전송 중 오류 발생: ' + error.message); // 네트워크 오류 등의 경우
+      }
+    } else {
+      openModal('파일, 제목, 내용 중 필요한 정보가 없습니다.'); // 업로드 불가능한 경우 경고 모달 표시
     }
   };
 
