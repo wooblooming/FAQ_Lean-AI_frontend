@@ -1,0 +1,7 @@
+{
+    "watch": ["public"],
+    "ext": "png, jpg, jpeg",
+    "ignore": ["node_modules"],
+    "exec": "npm run build && npm start"
+  }
+  

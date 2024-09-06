@@ -3,13 +3,14 @@ import Link from 'next/link';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 import ModalResetPassword from '../components/resetPasswordModal'; // 비밀번호 재설정 모달 컴포넌트
+import config from '../../config';
 
 // FindPassword 함수형 컨포넌트 정의
 function FindPassword() {
   // 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState(''); // 모달에 표시할 메시지
-  const [formData, setFormData] = useState({ phone: '', verificationCode: '' });
+  const [formData, setFormData] = useState({ id: '', phone: '', verificationCode: '' });
   const [codeSent, setCodeSent] = useState(false); // 인증번호 전송 여부 확인
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
@@ -34,12 +35,12 @@ const handleSendCode = async () => {
   }
 
   try {
-    const response = await fetch(`${config.localhosts}/api/send-code/`, {
+    const response = await fetch(`${config.apiDomain}/api/send-code/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ phone: formData.phone, type: 'findidpw' }),
+      body: JSON.stringify({ id: formData.id, phone: formData.phone, type: 'findPW' }),
     });
 
     const data = await response.json();
@@ -49,6 +50,7 @@ const handleSendCode = async () => {
       setModalMessage('인증번호가 발송되었습니다!');
       setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
     } else {
+      console.log(data.message)
       setErrorMessage(data.message);
       setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
     }
@@ -62,7 +64,7 @@ const handleSendCode = async () => {
   // 인증번호 확인
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch(`${config.localhosts}/api/verify-code/`, {
+      const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +72,7 @@ const handleSendCode = async () => {
         body: JSON.stringify({
           phone: formData.phone,
           code: formData.verificationCode,
-          type: 'findidpw'
+          type: 'findPW'
         }),
       });
 
@@ -93,6 +95,10 @@ const handleSendCode = async () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage(''); // 모달 메시지 초기화
+    setFormData({
+      ...formData,
+      verificationCode: '',  // 인증번호 입력값 초기화
+  });
   };
 
   // 에러 메시지 모달 닫기
@@ -137,7 +143,14 @@ const handleSendCode = async () => {
         {/* 입력 탭 - 아이디 입력 필드 */}
         <div className="mt-4">
           <div className="flex items-center mb-4">
-            <input type="text" className="flex-grow border-b border-gray-300 p-2 focus:outline-none text-black" placeholder="아이디 입력" />
+            <input
+              type="text"
+              name="id" // name 속성 추가
+              value={formData.id} // 상태와 연결
+              onChange={handleInputChange} // 상태 업데이트를 위한 이벤트 핸들러 연결
+              className="flex-grow border-b border-gray-300 p-2 focus:outline-none text-black"
+              placeholder="아이디 입력"
+            />
           </div>
 
           {/* 입력 탭 - 휴대폰 번호 입력 필드 */}
@@ -177,11 +190,6 @@ const handleSendCode = async () => {
       {/* 모달창 */}
       <ModalMSG show={isModalOpen} onClose={handleCloseModal} title=" ">
         {modalMessage}
-        <div className="flex justify-center mt-4">
-          <button onClick={handleCloseModal} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
-            확인
-          </button>
-        </div>
       </ModalMSG>
 
       {/* 에러 메시지 모달 */}
@@ -197,11 +205,6 @@ const handleSendCode = async () => {
             errorMessage
           )}
         </p>
-        <div className="flex justify-center mt-4">
-          <button onClick={handleErrorMessageModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
-            확인
-          </button>
-        </div>
       </ModalErrorMSG>
 
       {/* 비밀번호 재설정 모달 */}

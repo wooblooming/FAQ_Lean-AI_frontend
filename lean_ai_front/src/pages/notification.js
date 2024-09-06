@@ -4,6 +4,7 @@ import Link from 'next/link';
 const NoticePage = () => {
   const [selectedNotice, setSelectedNotice] = useState(null);
 
+  // 공지사항을 jSON 형태로 작성
   const notices = [
     {
       id: 1,
@@ -48,8 +49,8 @@ const NoticePage = () => {
           감사합니다.
           <br /><br />
           <a
-            href="/무물 서비스 데이터 입력 가이드라인.xlsx"
-            download="FAQ_데이터_입력_양식.xlxs"
+            href="/mumul service data guideline.xlsx"
+            download="mumul service data guideline.xlsx"
             className="text-blue-500 underline"
           >
             데이터 입력 양식 및 가이드라인 다운로드
@@ -59,6 +60,7 @@ const NoticePage = () => {
     },
   ];
 
+  // 선택한 공지사항의 상세 내용 확인
   const handleButtonClick = (id) => {
     setSelectedNotice(prevSelected => (prevSelected === id ? null : id));
   };
@@ -102,8 +104,9 @@ const NoticePage = () => {
               <div className="flex-1">
                 <h2 className="text-lg font-semibold whitespace-nowrap">{notice.title}</h2>
                 <p className="text-sm text-gray-500 whitespace-nowrap">{notice.description}</p>
+                <div className="text-sm text-gray-400 whitespace-nowrap">{notice.date}</div>
               </div>
-              <div className="text-sm text-gray-400 whitespace-nowrap">{notice.date}</div>
+              
             </div>
 
             {selectedNotice === notice.id && (

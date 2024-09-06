@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
-import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import ModalMSG from '../components/modalMSG'; 
+import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 
-function FindId() {
-  // 상태 관리
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState(''); // 모달에 표시할 메시지
-  const [formData, setFormData] = useState({ phone: '', verificationCode: '' });
+function FindId() { 
+  const [formData, setFormData] = useState({ phone: '', verificationCode: '' }); // 백엔드로 보낼 데이터 형식 
   const [CodeSent, setCodeSent] = useState(false); // 인증번호 전송 여부 확인
-  const [errorMessage, setErrorMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false); // 메시지 모달
+  const [modalMessage, setModalMessage] = useState(''); // 모달에 표시할 메시지
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-
 
   const router = useRouter();
 
@@ -37,16 +35,19 @@ const handleSendCode = async () => {
   }
 
   try {
-    const response = await fetch(`${config.localhosts}/api/send-code/`, {
+    const response = await fetch(`${config.apiDomain}/api/send-code/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ phone: formData.phone, type: 'findidpw' }),
+      // findID라는 타입을 지정해서 백엔드로 전송
+      body: JSON.stringify({ phone: formData.phone, type: 'findID' }), 
     });
 
     const data = await response.json();
-
+    // 디버깅용: 서버로부터 받은 데이터를 출력
+    // console.log(data);
+    
     if (data.success) {
       setCodeSent(true);
       setModalMessage('인증번호가 발송되었습니다!');
@@ -65,7 +66,7 @@ const handleSendCode = async () => {
   // 인증번호 확인
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch(`${config.localhosts}/api/verify-code/`, {
+      const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +74,7 @@ const handleSendCode = async () => {
         body: JSON.stringify({
           phone: formData.phone,
           code: formData.verificationCode,
-          type: 'findidpw'
+          type: 'findID'
         }),
       });
 
@@ -167,11 +168,6 @@ const handleSendCode = async () => {
       {/* 모달창 */}
       <ModalMSG show={isModalOpen} onClose={handleCloseModal} title=" ">
         {modalMessage}
-        <div className="flex justify-center mt-4">
-          <button onClick={handleCloseModal} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
-            확인
-          </button>
-        </div>
       </ModalMSG>
 
       {/* 에러 메시지 모달 */}
@@ -187,11 +183,6 @@ const handleSendCode = async () => {
             errorMessage
           )}
         </p>
-        <div className="flex justify-center mt-4">
-          <button onClick={handleErrorMessageModalClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
-            확인
-          </button>
-        </div>
       </ModalErrorMSG>
     </div>
   );

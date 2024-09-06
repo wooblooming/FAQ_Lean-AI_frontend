@@ -1,4 +1,3 @@
-// components/verificationModal.js
 import React from 'react';
 
 const VerificationModal = ({ isOpen, onClose, onSubmit, verificationCode, onChange, errorMessage }) => {

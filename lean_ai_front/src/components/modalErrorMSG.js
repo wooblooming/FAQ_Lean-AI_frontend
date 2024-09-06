@@ -1,9 +1,9 @@
 import React from 'react';
 
 // ModalMSG 컴포넌트: 짧은 메시지가 있는 모달 창을 렌더링하는 컴포넌트
-const ModalMSG = ({ show, onClose, title, children }) => {
+const ModalErrorMSG = ({ show, onClose, title, children }) => {
     // 모달이 보이지 않아야 할 때(null 반환)
-    title='Error';
+    title = 'Error';
     if (!show) return null;
 
     return (
@@ -11,15 +11,15 @@ const ModalMSG = ({ show, onClose, title, children }) => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center font-sans">
             {/* 모달의 콘텐츠를 담는 컨테이너 */}
             <div className="bg-white rounded-lg shadow-lg w-10/12 p-4 relative max-h-fit"
-                style={{ maxWidth: '400px' }}
+                style={{ maxWidth: '430px' }}
             >
                 {/* 모달 닫기 버튼 */}
-                <button 
+                <button
                     onClick={onClose}  // 버튼 클릭 시 onClose 함수를 호출하여 모달을 닫음
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                >   
+                >
                     {/* X 문자로 표시되는 닫기 아이콘 */}
-                    &times;  
+                    &times;
                 </button>
                 {/* 모달의 제목이 있을 경우 렌더링 */}
                 {title && <h2 className="text-2xl font-bold mb-4">{title}</h2>}
@@ -27,9 +27,15 @@ const ModalMSG = ({ show, onClose, title, children }) => {
                 <div className="max-h-[calc(80vh-4rem)] font-normal text-base text-center">
                     {children}  {/* 모달의 본문 내용 */}
                 </div>
+
+                <div className="flex justify-center mt-4">
+                    <button onClick={onClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
+                        확인
+                    </button>
+                </div>
             </div>
         </div>
     );
 };
 
-export default ModalMSG;
+export default ModalErrorMSG;

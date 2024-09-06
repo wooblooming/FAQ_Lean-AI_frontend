@@ -310,33 +310,33 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
     };
 
     return (
-        <ModalText show={show} onClose={onClose} title="이용약관 및 개인정보 수집 동의">
-            <p >이용약관</p>
-            <div ref={termsOfServiceRef} className="h-60 overflow-y-auto border rounded-md p-2 whitespace-pre text-wrap font-normal mb-4" >
-                <p>{termsOfService}</p>
-            </div>
+        <>
+            <ModalText show={show} onClose={onClose} title="이용약관 및 개인정보 수집 동의">
+                <p>이용약관</p>
+                <div className="h-60 overflow-y-auto border rounded-md p-2 whitespace-pre-wrap font-normal mb-4">
+                    <p>{termsOfService}</p>
+                </div>
 
-            <p>개인정보 수집 및 이용 동의</p>
-            <div className="h-60 overflow-y-auto border rounded-md p-2 whitespace-pre text-wrap font-normal">
-                <p>{informationOfService}</p>
-            </div>
+                <p>개인정보 수집 및 이용 동의</p>
+                <div className="h-60 overflow-y-auto border rounded-md p-2 whitespace-pre-wrap font-normal">
+                    <p>{informationOfService}</p>
+                </div>
 
-            <div className='flex flex-row items-center justify-center mt-3 mb-3'>
-                <div className='flex space-x-2'>
+                <div className="flex space-x-2 justify-center my-4">
                     <button
                         onClick={() => handleAgree(true)}
-                        className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
+                        className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500"
                     >
                         동의합니다
                     </button>
                     <button
                         onClick={() => handleAgree(false)}
-                        className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
+                        className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500"
                     >
                         동의하지 않습니다
                     </button>
                 </div>
-            </div>
+            </ModalText>
 
             {/* 에러 메시지 모달 */}
             <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
@@ -351,15 +351,8 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
                         errorMessage
                     )}
                 </p>
-                <div className="flex justify-center mt-4">
-                    <button onClick={handleErrorMessageModalClose} className="text-white bg-indigo-300 rounded-md px-4 py-2 border-l border-indigo-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-purple-400">
-                        확인
-                    </button>
-                </div>
             </ModalErrorMSG>
-
-        </ModalText>
+        </>
     );
 };
-
 export default TermsOfServiceModal;

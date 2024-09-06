@@ -25,7 +25,7 @@ const Chatbot = () => {
     setMessage('');
 
     try {
-      const response = await fetch(`${config.localhosts}/chatbot/chating/`, {
+      const response = await fetch(`${config.apiDomain}/chatbot/chating/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

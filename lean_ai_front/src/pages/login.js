@@ -10,29 +10,30 @@ import googleIcon from '../../public/btn_google.svg';
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 import config from '../../config';
 
-
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [username, setUsername] = useState(''); // 아이디 입력값을 저장
+    const [password, setPassword] = useState(''); // 비밀번호 입력값을 저장
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 성공 여부를 저장
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달의 상태
+    const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지를 저장
 
     const router = useRouter();
 
     const handleErrorMessageModalClose = () => {
-        setShowErrorMessageModal(false);
+        setShowErrorMessageModal(false); // 에러 메시지 모달을 닫음
     };
 
     const handleLoginClick = async () => {
-        if (!username || !password) {
+        // 아이디와 비밀번호가 입력되지 않은 경우 처리
+        if (!username || !password) { 
             setErrorMessage('아이디와 비밀번호를 입력해 주세요.');
             setShowErrorMessageModal(true);
             return;
         }
 
+        // 입력한 아이디와 비밀번호를 백엔드로 전송
         try {
-            const response = await fetch(`${config.localhosts}/api/login/`, {
+            const response = await fetch(`${config.apiDomain}/api/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,9 +42,12 @@ const Login = () => {
             });
 
             const data = await response.json();
+            
+            // 디버깅용: 서버로부터 받은 데이터를 출력
+            // console.log(data);
 
             if (response.ok && data.access) {  // 서버 응답이 성공적이고 access 토큰이 존재하는 경우
-                localStorage.setItem('token', data.access);  // 서버가 반환한 JWT 토큰 저장
+                localStorage.setItem('token', data.access);  // 서버가 반환한 JWT 토큰을 저장
                 setIsLoggedIn(true);
                 router.push('/mainPageForPresident');
             } else {
@@ -51,13 +55,14 @@ const Login = () => {
                 setShowErrorMessageModal(true);
             }
         } catch (error) {
-            console.error('로그인 오류:', error);
+            // console.error('로그인 오류:', error);
             setErrorMessage('로그인 요청 중 오류가 발생했습니다.');
             setShowErrorMessageModal(true);
         }
     };
 
-    const handleKeyPress = (e) => {
+    // 로그인 시 Enter 키 사용
+    const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleLoginClick();
         }
@@ -65,7 +70,7 @@ const Login = () => {
 
     return (
         <div className="bg-blue-100 flex justify-center items-center h-screen">
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md" style={{ width: '400px' }}>
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md m-10" style={{ width: '400px' }}>
                 <h1 className="text-3xl font-bold text-blue-400 text-center mb-8">MUMUL</h1>
                 <div className="space-y-4">
                     <div className="flex items-center border rounded-md px-4 py-2">
@@ -86,7 +91,7 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="ml-2 w-full border-none focus:ring-0"
-                            onKeyPress={handleKeyPress} // Enter 키를 누를 때 handleLoginClick을 호출
+                            onKeyDown={handleKeyDown} // Enter 키를 누를 때 handleLoginClick 호출
                         />
                     </div>
                     <button
@@ -132,13 +137,6 @@ const Login = () => {
                             errorMessage
                         )}
                     </p>
-                    <div className="flex justify-center mt-4">
-                        <button onClick={handleErrorMessageModalClose} 
-                                className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
-                        >
-                            확인
-                        </button>
-                    </div>
                 </ModalErrorMSG>
             </div>
         </div>

@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import Link from 'next/link';
+import config from '../../config';
 
 export default function DataEditPage() {
   const [fileName, setFileName] = useState('');
-  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState(''); // 모달 메시지 상태 추가
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -18,42 +17,44 @@ export default function DataEditPage() {
   };
 
   const openModal = (message) => {
-    setModalMessage(message); // 모달 메시지 설정
+    setModalMessage(message);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setModalMessage(''); // 모달 메시지 초기화
+    setModalMessage('');
   };
 
-  // 폼과 파일 입력을 초기화하는 함수
   const resetForm = () => {
     setFileName('');
-    setTitle('');
     setContent('');
     document.getElementById('fileInput').value = ''; // 파일 입력 초기화
   };
 
-  // 3. 파일, 제목, 내용 모두 업로드
   const handleSubmit = async () => {
-    if (!title && !content) {
-      openModal('요청 사항을 입력해주세요.'); // 입력이 없는 경우 경고 모달 표시
+    const fileInput = document.getElementById('fileInput');
+
+    // 파일과 내용이 모두 비어 있는지 확인
+    if (!content && !fileInput.files.length) {
+      openModal('파일이나 요청 사항 중 하나를 입력해주세요.');
       return;
     }
 
     const formData = new FormData();
-    const fileInput = document.getElementById('fileInput');
 
-    formData.append('title', title);
-    formData.append('content', content);
-    
-    if (fileInput.files[0]) {
+    // 요청 사항이 있으면 추가
+    if (content) {
+      formData.append('content', content);
+    }
+
+    // 파일이 있으면 추가
+    if (fileInput.files.length > 0) {
       formData.append('file', fileInput.files[0]);
     }
 
     try {
-      const response = await fetch(`${config.localhosts}/api/edit/`, {
+      const response = await fetch(`${config.apiDomain}/api/edit/`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -62,8 +63,8 @@ export default function DataEditPage() {
       });
 
       if (response.ok) {
-        openModal('요청되었습니다!'); // 성공 메시지 모달
-        resetForm(); // 요청 성공 후 폼 초기화
+        openModal('요청되었습니다!');
+        resetForm();
       } else {
         console.error('요청 전송 실패:', response.statusText);
       }
@@ -73,64 +74,55 @@ export default function DataEditPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs">
-        {/* 뒤로가기 버튼 및 제목을 동일선상에 배치 */}
-        <div className="mb-4 flex items-center">
-          <Link href="/mainPageForPresident" className="text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          <h1 className="text-xl font-bold flex-grow text-center">데이터 수정하기</h1>
-        </div>
+    <div className="relative z-10 flex flex-col">
+      <div className='fixed inset-0 flex items-center justify-center'>
+        <div className="flex flex-col rounded-lg p-8 w-full max-w-md text-center mb-2">
+          <div className="rounded-lg p-8 w-full">
+            <div className="mb-3 flex items-center justify-center">
+              <h1 className="text-2xl font-bold">데이터 수정하기</h1>
+            </div>
 
-        {/* 설명 텍스트 */}
-        <p className="text-sm text-gray-600 mb-6 text-center">아래 버튼을 눌러 파일을 첨부해주세요.</p>
+            {/* 설명 텍스트 */}
+            <p className="text-sm text-gray-600 mb-6 text-center">아래 버튼을 눌러 파일을 첨부해주세요.</p>
 
-        {/* 파일 첨부 버튼 */}
-        <div className="mb-6">
-          <input 
-            type="file" 
-            id="fileInput" 
-            className="hidden" 
-            onChange={handleFileChange} 
-          />
+            {/* 파일 첨부 버튼 */}
+            <div className="mb-6">
+              <input
+                type="file"
+                id="fileInput"
+                className="hidden"
+                onChange={handleFileChange}
+              />
 
-          <button 
-            className="w-full bg-red-500 text-white py-3 rounded-lg font-bold" 
-            onClick={() => document.getElementById('fileInput').click()}
-          >
-            파일 첨부
-          </button>
+              <button
+                className="w-full bg-red-500 text-white py-3 rounded-lg font-bold"
+                onClick={() => document.getElementById('fileInput').click()}
+              >
+                파일 첨부
+              </button>
 
-          <p id="fileName" className="mt-2 text-sm text-gray-700">{fileName}</p>
-        </div>
+              <p id="fileName" className="mt-2 text-sm text-gray-700">{fileName}</p>
+            </div>
 
-        {/* 요청 사항 폼 */}
-        <div className="mb-6">
-          <label className="block mb-2 text-left font-semibold">요청 사항</label>
-          <input 
-            type="text" 
-            placeholder="제목 남기기" 
-            className="w-full p-3 rounded-lg border mb-4" 
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <textarea 
-            placeholder="내용 입력" 
-            className="w-full p-3 rounded-lg border h-32 resize-none"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          ></textarea>
-          <p className="text-sm text-gray-500 mt-2">*파일이 없으시더라도 수정 요청이 가능합니다.</p>
-        </div>
+            {/* 요청 사항 폼 */}
+            <div className="mb-6">
+              <label className="block mb-2 text-left font-semibold">요청 사항</label>
+              <textarea
+                placeholder="내용 입력"
+                className="w-full p-3 rounded-lg border h-32 resize-none"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              ></textarea>
+              <p className="text-sm text-gray-500 mt-2">*파일이 없으시더라도 수정 요청이 가능합니다.</p>
+            </div>
 
-        {/* 요청하기 버튼 */}
-        <div className="text-center">
-          <button className="bg-red-500 text-white py-3 px-6 rounded-lg font-bold" onClick={handleSubmit}>
-            요청하기
-          </button>
+            {/* 요청하기 버튼 */}
+            <div className="text-center">
+              <button className="bg-red-500 text-white py-3 px-6 rounded-lg font-bold w-full" onClick={handleSubmit}>
+                요청하기
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

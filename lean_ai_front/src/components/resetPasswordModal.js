@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
@@ -14,10 +14,21 @@ function ModalResetPassword({ show, onClose, phone }) {
 
     const router = useRouter();
 
+    useEffect(() => {
+        // 모달이 열릴 때마다 입력 필드 초기화
+        if (show) {
+            setNewPassword('');
+            setConfirmPassword('');
+        }
+    }, [show]);
+
     // 모달 내 확인 버튼을 클릭했을 때 모달을 닫는 함수
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        setNewPassword('');
+        setConfirmPassword('');
         setModalMessage(''); // 모달 메시지 초기화
+        onClose(); // 모달 종료 시 초기화 작업과 함께 onClose 호출
     };
 
     // 에러 메시지 모달 닫기
@@ -48,7 +59,6 @@ function ModalResetPassword({ show, onClose, phone }) {
             const data = await response.json();
 
             if (data.success) {
-                onClose();
                 setModalMessage('비밀번호가 성공적으로 변경되었습니다.');
                 setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
 
@@ -56,13 +66,11 @@ function ModalResetPassword({ show, onClose, phone }) {
             } else {
                 setErrorMessage(data.message);
                 setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
-
             }
         } catch (error) {
             console.error('비밀번호 재설정 오류:', error);
             setErrorMessage('비밀번호 재설정 중 오류가 발생했습니다.');
             setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
-
         }
     };
 
@@ -86,7 +94,7 @@ function ModalResetPassword({ show, onClose, phone }) {
                 />
                 {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                 <div className="flex justify-end mt-4">
-                    <button onClick={onClose} className="text-white bg-gray-500 rounded-md px-4 py-2 mr-2">취소</button>
+                    <button onClick={handleCloseModal} className="text-white bg-gray-500 rounded-md px-4 py-2 mr-2">취소</button>
                     <button onClick={handleResetPassword} className="text-white bg-blue-500 rounded-md px-4 py-2">비밀번호 재설정</button>
                 </div>
 
@@ -94,7 +102,7 @@ function ModalResetPassword({ show, onClose, phone }) {
                 <ModalMSG show={isModalOpen} onClose={handleCloseModal} title=" ">
                     {modalMessage}
                     <div className="flex justify-end mt-4">
-                        <button onClick={onClose} className="text-white bg-gray-500 rounded-md px-4 py-2 mr-2">취소</button>
+                        <button onClick={handleCloseModal} className="text-white bg-gray-500 rounded-md px-4 py-2 mr-2">취소</button>
                         <button onClick={handleResetPassword} className="text-white bg-blue-500 rounded-md px-4 py-2">비밀번호 재설정</button>
                     </div>
                 </ModalMSG>

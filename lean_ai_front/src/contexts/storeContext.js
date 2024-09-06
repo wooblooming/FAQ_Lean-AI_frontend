@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import axios from 'axios';
+import config from '../../config';
+
 
 const StoreContext = createContext();
 
@@ -13,7 +15,7 @@ export function StoreProvider({ children }) {
   const fetchStoreData = async (id) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://:8000/api/storesinfo/`, {
+      const response = await axios.post(`${config.apiDomain}/api/storesinfo/`, {
         params: {
           store_id: id,  // 쿼리 파라미터로 store_id 전달
         },
