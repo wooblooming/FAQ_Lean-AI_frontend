@@ -6,21 +6,20 @@ import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모�
 import config from '../../config'; // config 파일에서 API URL 등을 가져오기
 
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showQrModal, setShowQrModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [message, setMessage] = useState('');
-  const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null);
-  const [storeName, setStoreName] = useState('');
+  const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null); // QR 코드 이미지 URL 관리
+  const [storeName, setStoreName] = useState(''); // 스토어 이름 관리
+  const [message, setMessage] = useState(''); // 일반 메시지 관리
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 관리
+  const [menuOpen, setMenuOpen] = useState(false); // 메뉴 열림/닫힘 상태 관리
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 열림/닫힘 상태 관리
+  const [showQrModal, setShowQrModal] = useState(false); // QR 코드 모달 열림/닫힘 상태 관리
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 열림/닫힘 상태 관리
+  const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달 열림/닫힘 상태 관리
 
-  const qrCanvasRef = useRef(null);
-
-  const router = useRouter();
-
-  // QR 코드를 가져오는 함수
+  const qrCanvasRef = useRef(null); // QR 코드 이미지를 캔버스에 그리기 위한 참조 생성
+  const router = useRouter(); 
+  
+  // QR 코드를 서버에서 가져오는 함수
   const fetchQRCode = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -37,8 +36,9 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
       const data = await response.json();
       //console.log('QR Code Data:', data);
-      setStoreName(data.store_name);
-      setQrCodeImageUrl(data.qr_code_image_url);
+      
+      setStoreName(data.store_name); // 스토어 이름 저장
+      setQrCodeImageUrl(data.qr_code_image_url); // QR 코드 이미지 URL 저장
       //console.log('QR code URL set:', data.qr_code_image_url);
     } catch (error) { 
       console.error('Error fetching QR code:', error);
@@ -49,49 +49,57 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
   useEffect(() => {
     if (!qrCodeImageUrl) {
-      fetchQRCode();
+      fetchQRCode(); // QR 코드 URL이 없으면 QR 코드 가져오기 함수 실행
     }
-  }, [qrCodeImageUrl]);
+  }, [qrCodeImageUrl]); // QR 코드 URL 상태 변경 감지
 
+    // 로그인/로그아웃 클릭 시 동작 함수
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
       setMenuOpen(false);
       setShowLogoutModal(true);
     } else {
-      router.push('/login');
+      router.push('/login'); // 로그인 상태가 아니면 로그인 페이지로 이동
     }
   };
 
+  // 로그아웃 확인 시 동작 함수
   const handleLogoutConfirm = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setShowLogoutModal(false);
-    router.push('/');
+    localStorage.removeItem('token'); // 로컬스토리지에서 토큰 제거
+    setIsLoggedIn(false); // 로그인 상태 변경
+    setShowLogoutModal(false); // 로그아웃 모달 닫기
+    router.push('/'); // 홈으로 이동
   };
 
+    // 로그아웃 취소 시 동작 함수
   const handleLogoutCancel = () => {
     setShowLogoutModal(false);
   };
 
+  // 메뉴 토글 함수
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    setMenuOpen(!menuOpen); // 메뉴 열림/닫힘 상태 토글
   };
 
+  // 마이페이지로 이동하는 함수
   const goToMypage = () => {
-    if (isLoggedIn) router.push('/myPage');
-    else router.push('/login');
+    if (isLoggedIn) 
+      router.push('/myPage');
+    else 
+      router.push('/login'); // 로그인 상태에 따라 페이지 이동
   };
 
+  // QR 코드 생성 모달을 여는 함수
   const goToQRCode = async () => {
     try {
       if (!qrCodeImageUrl) {
-        await fetchQRCode();
+        await fetchQRCode(); // QR 코드가 없으면 가져오기
       }
 
       if (qrCodeImageUrl) {
-        setShowQrModal(true);
+        setShowQrModal(true); // QR 코드가 있으면 모달 열기
       } else {
-        router.push('/myPage');
+        router.push('/myPage'); // QR 코드가 없으면 마이페이지로 이동
       }
     } catch (error) {
       console.error('Error fetching QR code:', error);
@@ -100,32 +108,36 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     }
   };
 
+  // 공지사항 페이지로 이동하는 함수
   const goToNotice = () => {
     if (isLoggedIn) router.push('/notification');
-    else router.push('/login');
+    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
   };
 
+  // 자주 묻는 질문 페이지로 이동하는 함수
   const goToQnA = () => {
     if (isLoggedIn) router.push('/qna');
-    else router.push('/login');
+    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
   };
 
+ // QR 코드 이미지를 저장하는 함수
   const handleSaveQRCode = () => {
     const canvas = qrCanvasRef.current;
     const ctx = canvas.getContext('2d');
     const img = new Image();
-    img.src = qrCodeImageUrl;
+    img.src = qrCodeImageUrl;  // QR 코드 이미지 URL 설정
 
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-      const dataUrl = canvas.toDataURL('image/png');
+      ctx.drawImage(img, 0, 0); // QR 코드 이미지를 캔버스에 그리기
+      const dataUrl = canvas.toDataURL('image/png'); // 이미지를 데이터 URL로 변환
 
+      // 이미지 다운로드 링크 생성 및 클릭
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `${storeName}_qr_code.png`; // storeName을 파일명에 포함
-      link.click();
+      link.download = `${storeName}_qr_code.png`; // 스토어 이름을 포함한 파일명 설정
+      link.click(); // 다운로드 트리거
     };
   };
 

@@ -6,25 +6,25 @@ import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모
 import config from '../../config';
 
 const ChangeInfo = ({ initialData }) => {
-  const [storeId, setStoreId] = useState('');
-  const [storeName, setStoreName] = useState('');
-  const [storeHours, setStoreHours] = useState('');
-  const [menuPrices, setMenuPrices] = useState([]); // 메뉴 항목 배열로 변경
-  const [storeAddess, setStoreAddess] = useState('');
-  const [storeTel, setStoreTel] = useState('');
+  const [storeId, setStoreId] = useState(''); // 매장 ID 상태
+  const [storeName, setStoreName] = useState(''); // 매장 이름 상태
+  const [storeHours, setStoreHours] = useState(''); // 영업 시간 상태
+  const [menuPrices, setMenuPrices] = useState([]); // 메뉴 가격 리스트 상태
+  const [storeAddess, setStoreAddess] = useState(''); // 매장 주소 상태
+  const [storeTel, setStoreTel] = useState(''); // 매장 전화번호 상태
   
-  const [storeImage, setStoreImage] = useState('');
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editText, setEditText] = useState('');
-  const [currentEditElement, setCurrentEditElement] = useState('');
-  const [currentMenuIndex, setCurrentMenuIndex] = useState(null); // 현재 수정 중인 메뉴 항목 인덱스
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [message, setMessage] = useState('');
+  const [storeImage, setStoreImage] = useState(''); // 매장 배너 이미지 상태
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 열림/닫힘 상태
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 수정 모달 열림/닫힘 상태
+  const [editText, setEditText] = useState(''); // 수정 중인 텍스트
+  const [currentEditElement, setCurrentEditElement] = useState(''); // 현재 수정 중인 요소
+  const [currentMenuIndex, setCurrentMenuIndex] = useState(null); // 현재 수정 중인 메뉴 항목의 인덱스
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 모달 열림/닫힘 상태
+  const [showMessageModal, setShowMessageModal] = useState(false); // 메시지 모달 열림/닫힘 상태
+  const [message, setMessage] = useState(''); // 일반 메시지 상태
 
-  // 데이터 가져오기
+  // 매장 정보 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,7 +42,7 @@ const ChangeInfo = ({ initialData }) => {
           localStorage.removeItem('token');
           return;
         }
-        const data = await response.json();
+        const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
         console.log('data : ',data);
 
         if (data.length > 0) {
@@ -59,8 +59,8 @@ const ChangeInfo = ({ initialData }) => {
               : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
             : '/chatbot.png'; // 기본 이미지 경로 설정
 
-          setStoreImage(storeImageUrl);
-          setStoreId(data[0].store_id);
+            setStoreImage(storeImageUrl); // 배너 이미지 설정
+            setStoreId(data[0].store_id); // 매장 ID 설정
         } else {
           setErrorMessage('매장 정보를 찾을 수 없습니다.');
           setShowErrorMessageModal(true);
@@ -72,20 +72,23 @@ const ChangeInfo = ({ initialData }) => {
       }
     };
 
-    fetchData();
+    fetchData(); // 페이지가 로드될 때 데이터 가져오기
   }, [initialData]);
 
+  // 이미지 모달 열기 함수
   const openImageModal = () => {
     setIsImageModalOpen(true);
   };
 
+  // 이미지 모달 닫기 함수
   const closeImageModal = () => {
     setIsImageModalOpen(false);
   };
 
+  // 수정 모달 열기 함수
   const openEditModal = (elementId, index = null) => {
-    setCurrentEditElement(elementId);
-    setCurrentMenuIndex(index); // 수정할 메뉴 인덱스를 저장
+    setCurrentEditElement(elementId); // 수정할 요소 설정
+    setCurrentMenuIndex(index); // 수정할 메뉴 인덱스 설정
     setEditText(
       elementId === 'storeName'
         ? storeName
@@ -95,16 +98,17 @@ const ChangeInfo = ({ initialData }) => {
             ? storeAddess 
             : elementId === 'storeTel'
               ? storeTel  
-              : index !== null ? menuPrices[index] : '' 
+              : index !== null ? menuPrices[index] : '' // 메뉴 항목의 텍스트 설정
     );
     setIsEditModalOpen(true);
   };
   
-
+  // 수정 모달 닫기 함수
   const closeEditModal = () => {
     setIsEditModalOpen(false);
   };
 
+  // 이미지를 선택하고 미리보기로 설정하는 함수
   const chooseImage = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -121,14 +125,16 @@ const ChangeInfo = ({ initialData }) => {
     input.click();
   };
 
+  // 기본 이미지를 설정하는 함수
   const applyDefaultImage = () => {
     setStoreImage('/chatbot.png');
     closeImageModal();
   };
 
-  // 변경 저장 함수
+  // 변경 사항 저장 함수
   const saveChanges = () => {
     if (editText.trim() !== '') {
+      // 수정할 요소에 따라 상태 업데이트
       if (currentEditElement === 'storeName') {
         setStoreName(editText);
       } else if (currentEditElement === 'storeHours') {
@@ -139,22 +145,25 @@ const ChangeInfo = ({ initialData }) => {
         setStoreTel(editText);  // storeTel 추가
       } else if (currentEditElement === 'menuPrices' && currentMenuIndex !== null) {
         const updatedMenuPrices = [...menuPrices];
-        updatedMenuPrices[currentMenuIndex] = editText; // 선택한 메뉴 항목 업데이트
+        updatedMenuPrices[currentMenuIndex] = editText; 
         setMenuPrices(updatedMenuPrices);
       } else if (currentEditElement === 'menuPrices') {
-        setMenuPrices([...menuPrices, editText]); // 새 메뉴 항목 추가
+        setMenuPrices([...menuPrices, editText]);
       }
     }
-    closeEditModal();
+    closeEditModal(); // 수정 모달 닫기
   };
   
-
   // 삭제 함수
   const deleteElement = () => {
     if (currentEditElement === 'storeName') {
       setStoreName(''); // 매장 이름 삭제
     } else if (currentEditElement === 'storeHours') {
       setStoreHours(''); // 영업 시간 삭제
+    } else if (currentEditElement === 'storeAddress') {
+      setStoreAddess(''); // 주소 삭제
+    } else if (currentEditElement === 'storeTel') {
+      setStoreTel(''); // 매장 전화번호 삭제
     } else if (currentEditElement === 'menuPrices' && currentMenuIndex !== null) {
       const updatedMenuPrices = menuPrices.filter((_, index) => index !== currentMenuIndex); // 해당 메뉴 항목 삭제
       setMenuPrices(updatedMenuPrices);
@@ -165,15 +174,15 @@ const ChangeInfo = ({ initialData }) => {
   // 변경 사항 저장 함수
   const saveAllChanges = async () => {
     try {
-      const formData = new FormData();
+      const formData = new FormData(); // 수정된 데이터를 폼 데이터에 추가
       formData.append('store_name', storeName || "");
       formData.append('opening_hours', storeHours || "");
       formData.append('menu_price', menuPrices.join('\n') || "");
-      formData.append('store_tel', storeTel || "");  // 전화번호 필드 추가
-      formData.append('store_address', storeAddess || "");  // 주소 필드 추가
+      formData.append('store_tel', storeTel || "");  
+      formData.append('store_address', storeAddess || ""); 
   
       if (storeImage && storeImage instanceof File) {
-        formData.append('banner', storeImage);
+        formData.append('banner', storeImage);  // 배너 이미지 파일 추가
       }
   
       const response = await fetch(`${config.apiDomain}/api/user-stores/${storeId}/`, {
@@ -189,7 +198,7 @@ const ChangeInfo = ({ initialData }) => {
       }
   
       const result = await response.json();  // 응답 결과 확인
-      console.log('Update result:', result);
+      //console.log('Update result:', result);
   
       setMessage('정보가 성공적으로 저장되었습니다.');
       setShowMessageModal(true);
@@ -217,7 +226,6 @@ const ChangeInfo = ({ initialData }) => {
         <div className=" bg-white relative h-auto "
           style={{ height: '45%', maxHeight: '200px' }}
         >
-        {/* 높이를 전체 모달의 1/3로 설정 */}
           <img
             id="storeImage"
             src={storeImage}
