@@ -27,10 +27,10 @@ const LandingPage = () => {
           <div className="text-2xl font-bold text-indigo-600">MUMUL</div>
           <nav>
             <ul className="flex space-x-6">
-              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300">서비스 소개</Link>
-              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300">기능</Link>
-              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300">가격</Link>
-              <Link href="/login" className="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition duration-300">체험해보기</Link>
+              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 whitespace-pre-line">서비스 소개</Link>
+              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 whitespace-pre-line">기능</Link>
+              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 whitespace-pre-line">가격</Link>
+              <Link href="/login" className="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition duration-300  whitespace-pre-line">체험해보기</Link>
             </ul>
           </nav>
         </div>
@@ -40,11 +40,14 @@ const LandingPage = () => {
       <section className="pt-32 pb-20 px-4 md:px-0">
         <div className="container mx-auto flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-10 md:mb-0">
-            <h1 className="text-4xl font-bold mb-6 leading-tight text-gray-800">
-              소상공인의 <span className="text-indigo-600">디지털 파트너</span><br />
+            <h1 className="text-4xl font-bold mb-6 leading-tight text-gray-800  whitespace-pre-line">
+              소상공인의 <span className="text-indigo-600 whitespace-pre-line">디지털 파트너</span><br />
               무물이 함께합니다
             </h1>
-            <p className="text-xl mb-8 text-gray-600">고객 응대, 매출 증대, 데이터 분석까지.<br />AI로 비즈니스의 새로운 지평을 열어보세요.</p>
+            <p className="text-xl mb-8 text-gray-600   whitespace-pre-line"> 
+              {`고객 응대, 매출 증대, 데이터 분석까지
+AI로 비즈니스의 새로운 지평을 열어보세요.`}
+            </p>
             <button 
               className="bg-indigo-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-indigo-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               onClick={handleLoginLogoutClick}
@@ -62,17 +65,17 @@ const LandingPage = () => {
       {/* Features */}
       <section className="py-20 bg-white skew-y-3">
         <div className="container mx-auto px-4 -skew-y-3">
-          <h2 className="text-4xl font-bold text-center mb-16 text-gray-800">비즈니스를 한 단계 끌어올리는 <span className="text-indigo-600">핵심 기능</span></h2>
+          <h2 className="text-4xl font-bold text-center mb-16 text-gray-800  whitespace-pre-line">비즈니스를 한 단계 끌어올리는 <span className="text-indigo-600  whitespace-pre-line">핵심 기능</span></h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 whitespace-pre-line">
               <MessageSquare size={48} className="text-indigo-600 mb-6" />
               <h3 className="text-2xl font-semibold mb-4 text-gray-800">스마트 응대</h3>
-              <p className="text-gray-600">AI가 고객의 문의에 실시간으로 응답하여 고객 만족도를 높이고 업무 효율을 극대화합니다.</p>
+              <p className="text-gray-600 ">AI가 고객의 문의에 실시간으로 응답하여 고객 만족도를 높이고 업무 효율을 극대화합니다.</p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
               <TrendingUp size={48} className="text-purple-600 mb-6" />
               <h3 className="text-2xl font-semibold mb-4 text-gray-800">매출 최적화</h3>
-              <p className="text-gray-600">고객 데이터를 분석하여 개인화된 프로모션을 제안, 매출 증대에 직접적으로 기여합니다.</p>
+              <p className="text-gray-600 ">고객 데이터를 분석하여 개인화된 프로모션을 제안, 매출 증대에 직접적으로 기여합니다.</p>
             </div>
             <div className="bg-gradient-to-br from-pink-50 to-red-50 p-8 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
               <PieChart size={48} className="text-pink-600 mb-6" />
@@ -84,12 +87,12 @@ const LandingPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-indigo-600 -skew-y-3 mt-20">
+      <section className="py-20 bg-indigo-600 -skew-y-3 mt-20  whitespace-pre-line">
         <div className="container mx-auto px-4 text-center skew-y-3">
           <h2 className="text-4xl font-bold mb-6 text-white">비즈니스의 미래를 지금 경험하세요</h2>
           <p className="text-xl mb-10 text-indigo-100">7일 무료 체험으로 무물의 강력한 기능을 직접 확인해보세요</p>
           <button 
-            className="bg-white text-indigo-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-indigo-100 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            className="bg-white text-indigo-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-indigo-100 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 whitespace-pre-line"
             onClick={handleLoginLogoutClick}
           >
             무료 체험 시작하기 <ChevronRight className="inline ml-2" />
@@ -103,7 +106,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h3 className="text-2xl font-bold mb-4">린에이아이</h3>
-              <p className="text-gray-400">소상공인의 디지털 혁신을 선도합니다.</p>
+              <p className="text-gray-400  whitespace-pre-line">소상공인의 디지털 혁신을 선도합니다.</p>
             </div>
             <div>
               <h4 className="text-lg font-semibold mb-4">빠른 링크</h4>

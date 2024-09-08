@@ -12,8 +12,9 @@ const ChangeInfo = ({ initialData }) => {
   const [menuPrices, setMenuPrices] = useState([]); // 메뉴 가격 리스트 상태
   const [storeAddess, setStoreAddess] = useState(''); // 매장 주소 상태
   const [storeTel, setStoreTel] = useState(''); // 매장 전화번호 상태
-  
-  const [storeImage, setStoreImage] = useState(''); // 매장 배너 이미지 상태
+
+  const [storeImage, setStoreImage] = useState(null); // 이미지 파일 상태
+  const [previewImage, setPreviewImage] = useState(''); // 미리보기 URL 상태
   const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 열림/닫힘 상태
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 수정 모달 열림/닫힘 상태
   const [editText, setEditText] = useState(''); // 수정 중인 텍스트
@@ -43,7 +44,7 @@ const ChangeInfo = ({ initialData }) => {
           return;
         }
         const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
-        console.log('data : ',data);
+        console.log('data : ', data);
 
         if (data.length > 0) {
           setStoreName(data[0].store_name || '');
@@ -52,15 +53,15 @@ const ChangeInfo = ({ initialData }) => {
           setStoreAddess(data[0].store_address || '');
           setStoreTel(data[0].store_tel || '');
 
-          const bannerPath = data[0].banner || "";
+          const bannerPath = data[0].banner || '';
           const storeImageUrl = bannerPath
-            ? bannerPath.startsWith("/media/")
+            ? bannerPath.startsWith('/media/')
               ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
               : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
             : '/chatbot.png'; // 기본 이미지 경로 설정
 
-            setStoreImage(storeImageUrl); // 배너 이미지 설정
-            setStoreId(data[0].store_id); // 매장 ID 설정
+          setPreviewImage(storeImageUrl); // 배너 이미지 미리보기 설정
+          setStoreId(data[0].store_id); // 매장 ID 설정
         } else {
           setErrorMessage('매장 정보를 찾을 수 없습니다.');
           setShowErrorMessageModal(true);
@@ -93,22 +94,24 @@ const ChangeInfo = ({ initialData }) => {
       elementId === 'storeName'
         ? storeName
         : elementId === 'storeHours'
-          ? storeHours
-          : elementId === 'storeAddess'
-            ? storeAddess 
-            : elementId === 'storeTel'
-              ? storeTel  
-              : index !== null ? menuPrices[index] : '' // 메뉴 항목의 텍스트 설정
+        ? storeHours
+        : elementId === 'storeAddess'
+        ? storeAddess
+        : elementId === 'storeTel'
+        ? storeTel
+        : index !== null
+        ? menuPrices[index]
+        : ''
     );
     setIsEditModalOpen(true);
   };
-  
+
   // 수정 모달 닫기 함수
   const closeEditModal = () => {
     setIsEditModalOpen(false);
   };
 
-  // 이미지를 선택하고 미리보기로 설정하는 함수
+  // 이미지를 선택하고 파일과 미리보기 URL을 설정하는 함수
   const chooseImage = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -117,7 +120,8 @@ const ChangeInfo = ({ initialData }) => {
     input.onchange = function (event) {
       if (event.target.files && event.target.files[0]) {
         const file = event.target.files[0];
-        setStoreImage(URL.createObjectURL(file));
+        setStoreImage(file); // 파일 객체 저장
+        setPreviewImage(URL.createObjectURL(file)); // 미리보기 URL 설정
         closeImageModal();
       }
     };
@@ -127,45 +131,45 @@ const ChangeInfo = ({ initialData }) => {
 
   // 기본 이미지를 설정하는 함수
   const applyDefaultImage = () => {
-    setStoreImage('/chatbot.png');
+    setPreviewImage('/chatbot.png'); // 미리보기 URL 변경
+    setStoreImage(null); // 파일을 null로 설정
     closeImageModal();
   };
 
   // 변경 사항 저장 함수
   const saveChanges = () => {
     if (editText.trim() !== '') {
-      // 수정할 요소에 따라 상태 업데이트
       if (currentEditElement === 'storeName') {
         setStoreName(editText);
       } else if (currentEditElement === 'storeHours') {
         setStoreHours(editText);
       } else if (currentEditElement === 'storeAddess') {
-        setStoreAddess(editText);  // storeAddess 추가
+        setStoreAddess(editText);
       } else if (currentEditElement === 'storeTel') {
-        setStoreTel(editText);  // storeTel 추가
+        setStoreTel(editText);
       } else if (currentEditElement === 'menuPrices' && currentMenuIndex !== null) {
         const updatedMenuPrices = [...menuPrices];
-        updatedMenuPrices[currentMenuIndex] = editText; 
+        updatedMenuPrices[currentMenuIndex] = editText;
         setMenuPrices(updatedMenuPrices);
       } else if (currentEditElement === 'menuPrices') {
         setMenuPrices([...menuPrices, editText]);
       }
     }
-    closeEditModal(); // 수정 모달 닫기
+    closeEditModal();
   };
-  
+
   // 삭제 함수
   const deleteElement = () => {
     if (currentEditElement === 'storeName') {
-      setStoreName(''); // 매장 이름 삭제
+      setStoreName('');
     } else if (currentEditElement === 'storeHours') {
-      setStoreHours(''); // 영업 시간 삭제
-    } else if (currentEditElement === 'storeAddress') {
-      setStoreAddess(''); // 주소 삭제
+      setStoreHours('');
+    } else if (currentEditElement === 'storeAddess') {
+      setStoreAddess('');
     } else if (currentEditElement === 'storeTel') {
-      setStoreTel(''); // 매장 전화번호 삭제
+      setStoreTel('');
     } else if (currentEditElement === 'menuPrices' && currentMenuIndex !== null) {
-      const updatedMenuPrices = menuPrices.filter((_, index) => index !== currentMenuIndex); // 해당 메뉴 항목 삭제
+      const updatedMenuPrices = menuPrices.filter((_, index) => index !== currentMenuIndex);
       setMenuPrices(updatedMenuPrices);
     }
     closeEditModal();
@@ -174,21 +178,22 @@ const ChangeInfo = ({ initialData }) => {
   // 변경 사항 저장 함수
   const saveAllChanges = async () => {
     try {
-      const formData = new FormData(); // 수정된 데이터를 폼 데이터에 추가
-      formData.append('store_name', storeName || "");
-      formData.append('opening_hours', storeHours || "");
-      formData.append('menu_price', menuPrices.join('\n') || "");
-      formData.append('store_tel', storeTel || "");  
-      formData.append('store_address', storeAddess || ""); 
+      const formData = new FormData();
+      formData.append('store_name', storeName || '');
+      formData.append('opening_hours', storeHours || '');
+      formData.append('menu_price', menuPrices.join('\n') || '');
+      formData.append('store_tel', storeTel || '');
+      formData.append('store_address', storeAddess || '');
   
-      if (storeImage && storeImage instanceof File) {
-        formData.append('banner', storeImage);  // 배너 이미지 파일 추가
+      // 이미지 파일 추가
+      if (storeImage) {
+        formData.append('banner', storeImage); // storeImage는 파일 객체여야 합니다.
       }
   
       const response = await fetch(`${config.apiDomain}/api/user-stores/${storeId}/`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: formData,
       });
@@ -197,8 +202,8 @@ const ChangeInfo = ({ initialData }) => {
         throw new Error('정보 저장에 실패했습니다.');
       }
   
-      const result = await response.json();  // 응답 결과 확인
-      //console.log('Update result:', result);
+      const result = await response.json();
+      console.log('Update result:', result);
   
       setMessage('정보가 성공적으로 저장되었습니다.');
       setShowMessageModal(true);
@@ -208,7 +213,7 @@ const ChangeInfo = ({ initialData }) => {
       setShowErrorMessageModal(true);
     }
   };
-
+  
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
     setMessage('');
@@ -228,7 +233,7 @@ const ChangeInfo = ({ initialData }) => {
         >
           <img
             id="storeImage"
-            src={storeImage}
+            src={previewImage}
             className="w-full h-full object-cover "
             alt="Store Banner"
           />
@@ -289,7 +294,6 @@ const ChangeInfo = ({ initialData }) => {
               <EditIcon style={{width: '20px', height:'20px'}}/>
             </button>
           </div>
-
 
           <hr className="border-t-2 border-gray-300 mt-2.5 mb-px w-full" />
         </div>
@@ -436,6 +440,6 @@ const ChangeInfo = ({ initialData }) => {
       </ModalErrorMSG>
     </div>
   );
-}
+};
 
 export default ChangeInfo;
