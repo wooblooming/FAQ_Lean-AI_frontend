@@ -7,7 +7,7 @@ const LandingPage = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const router = useRouter();
 
-  const handleLoginLogoutClick = () => {
+  const handleClick = () => {
       router.push('/login');
     }
 
@@ -20,17 +20,18 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       {/* Header */}
-      <header className="bg-white bg-opacity-90 fixed w-full z-10 transition-all duration-300" style={{
+      <header className="bg-black bg-opacity-90 fixed w-full z-10 transition-all duration-300" style={{
         boxShadow: scrollPosition > 50 ? '0 4px 6px rgba(0,0,0,0.1)' : 'none'
       }}>
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-indigo-600">MUMUL</div>
+        <div className="container mx-auto px-4 py-4 flex">
+          <div className="flex justify-between items-center font-bold text-indigo-600" style={{ fontSize: '24px' }}>MUMUL</div>
           <nav>
             <ul className="flex space-x-6">
-              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 whitespace-pre-line">서비스 소개</Link>
-              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 whitespace-pre-line">기능</Link>
-              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 whitespace-pre-line">가격</Link>
-              <Link href="/login" className="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition duration-300  whitespace-pre-line">체험해보기</Link>
+              {/* 
+              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 text-sm whitespace-pre-line">서비스 소개</Link>
+              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 text-sm whitespace-pre-line">기능</Link>
+              <Link href="#" className="text-gray-600 hover:text-indigo-600 transition duration-300 text-sm whitespace-pre-line">가격</Link>*/}
+              <Link href="/login" className="bg-indigo-600 text-white px-2 py-2 rounded-full hover:bg-indigo-700 transition duration-300 whitespace-pre-line">체험해보기</Link>
             </ul>
           </nav>
         </div>
@@ -39,9 +40,9 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 md:px-0">
         <div className="container mx-auto flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-10 md:mb-0">
+          <div className="md:w-1/2 mb-10 md:ml-4 ">
             <h1 className="text-4xl font-bold mb-6 leading-tight text-gray-800  whitespace-pre-line">
-              소상공인의 <span className="text-indigo-600 whitespace-pre-line">디지털 파트너</span><br />
+              소상공인의 <br /> <span className="text-indigo-600 whitespace-pre-line">디지털 파트너</span><br />
               무물이 함께합니다
             </h1>
             <p className="text-xl mb-8 text-gray-600   whitespace-pre-line"> 
@@ -50,14 +51,14 @@ AI로 비즈니스의 새로운 지평을 열어보세요.`}
             </p>
             <button 
               className="bg-indigo-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-indigo-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              onClick={handleLoginLogoutClick}
+              onClick={handleClick}
             >
               지금 시작하기 <ChevronRight className="inline ml-2" />
             </button>
           </div>
           <div className="md:w-1/2 relative">
-            <div className="w-80 h-80 bg-indigo-300 rounded-full absolute top-0 right-0 z-0 animate-pulse"></div>
-            <img src="챗봇.png" alt="BiZBot 대시보드 이미지" className="relative z-10 rounded-lg shadow-2xl" />
+          <div className="w-40 h-40 md:w-80 md:h-80 bg-indigo-300 rounded-full absolute top-0 right-0 z-0 animate-pulse"></div>
+            <img src="챗봇.png" alt="BiZBot 대시보드 이미지" className="relative z-5 rounded-lg shadow-2xl" />
           </div>
         </div>
       </section>
@@ -93,7 +94,7 @@ AI로 비즈니스의 새로운 지평을 열어보세요.`}
           <p className="text-xl mb-10 text-indigo-100">7일 무료 체험으로 무물의 강력한 기능을 직접 확인해보세요</p>
           <button 
             className="bg-white text-indigo-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-indigo-100 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 whitespace-pre-line"
-            onClick={handleLoginLogoutClick}
+            onClick={handleClick}
           >
             무료 체험 시작하기 <ChevronRight className="inline ml-2" />
           </button>
@@ -119,7 +120,7 @@ AI로 비즈니스의 새로운 지평을 열어보세요.`}
             <div>
               <h4 className="text-lg font-semibold mb-4">문의하기</h4>
               <p className="text-gray-400">ch@lean-ai.com</p>
-              <p className="text-gray-400">02-1234-5678</p>
+              {/*<p className="text-gray-400">02-1234-5678</p>*/}
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-700 text-center">

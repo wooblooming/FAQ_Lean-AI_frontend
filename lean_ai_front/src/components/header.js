@@ -4,6 +4,7 @@ import Link from 'next/link';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 import config from '../../config'; // config 파일에서 API URL 등을 가져오기
+import { MessageSquare, TrendingUp, PieChart, ChevronRight } from 'lucide-react';
 
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null); // QR 코드 이미지 URL 관리
@@ -17,8 +18,16 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달 열림/닫힘 상태 관리
 
   const qrCanvasRef = useRef(null); // QR 코드 이미지를 캔버스에 그리기 위한 참조 생성
-  const router = useRouter(); 
-  
+  const router = useRouter();
+
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollPosition(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // QR 코드를 서버에서 가져오는 함수
   const fetchQRCode = async () => {
     try {
@@ -36,11 +45,11 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
       const data = await response.json();
       //console.log('QR Code Data:', data);
-      
+
       setStoreName(data.store_name); // 스토어 이름 저장
       setQrCodeImageUrl(data.qr_code_image_url); // QR 코드 이미지 URL 저장
       //console.log('QR code URL set:', data.qr_code_image_url);
-    } catch (error) { 
+    } catch (error) {
       console.error('Error fetching QR code:', error);
       setErrorMessage('QR 코드 로딩 중 오류가 발생했습니다.');
       setShowErrorMessageModal(true);
@@ -53,7 +62,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     }
   }, [qrCodeImageUrl]); // QR 코드 URL 상태 변경 감지
 
-    // 로그인/로그아웃 클릭 시 동작 함수
+  // 로그인/로그아웃 클릭 시 동작 함수
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
       setMenuOpen(false);
@@ -71,7 +80,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     router.push('/'); // 홈으로 이동
   };
 
-    // 로그아웃 취소 시 동작 함수
+  // 로그아웃 취소 시 동작 함수
   const handleLogoutCancel = () => {
     setShowLogoutModal(false);
   };
@@ -81,11 +90,29 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     setMenuOpen(!menuOpen); // 메뉴 열림/닫힘 상태 토글
   };
 
+  // 인덱스로 이동하는 함수
+  const goToHome = () => {
+    router.push('/');
+  };
+
+  const goToServiceInfo=()=>{
+    if (isLoggedIn) router.push('/serviceIntro');
+    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
+  }
+
+  const goToFeature=()=>{
+    if (isLoggedIn) router.push('/features');
+    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
+  }
+  const goToPrice=()=>{
+    if (isLoggedIn) router.push('/pricing');
+    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
+  }
   // 마이페이지로 이동하는 함수
   const goToMypage = () => {
-    if (isLoggedIn) 
+    if (isLoggedIn)
       router.push('/myPage');
-    else 
+    else
       router.push('/login'); // 로그인 상태에 따라 페이지 이동
   };
 
@@ -120,7 +147,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     else router.push('/login'); // 로그인 상태에 따라 페이지 이동
   };
 
- // QR 코드 이미지를 저장하는 함수
+  // QR 코드 이미지를 저장하는 함수
   const handleSaveQRCode = () => {
     const canvas = qrCanvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -152,28 +179,33 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   };
 
   return (
-    <>
-      <nav className="flex justify-between items-center mb-6">
-        <div className="text-xl font-bold p-4">LEAN AI</div>
-        <div className="flex space-x-4">
-          <Link href="/notification" className="text-xl flex items-center justify-center w-8 h-8">
-            <i className="fas fa-bell"></i>
-          </Link>
-          <button
-            id="menuToggle"
-            className="text-xl flex items-center justify-center w-8 h-8 focus:outline-none"
-            onClick={toggleMenu}
-            style={{ marginRight: '10px' }}
-          >
-            <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
-              <div></div>
-              <div></div>
-              <div></div>
-            </span>
-          </button>
-        </div>
-      </nav>
-
+      <div>
+        {/* 헤더 섹션 */}
+        <header className="bg-white bg-opacity-90 fixed w-full z-10 transition-all duration-300" style={{
+          boxShadow: scrollPosition > 50 ? '0 4px 6px rgba(0,0,0,0.1)' : 'none'
+        }}>
+          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+            {/* 로고 */}
+            <div className="text-3xl md:text2xl font-bold text-indigo-600 pl-2 cursor-pointer" onClick={goToHome}>MUMUL</div>
+            <div className="flex space-x-4">
+              <Link href="/notification" className="text-xl flex items-center justify-center w-8 h-8">
+                <i className="fas fa-bell"></i>
+              </Link>
+              <button
+                id="menuToggle"
+                className="text-xl flex items-center justify-center w-8 h-8 focus:outline-none"
+                onClick={toggleMenu}
+                style={{ marginRight: '10px' }}
+              >
+                <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </span>
+              </button>
+            </div>
+          </div>
+        </header>
       {/* 오버레이 메뉴 */}
       {menuOpen && (
         <div
@@ -196,12 +228,16 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                 {isLoggedIn ? 'Log out' : 'Log in'}
               </p>
             </li>
-            <p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p>
-            <p className="mt-2 cursor-pointer text-white" onClick={goToQRCode}>QR코드 생성하기</p>
-            <p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p>
-            <p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p>
+            <li><p className="mt-2 cursor-pointer text-white" onClick={goToServiceInfo}>서비스 소개</p></li>
+            <li><p className="mt-2 cursor-pointer text-white" onClick={goToFeature}>기능</p></li>
+            <li><p className="mt-2 cursor-pointer text-white" onClick={goToPrice}>가격</p></li>
+            <li><p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p></li>
+            <li><p className="mt-2 cursor-pointer text-white" onClick={goToQRCode}>QR코드 생성하기</p></li>
+            <li><p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p></li>
+            <li><p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p></li>
           </ul>
         </div>
+
       )}
 
       {/* 로그아웃 모달 */}
@@ -249,7 +285,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
               X
             </button>
             <h2 className="text-xl font-bold mb-1.5">챗봇 전용 QR 코드</h2>
-            <p className='text-gray-400' style={{ whiteSpace: 'pre-line', textAlign: 'center'}}>
+            <p className='text-gray-400' style={{ whiteSpace: 'pre-line', textAlign: 'center' }}>
               {`이용하려는 챗봇의 QR코드
 이미지를 저장할 수 있습니다`}
             </p>
@@ -260,7 +296,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
               </>
             )}
             <p className='font-semibold underline hover:text-blue-400'
-                onClick={handleSaveQRCode}
+              onClick={handleSaveQRCode}
             >
               이미지 저장하기
             </p>
@@ -332,7 +368,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
           backdrop-filter: none;
         }
       `}</style>
-    </>
+    </div>
   );
 };
 

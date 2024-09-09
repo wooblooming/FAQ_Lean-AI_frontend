@@ -69,9 +69,9 @@ const Login = () => {
     };
 
     return (
-        <div className="bg-blue-100 flex justify-center items-center h-screen">
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md m-10" style={{ width: '400px' }}>
-                <h1 className="text-3xl font-bold text-blue-400 text-center mb-8">MUMUL</h1>
+        <div className="bg-indigo-100 flex justify-center items-center h-screen">
+            <div className=" bg-white rounded-lg shadow-lg p-8 max-w-md m-10" style={{ width: '400px' }}>
+                <h1 className="text-3xl font-bold text-violet-500 text-center mb-8">MUMUL</h1>
                 <div className="space-y-4">
                     <div className="flex items-center border rounded-md px-4 py-2">
                         <FontAwesomeIcon icon={faUser} />
@@ -95,7 +95,7 @@ const Login = () => {
                         />
                     </div>
                     <button
-                        className="bg-blue-200 text-black font-bold py-2 px-4 rounded-md w-full"
+                        className="bg-gradient-to-r from-purple-400 to-blue-400 text-white font-bold py-2 px-4 rounded-md w-full"
                         onClick={handleLoginClick}
                     >
                         로그인
@@ -115,7 +115,7 @@ const Login = () => {
                 </div>
                 <div className="mt-6 text-center text-gray-500 ">
                     <p>계정이 없나요?
-                        <Link href="/signForm" className="underline p-1 m-1">회원가입</Link>
+                        <Link href="/signForm" className="underline text-blue-500 p-1 m-1">회원가입 </Link>
                     </p>
                     <p className="mt-2">
                         <Link href="/findingId" className="text-blue-500">아이디 찾기</Link>

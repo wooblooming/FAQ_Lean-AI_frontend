@@ -28,7 +28,7 @@ const ModalMSG = ({ show, onClose, title, children }) => {
                 </div>
 
                 <div className="flex justify-center mt-4">
-                    <button onClick={onClose} className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 ">
+                    <button onClick={onClose} className="text-white bg-violet-300 rounded-md px-4 py-2 font-normal border-l hover:bg-violet-500 ">
                         확인
                     </button>
                 </div>

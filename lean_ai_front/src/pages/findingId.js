@@ -111,7 +111,7 @@ const handleSendCode = async () => {
   };
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center h-screen">
+    <div className="bg-indigo-100 flex items-center justify-center h-screen">
       <div className="bg-white w-full max-w-md mx-auto p-4 rounded-md shadow-md">
         <div className="flex items-center mb-4">
           <a href="/login" className="text-gray-600">
@@ -144,7 +144,7 @@ const handleSendCode = async () => {
               className="flex-grow border-b border-gray-300 p-2 focus:outline-none"
               placeholder="휴대폰 번호 입력('-' 제외)"
             />
-            <button onClick={handleSendCode} className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded">
+            <button onClick={handleSendCode} className="ml-3 px-4 py-2 text-white bg-indigo-300 hover:bg-violet-500 rounded-md px-2 py-2 font-medium whitespace-nowrap">
               인증번호 전송
             </button>
           </div>
@@ -158,7 +158,7 @@ const handleSendCode = async () => {
               className="flex-grow border-b border-gray-300 p-2 focus:outline-none"
               placeholder="인증번호 입력"
             />
-            <button onClick={handleVerifyCode} className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded">
+            <button onClick={handleVerifyCode} className="ml-3 px-4 py-2 text-white bg-indigo-300 hover:bg-violet-500 rounded-md px-2 py-2 font-medium whitespace-nowrap ">
               확인
             </button>
           </div>

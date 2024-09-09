@@ -223,9 +223,9 @@ const Signup = () => {
     };
 
     return (
-        <div className="bg-blue-100 flex flex-col items-center min-h-screen overflow-y-auto relative w-full">
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md m-10" style={{ width: '400px' }}>
-                <h1 className="text-3xl font-bold text-center mb-5 text-blue-400 mt-8">MUMUL</h1>
+        <div className="bg-indigo-100 flex justify-center items-center min-h-screen overflow-y-auto">
+            <div className=" bg-white rounded-lg shadow-lg p-5 max-w-md m-7 w-11/12" style={{ maxWidth: '400px' }}>
+                <h1 className="text-3xl font-bold text-violet-500 text-center mt-2 mb-4">MUMUL</h1>
                 <div className="space-y-2">
                     <div className='flex justify-start'>
                         <p className="text-red-500 text-sm font-bold">* 표시는 필수 입력 항목입니다.</p>
@@ -245,13 +245,13 @@ const Signup = () => {
                                     />
                                     <label htmlFor="user-id" className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                                 </div>
-                                <button className="flex items-center justify-end text-justify text-white bg-purple-400 rounded-md px-4 py-2 font-medium whitespace-nowrap hover:bg-purple-500 w-28"
+                                <button className="flex items-center justify-end text-justify text-white bg-indigo-300 hover:bg-violet-500 rounded-md px-4 py-2 font-medium whitespace-nowrap"
                                     onClick={() => setShowIdCheckModal(true)}>
                                     아이디 확인
                                 </button>
                             </div>
                         </label>
-                        <p className="text-gray-500 text-xs mt-2 font-medium text-start mb-3 whitespace-pre">영문 소문자와 숫자만을 사용해, 영문 소문자로 시작하는 <br /> 4~12자의 아이디를 입력해주세요.</p>
+                        <p className="text-gray-500 text-xs mt-2 font-medium text-start mb-3 whitespace-pre-lne">영문 소문자와 숫자만을 사용해, 영문 소문자로 시작하는 4~12자의 아이디를 입력해주세요.</p>
                     </div>
                 </div>
                 <div>
@@ -272,7 +272,7 @@ const Signup = () => {
                     {!passwordValid ? (
                         <p className="text-red-500 text-xs mt-1 font-medium mb-3">비밀번호가 8자 이상 영문 대문자, 소문자, 숫자, 특수문자 중 2가지 이상인지 확인해주세요</p>
                     ) : (
-                        <p className="text-gray-500 text-xs mt-1 font-medium text-start mb-3 whitespace-pre ">영문 대문자와 소문자, 숫자, 특수문자 중 2가지 이상을 조합하여 <br /> 8자~20자로 입력해주세요.</p>
+                        <p className="text-gray-500 text-xs mt-1 font-medium text-start mb-3 whitespace-pre-line ">영문 대문자와 소문자, 숫자, 특수문자 중 2가지 이상을 조합하여  8자~20자로 입력해주세요.</p>
                     )}
                 </div>
 
@@ -339,8 +339,8 @@ const Signup = () => {
                                 />
                                 <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                             </div>
-                            <button className="flex items-center justify-end text-justify text-white bg-purple-400 rounded-md py-2 font-base hover:bg-purple-500 w-24 whitespace-nowrap"
-                                onClick={handleSendCode}
+                            <button className="flex items-center justify-end text-center text-white bg-indigo-300 hover:bg-violet-500 rounded-md px-2 py-2 font-medium whitespace-nowrap"
+                                    onClick={handleSendCode}
                             >
                                 인증번호 받기
                             </button>

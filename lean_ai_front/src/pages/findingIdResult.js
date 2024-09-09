@@ -15,7 +15,7 @@ const IdFinder = () => {
   }, []);
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center h-screen">
+    <div className="bg-indigo-100 flex items-center justify-center h-screen">
       <div className="bg-white w-full max-w-md mx-auto p-4 rounded-md shadow-md">
         <div className="flex items-center mb-4">
           <Link href="/login" className="text-gray-600">
@@ -43,7 +43,7 @@ const IdFinder = () => {
           </div>
         </div>
 
-        <Link href="/login" className="w-full py-2 border border-black text-center block rounded-full cursor-pointer">
+        <Link href="/login" className="w-full py-2 bg-gradient-to-r from-purple-400 to-blue-400 text-white text-center block rounded-full cursor-pointer">
           확인 
         </Link>
       </div>
