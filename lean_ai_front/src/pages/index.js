@@ -48,9 +48,9 @@ const LandingPage = () => {
           {/* 네비게이션 메뉴 */}
           <nav>
             <ul className="flex space-x-6">
-              <li><Link href="/serviceIntro" className="text-gray-600 hover:text-indigo-600 transition duration-300">서비스 소개</Link></li>
-              <li><Link href="/features" className="text-gray-600 hover:text-indigo-600 transition duration-300">기능</Link></li>
-              <li><Link href="/pricing" className="text-gray-600 hover:text-indigo-600 transition duration-300">가격</Link></li>
+              <li><Link href="/update" className="text-gray-600 hover:text-indigo-600 transition duration-300">서비스 소개</Link></li>
+              <li><Link href="/update" className="text-gray-600 hover:text-indigo-600 transition duration-300">기능</Link></li>
+              <li><Link href="/update" className="text-gray-600 hover:text-indigo-600 transition duration-300">가격</Link></li>
               <li><Link href="/login" className="bg-indigo-600 text-white px-4 py-3 rounded-full hover:bg-indigo-700 transition duration-300">무료 체험</Link></li>
             </ul>
           </nav>
@@ -133,7 +133,6 @@ const LandingPage = () => {
             <div>
               <h4 className="text-lg font-semibold mb-4">문의하기</h4>
               <p className="text-gray-400">ch@lean-ai.com</p>
-              <p className="text-gray-400">02-1234-5678</p>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-700 text-center">
