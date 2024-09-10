@@ -223,7 +223,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="bg-indigo-100 flex justify-center items-center min-h-screen overflow-y-auto">
+        <div className="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex justify-center items-center min-h-screen overflow-y-auto">
             <div className=" bg-white rounded-lg shadow-lg p-5 max-w-md m-7 w-11/12" style={{ maxWidth: '400px' }}>
                 <h1 className="text-3xl font-bold text-violet-500 text-center mt-2 mb-4">MUMUL</h1>
                 <div className="space-y-2">

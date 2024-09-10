@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: sans-sans;
+    font-family: font-sans;
     border-radius: 1rem;
     padding: 0.5rem;
     width: 100%;
@@ -11,7 +11,7 @@
     text-align: center;
     margin-bottom: 1rem;
     transition: all 0.3s ease;
-	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+	  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     background-color:  rgb(165 180 252);
 }
   
@@ -21,6 +21,7 @@
   }
   
   .button .text-lg {
+    color: white;
     font-weight: 600;
     font-size: 1.25rem;
     margin-bottom: 0.375rem;
@@ -29,6 +30,7 @@
   
   .button .text-sm {
     color: #5F5F5F;
+    font-weight: 400;
     font-size: 0.875rem;
     white-space: nowrap;
   }

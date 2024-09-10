@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
 import Modal from '../components/modal';
@@ -85,6 +84,12 @@ const MainPageWithMenu = () => {
     return null;
   }
 
+  const goToChatbot = () => {
+    if (storeId) {
+      router.push(`/storeIntroductionOwner?id=${storeId}`);
+    }
+  };
+
   return (
     <div id='main' className="flex-grow bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen">
       <div className="relative w-full flex flex-col">
@@ -110,8 +115,8 @@ const MainPageWithMenu = () => {
             <p className="text-xlg"> <span className='font-bold text-2xl'>{storeName}</span>님을 <br />위한 서비스를 준비했어요.</p>
           </div>
 
-          <div className='flex justify-center items-stretch' style={{ minWidth: '30%', maxWidth: '360px' }}>
-            <div className="flex flex-col w-full items-stretch p-2" style={{ minWidth: '360px' }}>
+          <div id='button' className="flex justify-center items-stretch" style={{ minWidth: '30%', maxWidth: '360px' }}>
+            <div className="flex flex-col w-full items-stretch p-2">
               {/* 업종 정보 변경 모달 열기 */}
               <button
                 onClick={() => setIsChangeInfoModalOpen(true)}
@@ -119,8 +124,8 @@ const MainPageWithMenu = () => {
               >
                 <div className="flex flex-row justify-between items-center">
                   <div className="flex flex-col w-full ml-4">
-                    <p className='font-semibold text-lg mb-1.5 whitespace-nowrap'>업종 정보 변경</p>
-                    <p className='text-sm whitespace-nowrap' style={{ color: '#5F5F5F' }}>사업장 정보를 수정해야 할 때</p>
+                    <p className={styles['text-lg']}>업종 정보 변경</p>
+                    <p className={styles['text-sm']}>사업장 정보를 수정해야 할 때</p>
                   </div>
                   <div className="flex justify-end w-max">
                     <img src='/change.png' className={styles.icon} alt="업종 정보 수정 이미지" />
@@ -129,19 +134,20 @@ const MainPageWithMenu = () => {
               </button>
 
               {/* 챗봇 미리보기 링크 */}
-              <Link href={`/storeIntroductionOwner?id=${storeId}`} passHref>
-                <div className={styles.button}>
-                  <div className="flex flex-row justify-between items-center">
-                    <div className="flex flex-col w-full ml-4">
-                      <p className='font-semibold text-lg mb-1.5 whitespace-nowrap'>챗봇 미리보기</p>
-                      <p className='text-sm whitespace-nowrap' style={{ color: '#5F5F5F' }}>손님에게 보여지는 화면을 보고 싶을 때</p>
-                    </div>
-                    <div className="flex justify-end w-max">
-                      <img src='/preview.png' className={styles.icon} alt="챗봇 미리보기 이미지" />
-                    </div>
+              <button
+                onClick={goToChatbot}
+                className={styles.button}
+              >
+                <div className="flex flex-row justify-between items-center">
+                  <div className="flex flex-col w-full ml-4">
+                    <p className={styles['text-lg']}>챗봇 미리보기</p>
+                    <p className={styles['text-sm']}>손님에게 보여지는 화면을 보고 싶을 때</p>
+                  </div>
+                  <div className="flex justify-end w-max">
+                    <img src='/preview.png' className={styles.icon} alt="챗봇 미리보기 이미지" />
                   </div>
                 </div>
-              </Link>
+              </button>
 
               {/* 데이터 수정하기 모달 열기 */}
               <button
@@ -150,8 +156,8 @@ const MainPageWithMenu = () => {
               >
                 <div className="flex flex-row justify-between items-center">
                   <div className="flex flex-col w-full ml-4">
-                    <p className='font-semibold text-lg mb-1.5 whitespace-nowrap'>데이터 수정하기</p>
-                    <p className='text-sm whitespace-nowrap' style={{ color: '#5F5F5F' }}>챗봇 데이터 수정을 원할 때</p>
+                    <p className={styles['text-lg']}>데이터 수정하기</p>
+                    <p className={styles['text-sm']}>챗봇 데이터 수정을 원할 때</p>
                   </div>
                   <div className="flex justify-end w-max">
                     <img src='/modify.png' className={styles.icon} alt="FAQ 데이터 수정하기 이미지" />
