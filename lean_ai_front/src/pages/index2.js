@@ -11,10 +11,10 @@ function LandingMenu() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // 컴포넌트가 마운트된 이후에만 localStorage에 접근하도록 설정
+    setIsMounted(true); // 컴포넌트가 마운트된 이후에만 sessionStorage에 접근하도록 설정
 
     if (isMounted) {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (token) {
         setIsLoggedIn(true);
       }

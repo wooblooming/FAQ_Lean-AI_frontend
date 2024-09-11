@@ -9,9 +9,9 @@ const LandingPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);  // 로그인 상태 관리
   const router = useRouter();
 
-  // 페이지가 렌더링될 때 localStorage에서 토큰을 확인하여 로그인 상태를 설정
+  // 페이지가 렌더링될 때 sessionStorage에서 토큰을 확인하여 로그인 상태를 설정
   useEffect(() => {
-    const token = localStorage.getItem('token');  // localStorage에서 'token' 값 가져옴
+    const token = sessionStorage.getItem('token');  // sessionStorage에서 'token' 값 가져옴
     if (token) {
       setIsLoggedIn(true);  // 토큰이 있으면 로그인 상태로 설정
     } else {

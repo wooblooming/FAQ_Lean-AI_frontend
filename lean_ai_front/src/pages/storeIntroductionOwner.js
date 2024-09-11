@@ -36,7 +36,7 @@ const StoreIntroduceOwner = () => {
     if (id) {
       const fetchStoreData = async () => {
         try {
-          const token = localStorage.getItem('token'); 
+          const token = sessionStorage.getItem('token'); 
           const response = await axios.post(`${config.apiDomain}/api/storesinfo/`, 
             {
               store_id: id, // store_id를 POST 요청으로 전송

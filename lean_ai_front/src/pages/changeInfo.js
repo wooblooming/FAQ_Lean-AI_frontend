@@ -29,7 +29,7 @@ const ChangeInfo = ({ initialData }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
           method: 'POST',
           headers: {
@@ -40,7 +40,7 @@ const ChangeInfo = ({ initialData }) => {
         if (response.status === 401) {
           setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
           setShowErrorMessageModal(true);
-          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
           return;
         }
         const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
@@ -193,7 +193,7 @@ const ChangeInfo = ({ initialData }) => {
       const response = await fetch(`${config.apiDomain}/api/user-stores/${storeId}/`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
         body: formData,
       });
@@ -333,7 +333,7 @@ const ChangeInfo = ({ initialData }) => {
         <div className='flex bg-white mt-px items-center justify-center h-auto'>
           <button
             onClick={saveAllChanges}
-            className="mb-3 w-48 py-2 bg-blue-500 text-white text-center block rounded-full cursor-pointer absolute bottom-0"
+            className="mb-3 w-48 py-2 bg-indigo-300 hover:bg-violet-500 text-white text-center font-medium block rounded-full cursor-pointer absolute bottom-0"
           >
             모든 변경사항 저장
           </button>

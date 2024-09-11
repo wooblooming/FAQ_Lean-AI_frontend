@@ -47,7 +47,7 @@ const Login = () => {
             // console.log(data);
 
             if (response.ok && data.access) {  // 서버 응답이 성공적이고 access 토큰이 존재하는 경우
-                localStorage.setItem('token', data.access);  // 서버가 반환한 JWT 토큰을 저장
+                sessionStorage.setItem('token', data.access);  // 서버가 반환한 JWT 토큰을 저장
                 setIsLoggedIn(true);
                 router.push('/mainPageForPresident');
             } else {

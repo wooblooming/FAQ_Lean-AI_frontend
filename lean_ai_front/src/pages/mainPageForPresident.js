@@ -24,7 +24,7 @@ const MainPageWithMenu = () => {
   // 스토어 정보를 가져오는 함수
   const fetchStoreInfo = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         router.push('/login');
         return;
@@ -41,7 +41,7 @@ const MainPageWithMenu = () => {
       if (response.status === 401) {
         setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
         setShowErrorMessageModal(true);
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
         router.push('/login');
         return;
       }

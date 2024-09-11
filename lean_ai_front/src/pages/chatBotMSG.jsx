@@ -24,7 +24,7 @@ export default function Chatbot({ agentId }) {
         // 페이지 새로고침 시 세션 초기화
         const handlePageRefresh = () => {
             createNewSession();
-            localStorage.removeItem('greeted'); // 새로고침 시 greeted 상태 초기화
+            sessionStorage.removeItem('greeted'); // 새로고침 시 greeted 상태 초기화
         };
 
         const handleChatOpenChanged = (event) => {
@@ -32,11 +32,11 @@ export default function Chatbot({ agentId }) {
             const dfMessenger = document.querySelector('df-messenger');
 
             const sendGreetingMessage = () => {
-                if (dfMessenger && !localStorage.getItem('greeted')) {
+                if (dfMessenger && !sessionStorage.getItem('greeted')) {
                     try {
                         dfMessenger.sendQuery('안녕');
                         console.log('Sent greeting message automatically.');
-                        localStorage.setItem('greeted', 'true');
+                        sessionStorage.setItem('greeted', 'true');
                     } catch (error) {
                         console.error('Error sending greeting message:', error);
                     }

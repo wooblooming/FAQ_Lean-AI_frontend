@@ -87,7 +87,7 @@ const MyPage = () => {
       formData.append('profile_photo', file);
 
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
           method: 'POST',
           headers: {
@@ -118,7 +118,7 @@ const MyPage = () => {
     setProfileImage(defaultImageUrl); // 기본 이미지 URL 설정
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
         method: 'POST',
         headers: {
@@ -148,7 +148,7 @@ const MyPage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
           console.error('No token found');
           setErrorMessage("로그인 하신 후 이용해 주세요");
@@ -233,7 +233,7 @@ const MyPage = () => {
   // 변경 사항 저장 처리 함수
   const handleSaveChanges = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         console.error('No token found');
         setErrorMessage("로그인 하신 후 이용해 주세요");
@@ -274,7 +274,7 @@ const MyPage = () => {
   // QR 코드 생성 처리 함수
   const handleGenerateQrCode = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         setErrorMessage("로그인 하신 후 이용해 주세요");
         setShowErrorMessageModal(true);

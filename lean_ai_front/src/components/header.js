@@ -31,7 +31,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   // QR 코드를 서버에서 가져오는 함수
   const fetchQRCode = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const response = await fetch(`${config.apiDomain}/api/qrCodeImage/`, {
         method: 'POST',
         headers: {
@@ -74,7 +74,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
   // 로그아웃 확인 시 동작 함수
   const handleLogoutConfirm = () => {
-    localStorage.removeItem('token'); // 로컬스토리지에서 토큰 제거
+    sessionStorage.removeItem('token'); // 로컬스토리지에서 토큰 제거
     setIsLoggedIn(false); // 로그인 상태 변경
     setShowLogoutModal(false); // 로그아웃 모달 닫기
     router.push('/'); // 홈으로 이동
