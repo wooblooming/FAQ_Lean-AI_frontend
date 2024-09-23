@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from '../components/editIcon';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
@@ -8,6 +8,8 @@ import config from '../../config';
 const ChangeInfo = ({ initialData }) => {
   const [storeId, setStoreId] = useState(''); // 매장 ID 상태
   const [storeName, setStoreName] = useState(''); // 매장 이름 상태
+  const [storeIntroduction, setstoreIntroduction] = useState(''); // 매장 소개 상태
+  const [storeCategory, setStoreCategory] = useState(''); // 매장 종류 상태
   const [storeHours, setStoreHours] = useState(''); // 영업 시간 상태
   const [menuPrices, setMenuPrices] = useState([]); // 메뉴 가격 리스트 상태
   const [storeAddess, setStoreAddess] = useState(''); // 매장 주소 상태
@@ -44,10 +46,11 @@ const ChangeInfo = ({ initialData }) => {
           return;
         }
         const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
-        console.log('data : ', data);
 
         if (data.length > 0) {
           setStoreName(data[0].store_name || '');
+          setstoreIntroduction(data[0].store_introduction || '');
+          setStoreCategory(data[0].store_category || '');
           setStoreHours(data[0].opening_hours || '');
           setMenuPrices(data[0].menu_price ? data[0].menu_price.split('\n') : []); // 메뉴 데이터를 배열로 저장
           setStoreAddess(data[0].store_address || '');
@@ -93,15 +96,19 @@ const ChangeInfo = ({ initialData }) => {
     setEditText(
       elementId === 'storeName'
         ? storeName
-        : elementId === 'storeHours'
-        ? storeHours
-        : elementId === 'storeAddess'
-        ? storeAddess
-        : elementId === 'storeTel'
-        ? storeTel
-        : index !== null
-        ? menuPrices[index]
-        : ''
+        : elementId === 'storeIntroduction'
+          ? storeIntroduction
+          : elementId === 'storeCategory'
+            ? storeCategory
+            : elementId === 'storeHours'
+              ? storeHours
+              : elementId === 'storeAddess'
+                ? storeAddess
+                : elementId === 'storeTel'
+                  ? storeTel
+                  : index !== null
+                    ? menuPrices[index]
+                    : ''
     );
     setIsEditModalOpen(true);
   };
@@ -141,6 +148,10 @@ const ChangeInfo = ({ initialData }) => {
     if (editText.trim() !== '') {
       if (currentEditElement === 'storeName') {
         setStoreName(editText);
+      } else if (currentEditElement === 'storeIntroduction') {
+        setstoreIntroduction(editText);
+      } else if (currentEditElement === 'storeCategory') {
+        setStoreCategory(editText);
       } else if (currentEditElement === 'storeHours') {
         setStoreHours(editText);
       } else if (currentEditElement === 'storeAddess') {
@@ -162,6 +173,10 @@ const ChangeInfo = ({ initialData }) => {
   const deleteElement = () => {
     if (currentEditElement === 'storeName') {
       setStoreName('');
+    } else if (currentEditElement === 'storeIntroduction') {
+      setstoreIntroduction('');
+    } else if (currentEditElement === 'storeCategory') {
+      setStoreCategory('');
     } else if (currentEditElement === 'storeHours') {
       setStoreHours('');
     } else if (currentEditElement === 'storeAddess') {
@@ -179,17 +194,19 @@ const ChangeInfo = ({ initialData }) => {
   const saveAllChanges = async () => {
     try {
       const formData = new FormData();
+      formData.append('store_category', storeCategory || '');
+      formData.append('store_introduction', storeIntroduction || '');
       formData.append('store_name', storeName || '');
       formData.append('opening_hours', storeHours || '');
       formData.append('menu_price', menuPrices.join('\n') || '');
       formData.append('store_tel', storeTel || '');
       formData.append('store_address', storeAddess || '');
-  
+
       // 이미지 파일 추가
       if (storeImage) {
         formData.append('banner', storeImage); // storeImage는 파일 객체여야 합니다.
       }
-  
+
       const response = await fetch(`${config.apiDomain}/api/user-stores/${storeId}/`, {
         method: 'PUT',
         headers: {
@@ -197,14 +214,13 @@ const ChangeInfo = ({ initialData }) => {
         },
         body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error('정보 저장에 실패했습니다.');
       }
-  
+
       const result = await response.json();
-      console.log('Update result:', result);
-  
+      console.log(result);
       setMessage('정보가 성공적으로 저장되었습니다.');
       setShowMessageModal(true);
     } catch (error) {
@@ -213,7 +229,7 @@ const ChangeInfo = ({ initialData }) => {
       setShowErrorMessageModal(true);
     }
   };
-  
+
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
     setMessage('');
@@ -224,9 +240,18 @@ const ChangeInfo = ({ initialData }) => {
     setErrorMessage('');
   };
 
+  // storeCategory에 따라 메뉴 타이틀 설정
+  const menuTitle = storeCategory === 'RESTAURANT'
+    ? '메뉴'
+    : storeCategory === 'RETAIL'
+      ? '상품'
+      : storeCategory === 'PUBLIC'
+        ? '서비스'
+        : '기타';
+
   return (
     <div className='flex flex-col h-full w-full bg-white font-sans'>
-      <div id='banner' className="flex flex-col mt-1">
+      <div id='banner' className="flex flex-col mt-1 flex-grow">
         {/* 배너 이미지 */}
         <div className=" bg-white relative h-auto "
           style={{ height: '45%', maxHeight: '200px' }}
@@ -255,85 +280,137 @@ const ChangeInfo = ({ initialData }) => {
               onClick={() => openEditModal('storeName')}
               className="ml-2 text-gray-500 "
             >
-              <EditIcon style={{width: '20px', height:'20px'}}/>
+              <EditIcon style={{ width: '20px', height: '20px' }} />
+            </button>
+          </div>
+
+          <div id="introdution" className="flex flex-row items-start text-center ">
+            <div className='flex flex-col items-start text-start'>
+              <p className=" whitespace-pre font-semibold">
+                매장 소개 :
+                <button
+                  onClick={() => openEditModal('storeIntroduction')}
+                  className="ml-px text-gray-500"
+                >
+                  <EditIcon style={{ width: '20px', height: '20px' }} />
+                </button>
+                <br />
+              </p>
+              <p className=" whitespace-pre ml-2 mb-1">
+                {storeIntroduction}
+              </p>
+            </div>
+
+          </div>
+
+          <div id="category" className="flex flex-row items-start text-center ">
+            <div className='flex flex-row items-start text-start'>
+              <p className=" whitespace-pre-line font-semibold">
+                비즈니스 종류 :&nbsp;
+              </p>
+              <p className=" whitespace-pre ">
+                {storeCategory}
+              </p>
+            </div>
+            <button
+              onClick={() => openEditModal('storeCategory')}
+              className="ml-px text-gray-500"
+            >
+              <EditIcon style={{ width: '20px', height: '20px' }} />
             </button>
           </div>
 
           <div id="storeHours" className="flex flex-row items-start text-center ">
-            <p className=" whitespace-pre-line ">
-              영업시간 : {storeHours}
-            </p>
+            <div className='flex flex-row items-start text-start'>
+              <p className=" whitespace-pre-line font-semibold">
+                영업시간 :&nbsp;
+              </p>
+              <p className=" whitespace-pre ">
+                {storeHours}
+              </p>
+            </div>
             <button
               onClick={() => openEditModal('storeHours')}
               className="ml-px text-gray-500"
             >
-              <EditIcon style={{width: '20px', height:'20px'}}/>
+              <EditIcon style={{ width: '20px', height: '20px' }} />
             </button>
           </div>
 
           <div id="storeLocation" className="flex flex-row items-start text-center whitespace-pre-line">
-            <p className="whitespace-pre-line">
-              매장위치: &nbsp;{storeAddess}
-            </p>
+            <div className='flex flex-row items-start text-start'>
+              <p className=" whitespace-pre-line font-semibold">
+                매장위치 :&nbsp;
+              </p>
+              <p className=" whitespace-pre ">
+                {storeAddess}
+              </p>
+            </div>
             <button
               onClick={() => openEditModal('storeAddess')}
               className="ml-px text-gray-500"
             >
-              <EditIcon style={{width: '20px', height:'20px'}}/>
+              <EditIcon style={{ width: '20px', height: '20px' }} />
             </button>
           </div>
 
           <div id="storeTel" className="flex flex-row items-start text-center ">
-            <p className="whitespace-pre-line">
-              매장번호: &nbsp;{storeTel}
-            </p>
+            <div className='flex flex-row items-start text-start'>
+              <p className=" whitespace-pre-line font-semibold">
+                매장번호 :&nbsp;
+              </p>
+              <p className=" whitespace-pre ">
+                {storeTel}
+              </p>
+            </div>
             <button
               onClick={() => openEditModal('storeTel')}
               className="ml-px text-gray-500"
             >
-              <EditIcon style={{width: '20px', height:'20px'}}/>
+              <EditIcon style={{ width: '20px', height: '20px' }} />
             </button>
           </div>
 
           <hr className="border-t-2 border-gray-300 mt-2.5 mb-px w-full" />
         </div>
 
-        <div id='store-menu' 
-             className=' p-4 h-40'
-             style={{maxHeight:'60%'}}
+        <div id='store-menu'
+          className=' p-4 flex-grow'
+          style={{ maxHeight: '60%' }}
         >
           <p id="menuTitle" className="font-bold text-xl mb-2 h-auto">
-            상품
+            {menuTitle}
           </p>
           {menuPrices.map((menu, index) => (
             <div key={index}>
               <div className="flex flex-row items-start mb-4 text-center">
                 <p id={`menuPrice_${index}`} className="whitespace-pre-line">
-                  {menu}
+                  - {menu}
                 </p>
                 <button
                   onClick={() => openEditModal('menuPrices', index)}
                   className="ml-2 text-gray-500"
                 >
-                  <EditIcon style={{width: '20px', height:'20px'}}/>
+                  <EditIcon style={{ width: '20px', height: '20px' }} />
                 </button>
               </div>
               <hr className="border-t-1 border-gray-200 my-px w-full" />
             </div>
           ))}
-          
+
           <button
             onClick={() => openEditModal('menuPrices')} // 새로운 메뉴 항목 추가
             className="ml-2 mt-px text-blue-500"
           >
-            + 상품 추가
+            <p className='text-violet-500'> {`+ ${menuTitle} 추가`} </p>
           </button>
         </div>
 
-        <div className='flex bg-white mt-px items-center justify-center h-auto'>
+        <div className='flex bg-white items-center justify-center h-auto mt-auto'>
           <button
             onClick={saveAllChanges}
-            className="mb-3 w-48 py-2 bg-indigo-300 hover:bg-violet-500 text-white text-center font-medium block rounded-full cursor-pointer absolute bottom-0"
+            className="mb-3 w-48 py-2 bg-violet-500 text-white text-center font-medium block rounded-full cursor-pointer"
+            style={{ marginBottom: '10px' }}
           >
             모든 변경사항 저장
           </button>
@@ -395,25 +472,41 @@ const ChangeInfo = ({ initialData }) => {
               &times;
             </button>
             <h2 className="text-2xl font-bold mb-4">내용 수정</h2>
-            <textarea
-              id="editTextArea"
-              className="w-full h-32 p-2 border border-gray-300 rounded"
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-            />
+            {currentEditElement === 'storeCategory' ? (
+              // 비즈니스 종류 수정 드롭다운
+              <select
+                className="w-full h-12 p-2 border border-gray-300 rounded"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+              >
+                <option value=""> 종류 선택</option>
+                <option value="RESTAURANT">음식점</option>
+                <option value="RETAIL">도소매점</option>
+                <option value="PUBLIC">공공기관</option>
+                <option value="ETC">기타</option>
+              </select>
+            ) : (
+              <textarea
+                id="editTextArea"
+                className="w-full h-32 p-2 border border-gray-300 rounded"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+              />
+            )}
+
             <div className='flex flex-row'>
-            <button
-              onClick={saveChanges}
-              className="block w-full py-2 mt-4 text-blue-400 rounded"
-            >
-              확인
-            </button>
-            <button
-              onClick={deleteElement} // 삭제 함수 호출
-              className="block w-full py-2 mt-4 text-red-400 rounded"
-            >
-              삭제
-            </button>
+              <button
+                onClick={saveChanges}
+                className="block w-full py-2 mt-4 text-blue-400 rounded"
+              >
+                확인
+              </button>
+              <button
+                onClick={deleteElement} // 삭제 함수 호출
+                className="block w-full py-2 mt-4 text-red-400 rounded"
+              >
+                삭제
+              </button>
             </div>
           </div>
         </div>

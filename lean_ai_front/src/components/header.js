@@ -4,7 +4,6 @@ import Link from 'next/link';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 import config from '../../config'; // config 파일에서 API URL 등을 가져오기
-import { MessageSquare, TrendingUp, PieChart, ChevronRight } from 'lucide-react';
 
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null); // QR 코드 이미지 URL 관리
@@ -44,11 +43,14 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       }
 
       const data = await response.json();
-      //console.log('QR Code Data:', data);
+      //console.log(decodeURIComponent(data.qr_code_image_url));
 
+      // 퍼센트 인코딩된 URL을 디코딩해서 한글을 포함한 파일 이름을 정상적으로 처리
       setStoreName(data.store_name); // 스토어 이름 저장
-      setQrCodeImageUrl(data.qr_code_image_url); // QR 코드 이미지 URL 저장
-      //console.log('QR code URL set:', data.qr_code_image_url);
+      // 환경 변수를 사용하여 미디어 URL을 구성
+      const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_image_url)}`;
+      setQrCodeImageUrl(mediaUrl); // QR 코드 이미지 URL 디코딩 후 저장
+
     } catch (error) {
       console.error('Error fetching QR code:', error);
       setErrorMessage('QR 코드 로딩 중 오류가 발생했습니다.');
@@ -95,25 +97,10 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     router.push('/');
   };
 
-  const goToServiceInfo=()=>{
-    if (isLoggedIn) router.push('/serviceIntro');
-    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
-  }
-
-  const goToFeature=()=>{
-    if (isLoggedIn) router.push('/features');
-    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
-  }
-  const goToPrice=()=>{
-    if (isLoggedIn) router.push('/pricing');
-    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
-  }
   // 마이페이지로 이동하는 함수
   const goToMypage = () => {
-    if (isLoggedIn)
-      router.push('/myPage');
-    else
-      router.push('/login'); // 로그인 상태에 따라 페이지 이동
+    if (isLoggedIn) router.push('/myPage');
+    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
   };
 
   // QR 코드 생성 모달을 여는 함수
@@ -135,24 +122,12 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     }
   };
 
-  // 공지사항 페이지로 이동하는 함수
-  const goToNotice = () => {
-    if (isLoggedIn) router.push('/notification');
-    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
-  };
-
-  // 자주 묻는 질문 페이지로 이동하는 함수
-  const goToQnA = () => {
-    if (isLoggedIn) router.push('/qna');
-    else router.push('/login'); // 로그인 상태에 따라 페이지 이동
-  };
-
   // QR 코드 이미지를 저장하는 함수
   const handleSaveQRCode = () => {
     const canvas = qrCanvasRef.current;
     const ctx = canvas.getContext('2d');
     const img = new Image();
-    img.src = qrCodeImageUrl;  // QR 코드 이미지 URL 설정
+    img.src = qrCodeImageUrl; // QR 코드 이미지 URL 설정
 
     img.onload = () => {
       canvas.width = img.width;
@@ -179,94 +154,87 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   };
 
   return (
-      <div>
-        {/* 헤더 섹션 */}
-        <header className="bg-white bg-opacity-90 fixed w-full z-10 transition-all duration-300" style={{
-          boxShadow: scrollPosition > 50 ? '0 4px 6px rgba(0,0,0,0.1)' : 'none'
-        }}>
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            {/* 로고 */}
-            <div className="text-3xl md:text2xl font-bold text-indigo-600 pl-2 cursor-pointer" onClick={goToHome}>MUMUL</div>
-            <div className="flex space-x-4">
-              <Link href="/notification" className="text-xl flex items-center justify-center w-8 h-8">
-                <i className="fas fa-bell"></i>
-              </Link>
-              <button
-                id="menuToggle"
-                className="text-xl flex items-center justify-center w-8 h-8 focus:outline-none"
-                onClick={toggleMenu}
-                style={{ marginRight: '10px' }}
-              >
-                <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </span>
-              </button>
-            </div>
+    <div>
+      {/* 헤더 섹션 */}
+      <header
+        className="bg-white bg-opacity-90 fixed w-full z-10 transition-all duration-300"
+        style={{
+          boxShadow: scrollPosition > 50 ? '0 4px 6px rgba(0,0,0,0.1)' : 'none',
+        }}
+      >
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          {/* 로고 */}
+          <div className="text-3xl md:text2xl font-bold text-indigo-600 pl-2 cursor-pointer" onClick={goToHome}>
+            MUMUL
           </div>
-        </header>
+          <div className="flex space-x-4">
+            <Link href="/notification" className="text-xl flex items-center justify-center w-8 h-8">
+              <i className="fas fa-bell"></i>
+            </Link>
+            <button
+              id="menuToggle"
+              className="text-xl flex items-center justify-center w-8 h-8 focus:outline-none"
+              onClick={toggleMenu}
+              style={{ marginRight: '10px' }}
+            >
+              <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
+                <div></div>
+                <div></div>
+                <div></div>
+              </span>
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* 오버레이 메뉴 */}
       {menuOpen && (
-        <div
-          id="fullscreenOverlay"
-          className="fullscreen-overlay fixed inset-0 flex flex-col justify-center items-center text-center z-20"
-        >
-          <button
-            className="absolute top-4 right-4 text-3xl text-white focus:outline-none no-blur"
-            onClick={toggleMenu}
-          >
+        <div id="fullscreenOverlay" className="fullscreen-overlay fixed inset-0 flex flex-col justify-center items-center text-center z-20">
+          <button className="absolute top-4 right-4 text-3xl text-black focus:outline-none no-blur" onClick={toggleMenu}>
             <span className={`menu-icon ${menuOpen ? 'open' : ''}`}>
               <div></div>
               <div></div>
               <div></div>
             </span>
           </button>
-          <ul className="space-y-4 text-lg text-white text-center">
+          <ul className="space-y-4 text-black text-center text-2xl font-semibold font-sans">
             <li>
-              <p className="mt-2 cursor-pointer text-white" onClick={handleLoginLogoutClick}>
+              <p className="mt-2 cursor-pointer " onClick={handleLoginLogoutClick}>
                 {isLoggedIn ? 'Log out' : 'Log in'}
               </p>
             </li>
-            <li><p className="mt-2 cursor-pointer text-white" onClick={goToServiceInfo}>서비스 소개</p></li>
-            <li><p className="mt-2 cursor-pointer text-white" onClick={goToFeature}>기능</p></li>
-            <li><p className="mt-2 cursor-pointer text-white" onClick={goToPrice}>가격</p></li>
-            <li><p className="mt-2 cursor-pointer text-white" onClick={goToMypage}>마이 페이지</p></li>
-            <li><p className="mt-2 cursor-pointer text-white" onClick={goToQRCode}>QR코드 생성하기</p></li>
-            <li><p className="mt-2 cursor-pointer text-white" onClick={goToNotice}>공지사항</p></li>
-            <li><p className="mt-2 cursor-pointer text-white" onClick={goToQnA}>자주 묻는 질문</p></li>
+            <li>
+              <p className="mt-2 cursor-pointer " onClick={goToHome}>
+                Home
+              </p>
+            </li>
+            <li>
+              <p className="mt-2 cursor-pointer " onClick={goToMypage}>
+                마이 페이지
+              </p>
+            </li>
+            <li>
+              <p className="mt-2 cursor-pointer " onClick={goToQRCode}>
+                QR코드 생성
+              </p>
+            </li>
           </ul>
         </div>
-
       )}
 
       {/* 로그아웃 모달 */}
       {showLogoutModal && (
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-        >
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center relative"
-            style={{ width: '350px' }}
-          >
-            <button
-              onClick={handleLogoutCancel}
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-10"
-              aria-label="Close"
-            >
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center relative" style={{ width: '350px' }}>
+            <button onClick={handleLogoutCancel} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-10" aria-label="Close">
               &times;
             </button>
             <p className="mb-4 text-center">로그아웃하시겠습니까?</p>
             <div className="flex space-x-4 mt-2 items-center justify-center">
-              <button
-                className="bg-red-300 text-white px-4 py-2 rounded hover:bg-red-500"
-                onClick={handleLogoutConfirm}
-              >
+              <button className="bg-red-300 text-white px-4 py-2 rounded hover:bg-red-500" onClick={handleLogoutConfirm}>
                 로그아웃
               </button>
-              <button
-                className="bg-gray-300 text-white px-4 py-2 rounded hover:bg-gray-400"
-                onClick={handleLogoutCancel}
-              >
+              <button className="bg-gray-300 text-white px-4 py-2 rounded hover:bg-gray-400" onClick={handleLogoutCancel}>
                 취소
               </button>
             </div>
@@ -278,50 +246,32 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       {showQrModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center relative">
-            <button
-              onClick={() => setShowQrModal(false)}
-              className="absolute top-2 right-3 text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={() => setShowQrModal(false)} className="absolute top-2 right-3 text-gray-400 hover:text-gray-600">
               X
             </button>
             <h2 className="text-xl font-bold mb-1.5">챗봇 전용 QR 코드</h2>
-            <p className='text-gray-400' style={{ whiteSpace: 'pre-line', textAlign: 'center' }}>
-              {`이용하려는 챗봇의 QR코드
-이미지를 저장할 수 있습니다`}
+            <p className="text-gray-400" style={{ whiteSpace: 'pre-line', textAlign: 'center' }}>
+              {`이용하려는 챗봇의 QR코드\n이미지를 저장할 수 있습니다`}
             </p>
             {qrCodeImageUrl && (
               <>
                 <canvas ref={qrCanvasRef} style={{ display: 'none' }} />
-                <img src={qrCodeImageUrl} alt="QR Code" className="mx-auto" />
+                <img src={qrCodeImageUrl} alt="QR Code" className="mx-auto" /> 
               </>
             )}
-            <p className='font-semibold underline hover:text-blue-400'
-              onClick={handleSaveQRCode}
-            >
+            <p className="font-semibold underline hover:text-blue-400" onClick={handleSaveQRCode}>
               이미지 저장하기
             </p>
           </div>
         </div>
       )}
 
-      <ModalMSG
-        show={showMessageModal}
-        onClose={handleMessageModalClose}
-        title=" "
-      >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {message}
-        </p>
+      <ModalMSG show={showMessageModal} onClose={handleMessageModalClose} title=" ">
+        <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
       </ModalMSG>
 
-      <ModalErrorMSG
-        show={showErrorMessageModal}
-        onClose={handleErrorMessageModalClose}
-        title="Error"
-      >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {errorMessage}
-        </p>
+      <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose} title="Error">
+        <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
       </ModalErrorMSG>
 
       <style jsx>{`
@@ -335,7 +285,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
         }
 
         .menu-icon div {
-          background-color: black;
+          background-color: rgb(79 70 229);
           height: 3px;
           width: 100%;
           margin: 4px 0;
@@ -359,7 +309,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
         }
 
         .fullscreen-overlay {
-          background: rgba(0, 0, 0, 0.5);
+          background: rgba(238, 242, 255, 0.5);
           backdrop-filter: blur(10px);
           z-index: 20;
         }

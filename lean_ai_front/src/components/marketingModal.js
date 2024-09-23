@@ -31,13 +31,13 @@ const MarketingModal = ({ show, onClose, onAgree }) => {
                 <div className='flex space-x-2'>
                     <button
                         onClick={() => handleAgree(true)}
-                        className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
+                        className="text-white bg-violet-500 rounded-md px-4 py-2 font-normal border-l "
                     >
                         동의합니다
                     </button>
                     <button
                         onClick={() => handleAgree(false)}
-                        className="text-white bg-blue-300 rounded-md px-4 py-2 font-normal border-l hover:bg-blue-500 "
+                        className="text-white bg-violet-500 rounded-md px-4 py-2 font-normal border-l "
                     >
                         동의하지 않습니다
                     </button>

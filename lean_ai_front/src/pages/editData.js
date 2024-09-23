@@ -95,7 +95,7 @@ export default function DataEditPage() {
               />
 
               <button
-                className="w-full bg-indigo-300 hover:bg-violet-500 text-white text-center font-medium text-white py-3 rounded-lg "
+                className="w-full bg-violet-500 text-white text-center font-medium text-white py-3 rounded-lg "
                 onClick={() => document.getElementById('fileInput').click()}
               >
                 파일 첨부
@@ -118,7 +118,7 @@ export default function DataEditPage() {
 
             {/* 요청하기 버튼 */}
             <div className="text-center">
-              <button className="bg-indigo-300 hover:bg-violet-500 text-white text-center font-medium py-3 px-6 rounded-lg  w-full" onClick={handleSubmit}>
+              <button className="bg-violet-500 text-white text-center font-medium py-3 px-6 rounded-lg  w-full" onClick={handleSubmit}>
                 요청하기
               </button>
             </div>

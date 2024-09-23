@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useViewportScroll, useTransform } from 'framer-motion';
 import { Zap, Shield, Rocket, ArrowRight, MessageSquare, TrendingUp, PieChart, Users, DollarSign, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
   <motion.div 
-    className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 "
-    style={{minHeight:'193px'}}
+    className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
     whileHover={{ y: -5 }}
   >
     <Icon className="text-indigo-600 w-12 h-12 mb-4" />
     <h3 className="text-xl font-semibold mb-2 text-gray-800">{title}</h3>
-    <p className="text-gray-600 whitespace-pre-line">{description}</p>
+    <p className="text-gray-600">{description}</p>
   </motion.div>
 );
 
@@ -25,7 +24,7 @@ const StatCard = ({ icon: Icon, value, label }) => (
 
 const ServiceIntroPage = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const { scrollYProgress } = useScroll();
+  const { scrollYProgress } = useViewportScroll();
   const yPosAnim = useTransform(scrollYProgress, [0, 0.5], [0, 300]);
 
   const features = [
@@ -129,7 +128,7 @@ const ServiceIntroPage = () => {
           <h2 className="text-3xl font-bold mb-6">무물과 함께 비즈니스를 혁신하세요</h2>
           <p className="text-xl mb-8">AI의 힘으로 당신의 비즈니스를 한 단계 끌어올리세요.</p>
           <motion.a 
-            href="mailto:support@bizbot.com"
+            href="mailto:ch@lean-ai.com"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="inline-block bg-white text-indigo-600 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-100 transition duration-300"
@@ -148,7 +147,7 @@ const ServiceIntroPage = () => {
         
         <div className="mt-12 text-center">
           <a 
-            href="mailto:support@bizbot.com"
+            href="mailto:ch@lean-ai.com"
             className="inline-block bg-indigo-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-indigo-700 transition duration-300"
           >
             문의하기

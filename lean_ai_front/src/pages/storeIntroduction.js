@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faClock, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useSwipeable } from 'react-swipeable'; // Swipeable Hook 사용
 import Loading from '../components/loading'; // 로딩 컴포넌트 import
 import Chatbot from './chatBotMSG'; // 챗봇 컴포넌트 import
@@ -10,7 +10,7 @@ import config from '../../config';
 
 const StoreIntroduce = () => {
   const router = useRouter();
-  const { id } = router.query; // URL에서 id 파라미터 가져옴
+  const { slug } = router.query; // URL에서 slug 파라미터 가져옴
   const [storeData, setStoreData] = useState(null); // 매장 데이터를 저장
   const [agentId, setAgentId] = useState(null); // 챗봇의 agentId를 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
@@ -28,15 +28,15 @@ const StoreIntroduce = () => {
         setActiveTab('home'); // 오른쪽으로 스와이프하면 home 탭으로 전환
       }
     },
-  });
+  }); 
 
   // 매장 데이터를 가져오는 비동기 함수, 컴포넌트가 처음 마운트될 때 실행됨
   useEffect(() => {
-    if (id) {
+    if (slug) {
       const fetchStoreData = async () => {
         try {
           const response = await axios.post(`${config.apiDomain}/api/storesinfo/`, {
-            store_id: id, // store_id를 POST 요청으로 전송
+            slug: slug, // slug를 POST 요청으로 전송
             type: 'customer', // 고객 유형으로 데이터 요청
           });
           setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
@@ -50,7 +50,7 @@ const StoreIntroduce = () => {
 
       fetchStoreData(); // 매장 데이터를 가져오는 함수 호출
     }
-  }, [id]);  
+  }, [slug]);  // slug가 변경될 때마다 데이터를 다시 가져옴
 
   // 로딩 중일 때 로딩 컴포넌트를 표시
   if (isLoading) {

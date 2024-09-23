@@ -7,6 +7,7 @@ import EditData from './editData';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 import styles from '../styles/button.module.css'; 
+import Footer from '../components/footer';
 
 const MainPageWithMenu = () => {
   const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false); // '업종 정보 변경' 모달 상태
@@ -15,8 +16,7 @@ const MainPageWithMenu = () => {
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 저장
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 표시 상태
   const [storeName, setStoreName] = useState(''); // 스토어 이름 저장
-  const [storeId, setStoreId] = useState(''); // 스토어 ID 저장
-  const [isMobile, setIsMobile] = useState(false); // 모바일 환경 여부
+  const [slug, setStoreSlug] = useState(''); // 스토어 slug 저장
   const [isMounted, setIsMounted] = useState(false); // 컴포넌트가 마운트되었는지 확인하는 플래그
 
   const router = useRouter();
@@ -51,10 +51,14 @@ const MainPageWithMenu = () => {
       }
 
       const storeData = await response.json();
+      console.log("data : ", storeData);
 
       if (storeData && storeData.length > 0) {
         setStoreName(storeData[0].store_name);
-        setStoreId(storeData[0].store_id);
+        setStoreSlug(storeData[0].slug);
+        //console.log(slug);
+        const encodedSlug = encodeURIComponent(slug);  // 슬러그 인코딩
+        //console.log(encodedSlug);
       } else {
         setStoreName('');
       }
@@ -68,16 +72,9 @@ const MainPageWithMenu = () => {
   useEffect(() => {
     setIsMounted(true);
 
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
     fetchStoreInfo();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return ;
   }, []);
 
   if (!isMounted) {
@@ -85,8 +82,10 @@ const MainPageWithMenu = () => {
   }
 
   const goToChatbot = () => {
-    if (storeId) {
-      router.push(`/storeIntroductionOwner?id=${storeId}`);
+    if (slug) {
+      const encodedSlug = encodeURIComponent(slug);  // 슬러그 인코딩
+      //console.log('Navigating to:', `/storeIntroductionOwner/${encodedSlug}`); // URL 로그 확인
+      router.push(`/storeIntroductionOwner/${encodedSlug}`);
     }
   };
 
@@ -124,11 +123,11 @@ const MainPageWithMenu = () => {
               >
                 <div className="flex flex-row justify-between items-center">
                   <div className="flex flex-col w-full ml-4">
-                    <p className={styles['text-lg']}>업종 정보 변경</p>
+                    <p className={styles['text-lg']}>매장 정보 변경</p>
                     <p className={styles['text-sm']}>사업장 정보를 수정해야 할 때</p>
                   </div>
                   <div className="flex justify-end w-max">
-                    <img src='/change.png' className={styles.icon} alt="업종 정보 수정 이미지" />
+                    <img src='/change.png' className={styles.icon} alt="매장 정보 수정 이미지" />
                   </div>
                 </div>
               </button>
@@ -156,7 +155,7 @@ const MainPageWithMenu = () => {
               >
                 <div className="flex flex-row justify-between items-center">
                   <div className="flex flex-col w-full ml-4">
-                    <p className={styles['text-lg']}>데이터 수정하기</p>
+                    <p className={styles['text-lg']}>데이터 수정</p>
                     <p className={styles['text-sm']}>챗봇 데이터 수정을 원할 때</p>
                   </div>
                   <div className="flex justify-end w-max">
@@ -168,18 +167,10 @@ const MainPageWithMenu = () => {
           </div>
         </main>
       </div>
-
-      {!isMobile && (
-        <footer className='bg-black text-gray-400 text-xs font-sans p-4 w-full flex justify-start items-center mt-8'>
-          <img src='Lean-AI logo.png' className='h-12 mr-4' />
-          <p className='whitespace-pre-line'>
-            {`(주)린에이아이
-            (우)08789 서울 관악구 봉천로 545 201호
-            © LEAN AI All Rights Reserved.`}
-          </p>
-        </footer>
-      )}
-
+      
+      {/* 푸터 섹션 */}
+      <Footer />
+      
       {isChangeInfoModalOpen && (
         <Modal onClose={() => setIsChangeInfoModalOpen(false)}>
           <ChangeInfo />
@@ -205,14 +196,6 @@ const MainPageWithMenu = () => {
           )}
         </p>
       </ModalErrorMSG>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          footer {
-            display: none;
-          }
-        }
-      `}</style>
     </div>
   );
 };

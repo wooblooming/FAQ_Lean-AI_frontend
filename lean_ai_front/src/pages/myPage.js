@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import kakaoIcon from '../../public/btn_kakao.svg';
+import naverIcon from '../../public/btn_naver.svg';  
+import googleIcon from '../../public/btn_google.svg'; 
+import UserProfileForm from '../components/userProfile';
+import QrCodeSection from '../components/qrCode';
+import EventSwitch from '../components/event';
+import SnsConnect from '../components/snsConnect'; // SNS 연결 컴포넌트
+import VerificationModal from '../components/verificationModal'; // 핸드폰 인증 기능이 있는 컴포넌트
 import EventAlertModal from '../components/eventModal'; // 이벤트 모달 컴포넌트
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
@@ -9,19 +15,24 @@ import config from '../../config';
 
 const MyPage = () => {
   // 모달 및 UI 상태 관련 변수
+  const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달의 열림/닫힘 상태
   const [showEventAlertModal, setShowEventAlertModal] = useState(false); // 이벤트 알림 모달의 열림/닫힘 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달의 열림/닫힘 상태
   const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달의 열림/닫힘 상태
   const [showQrCode, setShowQrCode] = useState(false); // QR 코드 표시 상태
+  const [snsList, setSnsList] = useState([
+    { name: 'kakao', displayName: '카카오', icon: kakaoIcon, isConnected: false },
+    { name: 'naver', displayName: '네이버', icon: naverIcon, isConnected: false },
+    { name: 'google', displayName: '구글', icon:  googleIcon, isConnected: false },
+  ]); // SNS 연결 상태 관리
 
   // 사용자 및 사업자 정보 관련 변수
   const [profileImage, setProfileImage] = useState(''); // 프로필 이미지 URL
   const [name, setName] = useState(''); // 사용자 이름
   const [email, setEmail] = useState(''); // 사용자 이메일
   const [phoneNumber, setPhoneNumber] = useState(''); // 사용자 전화번호
-  const [businessName, setBusinessName] = useState(''); // 사업자 이름
-  const [businessAddress, setBusinessAddress] = useState(''); // 사업자 주소
+  const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
   const [ID, setID] = useState(''); // 사용자 또는 사업자 ID
   const [stores, setStores] = useState([]); // 스토어 목록
   const [selectedStoreId, setSelectedStoreId] = useState(null); // 선택된 스토어의 ID
@@ -29,14 +40,15 @@ const MyPage = () => {
 
   // 이벤트 및 스위치 관련 변수
   const [isEventOn, setIsEventOn] = useState(false); // 이벤트 스위치 상태
-  const [isKakaoConnected, setIsKakaoConnected] = useState(false); // 카카오톡 연동 여부 (SNS 스위치 상태)
+  const [isSnsConnected, setIsSnsConnected] = useState(false); // SNS 연동 여부 (SNS 스위치 상태)
 
   // 에러 및 메시지 관련 변수
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
   const [message, setMessage] = useState(''); // 일반 메시지 내용
 
   // QR 코드 관련 변수
-  const [qrUrl, setQrUrl] = useState(''); // QR 코드 URL
+  const [qrUrl, setQrUrl] = useState(''); // QR 코드 URL  
+  const toggleQrCode = () => setShowQrCode(!showQrCode);// QR 코드 접기/펼치기 상태 관리 함수
 
   // 초기 데이터 및 변경 상태 관련 변수
   const [initialData, setInitialData] = useState({}); // 초기 데이터 (불러온 사용자 또는 사업자 정보)
@@ -53,12 +65,45 @@ const MyPage = () => {
   };
 
   // 이벤트 모달 닫기 처리
-  const handleEventAlertModalClose = (confirmed) => {
+  const handleEventAlertModalClose = async (confirmed) => {
     setShowEventAlertModal(false);
     if (confirmed) {
       setIsEventOn(true);  // "예"를 눌렀을 때 스위치를 ON으로 변경
+      await updateMarketingStatus('Y');  // DB 업데이트
     } else {
       setIsEventOn(false); // "아니오"를 눌렀을 때 스위치를 OFF로 변경
+      await updateMarketingStatus('N');  // DB 업데이트
+    }
+  };
+  
+  // 마케팅 상태 업데이트 함수
+  const updateMarketingStatus = async (status) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        setErrorMessage("로그인 하신 후 이용해 주세요.");
+        return;
+      }
+
+      const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ marketing: status })
+      });
+
+      if (!response.ok) {
+        throw new Error('마케팅 상태 업데이트에 실패하였습니다.');
+      }
+
+      const data = await response.json();
+      setMessage("마케팅 상태가 업데이트되었습니다.");
+      setShowMessageModal(true);
+    } catch (error) {
+      setErrorMessage(error.message);
+      setShowErrorMessageModal(true);
     }
   };
 
@@ -153,7 +198,6 @@ const MyPage = () => {
           console.error('No token found');
           setErrorMessage("로그인 하신 후 이용해 주세요");
           setShowErrorMessageModal(true);
-          router.push('/login');
           return;
         }
 
@@ -171,9 +215,9 @@ const MyPage = () => {
           setName(data.name || '');
           setEmail(data.email || '');
           setPhoneNumber(data.phone_number || '');
-          setBusinessName(data.business_name || '');
-          setBusinessAddress(data.business_address || '');
-          setQrUrl(data.qr_code_url || '');
+          setIsEventOn(data.marketing === 'Y'); // 마케팅 동의 상태 초기화
+          const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
+          setQrUrl(mediaUrl || '');
 
           if (data.profile_photo && !data.profile_photo.startsWith('http')) {
             setProfileImage(`${config.apiDomain}${data.profile_photo}`);
@@ -189,7 +233,7 @@ const MyPage = () => {
 
         // 사용자 스토어 목록 가져오기
         const storeResponse = await fetch(`${config.apiDomain}/api/user-stores/`, {
-          method: 'POST', 
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -223,12 +267,10 @@ const MyPage = () => {
     const hasChanged = (
       name !== initialData.name ||
       email !== initialData.email ||
-      phoneNumber !== initialData.phoneNumber ||
-      businessName !== initialData.businessName ||
-      businessAddress !== initialData.businessAddress
+      phoneNumber !== initialData.phoneNumber 
     );
     setIsChanged(hasChanged); // 변경 사항이 있으면 true 설정
-  }, [name, email, phoneNumber, businessName, businessAddress, initialData]);
+  }, [name, email, phoneNumber, initialData]);
 
   // 변경 사항 저장 처리 함수
   const handleSaveChanges = async () => {
@@ -238,7 +280,6 @@ const MyPage = () => {
         console.error('No token found');
         setErrorMessage("로그인 하신 후 이용해 주세요");
         setShowErrorMessageModal(true);
-        router.push('/login');
         return;
       }
 
@@ -271,6 +312,75 @@ const MyPage = () => {
     }
   };
 
+  // 핸드폰 번호로 인증번호 전송 요청
+  const handleSendCode = async () => {
+    const phoneRegex = /^\d{11}$/; // 핸드폰 번호 형식 검증 (11자리 숫자)
+    if (!phoneRegex.test(phoneNumber)) {
+      setErrorMessage('핸드폰 번호를 확인해 주세요');
+      setShowErrorMessageModal(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.apiDomain}/api/send-code/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone: phoneNumber, type: 'signup' }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setShowCodeModal(true); // 인증번호 입력 모달 열기
+      } else {
+        setErrorMessage(data.message);
+        setShowErrorMessageModal(true);
+      }
+    } catch (error) {
+      setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+      setShowErrorMessageModal(true);
+    }
+  };
+
+  // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
+  const handleVerifyCode = async () => {
+    try {
+      const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: phoneNumber,
+          code: verificationCode,
+          type: 'signup'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setShowCodeModal(false); // 인증 완료 후 모달 닫기
+        setMessage('핸드폰 번호 인증이 완료되었습니다.');
+        setShowMessageModal(true);
+      } else {
+        setErrorMessage(data.message);
+        setShowErrorMessageModal(true);
+      }
+    } catch (error) {
+      setErrorMessage('인증 확인 중 오류가 발생했습니다.');
+      setShowErrorMessageModal(true);
+    }
+  };
+
+  // 인증번호 모달을 닫을 때 에러 메시지 초기화
+  const handleCodeModalClose = () => {
+    setShowCodeModal(false);
+    setVerificationCode(''); // 인증번호 초기화
+  };
+
   // QR 코드 생성 처리 함수
   const handleGenerateQrCode = async () => {
     try {
@@ -278,7 +388,6 @@ const MyPage = () => {
       if (!token) {
         setErrorMessage("로그인 하신 후 이용해 주세요");
         setShowErrorMessageModal(true);
-        router.push('/login');
         return;
       }
       if (!selectedStoreId) {
@@ -297,7 +406,6 @@ const MyPage = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
         setErrorMessage('QR 코드 생성에 실패하였습니다.');
         setShowErrorMessageModal(true);
         return;
@@ -331,9 +439,18 @@ const MyPage = () => {
     document.body.removeChild(downloadLink); // 링크 제거
   };
 
+  // SNS 연결 상태 토글 함수
+  const toggleSnsConnection = (snsName) => {
+    setSnsList((prevSnsList) =>
+      prevSnsList.map((sns) =>
+        sns.name === snsName ? { ...sns, isConnected: !sns.isConnected } : sns
+      )
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center relative font-sans">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center relative">
+    <div className="bg-indigo-100 flex items-center justify-center relative font-sans min-h-screen">
+      <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
         <Link href="/mainPageForPresident" className="absolute top-4 left-4 text-gray-500 focus:outline-none">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -341,13 +458,13 @@ const MyPage = () => {
         </Link>
 
         <div className='flex justify-between items-center'>
-          <p className='font-semibold mt-2.5'>마이 페이지</p>
+          <p className='font-semibold mt-2.5'> </p>
           <button
             className={`font-semibold text-sm ${isChanged ? 'text-blue-500' : 'text-gray-200'}`}
             onClick={handleSaveChanges}
             disabled={!isChanged}
           >
-            완료
+            <p className='text-lg'>완료</p>
           </button>
         </div>
 
@@ -356,7 +473,7 @@ const MyPage = () => {
           <img
             src={profileImage || '/profile_default_img.jpg'}
             alt="프로필 이미지"
-            className="w-24 h-24 rounded-full mx-auto mb-4 border border-2 border-blue-300"
+            className="w-24 h-24 rounded-full mx-auto mb-4 border border-2 border-violet-400"
             onClick={toggleImageModal}
             style={{ cursor: 'pointer' }}
           />
@@ -366,7 +483,7 @@ const MyPage = () => {
               bottom: '0',
               left: '50%',
               transform: 'translate(-50%, 50%)',
-              backgroundColor: '#21A2FF',
+              backgroundColor: '#8b5cf6',
               padding: '4px 8px',
               borderRadius: '12px',
               width: '60px',
@@ -379,189 +496,46 @@ const MyPage = () => {
         </div>
 
         {/* 사용자 정보 입력 필드 */}
-        <div className="flex flex-col mt-4 font-sans">
-          <div className='flex flex-col items-start mb-4'>
-            <div className='flex flex-row '>
-              <div className='text-sm text-gray-300 mr-1.5 '>이름</div>
-              <label htmlFor="user-name" className=" text-red-500">*</label>
-            </div>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={{
-                border: 'none',
-                borderBottom: '1.5px solid #21A2FF',
-                outline: 'none',
-                padding: '4px 0',
-                width: '100%',
-              }}
-            />
-          </div>
+        <UserProfileForm
+          name={name}
+          setName={setName}
+          ID={ID}
+          setID={setID}
+          email={email}
+          setEmail={setEmail}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          handleSendCode={handleSendCode}
+          showCodeModal={showCodeModal}
+          setShowCodeModal={setShowCodeModal}
 
-          <div className='flex flex-col items-start mb-4'>
-            <div className='flex flex-row '>
-              <div className='text-sm text-gray-300 mr-1.5 '>이메일</div>
-            </div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                border: 'none',
-                borderBottom: '1.5px solid #21A2FF',
-                outline: 'none',
-                padding: '4px 0',
-                width: '100%',
-              }}
-            />
-          </div>
+        />
 
-          <div className='flex flex-col items-start mb-4'>
-            <div className='flex flex-row '>
-              <div className='text-sm text-gray-300 mr-1.5 '>전화번호</div>
-              <label htmlFor="user-phone" className=" text-red-500">*</label>
-            </div>
-            <input
-              type="text"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              style={{
-                border: 'none',
-                borderBottom: '1.5px solid #21A2FF',
-                outline: 'none',
-                padding: '4px 0',
-                width: '100%',
-              }}
-            />
-          </div>
+        {/* QR 코드 섹션 */}
+        <QrCodeSection
+          stores={stores}
+          selectedStoreId={selectedStoreId}
+          setSelectedStoreId={setSelectedStoreId}
+          storeName={storeName}
+          setStoreName={setStoreName}
+          qrUrl={qrUrl}
+          showQrCode={showQrCode}
+          toggleQrCode={toggleQrCode}
+          handleDownloadQrCode={handleDownloadQrCode}
+          handleGenerateQrCode={handleGenerateQrCode}
+        />
 
-          <div className='flex flex-col items-start mb-4'>
-            <div className='flex flex-row '>
-              <div className='text-sm text-gray-300 mr-1.5 '>사업자명</div>
-              <label htmlFor="business-name" className=" text-red-500">*</label>
-            </div>
-            <input
-              type="text"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              style={{
-                border: 'none',
-                borderBottom: '1.5px solid #21A2FF',
-                outline: 'none',
-                padding: '4px 0',
-                width: '100%',
-              }}
-            />
-          </div>
+        {/* 이벤트 스위치 */}
+        <EventSwitch
+          isEventOn={isEventOn}
+          toggleEventOn={toggleEventOn}
+        />
 
-          <div className='flex flex-col items-start mb-4'>
-            <div className='flex flex-row '>
-              <div className='text-sm text-gray-300 mr-1.5 '>사업장 주소</div>
-              <label htmlFor="business-address" className=" text-red-500">*</label>
-            </div>
-            <input
-              type="text"
-              value={businessAddress}
-              onChange={(e) => setBusinessAddress(e.target.value)}
-              style={{
-                border: 'none',
-                borderBottom: '1.5px solid #21A2FF',
-                outline: 'none',
-                padding: '4px 0',
-                width: '100%',
-              }}
-            />
-          </div>
-
-          {/* 스토어 선택 드롭다운 */}
-          <div className='flex flex-col items-start mb-4'>
-            <label htmlFor="store-select" className="text-sm text-gray-300">스토어 선택</label>
-            <select
-              id="store-select"
-              className="border-none border-b-2 border-blue-500 outline-none p-1"
-              value={selectedStoreId || ''}
-              onChange={(e) => {
-                setSelectedStoreId(parseInt(e.target.value, 10));
-                const selectedStore = stores.find(store => store.store_id === parseInt(e.target.value, 10));
-                setStoreName(selectedStore?.store_name || ''); // 선택한 스토어 이름 설정
-              }}
-            >
-              <option value="" disabled>스토어를 선택하세요</option>
-              {stores.map((store) => (
-                <option key={store.store_id} value={store.store_id}>
-                  {store.store_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* QR코드 관리 섹션 */}
-          <div className='flex flex-col items-start mb-4'>
-            <div className='font-semibold mb-2'>QR코드 관리</div>
-            {qrUrl ? (
-              <div className='mt-4'>
-                <img src={qrUrl} alt="QR 코드" className="mx-auto" style={{ maxWidth: '200px' }} />
-                <button
-                  className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-                  onClick={handleDownloadQrCode}
-                >
-                  QR 코드 다운로드
-                </button>
-              </div>
-            ) : (
-              <button className='border-none spacewhite-nowrap' style={{ color: '#007AFF' }} onClick={handleGenerateQrCode}>
-                생성하기
-              </button>
-            )}
-          </div>
-
-          {/* 이벤트 스위치 */}
-          <div className="flex flex-col items-start mb-4">
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex flex-col mr-11">
-                <div className="flex items-start w-full text-sm font-semibold">이벤트, 혜택 정보</div>
-                <div className="text-sm text-gray-300">이벤트, 프로모션 등 혜택 정보 알림</div>
-              </div>
-              <div>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={isEventOn}
-                    onChange={() => toggleEventOn()} // 스위치 변경 시 모달 열기
-                  />
-                  <span className="slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className='flex flex-col items-start mb-4'>
-            <div className='flex flex-row justify-between items-center'>
-              <div className='flex flex-col mr-11'>
-                <div className='flex items-start w-full text-sm font-semibold text-gray-400'>계정 정보</div>
-                <div className='text-sm text-gray-300 spacewhite-pre'>가입 아이디</div>
-                <div className='text-semibold spacewhite-pre'>{ID}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 카카오톡 연결 스위치 */}
-          <div>
-            <div className='flex flex-row justify-between items-center font-sans'>
-              <div className='flex items-center'>
-                <span><Image src={kakaoIcon} className='mr-2 w-5 h-5' alt="kakao" /></span>
-                <p className='whitespace-nowrap '>카카오 연결하기</p>
-              </div>
-              <div>
-                <label className="switch mr-2.5">
-                  <input type="checkbox" checked={isKakaoConnected} onChange={() => setIsKakaoConnected(!isKakaoConnected)} />
-                  <span className="slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* SNS 연결 섹션 */}
+        <SnsConnect
+          snsList={snsList}
+          toggleSnsConnection={toggleSnsConnection}
+        />
 
         {/* 이미지 모달 */}
         {isImageModalOpen && (
@@ -593,80 +567,92 @@ const MyPage = () => {
             </div>
           </div>
         )}
+
+        {/* 핸드폰 이용하여 본인 인증하는 모달 */}
+        <VerificationModal
+          isOpen={showCodeModal}
+          onClose={handleCodeModalClose}  // 에러 초기화를 위해 수정된 핸들러 사용
+          onSubmit={handleVerifyCode}
+          verificationCode={verificationCode}
+          onChange={(e) => setVerificationCode(e.target.value)}
+          errorMessage={errorMessage}
+        />
+
+        {/* 이벤트 모달 */}
+        <EventAlertModal
+          show={showEventAlertModal}
+          onClose={handleEventAlertModalClose}
+        />
+
+        <ModalMSG
+          show={showMessageModal}
+          onClose={handleMessageModalClose}
+          title=" "
+        >
+          <p style={{ whiteSpace: 'pre-line' }}>
+            {message}
+          </p>
+        </ModalMSG>
+
+        <ModalErrorMSG
+          show={showErrorMessageModal}
+          onClose={handleErrorMessageModalClose}
+          title="Error"
+        >
+          <p style={{ whiteSpace: 'pre-line' }}>
+            {errorMessage}
+          </p>
+        </ModalErrorMSG>
+
+        <style jsx>{`
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 26px;
+          }
+
+          .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+          }
+
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+          }
+
+          input:checked + .slider {
+            background-color: #8b5cf6;
+          }
+
+          input:checked + .slider:before {
+            transform: translateX(16px);
+          }
+        `}
+        </style>
+
       </div>
-
-      {/* 이벤트 모달 */}
-      <EventAlertModal
-        show={showEventAlertModal}
-        onClose={handleEventAlertModalClose}
-      />
-
-      <ModalMSG
-        show={showMessageModal}
-        onClose={handleMessageModalClose}
-        title=" "
-      >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {message}
-        </p>
-      </ModalMSG>
-
-      <ModalErrorMSG
-        show={showErrorMessageModal}
-        onClose={handleErrorMessageModalClose}
-        title="Error"
-      >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {errorMessage}
-        </p>
-      </ModalErrorMSG>
-
-      <style jsx>{`
-        .switch {
-          position: relative;
-          display: inline-block;
-          width: 42px;
-          height: 26px;
-        }
-
-        .switch input {
-          opacity: 0;
-          width: 0;
-          height: 0;
-        }
-
-        .slider {
-          position: absolute;
-          cursor: pointer;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: #ccc;
-          transition: .4s;
-          border-radius: 34px;
-        }
-
-        .slider:before {
-          position: absolute;
-          content: "";
-          height: 20px;
-          width: 20px;
-          left: 3px;
-          bottom: 3px;
-          background-color: white;
-          transition: .4s;
-          border-radius: 50%;
-        }
-
-        input:checked + .slider {
-          background-color: #2196F3;
-        }
-
-        input:checked + .slider:before {
-          transform: translateX(16px);
-        }
-      `}</style>
     </div>
   );
 };

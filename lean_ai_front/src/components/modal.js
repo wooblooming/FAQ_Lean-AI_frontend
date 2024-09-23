@@ -16,7 +16,7 @@ const Modal = ({ children, onClose }) => {
         >
           X
         </button>
-        <div className="w-full h-full overflow-y-auto"> {/* 모달의 내부 */}
+        <div className="w-full h-full overflow-y-auto scroll-auto"> {/* 모달의 내부 */}
           {children}
         </div>
       </div>

@@ -51,7 +51,7 @@ const PricingPage = () => {
 
   const handleInquiry = () => {
     // '문의하기' 버튼을 클릭했을 때 실행되는 함수입니다. 이메일 클라이언트를 열어 문의 메일을 작성할 수 있게 합니다.
-    window.location.href = "mailto:info@bizbot.com?subject=BiZBot 문의하기";
+    window.location.href = "mailto:ch@lean-ai.com?subject=Mumul 문의하기";
   };
 
   return (

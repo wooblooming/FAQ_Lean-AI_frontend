@@ -325,13 +325,13 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
                 <div className="flex space-x-2 justify-center my-4">
                     <button
                         onClick={() => handleAgree(true)}
-                        className="text-white bg-violet-300 rounded-md px-4 py-2 font-normal border-l hover:bg-violet-500"
+                        className="text-white rounded-md px-4 py-2 font-normal border-l bg-violet-500"
                     >
                         동의합니다
                     </button>
                     <button
                         onClick={() => handleAgree(false)}
-                        className="text-white bg-violet-300 rounded-md px-4 py-2 font-normal border-l hover:bg-violet-500"
+                        className="text-white rounded-md px-4 py-2 font-normal border-l bg-violet-500"
                     >
                         동의하지 않습니다
                     </button>
