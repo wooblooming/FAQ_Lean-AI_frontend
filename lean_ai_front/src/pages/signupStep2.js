@@ -155,10 +155,11 @@ const SignupStep2 = () => {
                         className="w-full border rounded-md px-3 py-2"
                     >
                         <option value="">비즈니스 종류 선택</option>
-                        <option value="RESTAURANT">음식점</option>
-                        <option value="RETAIL">도소매점</option>
+                        <option value="FOOD">음식점</option>
+                        <option value="RETAIL">판매점</option>
+                        <option value="UNMANNED">무인매장</option>
                         <option value="PUBLIC">공공기관</option>
-                        <option value="ETC">기타</option>
+                        <option value="OTHER">기타</option>
                     </select>
                 </div>
                 <div>

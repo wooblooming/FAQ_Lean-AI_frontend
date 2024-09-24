@@ -240,14 +240,14 @@ const ChangeInfo = ({ initialData }) => {
     setErrorMessage('');
   };
 
-  // storeCategory에 따라 메뉴 타이틀 설정
-  const menuTitle = storeCategory === 'RESTAURANT'
-    ? '메뉴'
-    : storeCategory === 'RETAIL'
-      ? '상품'
-      : storeCategory === 'PUBLIC'
-        ? '서비스'
-        : '기타';
+// storeCategory에 따라 메뉴 타이틀 설정
+const menuTitle = storeCategory === 'FOOD'
+  ? '메뉴'
+  : storeCategory === 'RETAIL' || storeCategory === 'UNMANNED' || storeCategory === 'OTHER'
+    ? '상품'
+    : storeCategory === 'PUBLIC'
+      ? '서비스'
+      : '기타';
 
   return (
     <div className='flex flex-col h-full w-full bg-white font-sans'>
@@ -480,10 +480,11 @@ const ChangeInfo = ({ initialData }) => {
                 onChange={(e) => setEditText(e.target.value)}
               >
                 <option value=""> 종류 선택</option>
-                <option value="RESTAURANT">음식점</option>
-                <option value="RETAIL">도소매점</option>
+                <option value="FOOD">음식점</option>
+                <option value="RETAIL">판매점</option>
+                <option value="UNMANNED">무인매장</option>
                 <option value="PUBLIC">공공기관</option>
-                <option value="ETC">기타</option>
+                <option value="OTHER">기타</option>
               </select>
             ) : (
               <textarea
