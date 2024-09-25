@@ -33,17 +33,17 @@ const Login = () => {
             });
     
             if (!response.ok) {
-                throw new Error('로그인 요청 실패');
+                const data = await response.json(); // 서버의 에러 메시지 받기
+                throw new Error(data.error || '로그인에 실패했습니다'); // 서버 에러 메시지 출력
             }
     
             const data = await response.json();
-            //console.log('로그인 성공', data);  // 성공 시 응답 데이터 로그 출력
             sessionStorage.setItem('token', data.access);  // 토큰 저장
             router.push('/mainPageForPresident');
         } catch (error) {
             console.error('로그인 요청 중 오류 발생:', error);
-            setErrorMessage(error);
-            errorMessage(True);
+            setErrorMessage(error.message); // 에러 메시지 설정
+            setShowErrorMessageModal(true); // 에러 모달 표시
         }
     };
     

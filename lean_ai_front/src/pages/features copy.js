@@ -8,6 +8,9 @@ const ServiceIntroPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 py-20">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center text-center mb-12">
+          <Link href="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mr-4">
+            <ArrowLeft className="mr-2 text-4xl" />
+          </Link>
           <h1 className="text-4xl font-bold text-gray-800">MUMUL <span className="text-indigo-600">서비스 소개</span></h1>
         </div>
         
@@ -104,6 +107,10 @@ const ServiceIntroPage = () => {
             <img src="/uni9.png" alt="Korea Logo" className="w-auto h-auto" />
           </div>
         </div>
+
+
+
+
         </div>
       </div>
     </div>
