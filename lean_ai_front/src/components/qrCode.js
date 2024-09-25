@@ -1,11 +1,20 @@
-// QRCodeSection.js
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const QRCodeSection = ({
   stores, selectedStoreId, setSelectedStoreId,
-  storeName, setStoreName, qrUrl, showQrCode,
+  storeName, setStoreName, qrUrl, setQrUrl, showQrCode,
   toggleQrCode, handleDownloadQrCode, handleGenerateQrCode
 }) => {
+
+  // QR 코드 URL이 상대 경로일 경우에만 절대 경로로 변환
+  useEffect(() => {
+    console.log(qrUrl);
+    if (qrUrl && !qrUrl.startsWith("https://mumulai.com/media/")) {
+      // QR 코드 URL이 "https://mumulai.com/media/"로 시작하지 않으면 절대 경로로 변환
+      setQrUrl(`${qrUrl}`);
+    }
+  }, [qrUrl]);
+
   return (
     <div className='flex flex-col items-start mb-4'>
       <div className='font-semibold mb-2 '>QR코드</div>
@@ -32,26 +41,34 @@ const QRCodeSection = ({
         </select>
       </div>
 
-      <button onClick={toggleQrCode} className="text-blue-400 underline text-sm font-semibold mb-2 ml-2 mt-2">
-        {showQrCode ? 'QR 코드 접기' : 'QR 코드 보기'}
-      </button>
-
-      {showQrCode && qrUrl && (
-        <div>
-          <img src={qrUrl} alt="QR 코드" className="mx-auto " style={{ maxWidth: '85%' }} />
-          <button
-            className="text-sm text-gray-400 underline hover:text-blue-300"
-            onClick={handleDownloadQrCode}
-          >
-            QR 코드 다운로드
-          </button>
-        </div>
-      )}
-
-      {!qrUrl && (
-        <button className='border-none spacewhite-nowrap' style={{ color: '#007AFF' }} onClick={handleGenerateQrCode}>
-          생성하기
+      {/* QR 코드가 없는 경우 생성하기 버튼 표시 */}
+      {!qrUrl ? (
+        <button
+          className='border-none text-blue-400 underline text-sm font-semibold mb-2 ml-2 mt-2'
+          onClick={handleGenerateQrCode}
+        >
+          QR 코드 생성하기
         </button>
+      ) : (
+        <>
+          {/* QR 코드 보기/접기 버튼 */}
+          <button onClick={toggleQrCode} className="text-blue-400 underline text-sm font-semibold mb-2 ml-2 mt-2">
+            {showQrCode ? 'QR 코드 접기' : 'QR 코드 보기'}
+          </button>
+
+          {/* QR 코드가 보일 때 이미지와 다운로드 버튼 표시 */}
+          {showQrCode && (
+            <div>
+              <img src={qrUrl} alt="QR 코드" className="mx-auto" style={{ maxWidth: '85%' }} />
+              <button
+                className="text-sm text-gray-400 underline hover:text-blue-300"
+                onClick={handleDownloadQrCode}
+              >
+                QR 코드 다운로드
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

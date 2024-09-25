@@ -48,25 +48,20 @@ const StoreIntroduce = () => {
       const fetchStoreData = async () => {
         try {
           const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-          //console.log('Decoded slug:', decodedSlug);
 
-          const token = sessionStorage.getItem('token');
           const response = await axios.post(`${config.apiDomain}/api/storesinfo/`,
             {
               slug: decodedSlug, // 디코딩 된 slug로 데이터 
-              type: 'owner', // 업주 유형으로 데이터 요청
+              type: 'customer', //  유형으로 데이터 요청
             },
             {
               headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
               },
             }
           );
           setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
-          setAgentId(storeData.agent_id); // 챗봇의 agentId를 설정
-          setStoreCategory(storeData.store_category);
-          //console.log("Store Data:", response.data); // 데이터 확인
+          //console.log(response.data);
         } catch (error) {
           console.error("Error fetching store data:", error);
         } finally {
@@ -76,7 +71,14 @@ const StoreIntroduce = () => {
 
       fetchStoreData(); // 매장 데이터를 가져오는 함수 호출
     }
-  }, [slug]); // slug가 변경될 때마다 데이터를 다시 가져옴
+  }, [slug]);
+
+  // storeData가 변경된 이후에 agent_id를 설정
+  useEffect(() => {
+    if (storeData && storeData.agent_id) {
+      setAgentId(storeData.agent_id);
+    }
+  }, [storeData]); // storeData가 업데이트될 때마다 실행
 
   // 로딩 중일 때 로딩 컴포넌트를 표시
   if (isLoading) {

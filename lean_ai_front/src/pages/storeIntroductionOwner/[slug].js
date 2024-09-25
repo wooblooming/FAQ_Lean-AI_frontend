@@ -79,6 +79,13 @@ const StoreIntroduceOwner = () => {
     }
   }, [slug]); // slug가 변경될 때마다 데이터를 다시 가져옴
 
+    // storeData가 변경된 이후에 agent_id를 설정
+    useEffect(() => {
+      if (storeData && storeData.agent_id) {
+        setAgentId(storeData.agent_id);
+      }
+    }, [storeData]); // storeData가 업데이트될 때마다 실행
+
   // 로딩 중일 때 로딩 컴포넌트를 표시
   if (isLoading) {
     return <Loading />; // 로딩 중일 때 Loading 컴포넌트를 렌더링

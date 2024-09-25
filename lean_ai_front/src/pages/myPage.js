@@ -216,8 +216,13 @@ const MyPage = () => {
           setEmail(data.email || '');
           setPhoneNumber(data.phone_number || '');
           setIsEventOn(data.marketing === 'Y'); // 마케팅 동의 상태 초기화
+          // QR 코드 처리
+        if (data.qr_code_url) {
           const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
-          setQrUrl(mediaUrl || '');
+          setQrUrl(mediaUrl);
+        } else {
+          setQrUrl(null); // QR 코드가 없으면 null 설정
+        }
 
           if (data.profile_photo && !data.profile_photo.startsWith('http')) {
             setProfileImage(`${config.apiDomain}${data.profile_photo}`);
@@ -293,8 +298,6 @@ const MyPage = () => {
           name,
           email,
           phone_number: phoneNumber,
-          business_name: businessName,
-          business_address: businessAddress,
         }),
       });
 
@@ -519,6 +522,7 @@ const MyPage = () => {
           storeName={storeName}
           setStoreName={setStoreName}
           qrUrl={qrUrl}
+          setQrUrl={setQrUrl}
           showQrCode={showQrCode}
           toggleQrCode={toggleQrCode}
           handleDownloadQrCode={handleDownloadQrCode}

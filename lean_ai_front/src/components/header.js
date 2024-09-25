@@ -31,6 +31,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const fetchQRCode = async () => {
     try {
       const token = sessionStorage.getItem('token');
+      //console.log('Token:', token); // 토큰 확인
       const response = await fetch(`${config.apiDomain}/api/qrCodeImage/`, {
         method: 'POST',
         headers: {
@@ -38,19 +39,27 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
         },
       });
 
+      //console.log('Response Status:', response.status); // 응답 상태 확인
+
       if (!response.ok) {
         throw new Error('Failed to fetch QR code');
       }
 
       const data = await response.json();
-      //console.log(decodeURIComponent(data.qr_code_image_url));
+      //console.log('QR Code Data:', data.qr_code_image_url); // 반환된 데이터 확인
 
       // 퍼센트 인코딩된 URL을 디코딩해서 한글을 포함한 파일 이름을 정상적으로 처리
+      if (data.qr_code_image_url) {
+        // QR 코드 이미지 URL이 있는 경우만 설정
+        const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_image_url)}`;
+        setQrCodeImageUrl(mediaUrl);
+        //console.log('Media URL:', mediaUrl);
+      } else {
+        // QR 코드 이미지 URL이 없으면 null로 설정
+        setQrCodeImageUrl(null);
+      }
+      
       setStoreName(data.store_name); // 스토어 이름 저장
-      // 환경 변수를 사용하여 미디어 URL을 구성
-      const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_image_url)}`;
-      setQrCodeImageUrl(mediaUrl); // QR 코드 이미지 URL 디코딩 후 저장
-
     } catch (error) {
       console.error('Error fetching QR code:', error);
       setErrorMessage('QR 코드 로딩 중 오류가 발생했습니다.');
@@ -106,14 +115,18 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   // QR 코드 생성 모달을 여는 함수
   const goToQRCode = async () => {
     try {
+      console.log('Initial qrCodeImageUrl:', qrCodeImageUrl); // 최초 상태 확인
       if (!qrCodeImageUrl) {
+        console.log('Fetching QR code...');
         await fetchQRCode(); // QR 코드가 없으면 가져오기
       }
 
-      if (qrCodeImageUrl) {
-        setShowQrModal(true); // QR 코드가 있으면 모달 열기
+      console.log('Updated qrCodeImageUrl:', qrCodeImageUrl); // 상태 업데이트 후 확인
+
+      if (!qrCodeImageUrl) {
+        router.push('/myPage'); 
       } else {
-        router.push('/myPage'); // QR 코드가 없으면 마이페이지로 이동
+        setShowQrModal(true); // QR 코드가 있으면 모달 열기
       }
     } catch (error) {
       console.error('Error fetching QR code:', error);
