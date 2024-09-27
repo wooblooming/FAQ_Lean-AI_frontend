@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import EditIcon from '../components/editIcon';
+import AddIcon from '@mui/icons-material/Add';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import SearchIcon from '@mui/icons-material/Search';
+import AddMenuModal from '../components/addMenuModal';
+import ViewMenuModal from '../components/viewMenuModal';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../config';
@@ -14,10 +19,13 @@ const ChangeInfo = ({ initialData }) => {
   const [menuPrices, setMenuPrices] = useState([]); // 메뉴 가격 리스트 상태
   const [storeAddess, setStoreAddess] = useState(''); // 매장 주소 상태
   const [storeTel, setStoreTel] = useState(''); // 매장 전화번호 상태
+  const [slug, setSlug] = useState('');
 
   const [storeImage, setStoreImage] = useState(null); // 이미지 파일 상태
   const [previewImage, setPreviewImage] = useState(''); // 미리보기 URL 상태
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 열림/닫힘 상태
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 열림/닫힘 상태\
+  const [isAddMenuModalOpen, setIsAddMenuModalOpen] = useState(false);
+  const [isViewMenuModalOpen, setIsViewMenuModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 수정 모달 열림/닫힘 상태
   const [editText, setEditText] = useState(''); // 수정 중인 텍스트
   const [currentEditElement, setCurrentEditElement] = useState(''); // 현재 수정 중인 요소
@@ -27,6 +35,8 @@ const ChangeInfo = ({ initialData }) => {
   const [showMessageModal, setShowMessageModal] = useState(false); // 메시지 모달 열림/닫힘 상태
   const [message, setMessage] = useState(''); // 일반 메시지 상태
 
+  const router = useRouter();
+  
   // 매장 정보 가져오기
   useEffect(() => {
     const fetchData = async () => {
@@ -46,23 +56,25 @@ const ChangeInfo = ({ initialData }) => {
           return;
         }
         const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
+        console.log(data);
 
         if (data.length > 0) {
           setStoreName(data[0].store_name || '');
           setstoreIntroduction(data[0].store_introduction || '');
           setStoreCategory(data[0].store_category || '');
           setStoreHours(data[0].opening_hours || '');
-          setMenuPrices(data[0].menu_price ? data[0].menu_price.split('\n') : []); // 메뉴 데이터를 배열로 저장
           setStoreAddess(data[0].store_address || '');
           setStoreTel(data[0].store_tel || '');
+          setSlug(data[0].slug || '');
 
           const bannerPath = data[0].banner || '';
           const storeImageUrl = bannerPath
             ? bannerPath.startsWith('/media/')
               ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
               : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
-            : '/chatbot.png'; // 기본 이미지 경로 설정
-
+            : '/chatbot.png'; // 기본 이미지 경로 설정            
+          
+         //console.log('storeImageUrl : ', storeImageUrl);
           setPreviewImage(storeImageUrl); // 배너 이미지 미리보기 설정
           setStoreId(data[0].store_id); // 매장 ID 설정
         } else {
@@ -240,6 +252,26 @@ const ChangeInfo = ({ initialData }) => {
     setErrorMessage('');
   };
 
+  // AddMenuModal 열기
+  const goToAddMenu = () => {
+    setIsAddMenuModalOpen(true);
+  };
+
+  // AddMenuModal 닫기
+  const closeAddMenuModal = () => {
+    setIsAddMenuModalOpen(false);
+  };
+
+  // goToViewMenu 열기
+  const goToViewMenu = () => {
+    setIsViewMenuModalOpen(true);
+  };
+
+    // goToViewMenu 닫기
+    const closeViewMenu = () => {
+      setIsViewMenuModalOpen(false);
+    };
+
 // storeCategory에 따라 메뉴 타이틀 설정
 const menuTitle = storeCategory === 'FOOD'
   ? '메뉴'
@@ -247,7 +279,7 @@ const menuTitle = storeCategory === 'FOOD'
     ? '상품'
     : storeCategory === 'PUBLIC'
       ? '서비스'
-      : '기타';
+      : '';
 
   return (
     <div className='flex flex-col h-full w-full bg-white font-sans'>
@@ -381,35 +413,28 @@ const menuTitle = storeCategory === 'FOOD'
           <p id="menuTitle" className="font-bold text-xl mb-2 h-auto">
             {menuTitle}
           </p>
-          {menuPrices.map((menu, index) => (
-            <div key={index}>
-              <div className="flex flex-row items-start mb-4 text-center">
-                <p id={`menuPrice_${index}`} className="whitespace-pre-line">
-                  - {menu}
-                </p>
-                <button
-                  onClick={() => openEditModal('menuPrices', index)}
-                  className="ml-2 text-gray-500"
-                >
-                  <EditIcon style={{ width: '20px', height: '20px' }} />
-                </button>
-              </div>
-              <hr className="border-t-1 border-gray-200 my-px w-full" />
+          <div className='flex flex-row'>
+            <AddIcon className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToAddMenu} />
+            <button 
+              className='textAddIcon '
+              onClick={goToAddMenu}>
+              <p className='text-indigo-400 font-semibold cursor-pointer text-lg'> {menuTitle} 추가</p>
+            </button>
             </div>
-          ))}
-
-          <button
-            onClick={() => openEditModal('menuPrices')} // 새로운 메뉴 항목 추가
-            className="ml-2 mt-px text-blue-500"
-          >
-            <p className='text-violet-500'> {`+ ${menuTitle} 추가`} </p>
-          </button>
+            <div className='flex flex-row'>
+            <SearchIcon className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToViewMenu} />
+            <button 
+              className='textAddIcon '
+              onClick={goToViewMenu}>
+              <p className='text-indigo-400 font-semibold cursor-pointer text-lg'> {menuTitle} 보기</p>
+            </button>
+            </div>
         </div>
 
         <div className='flex bg-white items-center justify-center h-auto mt-auto'>
           <button
             onClick={saveAllChanges}
-            className="mb-3 w-48 py-2 bg-violet-500 text-white text-center font-medium block rounded-full cursor-pointer"
+            className="mb-3 w-48 py-2 bg-indigo-500 text-white text-center font-medium block rounded-full cursor-pointer"
             style={{ marginBottom: '10px' }}
           >
             모든 변경사항 저장
@@ -512,6 +537,26 @@ const menuTitle = storeCategory === 'FOOD'
           </div>
         </div>
       )}
+
+      {/* AddMenuModal 모달 */}
+      <AddMenuModal
+        isOpen={isAddMenuModalOpen}
+        onClose={closeAddMenuModal}
+        onSave={(newMenu) => {
+          setMenuPrices([...menuPrices, newMenu]);
+        }}
+        slug={slug}
+        menuTitle={menuTitle}
+      />
+
+      {/* ViewMenuModal 모달 */}
+      <ViewMenuModal
+        show={isViewMenuModalOpen}
+        onClose={closeViewMenu}
+        title="메뉴 목록"
+        slug={slug}
+        menuTitle={menuTitle}
+      />
 
       <ModalMSG
         show={showMessageModal}

@@ -7,7 +7,7 @@ const ModalMSG = ({ show, onClose, title, children }) => {
 
     return (
         // 모달의 배경과 위치를 설정하는 컨테이너
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center font-sans">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center font-sans ">
             {/* 모달의 콘텐츠를 담는 컨테이너 */}
             <div className="bg-white rounded-lg shadow-lg w-10/12 p-4 relative max-h-fit"
                 style={{ maxWidth: '430px' }}

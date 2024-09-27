@@ -1,108 +1,125 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const ChatAnimation = () => {
-  const [messages, setMessages] = useState([]);
-  const [isClient, setIsClient] = useState(false); // 클라이언트 측에서만 렌더링하는 플래그
+const QRChatAnimation = () => {
+  console.log('QRChatAnimation rendering');
+  const [step, setStep] = useState(0);
+  const [chatMessages, setChatMessages] = useState([]);
 
-  const chatMessages = [
-    { sender: 'AI', text: '안녕하세요! 무엇을 도와드릴까요?' },
-    { sender: 'User', text: '챗봇 서비스에 대해 알고 싶어요.' },
-    { sender: 'AI', text: '저희 AI 챗봇은 고객 응대, 매출 최적화 솔루션을 제공합니다.' },
-    { sender: 'User', text: '어떻게 사용하죠?' },
-    { sender: 'AI', text: '간단히 API를 통해 통합하고, 실시간으로 고객과 소통할 수 있습니다.' },
-    { sender: 'User', text: '더 자세히 알고 싶어요!' },
-    { sender: 'AI', text: '문의 주시면 친절하게 안내해드리겠습니다.' }
-  ];
-
-  // 클라이언트에서만 상태 업데이트
   useEffect(() => {
-    setIsClient(true); // 클라이언트에서만 렌더링 시작
-    let index = 0;
-    if (isClient) {
-      const interval = setInterval(() => {
-        if (index < chatMessages.length) {
-          setMessages((prevMessages) => [...prevMessages, chatMessages[index]]);
-          index++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 3000); // 3초 간격으로 메시지 추가
-      return () => clearInterval(interval);
-    }
-  }, [isClient]);
+    console.log('QRChatAnimation mounted, current step:', step);
+    const timer = setTimeout(() => {
+      if (step < 3) {
+        setStep(step + 1);
+      } else if (chatMessages.length < 2) {
+        setChatMessages(prev => [...prev, { text: chatMessages.length === 0 ? "안녕하세요! 무엇을 도와드릴까요?" : "네, 어떤 정보가 필요하신가요?", isBot: true }]);
+      }
+    }, step < 3 ? 2000 : 1500);
 
-  if (!isClient) {
-    // 클라이언트에서만 렌더링하도록 방어 코드 추가
-    return null;
-  }
+    return () => clearTimeout(timer);
+  }, [step, chatMessages]);
+
+  const variants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -50 }
+  };
 
   return (
-    <div className="chat-container">
-      <div className="chat-box">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`chat-bubble ${msg.sender === 'AI' ? 'ai' : 'user'}`}
-            style={{ animationDelay: `${index * 0.5}s` }}
+    <div className="relative w-80 h-120 bg-gray-100 rounded-lg overflow-hidden shadow-lg border-2 border-blue-500">
+      <div className="absolute top-0 left-0 bg-black text-white p-1 z-10">Step: {step}</div>
+      <AnimatePresence mode="wait">
+        {step === 0 && (
+          <motion.div
+            key="qr"
+            className="absolute inset-0 flex items-center justify-center bg-white"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={variants}
           >
-            <p>{msg.text}</p>
-          </div>
-        ))}
-      </div>
-
-      <style jsx>{`
-        .chat-container {
-          width: 350px;
-          margin: 0 auto;
-          padding: 20px;
-          background-color: #f5f5f5;
-          border-radius: 10px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
-        }
-
-        .chat-box {
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
-          overflow-y: auto;
-          height: 300px;
-          padding: 10px;
-          border-radius: 10px;
-        }
-
-        .chat-bubble {
-          max-width: 80%;
-          padding: 12px 18px;
-          border-radius: 20px;
-          font-size: 14px;
-          opacity: 0;
-          animation: fadeInUp 0.8s forwards;
-        }
-
-        .ai {
-          background-color: #e0f7fa;
-          align-self: flex-start;
-        }
-
-        .user {
-          background-color: #d1c4e9;
-          align-self: flex-end;
-        }
-
-        @keyframes fadeInUp {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+            <div className="w-48 h-48 bg-gray-200 flex items-center justify-center">
+              <p>QR Code Placeholder</p>
+            </div>
+          </motion.div>
+        )}
+        {step === 1 && (
+          <motion.div
+            key="scan"
+            className="absolute inset-0 flex items-center justify-center"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={variants}
+          >
+            <motion.div
+              className="w-64 h-1 bg-blue-500"
+              animate={{ y: [-100, 100], opacity: [0, 1, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            <div className="w-48 h-48 border-4 border-blue-500 rounded-lg" />
+          </motion.div>
+        )}
+        {step === 2 && (
+          <motion.div
+            key="loading"
+            className="absolute inset-0 flex items-center justify-center"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={variants}
+          >
+            <motion.div
+              className="w-16 h-16 border-t-4 border-blue-500 rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+          </motion.div>
+        )}
+        {step >= 3 && (
+          <motion.div
+            key="chat"
+            className="absolute inset-0 flex flex-col"
+            initial="hidden"
+            animate="visible"
+            variants={variants}
+          >
+            <div className="bg-blue-500 text-white p-4">
+              <h3 className="text-lg font-bold">AI 챗봇</h3>
+            </div>
+            <div className="flex-grow p-4 overflow-y-auto">
+              <AnimatePresence>
+                {chatMessages.map((msg, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className={`mb-2 p-2 rounded ${msg.isBot ? 'bg-gray-200 mr-8' : 'bg-blue-100 ml-8'}`}
+                  >
+                    {msg.text}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+            <div className="p-4 bg-white border-t">
+              <input
+                type="text"
+                placeholder="메시지를 입력하세요..."
+                className="w-full p-2 rounded border"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                    setChatMessages(prev => [...prev, { text: e.target.value, isBot: false }]);
+                    e.target.value = '';
+                  }
+                }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-export default ChatAnimation;
+export default QRChatAnimation;

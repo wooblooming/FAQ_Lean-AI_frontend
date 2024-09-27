@@ -1,0 +1,4 @@
+/* src/styles/customStyles.module.css */
+.messenger.button.material-icons.close-action {
+    color: white !important; /* 닫기 버튼의 아이콘 색상을 흰색으로 설정 */
+}

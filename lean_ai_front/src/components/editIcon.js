@@ -3,7 +3,7 @@ import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'; // 필요한 
 
 const EditIcon = () => {
     return (
-        <FontAwesomeIcon icon={faPenToSquare} style={{ width: '20px', height: '20px', color: '#c4b5fd', marginLeft: '5px' }} />
+        <FontAwesomeIcon className='text-indigo-400' icon={faPenToSquare} style={{ width: '20px', height: '20px', marginLeft: '5px' }} />
     );
 };
 

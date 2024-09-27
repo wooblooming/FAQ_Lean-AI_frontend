@@ -86,7 +86,7 @@ const Login = () => {
                     >
                         로그인
                     </button>
-                    <div className="text-center text-gray-500 my-4">
+                    {/* <div className="text-center text-gray-500 my-4">
                         <span>또는</span>
                     </div>
                     <button className="text-black font-bold py-2 px-4 rounded-md w-full flex items-center justify-center" style={{ backgroundColor: '#FEE500' }}>
@@ -97,7 +97,7 @@ const Login = () => {
                     </button>
                     <button className="bg-green-500 text-white font-bold py-2 px-4 rounded-md w-full flex items-center justify-center">
                         <span><Image src={naverIcon} className='mr-2 w-4 h-4' alt="naver" /></span>네이버 계정으로 로그인
-                    </button>
+                    </button> */}
                 </div>
                 <div className="mt-6 text-center text-gray-500 ">
                     <p>계정이 없나요?
