@@ -1,28 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import ModalMSG from './modalMSG.js';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { Edit3 as EditIcon, Check as CheckIcon, X as CancelIcon } from 'lucide-react';
 import ModalErrorMSG from './modalErrorMSG';
+import ConfirmDeleteModal from '../components/confirmDeleteModal'; // 삭제 확인 모달 컴포넌트
 import config from '../../config';
+import styles from '../styles/viewMenu.module.css'; // 모듈 CSS 파일 import
 
 const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [editingItem, setEditingItem] = useState(null); // 수정 중인 아이템
+  const [updatedMenuItems, setUpdatedMenuItems] = useState([]); // 수정된 아이템을 저장
+  const [confirmDeleteItem, setConfirmDeleteItem] = useState(null); // 삭제할 항목
+  const [previewImage, setPreviewImage] = useState(null); // 미리보기 이미지
 
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setMessage] = useState('');
 
+  const storeSlug = encodeURIComponent(slug);
+  const fileInputRef = useRef(null); // 파일 입력 필드에 대한 참조
+
   useEffect(() => {
     if (show) {
       const fetchMenuItems = async () => {
         try {
           const token = sessionStorage.getItem('token');
-          const storeSlug = encodeURIComponent(slug);
-
           const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
             method: 'POST',
             headers: {
@@ -36,33 +44,170 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
           });
 
           const data = await response.json();
-
           if (Array.isArray(data) && data.length > 0) {
             setMenuItems(data);
-            // Initialize all categories as expanded
-            const categories = [...new Set(data.map(item => item.category))];
-            setExpandedCategories(categories.reduce((acc, category) => ({...acc, [category]: false}), {}));
-            setLoading(false);
+            setUpdatedMenuItems(data); // 처음 로드할 때 메뉴 아이템을 복사해 수정 가능하도록 설정
+            const categories = [...new Set(data.map((item) => item.category))];
+            setExpandedCategories(categories.reduce((acc, category) => ({ ...acc, [category]: false }), {}));
           } else {
-            setError("메뉴 데이터가 비어있거나 올바르지 않습니다.");
-            setLoading(false);
+            setError('메뉴 데이터가 비어있거나 올바르지 않습니다.');
           }
         } catch (error) {
-          console.error("Error fetching menu data:", error);
-          setError("메뉴 데이터를 불러오는 데 실패했습니다: " + error.message);
+          console.error('Error fetching menu data:', error);
+          setError('메뉴 데이터를 불러오는 데 실패했습니다: ' + error.message);
+        } finally {
           setLoading(false);
         }
       };
-
       fetchMenuItems();
     }
   }, [show, slug]);
 
   const toggleCategory = (category) => {
-    setExpandedCategories(prev => ({...prev, [category]: !prev[category]}));
+    setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] }));
   };
 
-  const groupedMenuItems = menuItems.reduce((acc, item) => {
+  const handleEditClick = (menuItem) => {
+    setEditingItem(menuItem.menu_number);
+    setPreviewImage(null); // 수정 시작 시 미리보기 초기화
+  };
+
+  const handleSaveEdit = async (menuItem) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('action', 'update');
+      formData.append('slug', storeSlug);
+      formData.append('menu_number', menuItem.menu_number);
+      formData.append('name', menuItem.name);
+      formData.append('price', Math.round(menuItem.price));
+      formData.append('category', menuItem.category);
+
+      if (menuItem.image instanceof File) {
+        formData.append('image', menuItem.image);
+      }
+
+      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        const updatedMenuItem = {
+          ...menuItem,
+          image: result.updated_menus[0]?.image
+            ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${result.updated_menus[0].image}`
+            : menuItem.image,
+        };
+
+        setUpdatedMenuItems((prevItems) =>
+          prevItems.map((item) => (item.menu_number === menuItem.menu_number ? updatedMenuItem : item))
+        );
+        setMenuItems((prevItems) =>
+          prevItems.map((item) => (item.menu_number === menuItem.menu_number ? updatedMenuItem : item))
+        );
+
+        setMessage(`"${menuItem.name}" 항목이 성공적으로 수정되었습니다.`);
+        setShowMessageModal(true);
+      } else {
+        const errorText = await response.text();
+        console.error('서버에서 수정 실패:', errorText);
+        throw new Error(`서버에서 수정 실패: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('항목 수정 중 오류 발생:', error);
+      setErrorMessage('항목 수정에 실패했습니다.');
+      setShowErrorMessageModal(true);
+    } finally {
+      setEditingItem(null);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+    setPreviewImage(null);
+  };
+
+  const handleInputChange = (e, menuItem, field) => {
+    const updatedItems = updatedMenuItems.map((item) =>
+      item.menu_number === menuItem.menu_number ? { ...item, [field]: e.target.value } : item
+    );
+    setUpdatedMenuItems(updatedItems);
+  };
+
+  const handleImageChange = (e, menuItem) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      const updatedItems = updatedMenuItems.map((item) =>
+        item.menu_number === menuItem.menu_number ? { ...item, image: file } : item
+      );
+      setUpdatedMenuItems(updatedItems);
+    }
+  };
+
+  const handleDeleteClick = (menuItem) => {
+    setConfirmDeleteItem(menuItem);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+
+      const requestBody = JSON.stringify({
+        action: 'delete',
+        menus: [
+          {
+            slug: storeSlug,
+            menu_number: confirmDeleteItem.menu_number,
+          },
+        ],
+      });
+
+      console.log('삭제 요청 body:', requestBody);
+
+      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      });
+
+      if (response.status === 200) {
+        const updatedItems = updatedMenuItems.filter(
+          (item) => item.menu_number !== confirmDeleteItem.menu_number
+        );
+        setUpdatedMenuItems(updatedItems);
+        setMenuItems(updatedItems);
+
+        setMessage(`"${confirmDeleteItem.name}" 항목이 성공적으로 삭제되었습니다.`);
+        setShowMessageModal(true);
+      } else {
+        const errorText = await response.text();
+        console.error('서버에서 삭제 실패:', errorText);
+        throw new Error(`서버에서 삭제 실패: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('항목 삭제 중 오류 발생:', error);
+      setErrorMessage('항목 삭제에 실패했습니다.');
+      setShowErrorMessageModal(true);
+    } finally {
+      setConfirmDeleteItem(null);
+    }
+  };
+
+  const groupedMenuItems = updatedMenuItems.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
     }
@@ -73,11 +218,18 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
   if (!show) return null;
 
   return (
-    <div className="modalOverlay">
-      <div className="modalContent">
-        <button className="closeButton" onClick={onClose}>&times;</button>
-        <div className="modalHeader">메뉴 목록</div>
-        <div className="modalBody">
+    <div className={styles.modalOverlay}>
+      <div className={`${styles.modalContent} relative mx-2`}>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-600 z-50"
+          style={{ padding: '10px', cursor: 'pointer' }}
+          aria-label="Close"
+        >
+          X
+        </button>
+        <div className={styles.modalHeader}>메뉴 목록</div>
+        <div className={styles.modalBody}>
           {loading ? (
             <p>메뉴 데이터를 불러오는 중...</p>
           ) : error ? (
@@ -86,27 +238,90 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
             <p>등록된 메뉴가 없습니다.</p>
           ) : (
             Object.entries(groupedMenuItems).map(([category, items]) => (
-              <div key={category} className="categoryGroup">
-                <h3 onClick={() => toggleCategory(category)} className="categoryHeader">
-                  {category} {expandedCategories[category] ? < KeyboardArrowUpIcon />  : < KeyboardArrowDownIcon />  }
+              <div key={category} className={styles.categoryGroup}>
+                <h3 onClick={() => toggleCategory(category)} className={styles.categoryHeader}>
+                  {category}{' '}
+                  {expandedCategories[category] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                 </h3>
                 {expandedCategories[category] && (
                   <ul>
-                    {items.map((menu, index) => (
-                      <li key={index} className="menuItem">
-                        <img
-                          src={menu.image ? 
-                            (menu.image.startsWith('http')
-                              ? menu.image
-                              : `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`)
-                          : '/menu_default_image.png'}
-                          alt={menu.name}
-                          className="menuImage"
-                        />
-                        <div className="menuDetails">
-                          <p className="menuName">{menu.name}</p>
-                          <p className="menuPrice">{Number(menu.price).toFixed(0)}원</p>
-                        </div>
+                    {items.map((menu) => (
+                      <li key={menu.menu_number} className={styles.menuItem}>
+                        {editingItem === menu.menu_number ? (
+                          <div className={styles.editMenuItem}>
+                            <div className={styles.imageWrapper}>
+                              <img
+                                src={
+                                  previewImage ||
+                                  (menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
+                                    ? menu.image
+                                    : menu.image
+                                    ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
+                                    : '/menu_default_image.png')
+                                }
+                                alt={menu.name}
+                                className={styles.menuEditImage}
+                                onClick={() => fileInputRef.current.click()}
+                                style={{ cursor: 'pointer' }}
+                              />
+                            </div>
+                            <input
+                              type="file"
+                              className={styles.menuEditImageInput}
+                              ref={fileInputRef}
+                              style={{ display: 'none' }}
+                              onChange={(e) => handleImageChange(e, menu)}
+                            />
+                            <input
+                              type="text"
+                              className={styles.menuEditInput}
+                              value={menu.name}
+                              onChange={(e) => handleInputChange(e, menu, 'name')}
+                            />
+                            <input
+                              type="number"
+                              className={styles.menuEditInput}
+                              value={Number(menu.price).toFixed(0)}
+                              onChange={(e) => handleInputChange(e, menu, 'price')}
+                            />
+                            <div className={styles.editButtons}>
+                              <button className={styles.saveButton} onClick={() => handleSaveEdit(menu)}>
+                                <CheckIcon />
+                              </button>
+                              <button className={styles.cancelButton} onClick={handleCancelEdit}>
+                                <CancelIcon />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="displayMenuItem flex justify-between items-center w-full">
+                            <div className="flex items-center">
+                              <img
+                                src={
+                                  menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
+                                    ? menu.image
+                                    : menu.image
+                                    ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
+                                    : '/menu_default_image.png'
+                                }
+                                alt={menu.name}
+                                className={styles.menuImage}
+                              />
+                              <div className={`${styles.menuDetails} ml-4`}>
+                                <p className={styles.menuName}>{menu.name}</p>
+                                <p className={styles.menuPrice}>{Number(menu.price).toFixed(0)}원</p>
+                              </div>
+                            </div>
+                            <div className="flex space-x-2 items-center mr-6">
+                              <button className={styles.editButton} onClick={() => handleEditClick(menu)}>
+                                <EditIcon />
+                              </button>
+                              <button className={styles.deleteButton} onClick={() => handleDeleteClick(menu)}>
+                                <DeleteOutlineIcon />
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -117,132 +332,16 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         </div>
       </div>
 
-      <ModalErrorMSG
-        show={showErrorMessageModal}
-        onClose={() => setShowErrorMessageModal(false)}
-        title="Error"
-      >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {errorMessage}
-        </p>
+      <ConfirmDeleteModal
+        show={!!confirmDeleteItem}
+        onClose={() => setConfirmDeleteItem(null)}
+        onConfirm={confirmDelete}
+        itemName={confirmDeleteItem?.name}
+      />
+
+      <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)} title="Error">
+        <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
       </ModalErrorMSG>
-
-      <style jsx>{`
-
-      ..modalHeader {
-          font-size: 24px;
-          font-weight: bold;
-          margin-bottom: 20px;
-          color: #333;
-        }
-        .categoryGroup {
-          margin-bottom: 10px;
-        }
-        .categoryHeader {
-          cursor: pointer;
-          background-color: #4f46e5;
-          color : #fff; 
-          padding: 10px;
-          border-radius: 5px;
-          margin-bottom: 5px;
-        }
-
-        .modalOverlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.6); /* 어두운 배경 */
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 999;
-        }
-
-        .modalContent {
-          background-color: white;
-          padding: 30px;
-          border-radius: 12px;
-          width: 90%;
-          max-width: 450px; /* 모달의 최대 크기 설정 */
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
-          font-family: 'Arial', sans-serif;
-          position: relative;
-          text-align: center;
-        }
-
-        .modalHeader {
-          font-size: 24px;
-          font-weight: bold;
-          margin-bottom: 20px;
-        }
-
-        .menuItem {
-          display: flex;
-          margin-bottom: 10px;
-          align-items: center;
-        }
-
-        .menuImage {
-          width: 60px;
-          height: 60px;
-          object-fit: cover;
-          margin-right: 10px;
-        }
-
-        .menuDetails {
-          flex-grow: 1;
-          text-align: left;
-        }
-
-        .menuName {
-          font-weight: bold;
-        }
-
-        .menuPrice {
-          color: green;
-        }
-
-        .menuCategory {
-          color: gray;
-        }
-
-        .modalFooter {
-          display: flex;
-          justify-content: center;
-          gap: 10px;
-        }
-
-        .modalButton {
-          background-color: #4F46E5; /* 보라색 버튼 배경 */
-          color: white;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 16px;
-        }
-
-        .modalButton:hover {
-          background-color: #4338CA; /* 호버 상태의 배경 색상 */
-        }
-
-        .closeButton {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          font-size: 24px;
-          color: #aaa;
-          background: none;
-          border: none;
-          cursor: pointer;
-        }
-
-        .closeButton:hover {
-          color: #333;
-        }
-      `}</style>
     </div>
   );
 };

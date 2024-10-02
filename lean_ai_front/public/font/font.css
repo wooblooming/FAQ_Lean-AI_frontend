@@ -1,0 +1,21 @@
+/* public/font/font.css 파일 */
+@font-face {
+    font-family: 'NanumSquare';
+    src: url('./NanumSquare_TTF/NanumSquareR.ttf') format('truetype');
+    font-weight: 400; /* 기본 설정 */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NanumSquareBold';
+    src: url('./NanumSquare_TTF/NanumSquareB.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NanumSquareExtraBold';
+    src: url('./NanumSquare_TTF/NanumSquareEB.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}

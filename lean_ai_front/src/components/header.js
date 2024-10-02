@@ -46,14 +46,14 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       }
 
       const data = await response.json();
-      //console.log('QR Code Data:', data.qr_code_image_url); // 반환된 데이터 확인
+      console.log('QR Code Data:', data.qr_code_image_url); // 반환된 데이터 확인
 
       // 퍼센트 인코딩된 URL을 디코딩해서 한글을 포함한 파일 이름을 정상적으로 처리
       if (data.qr_code_image_url) {
         // QR 코드 이미지 URL이 있는 경우만 설정
         const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_image_url)}`;
         setQrCodeImageUrl(mediaUrl);
-        //console.log('Media URL:', mediaUrl);
+        console.log('Media URL:', mediaUrl);
       } else {
         // QR 코드 이미지 URL이 없으면 null로 설정
         setQrCodeImageUrl(null);
@@ -115,13 +115,13 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   // QR 코드 생성 모달을 여는 함수
   const goToQRCode = async () => {
     try {
-      console.log('Initial qrCodeImageUrl:', qrCodeImageUrl); // 최초 상태 확인
+      // console.log('Initial qrCodeImageUrl:', qrCodeImageUrl); // 최초 상태 확인
       if (!qrCodeImageUrl) {
         console.log('Fetching QR code...');
         await fetchQRCode(); // QR 코드가 없으면 가져오기
       }
 
-      console.log('Updated qrCodeImageUrl:', qrCodeImageUrl); // 상태 업데이트 후 확인
+      // console.log('Updated qrCodeImageUrl:', qrCodeImageUrl); // 상태 업데이트 후 확인
 
       if (!qrCodeImageUrl) {
         router.push('/myPage'); 
@@ -244,10 +244,10 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
             </button>
             <p className="mb-4 text-center">로그아웃하시겠습니까?</p>
             <div className="flex space-x-4 mt-2 items-center justify-center">
-              <button className="bg-red-300 text-white px-4 py-2 rounded hover:bg-red-500" onClick={handleLogoutConfirm}>
+              <button className="bg-red-300 text-white px-4 py-2 rounded " onClick={handleLogoutConfirm}>
                 로그아웃
               </button>
-              <button className="bg-gray-300 text-white px-4 py-2 rounded hover:bg-gray-400" onClick={handleLogoutCancel}>
+              <button className="bg-gray-300 text-white px-4 py-2 rounded " onClick={handleLogoutCancel}>
                 취소
               </button>
             </div>

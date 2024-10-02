@@ -1,0 +1,99 @@
+.modalHeader {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  .categoryGroup {
+    margin-bottom: 10px;
+  }
+  .categoryHeader {
+    cursor: pointer;
+    background-color: #4f46e5;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+  }
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modalContent {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 700px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif;
+  }
+
+  .menuItem {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .menuImage {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+  .menuDetails {
+    flex-grow: 1;
+    text-align: left;
+  }
+  .menuName {
+    font-weight: bold;
+  }
+  .menuPrice {
+    color: green;
+  }
+  .editMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+  }
+  .imageWrapper {
+    width: 150px; /* 부모 div의 너비에 맞춰 설정 */
+    height: 80px; /* 부모 div의 높이에 맞춰 설정 */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+  }
+  
+  .menuEditImage {
+    width: 60px;
+    height: 60px;
+    object-fit: contain; /* 이미지가 부모 div 안에 맞게 들어가도록 설정 */
+  }
+  
+  .menuEditInput {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 200px); /* 이미지와 버튼을 제외한 공간 */
+  }
+  
+  .editButtons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .saveButton, .cancelButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  

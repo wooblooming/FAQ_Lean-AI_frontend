@@ -1,55 +1,18 @@
-import React, { createContext, useState, useContext } from 'react';
-import axios from 'axios';
-import config from '../../config';
+import React, { createContext, useState } from 'react';
 
+export const StoreContext = createContext();
 
-const StoreContext = createContext();
-
-export function StoreProvider({ children }) {
-  const [storeName, setStoreName] = useState('');
-  const [storeHours, setStoreHours] = useState('');
-  const [menuPrices, setMenuPrices] = useState('');
-  const [storeImage, setStoreImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchStoreData = async (id) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post(`${config.apiDomain}/api/storesinfo/`, {
-        params: {
-          store_id: id,  // 쿼리 파라미터로 store_id 전달
-        },
-      });
-      const data = response.data;
-      setStoreName(data.store_name);
-      setStoreHours(data.store_hours);
-      setMenuPrices(data.store_prices);
-      setStoreImage(data.store_image);
-    } catch (error) {
-      console.error("Error fetching store data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export const StoreProvider = ({ children }) => {
+  // 필요에 따라 초기 상태를 설정하거나 원하는 값을 추가하세요.
+  const [storeData, setStoreData] = useState({
+    // 예시 데이터
+    name: 'Default Store',
+    location: 'Default Location',
+  });
 
   return (
-    <StoreContext.Provider value={{
-      storeName,
-      storeHours,
-      menuPrices,
-      storeImage,
-      isLoading,
-      fetchStoreData,
-    }}>
+    <StoreContext.Provider value={{ storeData, setStoreData }}>
       {children}
     </StoreContext.Provider>
   );
-}
-
-export function useStore() {
-  const context = useContext(StoreContext);
-  if (!context) {
-    throw new Error('useStore must be used within a StoreProvider');
-  }
-  return context;
-}
+};

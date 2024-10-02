@@ -9,7 +9,7 @@ const QRCodeSection = ({
   // QR 코드 URL이 상대 경로일 경우에만 절대 경로로 변환
   useEffect(() => {
     console.log(qrUrl);
-    if (qrUrl && !qrUrl.startsWith("https://mumulai.com/media/")) {
+    if (qrUrl && !qrUrl.startsWith("http")) {
       // QR 코드 URL이 "https://mumulai.com/media/"로 시작하지 않으면 절대 경로로 변환
       setQrUrl(`${qrUrl}`);
     }

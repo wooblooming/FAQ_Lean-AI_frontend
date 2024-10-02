@@ -51,13 +51,13 @@ const MainPageWithMenu = () => {
       }
 
       const storeData = await response.json();
-      console.log("data : ", storeData);
+      // console.log("data : ", storeData);
 
       if (storeData && storeData.length > 0) {
         setStoreName(storeData[0].store_name);
         setStoreSlug(storeData[0].slug);
         //console.log(slug);
-        const encodedSlug = encodeURIComponent(slug);  // 슬러그 인코딩
+        // const encodedSlug = encodeURIComponent(slug);  // 슬러그 인코딩
         //console.log(encodedSlug);
       } else {
         setStoreName('');
@@ -100,20 +100,6 @@ const MainPageWithMenu = () => {
           handleErrorMessageModalClose={() => setShowErrorMessageModal(false)}
         />
         <main id="main-content" className="flex flex-col items-center text-center pt-20">
-          <h1 className="text-2xl font-bold mb-4">
-            사람이 답할 시간은 끝났습니다.
-            <br />
-            이제는 로봇이 응답합니다
-          </h1>
-
-          <div className="p-2 rounded-lg flex items-center justify-center" style={{ minWidth: '30%', maxWidth: '360px' }}>
-            <img src="banner_2.png" alt="상단 배너 이미지" className="w-full object-cover rounded-lg" />
-          </div>
-
-          <div className="mb-6 mt-8">
-            <p className="text-xlg"> <span className='font-bold text-2xl'>{storeName}</span>님을 <br />위한 서비스를 준비했어요.</p>
-          </div>
-
           <div id='button' className="flex justify-center items-stretch" style={{ minWidth: '30%', maxWidth: '360px' }}>
             <div className="flex flex-col w-full items-stretch p-2">
               {/* 업종 정보 변경 모달 열기 */}

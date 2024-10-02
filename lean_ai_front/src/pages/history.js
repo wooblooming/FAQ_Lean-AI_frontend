@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+
 
 const timelineData = [
   {
@@ -160,7 +162,7 @@ const timelineData = [
     },
 ];
 
-const TimelineEvent = ({ date, title, description }) => { // image, details 제거
+const TimelineEvent = ({ date, title, description }) => { 
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const eventRef = useRef(null);
@@ -257,8 +259,14 @@ const Timeline = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl text-center font-bold mb-4">(주)린에이아이의 걸어온 길</h1> {/* 타이틀 추가 */}
-      <button onClick={handleGoBack} className="text-blue-500  mb-4">뒤로가기</button> {/* 뒤로가기 버튼 추가 */}
+      <h1 className="text-2xl md:text-3xl text-center font-bold mb-4 flex justify-center">린에이아이의 걸어온 길</h1> {/* 타이틀 추가 */}
+      <Link href="#">  {/* Link에 href 추가 */}
+        <a onClick={handleGoBack} className="absolute top-4 left-4 text-gray-500 flex justify-center focus:outline-none"> 
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </a>
+      </Link>
       <div className="max-w-3xl mx-auto">
         {timelineData.map((yearData) => (
           <React.Fragment key={yearData.year}>

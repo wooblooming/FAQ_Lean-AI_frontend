@@ -190,7 +190,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                         <div className="flex items-center justify-center w-full h-auto">
                             <label
                                 htmlFor="image-upload"
-                                className="flex flex-col items-center justify-center w-full h-auto md:h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                                className="flex flex-col items-center justify-center w-full h-auto border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                             >
                                 {newItem.image ? (
                                     <img
@@ -269,7 +269,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                                                             name="name"
                                                             value={editItem.name}
                                                             onChange={(e) => handleInputChange(e, true)}
-                                                            className="w-full p-2 border rounded mb-2 whitespace-nowrap"
+                                                            className="w-full p-2 border rounded mb-2 whitespace-nowrap mt-2"
                                                         />
                                                         <input
                                                             type="text"

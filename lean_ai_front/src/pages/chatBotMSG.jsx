@@ -133,7 +133,7 @@ export default function Chatbot({ agentId }) {
                     }}
                 >
                     <df-messenger-chat-bubble
-                        chat-title-icon="/chatbot.png"
+                        chat-title-icon="/mumul.png"
                         
                         chat-title="MUMUL BOT"
                         placeholder-text="자유롭게 질문해주세요"
