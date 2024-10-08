@@ -5,7 +5,6 @@ import { useInView } from 'react-intersection-observer';
 import Nav from '../components/navBar';
 import CompanySection from '../components/companySection';
 import ServiceSection from '../components/serviceSection';
-import SupportSection from '../components/supportSection';
 import Footer from '../components/footer';
 import ModalMSG from '../components/modalText';
 
@@ -19,12 +18,10 @@ const LandingPageContent = () => {
   // Animation controls for each section
   const companyAnimation = useAnimation();
   const serviceAnimation = useAnimation();
-  const supportAnimation = useAnimation();
 
   // Ref and inView for each section using useInView
   const [companyRef, companyInView] = useInView({ triggerOnce: true, threshold: 0.3 });
   const [serviceRef, serviceInView] = useInView({ triggerOnce: true, threshold: 0.3 });
-  const [supportRef, supportInView] = useInView({ triggerOnce: true, threshold: 0.3 });
 
   // 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
   useEffect(() => {
@@ -58,8 +55,8 @@ const LandingPageContent = () => {
   useEffect(() => {
     if (companyInView) companyAnimation.start('visible');
     if (serviceInView) serviceAnimation.start('visible');
-    if (supportInView) supportAnimation.start('visible');
-  }, [companyInView, serviceInView, supportInView, companyAnimation, serviceAnimation, supportAnimation]);
+  }, [companyInView, serviceInView, companyAnimation, serviceAnimation]);
+  
 
   // 텍스트 애니메이션 및 이미지 애니메이션 설정
   const textVariants = {
@@ -68,8 +65,8 @@ const LandingPageContent = () => {
   };
 
   const imageVariants = {
-    hidden: { opacity: 0, x: 100 },
-    visible: { opacity: 1, x: 0 },
+    hidden: { opacity: 0, y: 100 },
+    visible: { opacity: 1, y: 0 },
   };
 
   const sectionVariants = {
@@ -78,18 +75,18 @@ const LandingPageContent = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FFFFF2' }}>
+    <div className="min-h-screen flex flex-col font-sans bg-violet-50" >
       {/* Navigation Bar */}
       <Nav isMobile={isMobile} />
 
       {/* 메인 섹션 */}
       <motion.main
-        className="flex-grow-4 flex flex-row md:pt-12"
+        className="flex-grow-4 flex flex-row md:pt-12 bg-white"
         initial="hidden"
         animate="visible"
         variants={{ visible: { transition: { staggerChildren: 0.3 } } }}
       >
-        <div className="container md:mx-auto px-6 md:px-0 flex flex-col lg:flex-row items-center justify-center">
+        <div className="container md:mx-auto px-6 md:px-0 flex flex-col lg:flex-row items-center justify-center ">
           {/* 텍스트 섹션 */}
           <motion.div className="w-full text-left mb-0 md:mb-12 mt-28" variants={textVariants} transition={{ duration: 0.8 }}>
             <h2 className="text-3xl md:text-4xl font-medium md:font-semibold mb-2 md:mb-4 text-gray-800 whitespace-nowrap">
@@ -105,8 +102,8 @@ const LandingPageContent = () => {
               AI챗봇으로
             </h3>
             <motion.button
-              className="text-white px-8 md:px-12 py-4 mb-2 rounded-full text-xl md:text-2xl font-semibold transition-colors"
-              style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareBold' }}
+              className="text-white px-8 md:px-10 py-4 mb-2 rounded-full text-xl md:text-2xl font-semibold transition-colors"
+              style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareExtraBold' }}
               onClick={handleClick}
               whileHover={{ scale: 1.05 }} // hover 시 버튼 확대
               whileTap={{ scale: 0.95 }} // 클릭 시 버튼 축소
@@ -132,37 +129,67 @@ const LandingPageContent = () => {
         <CompanySection isMobile={isMobile} />
       </motion.main>
 
-      {/* 서비스 섹션 */}
+      {/* 서비스 섹션 
+      
+        initial="hidden"
+        animate={serviceAnimation}
+        variants={sectionVariants}
+        */}
       <motion.main
         ref={serviceRef}
         name="service"
         className="flex-grow px-0 md:px-6 py-8"
-        initial="hidden"
-        animate={serviceAnimation}
-        variants={sectionVariants}
+        
       >
         <ServiceSection isMobile={isMobile} />
       </motion.main>
 
-      {/* 고객지원 섹션 */}
-      <motion.main
-        ref={supportRef}
-        name="support"
-        className="flex-grow px-0 md:px-6 py-6"
-        initial="hidden"
-        animate={supportAnimation}
-        variants={sectionVariants}
-      >
-        <SupportSection isMobile={isMobile} />
-      </motion.main>
+      {/* 도입문의 섹션 */}
+      <div className="flex flex-col items-center justify-center text-center mt-32 bg-indigo-200 p-10 mb-3">
+        <p style={{ fontSize: '28px', fontFamily: 'NanumSquareBold' }}>
+          효율적인 매장 운영을 위한 서비스, <br />
+          AI 챗봇 '무물' 지금 바로 경험해 보세요!
+        </p>
+        <div className="items-center justify-center mt-4">
+          <button
+            className="bg-indigo-600 rounded-full w-fit px-6 py-3 text-center text-white pulse-button"
+            style={{
+              fontSize: '30px',
+              fontFamily: 'NanumSquareExtraBold',
+            }}
+            onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
+          >
+            무료 도입 상담 신청
+          </button>
+        </div>
+      </div>
 
       {/* Modal Component */}
       <ModalMSG show={isModalOpen} onClose={() => setIsModalOpen(false)} title="상세 내용">
-        <div className="text-gray-700 whitespace-pre-line text-left">{modalContent}</div>
+        <div className="text-gray-700 whitespace-pre-line text-left ">{modalContent}</div>
       </ModalMSG>
 
       {/* Footer */}
       <Footer isMobile={isMobile} />
+
+      <style jsx>{`
+
+        @keyframes gradient-animation {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        .pulse-button {
+          animation: pulse 3.5s infinite;
+        }
+
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
     </div>
   );
 };

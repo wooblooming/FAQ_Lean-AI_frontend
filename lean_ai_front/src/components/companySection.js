@@ -188,7 +188,7 @@ const CompanySection = ({ isMobile }) => {
         >
           <button
             onClick={() => router.push('/history')}
-            className={`text-indigo-500 rounded-full font-semibold transition-colors  hover:text-indigo-700 ${
+            className={`text-indigo-500 rounded-full font-semibold transition-colors hover:text-indigo-700 ${
               isMobile ? 'px-6 py-2 text-lg' : 'px-8 py-3 text-xl'
             }`}
           >

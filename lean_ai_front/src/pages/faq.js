@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { Search, ChevronDown, ChevronUp, MessageCircle, CreditCard, Settings, HelpCircle, ArrowLeft } from 'lucide-react';
 
@@ -6,6 +7,7 @@ const FAQPage = () => {
   const [activeCategory, setActiveCategory] = useState('모든 질문');
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedId, setExpandedId] = useState(null);
+  const router = useRouter();
 
   const categories = [
     { name: '모든 질문', icon: HelpCircle },
@@ -21,29 +23,29 @@ const FAQPage = () => {
     { id: 4, category: '계정', question: '계정 설정을 변경하고 싶어요.', answer: '계정 설정 변경은 로그인 후 우측 상단의 프로필 아이콘을 클릭하여 \'계정 설정\'에서 할 수 있습니다. 비밀번호, 알림 설정 등을 변경할 수 있습니다.' },
   ];
 
-  const filteredFaqs = faqs.filter(faq => 
+  const filteredFaqs = faqs.filter(faq =>
     (activeCategory === '모든 질문' || faq.category === activeCategory) &&
-    (faq.question.toLowerCase().includes(searchTerm.toLowerCase()) || 
-     faq.answer.toLowerCase().includes(searchTerm.toLowerCase()))
+    (faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen py-12 px-4 " style={{ backgroundColor: '#FFFFF2' }} >
+      <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#DCDAF6', borderRadius: '50px 0 50px 0' }}>
         <div className="flex items-center mb-12">
-          <ArrowLeft className="h-6 w-6 text-purple-600 cursor-pointer" onClick={() => window.location.href = '/'} /> {/* 뒤로가기 아이콘 */}
-          <h1 className="text-4xl font-bold text-purple-800 text-center flex-1">자주 묻는 질문</h1>
+          <ArrowLeft className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" onClick={() => router.push('/')} />
+          <h1 className="text-4xl font-bold text-center">자주 묻는 질문</h1>
         </div>
-        
+
         {/* 검색 바 */}
         <div className="relative mb-8">
           <input
             type="text"
             placeholder="질문 검색하기"
-            className="w-full py-3 pl-12 pr-4 text-gray-900 border-2 border-purple-300 rounded-full focus:outline-none focus:border-purple-500 transition-all duration-300"
+            className="w-full py-3 pl-12 pr-4 text-gray-900 border-2 border-indigo-500 rounded-full transition-all duration-300"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Search className="absolute left-4 top-3.5 h-6 w-6 text-purple-400" />
+          <Search className="absolute left-4 top-3.5 h-6 w-6 text-indigo-400" />
         </div>
 
         {/* 카테고리 선택 */}
@@ -51,9 +53,8 @@ const FAQPage = () => {
           {categories.map((category) => (
             <motion.button
               key={category.name}
-              className={`flex items-center px-4 py-2 rounded-full ${
-                activeCategory === category.name ? 'bg-purple-600 text-white' : 'bg-white text-purple-600'
-              }`}
+              className={`flex items-center px-4 py-2 rounded-full ${activeCategory === category.name ? 'bg-indigo-500 text-white' : 'bg-white text-gray-600'
+                }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveCategory(category.name)}
@@ -75,12 +76,13 @@ const FAQPage = () => {
                 className="w-full text-left px-6 py-4 flex justify-between items-center"
                 onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
               >
-                <span className="font-medium text-gray-900">{faq.question}</span>
-                {expandedId === faq.id ? <ChevronUp className="h-5 w-5 text-purple-500" /> : <ChevronDown className="h-5 w-5 text-purple-500" />}
+
+                {expandedId === faq.id ? <div className='font-bold text-lg text-indigo-500'>{faq.question}</div> : <div className='font-semibold text-lg'>{faq.question}</div>}
+                {expandedId === faq.id ? <ChevronUp className="h-5 w-5 text-indigo-500" /> : <ChevronDown className="h-5 w-5 text-indigo-500" />}
               </button>
               {expandedId === faq.id && (
-                <div className="px-6 py-4 bg-purple-50">
-                  <p className="text-gray-700">{faq.answer}</p>
+                <div className="px-6 py-4 ">
+                  <p className="text-gray-600">{faq.answer}</p>
                 </div>
               )}
             </div>

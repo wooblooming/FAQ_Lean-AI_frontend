@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ArrowLeft } from 'lucide-react';
 
 
 const timelineData = [
@@ -253,20 +254,15 @@ const YearMarker = ({ year }) => {
 };
 
 const Timeline = () => {
-  const handleGoBack = () => {
-    window.history.back(); // 뒤로가기 기능 추가
-  };
-
+  const router = useRouter();
+  
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl md:text-3xl text-center font-bold mb-4 flex justify-center">린에이아이의 걸어온 길</h1> {/* 타이틀 추가 */}
-      <Link href="#">  {/* Link에 href 추가 */}
-        <a onClick={handleGoBack} className="absolute top-4 left-4 text-gray-500 flex justify-center focus:outline-none"> 
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </a>
-      </Link>
+    <div className="min-h-screen p-4 font-sans" style={{ backgroundColor: '#FFFFF2' }}>
+      <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#DCDAF6', borderRadius: '50px 0 50px 0' }}>
+        <div className="flex items-center mb-12"> 
+          <ArrowLeft className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" onClick={() =>router.push('/')} /> 
+          <h1 className="text-4xl font-bold text-center">린에이아이의 걸어온 길</h1>
+        </div>
       <div className="max-w-3xl mx-auto">
         {timelineData.map((yearData) => (
           <React.Fragment key={yearData.year}>
@@ -277,6 +273,7 @@ const Timeline = () => {
           </React.Fragment>
         ))}
       </div>
+    </div>
     </div>
   );
 };

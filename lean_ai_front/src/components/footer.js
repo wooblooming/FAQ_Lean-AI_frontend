@@ -1,30 +1,70 @@
 import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Mail, Smartphone, Building } from 'lucide-react';
 
-const Footer = () => {
+export default function Footer() {
+    const router = useRouter();
     return (
-        <footer className='bg-black text-gray-400 text-xs font-sans p-4 w-full flex justify-center items-center mt-8 hidden md:block'>
-            <div className="container">
-                <div className="grid grid-cols-2 md:grid-cols-3 ">
-                    <div className="grid grid-rows-2">
-                        <h3 className="text-2xl sm:text-xl font-bold mb-4 whitespace-nowrap mt-2">
-                            (주)린에이아이
-                            <p className="text-base sm:text-xs font-normal sm:whitespace-pre-line ">서울특별시 관악구 봉천로 545, 2층(서울창업센터 관악) </p>
-                        </h3>
+        <footer className="bg-gray-900 text-white">
+            <div className="container md:mx-auto px-6 md:px-0 py-5
+      ">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-bold">MUMUL</h2>
+                        <p className="text-gray-400">AI 기반 고객 문의 관리 및 응대 솔루션을 제공하는 서비스입니다.</p>
                     </div>
 
-                    <div className="ml-auto">
-                        <h4 className="text-base font-semibold mb-2">문의하기</h4>
-                        <p className="text-gray-400 text-sm">ch@lean-ai.com</p>
-                        <p className="text-gray-400 text-sm">02-6951-1510</p>
+                    <div className='hidden md:block'>
+                        <h3 className="text-lg font-semibold mb-4">빠른 링크</h3>
+                        <ul className="space-y-2 text-gray-400">
+                            <li><Link href="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
+                            <li><Link href="#company" className="hover:text-indigo-400 transition-colors">About Us</Link></li>
+                            <li><Link href="#service" className="hover:text-indigo-400 transition-colors">Services</Link></li>
+                            <li><Link href="/signupStep1" className="hover:text-indigo-400 transition-colors">Signup</Link></li>
+                        </ul>
+                    </div>
+
+                    <div className='hidden md:block'>
+                        <h3 className="text-lg font-semibold mb-4">고객지원</h3>
+                        <ul className="space-y-2 text-gray-400">
+                            <li><Link href="/faq" className="hover:text-indigo-400 transition-colors">자주 묻는 질문(FAQ)</Link></li>
+                            <li><Link href="/notice" className="hover:text-indigo-400 transition-colors">공지사항</Link></li>
+                            <li><div className="hover:text-indigo-400 transition-colors"
+                                onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
+                            >
+                                문의하기
+                            </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">문의</h3>
+                        <div className="grid grid-row-3 md:flex md:flex-col md:space-y-4 text-gray-400">
+                            <a href="mailto:ch@lean-ai.com" className="flex items-center hover:text-indigo-400 transition-colors">
+                                <Mail size={24} className="mr-2" />
+                                <span>ch@lean-ai.com</span>
+                            </a>
+                            <div className="flex items-center hover:text-indigo-400 transition-colors">
+                                <Smartphone size={24} className="mr-2" />
+                                <span>02-6951-1510</span>
+                            </div>
+                            <div className="flex items-center hover:text-indigo-400 transition-colors">
+                                <Building size={24} className="mr-2" />
+                                <span className='text-sm'>서울특별시 관악구 봉천로 545, <br /> 서울창업센터 관악 201호</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="mt-8 pt-4 text-center">
-                    {/* 이 부분을 text-center로 감쌌습니다 */}
-                    <p>&copy; 2024 (주)린에이아이. All rights reserved.</p>
+                <div className="mt-8 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
+                    <p className="text-gray-400">&copy; 2024 MUMUL. All rights reserved.</p>
+                    <div className="mt-4 md:mt-0 flex space-x-4">
+                        <Link href="/privacy" className="text-gray-400 hover:text-indigo-400 transition-colors">Privacy Policy</Link>
+                        <Link href="/terms" className="text-gray-400 hover:text-indigo-400 transition-colors">Terms of Service</Link>
+                    </div>
                 </div>
             </div>
         </footer>
-    );
-};
-
-export default Footer;
+    )
+}

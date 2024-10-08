@@ -55,9 +55,11 @@ const Login = () => {
     };
 
     return (
-        <div className="bg-indigo-100 flex justify-center items-center h-screen">
+        <div className="bg-violet-100 flex justify-center items-center h-screen font-sans" >
             <div className=" bg-white rounded-lg shadow-lg p-8 max-w-md m-10" style={{ width: '400px' }}>
-                <h1 className="text-3xl font-bold text-violet-500 text-center mb-8">MUMUL</h1>
+                <h1 className="text-4xl font-bold text-indigo-600 text-center mb-8" >
+                    MUMUL
+                </h1>
                 <div className="space-y-4">
                     <div className="flex items-center border rounded-md px-4 py-2">
                         <FontAwesomeIcon icon={faUser} />
