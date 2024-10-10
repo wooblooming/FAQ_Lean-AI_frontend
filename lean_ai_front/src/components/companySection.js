@@ -155,11 +155,11 @@ const CompanySection = ({ isMobile }) => {
 
   return (
     <motion.div
-      className="px-4 mx-3 md:px-8 py-8 md:py-12 shadow-lg"
+      className="px-4 mx-3 md:px-8 py-8 md:py-12"
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      style={{ backgroundColor: '#DCDAF6', borderRadius: '50px 0 50px 0' }}
+      style={{  borderRadius: '50px 0 50px 0' }}
     >
       <div className="container mx-auto">
         {/* 제목 및 설명 */}
