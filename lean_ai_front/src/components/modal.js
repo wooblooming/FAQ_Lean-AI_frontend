@@ -10,7 +10,7 @@ const Modal = ({ children, onClose }) => {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-10" // z-index를 낮춤
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 z-20" // z-index를 낮춤
           style={{ padding: '10px', cursor: 'pointer' }}
           aria-label="Close"
         >

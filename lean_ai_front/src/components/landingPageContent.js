@@ -91,7 +91,7 @@ const LandingPageContent = () => {
               </div>
 
               {/* 텍스트 섹션 - 모바일 버전에서 슬라이더 밑에 배치 */}
-              <div className="w-full mt-4 p-6 -skew-y-3 bg-white shadow-lg flex flex-col items-center space-y-2">
+              <div className="w-full mt-4 p-6 -skew-y-3 bg-white shadow-lg flex flex-col items-center space-y-4">
                 <div className='text-gray-600 text-center whitespace-nowrap text-xl font-semibold '>
                   <p>
                     무엇이든 물어보세요
@@ -108,49 +108,74 @@ const LandingPageContent = () => {
 
                 </div>
 
+                <div className='flex flex-col space-x-2'>
                 <motion.button
-                  className="text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-nowrap bg-indigo-600"
-                  style={{ fontFamily: 'NanumSquareExtraBold' }}
+                  className="text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-pre-line  bg-indigo-600"
+                  style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareBold' }}
                   onClick={handleClick}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {isLoggedIn ? '메인 페이지로 이동' : '지금 시작하기'}
+                  무물 서비스 이용하기
                 </motion.button>
+                <motion.button
+                  className="text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-pre-line bg-cyan-500"
+                  style={{ fontFamily: 'NanumSquareBold' }}
+                  onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  도입 신청하기
+                </motion.button>
+                </div>
               </div>
             </div>
           ) : (
             // PC 버전
-            <div className="flex w-full h-full justify-center items-center">
+            <div className="flex w-full h-full justify-between items-center ">
               {/* 텍스트 섹션 */}
               <motion.div
                 className="w-full md:w-1/3 md:mr-32"
                 variants={textVariants}
                 transition={{ duration: 0.8 }}
               >
-                <div name='text' className='flex flex-col text-center justify-center items-center text-gray-800 whitespace-nowrap text-4xl font-semibold space-y-4'>
-                  <p>
-                    무엇이든 물어보세요
-                  </p>
-                  <p className="text-5xl font-bold mb-4 text-indigo-600">
-                    QR코드로
-                  </p>
-                  <p>
-                    무엇이든 답해드려요
-                  </p>
-                  <p className="text-5xl font-bold mb-6 text-indigo-600">
-                    AI챗봇으로
-                  </p>
+                <div name='text' className='flex flex-col justify-center items-center'>
+                  <div className='flex flex-col text-center text-gray-800 whitespace-nowrap text-4xl font-semibold space-y-4 mb-4'>
+                    <p>
+                      무엇이든 물어보세요
+                    </p>
+                    <p className="text-5xl font-bold text-indigo-600">
+                      QR코드로
+                    </p>
+                    <p>
+                      무엇이든 답해드려요
+                    </p>
+                    <p className="text-5xl font-bold text-indigo-600">
+                      AI챗봇으로
+                    </p>
+                  </div>
 
-                  <motion.button
-                    className="text-white px-8 py-4 mb-2 my-4 rounded-full text-2xl font-semibold transition-colors"
-                    style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareExtraBold' }}
-                    onClick={handleClick}
-                    whileHover={{ scale: 1.05 }} // hover 시 버튼 확대
-                    whileTap={{ scale: 0.95 }} // 클릭 시 버튼 축소
-                  >
-                    {isLoggedIn ? '메인 페이지로 이동' : '지금 시작하기'}
-                  </motion.button>
+                  <div className='flex flex-row space-x-4 '>
+                    <motion.button
+                      className="text-white px-8 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
+                      style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareExtraBold' }}
+                      onClick={handleClick}
+                      whileHover={{ scale: 1.05 }} // hover 시 버튼 확대
+                      whileTap={{ scale: 0.95 }} // 클릭 시 버튼 축소
+                    >
+                      무물 서비스 이용하기
+                    </motion.button>
+                    <motion.button
+                      className="bg-cyan-500 text-white px-8 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
+                      style={{ fontFamily: 'NanumSquareExtraBold', }}
+                      onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
+                      whileHover={{ scale: 1.05 }} // hover 시 버튼 확대
+                      whileTap={{ scale: 0.95 }} // 클릭 시 버튼 축소
+
+                    >
+                      도입 신청하기
+                    </motion.button>
+                  </div>
                 </div>
               </motion.div>
 
@@ -169,7 +194,7 @@ const LandingPageContent = () => {
       <motion.main
         ref={companyRef} // Ref 설정
         name="company"
-        className="flex-grow px-0 md:px-6 mt-32 md:mt-0"
+        className="flex-grow px-0 md:px-6 mt-48 md:mt-0"
         initial="hidden"
         animate={companyAnimation} // 애니메이션 컨트롤
         variants={sectionVariants}
@@ -178,20 +203,20 @@ const LandingPageContent = () => {
       </motion.main>
 
       {/* 서비스 섹션 */}
-      <motion.main ref={serviceRef} name="service" className="flex-grow px-0 md:px-6 py-8 bg-white rounded-lg shadow-lg mx-2">
+      <motion.main ref={serviceRef} name="services" className="flex-grow px-0 md:px-6 py-8 bg-white rounded-lg shadow-lg mx-2">
         <ServiceSection isMobile={isMobile} />
       </motion.main>
 
       {/* 도입문의 섹션 */}
       <div className="flex flex-col items-center justify-center text-center mt-28 p-10 mb-5 bg-indigo-200">
-      <p className="custom-text whitespace-nowrap" style={{ fontFamily: 'NanumSquareBold' }}>
+        <p className="custom-text whitespace-nowrap" style={{ fontFamily: 'NanumSquareBold' }}>
           효율적인 매장 운영을 위한 서비스, <br />
           AI 챗봇 '무물' 지금 바로 경험해 보세요!
         </p>
         <div className="items-center justify-center mt-4">
           <button
             className="bg-indigo-600 rounded-full px-8 py-3 text-center text-white pulse-button custom-button"
-            style={{ fontFamily: 'NanumSquareExtraBold',}}
+            style={{ fontFamily: 'NanumSquareExtraBold', }}
             onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
           >
             무료 도입 상담 신청
@@ -219,7 +244,7 @@ const LandingPageContent = () => {
             font-size: 25px; /* 모바일에서 버튼 글씨 크기 줄이기 */
           }
         }
-          
+
         .pulse-button {
           animation: pulse 3.5s infinite;
         }

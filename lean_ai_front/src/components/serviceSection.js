@@ -108,7 +108,7 @@ function FlipCard({ step, index }) {
 const ServiceSection = ({ isMobile }) => {
   // 상태값 정의
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [activeCategory, setActiveCategory] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [isOwnerStep, setIsOwnerStep] = useState(true); // 업주/고객 가이드라인 구분 상태
   const [goodThingIndex, setGoodThingIndex] = useState(0); // 장점 섹션 슬라이드 인덱스 관리
@@ -240,18 +240,16 @@ const ServiceSection = ({ isMobile }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           {/* Category buttons */}
           <div className="grid grid-cols-2 gap-4">
-            {usecase.map((category, index) => (
+          {usecase.map((category, index) => (
               <motion.button
                 key={index}
-                className={`py-3 rounded-lg transition-all duration-300 hover:bg-indigo-200 hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                className={`py-3 px-4 rounded-lg transition-all duration-300 hover:bg-white hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex flex-col items-center justify-center ${index === activeCategory ? 'bg-white ' : ''}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveCategory(index)}
               >
-                <category.icon className="w-12 h-12 mb-2 mx-auto" />
-                <h3 className="text-lg font-semibold text-center" style={{ fontFamily: "NanumSquareBold" }}>
-                  {category.name}
-                </h3>
+                <category.icon className="w-10 h-10 mb-1 mx-auto text-indigo-500" />
+                <h3 className="text-xl font-semibold text-center" style={{ fontFamily: "NanumSquareBold" }}>{category.name}</h3>
               </motion.button>
             ))}
           </div>
@@ -259,34 +257,21 @@ const ServiceSection = ({ isMobile }) => {
           {/* Description area */}
           {activeCategory !== null && (
             <motion.div
-              className="bg-white p-8 rounded-xl shadow-lg overflow-auto"
-              style={{ height: '305px' }}
+              className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"
+              style={{ height: 'auto', fontFamily: "NanumSquare" }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeCategory}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="h-full"
-                >
-                  <h3 className="text-2xl font-bold mb-4 text-indigo-500" style={{ fontFamily: "NanumSquareExtraBold" }}>
-                    {usecase[activeCategory].name}에서의 MUMUL 활용
-                  </h3>
-                  <p className="text-lg text-gray-700 leading-relaxed" style={{ fontFamily: "NanumSquare" }}>
-                    {usecase[activeCategory].description}
-                  </p>
-                  <p className="text-lg text-gray-700 leading-relaxed" style={{ fontFamily: "NanumSquare" }}>
-                    <br />
-                    {usecase[activeCategory].exemple}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
+              <h3 className=" mb-2 text-indigo-500" style={{ fontFamily: "NanumSquareExtraBold", fontSize: '22px' }}>
+                {usecase[activeCategory].name}에서 MUMUL 활용
+              </h3>
+              <p className="text-lg text-gray-700 leading-relaxed">{usecase[activeCategory].description}</p>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                <br />
+                {usecase[activeCategory].exemple}
+              </p>
             </motion.div>
           )}
         </div>
@@ -296,8 +281,7 @@ const ServiceSection = ({ isMobile }) => {
 
     // Features 섹션 렌더링 함수 (모바일)
     const renderFeaturesMobile = () => (
-      <div className="px-4">
-      <div className="w-full">
+      <div className="w-full px-4">
         <p className="text-center font-semibold mb-4 text-3xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
           <span className="text-indigo-600">MUMUL 서비스</span>에서는 <br /> 무엇을 할 수 있을까요?
         </p>
@@ -328,14 +312,13 @@ const ServiceSection = ({ isMobile }) => {
           </div>
         </div>
       </div>
-      </div>
     );
   
 
   // 가이드라인 섹션 렌더링 함수 (모바일) 
   const renderGuidelineMobile = () => (
     <div className="px-4">
-      <div className="w-full px-3 py-6 bg-indigo-100 rounded-lg ">
+      <div className="w-full px-2 py-6 bg-indigo-100 rounded-lg ">
         <p className="text-3xl font-bold text-center mb-4 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
           <span className="text-indigo-600">MUMUL 서비스</span>는 <br />간단합니다
         </p>
@@ -374,7 +357,7 @@ const ServiceSection = ({ isMobile }) => {
   // 장점 섹션 렌더링 함수 (모바일)
   const renderAdvantagesMobile = () => (
     <div className="px-2">
-    <div className="w-full px-4 space-y-10">
+    <div className="w-full px-2 space-y-10">
       {/* 장점 섹션 */}
       <div className="w-full ">
         <p className="text-3xl font-bold text-center mb-8 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
@@ -421,7 +404,7 @@ const ServiceSection = ({ isMobile }) => {
           {usecase.map((category, index) => (
             <motion.button
               key={index}
-              className={`py-3 px-4 rounded-lg transition-all duration-300 hover:bg-white hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex flex-col items-center justify-center`}
+              className={`py-3 px-4 rounded-lg transition-all duration-300 hover:bg-white hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex flex-col items-center justify-center ${index === activeCategory ? 'bg-white ' : ''}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveCategory(index)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
 import Modal from '../components/modal';
@@ -6,22 +6,39 @@ import ChangeInfo from './changeInfo';
 import EditData from './editData';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
-import styles from '../styles/button.module.css'; 
+import styles from '../styles/button.module.css';
 import Footer from '../components/footer';
 
 const MainPageWithMenu = () => {
-  const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false); // '업종 정보 변경' 모달 상태
-  const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false); // '데이터 수정하기' 모달 상태
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 상태 관리
-  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 저장
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 표시 상태
-  const [storeName, setStoreName] = useState(''); // 스토어 이름 저장
-  const [slug, setStoreSlug] = useState(''); // 스토어 slug 저장
-  const [isMounted, setIsMounted] = useState(false); // 컴포넌트가 마운트되었는지 확인하는 플래그
-
+  const [isMobile, setIsMobile] = useState(false);
+  const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false);
+  const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+  const [storeName, setStoreName] = useState('');
+  const [slug, setStoreSlug] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
+  const buttonRefs = useRef([]);
   const router = useRouter();
+  const maxButtonHeight = Math.max(...buttonRefs.current.map(button => button?.offsetHeight || 0));
 
-  // 스토어 정보를 가져오는 함수
+  const handleResize = () => {
+    const isMobileDevice = window.innerWidth <= 768;
+    setIsMobile(isMobileDevice);
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+    fetchStoreInfo();
+  }, []);
+
   const fetchStoreInfo = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -51,14 +68,9 @@ const MainPageWithMenu = () => {
       }
 
       const storeData = await response.json();
-      // console.log("data : ", storeData);
-
       if (storeData && storeData.length > 0) {
         setStoreName(storeData[0].store_name);
         setStoreSlug(storeData[0].slug);
-        //console.log(slug);
-        // const encodedSlug = encodeURIComponent(slug);  // 슬러그 인코딩
-        //console.log(encodedSlug);
       } else {
         setStoreName('');
       }
@@ -69,29 +81,21 @@ const MainPageWithMenu = () => {
     }
   };
 
-  useEffect(() => {
-    setIsMounted(true);
-
-    fetchStoreInfo();
-
-    return ;
-  }, []);
-
   if (!isMounted) {
     return null;
   }
 
   const goToChatbot = () => {
     if (slug) {
-      const encodedSlug = encodeURIComponent(slug);  // 슬러그 인코딩
-      //console.log('Navigating to:', `/storeIntroductionOwner/${encodedSlug}`); // URL 로그 확인
+      const encodedSlug = encodeURIComponent(slug);
       router.push(`/storeIntroductionOwner/${encodedSlug}`);
     }
   };
 
   return (
-    <div id='main' className="flex-grow bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen">
-      <div className="relative w-full flex flex-col">
+    <div className="flex flex-col min-h-screen font-sans bg-violet-50">
+      {/* Header 및 메인 콘텐츠를 감싸는 컨테이너 */}
+      <div className="flex-grow">
         <Header
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
@@ -99,64 +103,70 @@ const MainPageWithMenu = () => {
           showErrorMessageModal={showErrorMessageModal}
           handleErrorMessageModalClose={() => setShowErrorMessageModal(false)}
         />
-        <main id="main-content" className="flex flex-col items-center text-center pt-20">
-          <div id='button' className="flex justify-center items-stretch" style={{ minWidth: '30%', maxWidth: '360px' }}>
-            <div className="flex flex-col w-full items-stretch p-2">
-              {/* 업종 정보 변경 모달 열기 */}
-              <button
-                onClick={() => setIsChangeInfoModalOpen(true)}
-                className={styles.button}
-              >
-                <div className="flex flex-row justify-between items-center">
-                  <div className="flex flex-col w-full ml-4">
-                    <p className={styles['text-lg']}>매장 정보 변경</p>
-                    <p className={styles['text-sm']}>사업장 정보를 수정해야 할 때</p>
-                  </div>
-                  <div className="flex justify-end w-max">
-                    <img src='/change.png' className={styles.icon} alt="매장 정보 수정 이미지" />
-                  </div>
+        <main id="main-content" className="flex flex-col md:mx-auto md:px-0 py-4 mt-20">
+          {/* 버튼 영역 */}
+          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} justify-center md:space-x-4 space-y-2 md:space-y-0 w-full p-2`}>
+            {/* '매장 정보 변경' 버튼 */}
+            <button
+              ref={(el) => (buttonRefs.current[0] = el)}
+              style={{ height: isMobile ? 'auto' : `${maxButtonHeight}px`, minHeight: `${maxButtonHeight}px`, minWidth: isMobile ? '100%' : 'auto' }}
+              onClick={() => setIsChangeInfoModalOpen(true)}
+              className={`${styles.button} text-center md:text-left`}
+            >
+              <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-col w-full space-x-4">
+                  <p className={styles['text-lg']} style={{ fontSize: isMobile ? '20px' : '25px' }}>매장 정보 변경</p>
+                  <p className={styles['text-sm']} style={{ fontSize: isMobile ? '15px' : '18px' }}>사업장 정보를 수정하여 최신 상태로 유지하세요</p>
                 </div>
-              </button>
+                <div className="flex justify-end w-max">
+                  <img src='/change.png' className={`${styles.icon} md:w-20 md:h-20`} alt="매장 정보 수정 이미지" />
+                </div>
+              </div>
+            </button>
 
-              {/* 챗봇 미리보기 링크 */}
-              <button
-                onClick={goToChatbot}
-                className={styles.button}
-              >
-                <div className="flex flex-row justify-between items-center">
-                  <div className="flex flex-col w-full ml-4">
-                    <p className={styles['text-lg']}>챗봇 미리보기</p>
-                    <p className={styles['text-sm']}>손님에게 보여지는 화면을 보고 싶을 때</p>
-                  </div>
-                  <div className="flex justify-end w-max">
-                    <img src='/preview.png' className={styles.icon} alt="챗봇 미리보기 이미지" />
-                  </div>
+            {/* '챗봇 미리보기' 버튼 */}
+            <button
+              ref={(el) => (buttonRefs.current[1] = el)}
+              style={{ height: isMobile ? 'auto' : `${maxButtonHeight}px`, minHeight: `${maxButtonHeight}px`, minWidth: isMobile ? '100%' : 'auto' }}
+              onClick={goToChatbot}
+              className={`${styles.button} text-center md:text-left`}
+            >
+              <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-col w-full space-x-4">
+                  <p className={styles['text-lg']} style={{ fontSize: isMobile ? '20px' : '25px' }}>챗봇 미리보기</p>
+                  <p className={styles['text-sm']} style={{ fontSize: isMobile ? '15px' : '18px' }}>손님에게 보여지는 화면을 확인해 보세요</p>
                 </div>
-              </button>
+                <div className="flex justify-end w-max">
+                  <img src='/preview.png' className={`${styles.icon} md:w-20 md:h-20`} alt="챗봇 미리보기 이미지" />
+                </div>
+              </div>
+            </button>
 
-              {/* 데이터 수정하기 모달 열기 */}
-              <button
-                onClick={() => setIsEditDataModalOpen(true)}
-                className={styles.button}
-              >
-                <div className="flex flex-row justify-between items-center">
-                  <div className="flex flex-col w-full ml-4">
-                    <p className={styles['text-lg']}>데이터 수정</p>
-                    <p className={styles['text-sm']}>챗봇 데이터 수정을 원할 때</p>
-                  </div>
-                  <div className="flex justify-end w-max">
-                    <img src='/modify.png' className={styles.icon} alt="FAQ 데이터 수정하기 이미지" />
-                  </div>
+            {/* '데이터 수정' 버튼 */}
+            <button
+              ref={(el) => (buttonRefs.current[2] = el)}
+              style={{ height: isMobile ? 'auto' : `${maxButtonHeight}px`, minHeight: `${maxButtonHeight}px`, minWidth: isMobile ? '100%' : 'auto' }}
+              onClick={() => setIsEditDataModalOpen(true)}
+              className={`${styles.button} text-center md:text-left`}
+            >
+              <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-col w-full space-x-4">
+                  <p className={styles['text-lg']} style={{ fontSize: isMobile ? '20px' : '25px' }}>데이터 수정</p>
+                  <p className={styles['text-sm']} style={{ fontSize: isMobile ? '15px' : '18px' }}>챗봇 데이터를 수정해 보세요</p>
                 </div>
-              </button>
-            </div>
+                <div className="flex justify-end w-max">
+                  <img src='/modify.png' className={`${styles.icon} md:w-20 md:h-20`} alt="FAQ 데이터 수정하기 이미지" />
+                </div>
+              </div>
+            </button>
           </div>
+
         </main>
       </div>
-      
-      {/* 푸터 섹션 */}
-      <Footer />
-      
+
+      {/* Footer 섹션 - 항상 화면 아래에 위치 */}
+      <Footer className="w-full mt-auto hidden md:block" isMobile={isMobile} />
+
       {isChangeInfoModalOpen && (
         <Modal onClose={() => setIsChangeInfoModalOpen(false)}>
           <ChangeInfo />
@@ -164,7 +174,9 @@ const MainPageWithMenu = () => {
       )}
 
       {isEditDataModalOpen && (
-        <Modal onClose={() => setIsEditDataModalOpen(false)}>
+        <Modal
+          onClose={() => { setIsEditDataModalOpen(false); }}
+        >
           <EditData />
         </Modal>
       )}

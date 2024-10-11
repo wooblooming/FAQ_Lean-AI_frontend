@@ -6,9 +6,8 @@ import { Mail, Smartphone, Building } from 'lucide-react';
 export default function Footer() {
     const router = useRouter();
     return (
-        <footer className="bg-gray-900 text-white">
-            <div className="container md:mx-auto px-6 md:px-0 py-5
-      ">
+        <footer className="bg-gray-900 text-white hidden md:block">
+            <div className="container md:mx-auto px-6 md:px-0 py-5">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold">MUMUL</h2>
@@ -57,12 +56,8 @@ export default function Footer() {
                         </div>
                     </div>
                 </div>
-                <div className="mt-8 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
+                <div className="mt-8 pt-2 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
                     <p className="text-gray-400">&copy; 2024 MUMUL. All rights reserved.</p>
-                    <div className="mt-4 md:mt-0 flex space-x-4">
-                        <Link href="/privacy" className="text-gray-400 hover:text-indigo-400 transition-colors">Privacy Policy</Link>
-                        <Link href="/terms" className="text-gray-400 hover:text-indigo-400 transition-colors">Terms of Service</Link>
-                    </div>
                 </div>
             </div>
         </footer>
