@@ -9,8 +9,8 @@ const SliderComponent = () => {
   const [activeSlide, setActiveSlide] = useState(0);
 
   const images = [
-    '/index1.png',
-    '/index2.png',
+    '/index1.jpg',
+    '/index2.jpg',
     '/index3.png',
   ];
 
@@ -61,7 +61,7 @@ const SliderComponent = () => {
           <div key={index} className="slide-item">
             <div
               className="image-container"
-              style={{ position: 'relative', width: '98%', height: '65vh' }}
+              style={{ position: 'relative', width: '100%', height: '65vh' }}
             >
               <Image
                 src={src}

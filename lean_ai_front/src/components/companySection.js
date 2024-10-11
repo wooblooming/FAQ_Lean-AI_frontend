@@ -133,15 +133,15 @@ const CompanySection = ({ isMobile }) => {
 
   // 모바일과 데스크탑에서 다른 텍스트를 적용
   const mobileDescription = (
-    <>
-      <p className="font-bold text-2xl mb-2">린에이아이는</p>
-      <p className="text-gray-700 text-lg font-semibold ">
+    <div style={{ fontFamily: "NanumSquareExtraBold" }}>
+      <p className="font-bold text-3xl mb-2">린에이아이는</p>
+      <p className="text-gray-700 text-xl  ">
         AI가 필요한 모든 산업, 영역에 <br />
-        <span className="text-indigo-700 text-2xl font-bold">린에이아이의 AI 기술</span>
+        <span className="text-indigo-700 text-2xl ">린에이아이의 AI 기술</span>
         을 <br />
         적용하고자 합니다.
       </p>
-    </>
+    </div>
   );
 
   const desktopDescription = (
@@ -168,6 +168,7 @@ const CompanySection = ({ isMobile }) => {
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+          style={{ fontFamily: "NanumSquareExtraBold" }}
         >
           {isMobile ? mobileDescription : desktopDescription}
         </motion.h2>
@@ -188,6 +189,7 @@ const CompanySection = ({ isMobile }) => {
         >
           <button
             onClick={() => router.push('/history')}
+            style={{ fontFamily: "NanumSquareBold" }}
             className={`text-indigo-500 rounded-full font-semibold transition-colors hover:text-indigo-700 ${
               isMobile ? 'px-6 py-2 text-lg' : 'px-8 py-3 text-xl'
             }`}
