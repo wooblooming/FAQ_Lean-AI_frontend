@@ -21,7 +21,7 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, verificationCode, onChan
                 <div className="flex justify-center">
                     <button
                         onClick={onSubmit}
-                        className=" text-blue-500 px-4 py-2 rounded mr-2"
+                        className=" text-indigo-500 px-4 py-2 rounded mr-2"
                     >
                         확인
                     </button>

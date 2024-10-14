@@ -18,8 +18,8 @@ export default function Footer() {
                         <h3 className="text-lg font-semibold mb-4">빠른 링크</h3>
                         <ul className="space-y-2 text-gray-400">
                             <li><Link href="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
-                            <li><Link href="#company" className="hover:text-indigo-400 transition-colors">About Us</Link></li>
-                            <li><Link href="#service" className="hover:text-indigo-400 transition-colors">Services</Link></li>
+                            <li><Link href="/?section=company" className="hover:text-indigo-400 transition-colors">About Us</Link></li>
+                            <li><Link href="/?section=service" className="hover:text-indigo-400 transition-colors">Services</Link></li>
                             <li><Link href="/signupStep1" className="hover:text-indigo-400 transition-colors">Signup</Link></li>
                         </ul>
                     </div>

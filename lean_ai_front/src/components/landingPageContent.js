@@ -13,6 +13,16 @@ const LandingPageContent = () => {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const { section } = router.query;
+    if (section) {
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [router.query]);
+
   // Animation controls for each section
   const companyAnimation = useAnimation();
   const serviceAnimation = useAnimation();
@@ -69,7 +79,7 @@ const LandingPageContent = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-violet-50">
       {/* Navigation Bar */}
-      <Nav isMobile={isMobile} />
+      <Nav isMobile={isMobile} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
 
       {/* 메인 섹션 */}
       <div name='main' className="container md:mx-auto px-2 md:px-0 py-10 mt-12 ">
@@ -193,6 +203,7 @@ const LandingPageContent = () => {
       {/* 회사 Section */}
       <motion.main
         ref={companyRef} // Ref 설정
+        id="company"
         name="company"
         className="flex-grow px-0 md:px-6 mt-48 md:mt-0"
         initial="hidden"
@@ -203,7 +214,12 @@ const LandingPageContent = () => {
       </motion.main>
 
       {/* 서비스 섹션 */}
-      <motion.main ref={serviceRef} name="services" className="flex-grow px-0 md:px-6 py-8 bg-white rounded-lg shadow-lg mx-2">
+      <motion.main 
+        ref={serviceRef} 
+        id="services"
+        name="services" 
+        className="flex-grow px-0 md:px-6 py-8 bg-white rounded-lg shadow-lg mx-2"
+      >
         <ServiceSection isMobile={isMobile} />
       </motion.main>
 

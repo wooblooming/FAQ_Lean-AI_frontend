@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react'; // 햄버거 메뉴와 닫기 아이콘 사용
+import LogoutModal from '../components/logout'; // 로그아웃 모달 컴포넌트 가져오기
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../config'; // config 파일에서 API URL 등을 가져오기
@@ -13,6 +14,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 관리
   const [menuOpen, setMenuOpen] = useState(false); // 메뉴 열림/닫힘 상태 관리
   const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 열림/닫힘 상태 관리
+  const [isLoading, setIsLoading] = useState(false); // qr 코드 이미지 로딩 상태
   const [showQrModal, setShowQrModal] = useState(false); // QR 코드 모달 열림/닫힘 상태 관리
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 열림/닫힘 상태 관리
   const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달 열림/닫힘 상태 관리
@@ -31,6 +33,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   // QR 코드를 서버에서 가져오는 함수
   const fetchQRCode = async () => {
     try {
+      setIsLoading(true); // 로딩 시작
       const token = sessionStorage.getItem('token');
       const response = await fetch(`${config.apiDomain}/api/qrCodeImage/`, {
         method: 'POST',
@@ -40,22 +43,26 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch QR code');
+        throw new Error(`Failed to fetch QR code: ${response.status}`);
       }
 
       const data = await response.json();
+
       if (data.qr_code_image_url) {
-        const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_image_url)}`;
+        const mediaUrl = decodeURIComponent(data.qr_code_image_url);
         setQrCodeImageUrl(mediaUrl);
       } else {
         setQrCodeImageUrl(null);
+        console.warn("QR Code URL is null.");
       }
 
-      setStoreName(data.store_name); // 스토어 이름 저장
+      setStoreName(data.store_name || '');
     } catch (error) {
       console.error('Error fetching QR code:', error);
       setErrorMessage('QR 코드 로딩 중 오류가 발생했습니다.');
       setShowErrorMessageModal(true);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
@@ -64,6 +71,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     const canvas = qrCanvasRef.current;
     const ctx = canvas.getContext('2d');
     const img = new Image();
+    img.crossOrigin = "anonymous"; // CORS 문제 방지
     img.src = qrCodeImageUrl; // QR 코드 이미지 URL 설정
 
     img.onload = () => {
@@ -108,23 +116,11 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     setMenuOpen(!menuOpen); // 메뉴 열림/닫힘 상태 토글
   };
 
-  // QR 코드 생성 모달을 여는 함수
+  // QR 코드 모달을 여는 함수
   const goToQRCode = async () => {
-    try {
-      if (!qrCodeImageUrl) {
-        await fetchQRCode(); // QR 코드가 없으면 가져오기
-      }
-
-      if (qrCodeImageUrl) {
-        setShowQrModal(true); // QR 코드가 있으면 모달 열기
-      }
-    } catch (error) {
-      console.error('Error fetching QR code:', error);
-      setErrorMessage('QR 코드 로딩 중 오류가 발생했습니다.');
-      setShowErrorMessageModal(true);
-    }
+    setShowQrModal(true);
+    await fetchQRCode();
   };
-
   return (
     <div>
       {/* 헤더 섹션 */}
@@ -206,49 +202,40 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       )}
 
       {/* 로그아웃 모달 */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center relative" style={{ width: '350px' }}>
-            <button onClick={handleLogoutCancel} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-60" aria-label="Close">
-              &times;
-            </button>
-            <p className="mb-4 text-center">로그아웃하시겠습니까?</p>
-            <div className="flex space-x-4 mt-2 items-center justify-center">
-              <button className="bg-red-300 text-white px-4 py-2 rounded " onClick={handleLogoutConfirm}>
-                로그아웃
-              </button>
-              <button className="bg-gray-300 text-white px-4 py-2 rounded " onClick={handleLogoutCancel}>
-                취소
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <LogoutModal
+        show={showLogoutModal}
+        onConfirm={handleLogoutConfirm}
+        onCancel={handleLogoutCancel}
+      />
 
       {/* QR 코드 모달 */}
       {showQrModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center relative">
-            <button onClick={() => setShowQrModal(false)} className="absolute top-2 right-3 text-gray-400 hover:text-gray-600 z-60">
+          <div className="bg-white p-6 m-3 md:mx-0 rounded-lg text-center relative">
+            <button
+              onClick={() => setShowQrModal(false)}
+              className="absolute top-4 right-4 text-gray-500 font-bold"
+            >
               X
             </button>
-            <h2 className="text-xl font-bold mb-1.5">챗봇 전용 QR 코드</h2>
-            <p className="text-gray-400" style={{ whiteSpace: 'pre-line', textAlign: 'center' }}>
-              {`이용하려는 챗봇의 QR코드\n이미지를 저장할 수 있습니다`}
-            </p>
-            {qrCodeImageUrl && (
+            <h2 className="text-xl font-bold mb-2">챗봇 전용 QR 코드</h2>
+            {isLoading ? (
+              <p>로딩 중입니다...</p>
+            ) : (
               <>
                 <canvas ref={qrCanvasRef} style={{ display: 'none' }} />
                 <img src={qrCodeImageUrl} alt="QR Code" className="mx-auto" />
+                <p
+                  className="font-semibold underline cursor-pointer mt-2"
+                  onClick={handleSaveQRCode}
+                >
+                  이미지 저장하기
+                </p>
               </>
             )}
-            <p className="font-semibold underline hover:text-blue-400" onClick={handleSaveQRCode}>
-              이미지 저장하기
-            </p>
           </div>
         </div>
       )}
-
       {/* 메시지 모달 */}
       <ModalMSG show={showMessageModal} onClose={() => setShowMessageModal(false)} title=" ">
         <p style={{ whiteSpace: 'pre-line' }}>{message}</p>

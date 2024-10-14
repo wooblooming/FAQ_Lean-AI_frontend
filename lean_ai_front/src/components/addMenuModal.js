@@ -20,7 +20,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
     });
     const [editItemId, setEditItemId] = useState(null);
     const [editItem, setEditItem] = useState(null);
-    
+
     // isMobile 상태 추가
     const [isMobile, setIsMobile] = useState(false);
 
@@ -115,27 +115,48 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
         return acc;
     }, {});
 
+    const getImagePreview = (image) => {
+        if (image instanceof File) {
+            return URL.createObjectURL(image);
+        }
+        return '/menu_default_image.png'; // 기본 이미지 경로
+    };
+
     const handleComplete = async () => {
         try {
             const token = sessionStorage.getItem('token');
             const formData = new FormData();
             const storeSlug = encodeURIComponent(slug);
-
-            menuItems.forEach((item, index) => {
+    
+            // 디버깅용 
+            //console.log('전송할 메뉴 아이템:', menuItems);
+    
+            for (const [index, item] of menuItems.entries()) {
                 formData.append(`menus[${index}][slug]`, storeSlug);
-                formData.append(`menus[${index}][name]`, item.name);
-                formData.append(`menus[${index}][price]`, Math.round(item.price));
-                formData.append(`menus[${index}][category]`, item.category);
-
+                formData.append(`menus[${index}][name]`, item.name || '');
+                formData.append(`menus[${index}][price]`, item.price || 0);
+                formData.append(`menus[${index}][category]`, item.category || '');
+                formData.append(`menus[${index}][menu_number]`, item.menu_number || '');
+    
+                // 이미지가 없는 경우 기본 이미지 추가
                 if (item.image instanceof File) {
                     formData.append(`menus[${index}][image]`, item.image);
                 } else {
-                    formData.append(`menus[${index}][image]`, null);
+                    const defaultImageResponse = await fetch('/menu_default_image.png');
+                    const defaultImageBlob = await defaultImageResponse.blob();
+                    formData.append(`menus[${index}][image]`, defaultImageBlob, 'menu_default_image.png');
                 }
-            });
-
+            }
+    
+             // 디버깅용 : FormData의 내용을 확인
+            /*
+             for (let pair of formData.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
+            }
+            */
+            
             formData.append('action', editItemId ? 'update' : 'create');
-
+    
             const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
                 method: 'POST',
                 headers: {
@@ -143,34 +164,29 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                 },
                 body: formData,
             });
-
-            if (response.status === 201) {
-                const result = await response.json();
-                onSave(result);
-
-                setMessage(`${menuTitle}이(가) 성공적으로 저장되었습니다.`);
-                setShowMessageModal(true);
-
-                setNewItem({
-                    image: '',
-                    name: '',
-                    price: '',
-                    category: '',
-                    store: '',
-                });
-                setMenuItems([]);
-                setEditItemId(null);
-                setEditItem(null);
-            } else {
-                throw new Error('서버 전송에 실패했습니다.');
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || '서버 전송에 실패했습니다.');
             }
+    
+            const result = await response.json();
+            onSave(result);
+    
+            setMessage(`${menuTitle}이(가) 성공적으로 저장되었습니다.`);
+            setShowMessageModal(true);
+    
+            setNewItem({ image: '', name: '', price: '', category: '', store: '' });
+            setMenuItems([]);
+            setEditItemId(null);
+            setEditItem(null);
         } catch (error) {
             console.error('전송 중 오류 발생:', error);
             setErrorMessage('저장에 실패했습니다.');
             setShowErrorMessageModal(true);
         }
     };
-
+    
     return (
         <div className="modalOverlay z-50">
             <div className="modalContent relative mx-2 max-h-screen">
@@ -194,10 +210,10 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                             >
                                 {newItem.image ? (
                                     <img
-                                        src={URL.createObjectURL(newItem.image)}
+                                        src={getImagePreview(newItem.image)}
                                         alt="Preview"
                                         className="w-full max-h-64 object-contain rounded-lg"
-                                        style={{ objectFit: 'contain' }} // 부모 div에 맞게 이미지 크기 조정
+                                        style={{ objectFit: 'contain' }}
                                     />
                                 ) : (
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -208,6 +224,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                                         <p className="text-xs text-gray-500">PNG, JPG (MAX. 800x400px)</p>
                                     </div>
                                 )}
+
                                 <input
                                     id="image-upload"
                                     type="file"
@@ -373,10 +390,11 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                                                 ) : (
                                                     <>
                                                         <img
-                                                            src={URL.createObjectURL(item.image)}
+                                                            src={getImagePreview(item.image)}
                                                             alt={item.name}
                                                             className="w-16 h-16 object-cover rounded"
                                                         />
+
                                                         <div className="flex-grow ml-4">
                                                             <p className="font-semibold text-gray-800 whitespace-nowrap">{item.name}</p>
                                                             <p className="text-gray-600">{item.price}원</p>

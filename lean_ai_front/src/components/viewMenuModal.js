@@ -82,11 +82,12 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
       formData.append('name', menuItem.name);
       formData.append('price', Math.round(menuItem.price));
       formData.append('category', menuItem.category);
-
+  
+      // 이미지가 파일 형식인 경우에만 추가
       if (menuItem.image instanceof File) {
         formData.append('image', menuItem.image);
       }
-
+  
       const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
         method: 'POST',
         headers: {
@@ -94,23 +95,30 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         },
         body: formData,
       });
-
+  
       if (response.ok) {
         const result = await response.json();
+        const updatedImage =
+          menuItem.image instanceof File
+            ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${result.updated_menus[0]?.image}`
+            : menuItem.image; // 기존 이미지 유지
+  
         const updatedMenuItem = {
           ...menuItem,
-          image: result.updated_menus[0]?.image
-            ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${result.updated_menus[0].image}`
-            : menuItem.image,
+          image: updatedImage,
         };
-
+  
         setUpdatedMenuItems((prevItems) =>
-          prevItems.map((item) => (item.menu_number === menuItem.menu_number ? updatedMenuItem : item))
+          prevItems.map((item) =>
+            item.menu_number === menuItem.menu_number ? updatedMenuItem : item
+          )
         );
         setMenuItems((prevItems) =>
-          prevItems.map((item) => (item.menu_number === menuItem.menu_number ? updatedMenuItem : item))
+          prevItems.map((item) =>
+            item.menu_number === menuItem.menu_number ? updatedMenuItem : item
+          )
         );
-
+  
         setMessage(`"${menuItem.name}" 항목이 성공적으로 수정되었습니다.`);
         setShowMessageModal(true);
       } else {
@@ -126,6 +134,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
       setEditingItem(null);
     }
   };
+  
 
   const handleCancelEdit = () => {
     setEditingItem(null);
@@ -173,7 +182,8 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         ],
       });
 
-      console.log('삭제 요청 body:', requestBody);
+      // 디버깅용
+      // console.log('삭제 요청 body:', requestBody);
 
       const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
         method: 'POST',
@@ -196,6 +206,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
       } else {
         const errorText = await response.text();
         console.error('서버에서 삭제 실패:', errorText);
+        setErrorMessage('서버에서 삭제 실패:', errorText);
         throw new Error(`서버에서 삭제 실패: ${errorText}`);
       }
     } catch (error) {

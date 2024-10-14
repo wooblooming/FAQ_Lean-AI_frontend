@@ -1,13 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
-import Modal from '../components/modal';
+import { Edit3, Eye, BarChart2, ChevronDown, ChevronUp } from 'lucide-react';
+import { announcements } from './notice';
+import { faqs } from './faq';
 import ChangeInfo from './changeInfo';
 import EditData from './editData';
+import Modal from '../components/modal';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
-import styles from '../styles/button.module.css';
 import Footer from '../components/footer';
+
+// 버튼 컴포넌트 (아이콘과 텍스트 정렬)
+const Button = ({ children, icon: Icon, className, ...props }) => (
+  <button
+    className={`flex items-center justify-center space-x-2 mt-4 px-4 py-3 w-full bg-indigo-500 text-white rounded-lg font-semibold ${className}`}
+    {...props}
+  >
+    {Icon && <Icon className="h-5 w-5" />}
+    <span>{children}</span>
+  </button>
+);
+
+const Card = ({ children, className, ...props }) => (
+  <div className={`bg-white shadow rounded-lg p-6 space-y-3 ${className}`} {...props}>
+    {children}
+  </div>
+);
 
 const MainPageWithMenu = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -19,9 +38,12 @@ const MainPageWithMenu = () => {
   const [storeName, setStoreName] = useState('');
   const [slug, setStoreSlug] = useState('');
   const [isMounted, setIsMounted] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+
   const buttonRefs = useRef([]);
   const router = useRouter();
-  const maxButtonHeight = Math.max(...buttonRefs.current.map(button => button?.offsetHeight || 0));
+  const latestAnnouncements = announcements.slice(0, 3); // 상위 3개의 공지사항만 선택
+  const latestFaqs = faqs.slice(0, 3); // 상위 3개의 FAQ만 선택
 
   const handleResize = () => {
     const isMobileDevice = window.innerWidth <= 768;
@@ -94,73 +116,114 @@ const MainPageWithMenu = () => {
 
   return (
     <div className="flex flex-col min-h-screen font-sans bg-violet-50">
-      {/* Header 및 메인 콘텐츠를 감싸는 컨테이너 */}
       <div className="flex-grow">
-        <Header
+      <Header
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
           errorMessage={errorMessage}
           showErrorMessageModal={showErrorMessageModal}
           handleErrorMessageModalClose={() => setShowErrorMessageModal(false)}
         />
-        <main id="main-content" className="flex flex-col md:mx-auto md:px-0 py-4 mt-20">
-          {/* 버튼 영역 */}
-          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} justify-center md:space-x-4 space-y-2 md:space-y-0 w-full p-2`}>
-            {/* '매장 정보 변경' 버튼 */}
-            <button
-              ref={(el) => (buttonRefs.current[0] = el)}
-              style={{ height: isMobile ? 'auto' : `${maxButtonHeight}px`, minHeight: `${maxButtonHeight}px`, minWidth: isMobile ? '100%' : 'auto' }}
-              onClick={() => setIsChangeInfoModalOpen(true)}
-              className={`${styles.button} text-center md:text-left`}
-            >
-              <div className="flex flex-row justify-between items-center">
-                <div className="flex flex-col w-full space-x-4">
-                  <p className={styles['text-lg']} style={{ fontSize: isMobile ? '20px' : '25px' }}>매장 정보 변경</p>
-                  <p className={styles['text-sm']} style={{ fontSize: isMobile ? '15px' : '18px' }}>사업장 정보를 수정하여 최신 상태로 유지하세요</p>
-                </div>
-                <div className="flex justify-end w-max">
-                  <img src='/change.png' className={`${styles.icon} md:w-20 md:h-20`} alt="매장 정보 수정 이미지" />
-                </div>
-              </div>
-            </button>
 
-            {/* '챗봇 미리보기' 버튼 */}
-            <button
-              ref={(el) => (buttonRefs.current[1] = el)}
-              style={{ height: isMobile ? 'auto' : `${maxButtonHeight}px`, minHeight: `${maxButtonHeight}px`, minWidth: isMobile ? '100%' : 'auto' }}
-              onClick={goToChatbot}
-              className={`${styles.button} text-center md:text-left`}
-            >
-              <div className="flex flex-row justify-between items-center">
-                <div className="flex flex-col w-full space-x-4">
-                  <p className={styles['text-lg']} style={{ fontSize: isMobile ? '20px' : '25px' }}>챗봇 미리보기</p>
-                  <p className={styles['text-sm']} style={{ fontSize: isMobile ? '15px' : '18px' }}>손님에게 보여지는 화면을 확인해 보세요</p>
-                </div>
-                <div className="flex justify-end w-max">
-                  <img src='/preview.png' className={`${styles.icon} md:w-20 md:h-20`} alt="챗봇 미리보기 이미지" />
-                </div>
-              </div>
-            </button>
+        <main className="container md:mx-auto px-2 md:px-0 py-10 mt-12">
+          <div className="flex flex-col justify-center items-center text-center space-y-10">
+            <h2 className="text-2xl md:text-3xl mt-5 md:mt-10" style={{ fontFamily: 'NanumSquareBold' }}>
+              안녕하세요! {storeName}님!
+            </h2>
 
-            {/* '데이터 수정' 버튼 */}
-            <button
-              ref={(el) => (buttonRefs.current[2] = el)}
-              style={{ height: isMobile ? 'auto' : `${maxButtonHeight}px`, minHeight: `${maxButtonHeight}px`, minWidth: isMobile ? '100%' : 'auto' }}
-              onClick={() => setIsEditDataModalOpen(true)}
-              className={`${styles.button} text-center md:text-left`}
-            >
-              <div className="flex flex-row justify-between items-center">
-                <div className="flex flex-col w-full space-x-4">
-                  <p className={styles['text-lg']} style={{ fontSize: isMobile ? '20px' : '25px' }}>데이터 수정</p>
-                  <p className={styles['text-sm']} style={{ fontSize: isMobile ? '15px' : '18px' }}>챗봇 데이터를 수정해 보세요</p>
+            <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5">
+              <div className="grid md:grid-cols-3 gap-2 md:gap-4">
+                {/* 버튼 영역 */}
+                <Card>
+                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                    매장 정보 변경
+                  </h3>
+                  <p>사업장 정보를 수정하여 최신 상태로 유지하세요</p>
+                  <div className='flex justify-center items-center'>
+                    <Button icon={Edit3} onClick={() => setIsChangeInfoModalOpen(true)}> 정보 수정</Button>
+                  </div>
+                </Card>
+
+                <Card>
+                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }} >
+                    챗봇 미리보기
+                  </h3>
+                  <p>고객에게 보여지는 챗봇 화면을 미리 확인하세요</p>
+                  <div className='flex justify-center items-center'>
+                    <Button icon={Eye} onClick={goToChatbot}>미리보기</Button>
+                  </div>
+                </Card>
+
+                <Card>
+                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                    데이터 수정
+                  </h3>
+                  <p>챗봇 데이터를 수정하고 성능을 개선하세요</p>
+                  <div className='flex justify-center items-center'>
+                    <Button icon={BarChart2} onClick={() => setIsEditDataModalOpen(true)}> 데이터 수정</Button>
+                  </div>
+                </Card>
+              </div>
+
+              {/* 공지사항, FAQ, 통계 및 분석 섹션 */}
+              <div className="grid md:grid-cols-3 gap-2 md:gap-4 mt-10">
+                {/* 공지사항 섹션 */}
+                <div className="bg-white rounded-lg p-6 space-y-4 text-left">
+                  <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>공지사항</h2>
+                  <ul className="space-y-4 px-0 md:px-4">
+                    {latestAnnouncements.map((announcement) => (
+                      <li key={announcement.id} className="flex justify-between items-center border-b pb-2">
+                        <h3
+                          className="text-base font-semibold text-black truncate"
+                          style={{ maxWidth: '70%' }} // 긴 제목을 생략하고 너비 제한
+                        >
+                          {announcement.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 hidden md:block">{announcement.date}</p>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex justify-end">
+                    <button className="text-indigo-500 font-semibold text-sm" onClick={() => router.push('/notice')}>
+                      자세히 보기
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-end w-max">
-                  <img src='/modify.png' className={`${styles.icon} md:w-20 md:h-20`} alt="FAQ 데이터 수정하기 이미지" />
+
+                {/* FAQ 섹션 */}
+                <div className="bg-white rounded-lg p-6 space-y-4 text-left">
+                  <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>자주 묻는 질문</h2>
+                  <ul className="space-y-2 md:space-y-4  ">
+                    {latestFaqs.map((faq) => (
+                      <li key={faq.id} className="overflow-hidden">
+                        <button
+                          className="w-full text-left px-0 md:px-4 flex justify-between items-center "
+                          onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
+                        >
+                          <span className={expandedId === faq.id ? 'text-indigo-500 text-lg font-semibold' : 'font-semibold'}>{faq.question}</span>
+                          {expandedId === faq.id ? <ChevronUp className="h-5 w-5 text-indigo-500" /> : <ChevronDown className="h-5 w-5 text-indigo-500" />}
+                        </button>
+                        {expandedId === faq.id && <p className="px-6 py-2 text-gray-600 ">{faq.answer}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex justify-end mt-5 ">
+                    <button className="text-indigo-500 font-semibold text-sm" onClick={() => router.push('/faq')}>
+                      더 보기
+                    </button>
+                  </div>
+                </div>
+
+                {/* 통계 및 분석 섹션 */}
+                <div className="bg-white rounded-lg p-6 space-y-4 text-left">
+                  <h2 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>통계 및 분석</h2>
+                  <p className="text-gray-700 px-0 md:px-4">데이터가 준비 중입니다.</p>
                 </div>
               </div>
-            </button>
+            </main>
+
+
           </div>
-
         </main>
       </div>
 

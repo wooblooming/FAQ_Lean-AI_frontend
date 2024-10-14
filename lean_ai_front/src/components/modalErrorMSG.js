@@ -29,7 +29,7 @@ const ModalErrorMSG = ({ show, onClose, title, children }) => {
                 </div>
 
                 <div className="flex justify-center mt-4">
-                    <button onClick={onClose} className="text-white bg-violet-300 rounded-md px-4 py-2 font-normal border-l hover:bg-violet-500 ">
+                    <button onClick={onClose} className="text-white bg-indigo-500 rounded-md px-4 py-2 font-normal border-l">
                         확인
                     </button>
                 </div>

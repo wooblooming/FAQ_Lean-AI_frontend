@@ -86,7 +86,6 @@ const SliderComponent = () => {
           display: flex !important;
           justify-content: center;
           list-style: none;
-          z-index: 1000;
         }
         .slick-dots li {
           display: inline-block;

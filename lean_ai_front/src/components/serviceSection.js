@@ -145,6 +145,9 @@ const ServiceSection = ({ isMobile }) => {
   // Features 섹션 렌더링 함수 (데스크탑)
   const renderFeatures = () => (
     <div className="w-full px-4">
+      <p className="text-center font-semibold m-8 text-4xl " style={{ fontFamily: "NanumSquareExtraBold" }}>
+        <span className="text-indigo-600">MUMUL 서비스</span>에서는 무엇을 할 수 있을까요?
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:mt-10">
         {features.map((feature, index) => (
           <motion.div key={index} className="relative p-6 rounded-xl bg-indigo-50 cursor-pointer shadow-lg" style={{ height: "400px" }} whileHover={{ scale: 1.05 }} onHoverStart={() => setHoveredIndex(index)} onHoverEnd={() => setHoveredIndex(null)}>
@@ -159,7 +162,7 @@ const ServiceSection = ({ isMobile }) => {
 
   // 텍스트 벨트 섹션 렌더링 함수
   const renderTextBeltSection = () => (
-    <div className="bg-white py-10">
+    <div className="bg-white py-5 w-full">
       <div className="-skew-y-3 h-auto flex flex-col text-center text-white w-full py-7 bg-indigo-600" style={{ fontFamily: "NanumSquareBold" }}>
         <p style={{ fontFamily: "NanumSquareExtraBold", fontSize: "40px" }}>대충 물어봐도 찰떡같이! <br />
           <span style={{ fontFamily: "NanumSquareBold", fontSize: "30px" }}>MUMUL Bot은 사전학습 데이터 기반 AI 챗봇입니다 <br /> 고객의 문의, 대화의 맥락을 이해해서 알맞은 답변을 제공합니다.</span>
@@ -240,7 +243,7 @@ const ServiceSection = ({ isMobile }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           {/* Category buttons */}
           <div className="grid grid-cols-2 gap-4">
-          {usecase.map((category, index) => (
+            {usecase.map((category, index) => (
               <motion.button
                 key={index}
                 className={`py-3 px-4 rounded-lg transition-all duration-300 hover:bg-white hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex flex-col items-center justify-center ${index === activeCategory ? 'bg-white ' : ''}`}
@@ -279,41 +282,41 @@ const ServiceSection = ({ isMobile }) => {
     </div>
   );
 
-    // Features 섹션 렌더링 함수 (모바일)
-    const renderFeaturesMobile = () => (
-      <div className="w-full px-4">
-        <p className="text-center font-semibold mb-4 text-3xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
-          <span className="text-indigo-600">MUMUL 서비스</span>에서는 <br /> 무엇을 할 수 있을까요?
-        </p>
-        <div {...swipeHandlersForFeatures} className="relative w-full bg-indigo-50 rounded-lg shadow-lg p-6">
-          <div className="flex justify-center items-center space-x-4">
-            <motion.div
-              className="w-full flex items-start flex-col space-y-2"
-              key={features[featureIndex].text}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="flex justify-center items-center w-full">
-                {React.createElement(features[featureIndex].icon, { className: "w-12 h-12 text-indigo-600" })}
-              </div>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold text-indigo-800 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>{features[featureIndex].text}</h3>
-                <p className="text-gray-700 text-lg leading-relaxed" style={{ fontFamily: "NanumSquare" }}>{features[featureIndex].description}</p>
-              </div>
-            </motion.div>
-          </div>
-          {/* 하단 인디케이터 */}
-          <div className="flex justify-center mt-4 space-x-2">
-            {features.map((_, index) => (
-              <div key={index} className={`w-3 h-3 rounded-full ${index === featureIndex ? 'bg-indigo-400' : 'bg-gray-300'}`}></div>
-            ))}
-          </div>
+  // Features 섹션 렌더링 함수 (모바일)
+  const renderFeaturesMobile = () => (
+    <div className="w-full px-4">
+      <p className="text-center font-semibold mb-4 text-3xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
+        <span className="text-indigo-600">MUMUL 서비스</span>에서는 <br /> 무엇을 할 수 있을까요?
+      </p>
+      <div {...swipeHandlersForFeatures} className="relative w-full bg-indigo-50 rounded-lg shadow-lg p-6">
+        <div className="flex justify-center items-center space-x-4">
+          <motion.div
+            className="w-full flex items-start flex-col space-y-2"
+            key={features[featureIndex].text}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex justify-center items-center w-full">
+              {React.createElement(features[featureIndex].icon, { className: "w-12 h-12 text-indigo-600" })}
+            </div>
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-indigo-800 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>{features[featureIndex].text}</h3>
+              <p className="text-gray-700 text-lg leading-relaxed" style={{ fontFamily: "NanumSquare" }}>{features[featureIndex].description}</p>
+            </div>
+          </motion.div>
+        </div>
+        {/* 하단 인디케이터 */}
+        <div className="flex justify-center mt-4 space-x-2">
+          {features.map((_, index) => (
+            <div key={index} className={`w-3 h-3 rounded-full ${index === featureIndex ? 'bg-indigo-400' : 'bg-gray-300'}`}></div>
+          ))}
         </div>
       </div>
-    );
-  
+    </div>
+  );
+
 
   // 가이드라인 섹션 렌더링 함수 (모바일) 
   const renderGuidelineMobile = () => (
@@ -357,88 +360,88 @@ const ServiceSection = ({ isMobile }) => {
   // 장점 섹션 렌더링 함수 (모바일)
   const renderAdvantagesMobile = () => (
     <div className="px-2">
-    <div className="w-full px-2 space-y-10">
-      {/* 장점 섹션 */}
-      <div className="w-full ">
-        <p className="text-3xl font-bold text-center mb-8 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
-          <span className="text-indigo-600">MUMUL</span>을 <br /> 선택해야 하는 이유!
-        </p>
-        {/* Swipeable 감싸기 */}
-        <div {...swipeHandlersForGoodThings} className="relative w-full">
-          <motion.div
-            className="w-full bg-white rounded-lg p-4 flex items-start flex-col space-y-2"
-            key={goodThings[goodThingIndex].text}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex justify-center items-center w-full">
-              <Image src={goodThings[goodThingIndex].image} alt={`${goodThings[goodThingIndex].text} 이미지`} width={60} height={60} className="rounded-full" />
-            </div>
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-indigo-800 mb-2" >{goodThings[goodThingIndex].text}</h3>
-              <p className="text-gray-700 text-lg leading-relaxed" >{goodThings[goodThingIndex].description}</p>
-            </div>
-          </motion.div>
+      <div className="w-full px-2 space-y-10">
+        {/* 장점 섹션 */}
+        <div className="w-full ">
+          <p className="text-3xl font-bold text-center mb-8 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
+            <span className="text-indigo-600">MUMUL</span>을 <br /> 선택해야 하는 이유!
+          </p>
+          {/* Swipeable 감싸기 */}
+          <div {...swipeHandlersForGoodThings} className="relative w-full">
+            <motion.div
+              className="w-full bg-white rounded-lg p-4 flex items-start flex-col space-y-2"
+              key={goodThings[goodThingIndex].text}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex justify-center items-center w-full">
+                <Image src={goodThings[goodThingIndex].image} alt={`${goodThings[goodThingIndex].text} 이미지`} width={60} height={60} className="rounded-full" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-indigo-800 mb-2" >{goodThings[goodThingIndex].text}</h3>
+                <p className="text-gray-700 text-lg leading-relaxed" >{goodThings[goodThingIndex].description}</p>
+              </div>
+            </motion.div>
 
-          {/* 하단 인디케이터 */}
-          <div className="flex justify-center mt-4 space-x-2">
-            {goodThings.map((_, index) => (
-              <div
-                key={index}
-                className={`w-3 h-3 rounded-full ${index === goodThingIndex ? 'bg-indigo-400' : 'bg-gray-300'}`}
-              ></div>
-            ))}
+            {/* 하단 인디케이터 */}
+            <div className="flex justify-center mt-4 space-x-2">
+              {goodThings.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-3 h-3 rounded-full ${index === goodThingIndex ? 'bg-indigo-400' : 'bg-gray-300'}`}
+                ></div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* 활용 섹션 */}
-      <div className="w-full py-6 bg-indigo-100 rounded-lg p-2">
-        <p className="text-3xl font-bold text-center mb-5 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
-          <span className="text-indigo-600">MUMUL</span>은 <br /> 이렇게 활용됩니다
-        </p>
-        <div className="grid grid-cols-2 justify-center gap-2">
-          {/* Category Buttons */}
-          {usecase.map((category, index) => (
-            <motion.button
-              key={index}
-              className={`py-3 px-4 rounded-lg transition-all duration-300 hover:bg-white hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex flex-col items-center justify-center ${index === activeCategory ? 'bg-white ' : ''}`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveCategory(index)}
+        {/* 활용 섹션 */}
+        <div className="w-full py-6 bg-indigo-100 rounded-lg p-2">
+          <p className="text-3xl font-bold text-center mb-5 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
+            <span className="text-indigo-600">MUMUL</span>은 <br /> 이렇게 활용됩니다
+          </p>
+          <div className="grid grid-cols-2 justify-center gap-2">
+            {/* Category Buttons */}
+            {usecase.map((category, index) => (
+              <motion.button
+                key={index}
+                className={`py-3 px-4 rounded-lg transition-all duration-300 hover:bg-white hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex flex-col items-center justify-center ${index === activeCategory ? 'bg-white ' : ''}`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveCategory(index)}
+              >
+                <category.icon className="w-10 h-10 mb-1 mx-auto text-indigo-500" />
+                <h3 className="text-xl font-semibold text-center" style={{ fontFamily: "NanumSquareBold" }}>{category.name}</h3>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Category Description */}
+          {activeCategory !== null && (
+            <motion.div
+              className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"
+              style={{ height: 'auto', fontFamily: "NanumSquare" }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
             >
-              <category.icon className="w-10 h-10 mb-1 mx-auto text-indigo-500" />
-              <h3 className="text-xl font-semibold text-center" style={{ fontFamily: "NanumSquareBold" }}>{category.name}</h3>
-            </motion.button>
-          ))}
+              <h3 className=" mb-2 text-indigo-500" style={{ fontFamily: "NanumSquareExtraBold", fontSize: '22px' }}>
+                {usecase[activeCategory].name}에서 MUMUL 활용
+              </h3>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                {usecase[activeCategory].description}
+              </p>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                <br />
+                {usecase[activeCategory].exemple}
+              </p>
+            </motion.div>
+          )}
         </div>
-
-        {/* Category Description */}
-        {activeCategory !== null && (
-          <motion.div
-            className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"
-            style={{ height: 'auto', fontFamily: "NanumSquare" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h3 className=" mb-2 text-indigo-500" style={{ fontFamily: "NanumSquareExtraBold", fontSize: '22px' }}>
-              {usecase[activeCategory].name}에서 MUMUL 활용
-            </h3>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              {usecase[activeCategory].description}
-            </p>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              <br />
-              {usecase[activeCategory].exemple}
-            </p>
-          </motion.div>
-        )}
       </div>
-    </div>
     </div>
   );
 
@@ -454,15 +457,8 @@ const ServiceSection = ({ isMobile }) => {
 
   // 데스크탑 버전 렌더링 함수
   const renderDesktopVersion = () => (
-    <div>
-      <div className="w-full bg-white p-6 rounded-lg">
-        <div className="flex flex-col w-full mb-20">
-          <p className="text-center font-semibold m-8 text-4xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
-            <span className="text-indigo-600">MUMUL 서비스</span>에서는 무엇을 할 수 있을까요?
-          </p>
-          {renderFeatures()}
-        </div>
-      </div>
+    <div className="flex flex-col items-center space-y-10">
+      {renderFeatures()}
       {renderTextBeltSection()}
       {renderGuideline()}
       {renderAdvantages()}

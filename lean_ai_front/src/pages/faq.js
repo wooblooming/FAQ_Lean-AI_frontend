@@ -3,6 +3,12 @@ import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { Search, ChevronDown, ChevronUp, MessageCircle, CreditCard, Settings, HelpCircle, ArrowLeft } from 'lucide-react';
 
+export const faqs = [
+  { id: 1, category: '계정', question: 'AI 챗봇 서비스를 어떻게 시작하나요?', answer: 'AI 챗봇 서비스는 회원가입 후 대시보드에서 간단한 설정으로 시작할 수 있습니다.' },
+  { id: 2, category: '계정', question: '계정 설정을 변경하고 싶어요.', answer: '프로필 아이콘을 클릭하여 계정 설정을 변경할 수 있습니다.' },
+  { id: 3, category: '서비스', question: '데이터 백업은 어떻게 하나요?', answer: '백업 및 복원 메뉴에서 수동 또는 자동으로 가능합니다.' },
+];
+
 const FAQPage = () => {
   const [activeCategory, setActiveCategory] = useState('모든 질문');
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,13 +22,6 @@ const FAQPage = () => {
     { name: '서비스', icon: Settings },
   ];
 
-  const faqs = [
-    { id: 1, category: '계정', question: 'AI 챗봇 서비스를 어떻게 시작하나요?', answer: 'AI 챗봇 서비스는 회원가입 후 대시보드에서 간단한 설정으로 시작할 수 있습니다. 상세한 가이드는 설정 페이지에서 확인하실 수 있습니다.' },
-    { id: 2, category: '결제', question: '요금제는 어떻게 되나요?', answer: '기본, 프로, 엔터프라이즈 등 다양한 요금제를 제공하고 있습니다. 각 요금제의 상세 내용은 요금제 페이지에서 확인하실 수 있습니다.' },
-    { id: 3, category: '서비스', question: '데이터 백업은 어떻게 하나요?', answer: '데이터 백업은 대시보드의 \'백업 및 복원\' 메뉴에서 수동으로 할 수 있으며, 자동 백업 설정도 가능합니다. 백업 파일은 안전한 클라우드 스토리지에 저장됩니다.' },
-    { id: 4, category: '계정', question: '계정 설정을 변경하고 싶어요.', answer: '계정 설정 변경은 로그인 후 우측 상단의 프로필 아이콘을 클릭하여 \'계정 설정\'에서 할 수 있습니다. 비밀번호, 알림 설정 등을 변경할 수 있습니다.' },
-  ];
-
   const filteredFaqs = faqs.filter(faq =>
     (activeCategory === '모든 질문' || faq.category === activeCategory) &&
     (faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -30,10 +29,13 @@ const FAQPage = () => {
   );
 
   return (
-    <div className="min-h-screen py-12 px-4 " style={{ backgroundColor: '#FFFFF2' }} >
+    <div className="min-h-screen py-12 px-4" style={{ backgroundColor: '#FFFFF2' }}>
       <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#DCDAF6', borderRadius: '50px 0 50px 0' }}>
         <div className="flex items-center mb-12">
-          <ArrowLeft className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" onClick={() => router.push('/')} />
+          <ArrowLeft 
+            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" 
+            onClick={() => router.back()} 
+          />
           <h1 className="text-4xl font-bold text-center">자주 묻는 질문</h1>
         </div>
 
@@ -53,8 +55,9 @@ const FAQPage = () => {
           {categories.map((category) => (
             <motion.button
               key={category.name}
-              className={`flex items-center px-4 py-2 rounded-full ${activeCategory === category.name ? 'bg-indigo-500 text-white' : 'bg-white text-gray-600'
-                }`}
+              className={`flex items-center px-4 py-2 rounded-full ${
+                activeCategory === category.name ? 'bg-indigo-500 text-white' : 'bg-white text-gray-600'
+              }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveCategory(category.name)}
@@ -68,20 +71,24 @@ const FAQPage = () => {
         {/* FAQ 리스트 */}
         <div className="space-y-4">
           {filteredFaqs.map((faq) => (
-            <div
-              key={faq.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
-            >
+            <div key={faq.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <button
                 className="w-full text-left px-6 py-4 flex justify-between items-center"
                 onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
               >
-
-                {expandedId === faq.id ? <div className='font-bold text-lg text-indigo-500'>{faq.question}</div> : <div className='font-semibold text-lg'>{faq.question}</div>}
-                {expandedId === faq.id ? <ChevronUp className="h-5 w-5 text-indigo-500" /> : <ChevronDown className="h-5 w-5 text-indigo-500" />}
+                {expandedId === faq.id ? (
+                  <div className="font-bold text-lg text-indigo-500">{faq.question}</div>
+                ) : (
+                  <div className="font-semibold text-lg">{faq.question}</div>
+                )}
+                {expandedId === faq.id ? (
+                  <ChevronUp className="h-5 w-5 text-indigo-500" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-indigo-500" />
+                )}
               </button>
               {expandedId === faq.id && (
-                <div className="px-6 py-4 ">
+                <div className="px-6 py-4">
                   <p className="text-gray-600">{faq.answer}</p>
                 </div>
               )}
