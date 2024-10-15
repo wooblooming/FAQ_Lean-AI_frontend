@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ChevronLeft } from 'lucide-react';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import naverIcon from '../../public/btn_naver.svg';  
 import googleIcon from '../../public/btn_google.svg'; 
@@ -53,6 +54,8 @@ const MyPage = () => {
   // 초기 데이터 및 변경 상태 관련 변수
   const [initialData, setInitialData] = useState({}); // 초기 데이터 (불러온 사용자 또는 사업자 정보)
   const [isChanged, setIsChanged] = useState(false); // 데이터 변경 여부
+
+  const router = useRouter();
 
   // 이미지 모달
   const toggleImageModal = () => {
@@ -454,20 +457,18 @@ const MyPage = () => {
   return (
     <div className="bg-indigo-100 flex items-center justify-center relative font-sans min-h-screen">
       <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
-        <Link href="/mainPageForPresident" className="absolute top-4 left-4 text-gray-500 focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </Link>
-
         <div className='flex justify-between items-center'>
+        <ChevronLeft 
+            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" 
+            onClick={() => router.push('/login')} 
+          /> 
           <p className='font-semibold mt-2.5'> </p>
           <button
-            className={`font-semibold text-sm ${isChanged ? 'text-blue-500' : 'text-gray-200'}`}
+            className={`font-semibold text-lg ${isChanged ? 'text-indigo-500' : 'text-gray-500'}`}
             onClick={handleSaveChanges}
             disabled={!isChanged}
           >
-            <p className='text-lg'>완료</p>
+            완료
           </button>
         </div>
 
@@ -476,7 +477,7 @@ const MyPage = () => {
           <img
             src={profileImage || '/profile_default_img.jpg'}
             alt="프로필 이미지"
-            className="w-24 h-24 rounded-full mx-auto mb-4 border border-2 border-violet-400"
+            className="w-24 h-24 rounded-full mx-auto mb-4 border border-2 border-indigo-500"
             onClick={toggleImageModal}
             style={{ cursor: 'pointer' }}
           />
@@ -486,7 +487,7 @@ const MyPage = () => {
               bottom: '0',
               left: '50%',
               transform: 'translate(-50%, 50%)',
-              backgroundColor: '#8b5cf6',
+              backgroundColor: '#6366f1',
               padding: '4px 8px',
               borderRadius: '12px',
               width: '60px',
@@ -534,12 +535,14 @@ const MyPage = () => {
           isEventOn={isEventOn}
           toggleEventOn={toggleEventOn}
         />
-
-        {/* SNS 연결 섹션 */}
+        
+        {/* 추후 업데이트 */}
+        {/* SNS 연결 섹션 
         <SnsConnect
           snsList={snsList}
           toggleSnsConnection={toggleSnsConnection}
         />
+        */}
 
         {/* 이미지 모달 */}
         {isImageModalOpen && (

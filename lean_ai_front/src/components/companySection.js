@@ -1,10 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, Calendar, ArrowRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { HistoryContext, HistoryProvider } from '../contexts/historyContext';
 import { AwardsContext, AwardsProvider } from '../contexts/awardsContext';
 import { BussinessContext, BussinessProvider } from '../contexts/bussinessContext';
+import { news } from '../pages/news';
+
 
 // SectionItem 컴포넌트: 각 섹션의 반복적인 렌더링을 처리
 const SectionItem = ({ title, content, index, activeSections, toggleSection, isMobile }) => (
@@ -49,7 +51,7 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
           }}
         >
           <ul className="space-y-2">
-            {content.split('\n').slice(0, 6).map((item, idx) => (
+            {content.split('\n').slice(0, 3).map((item, idx) => (
               <li key={idx} className="flex items-start">
                 <ChevronRight className="mr-2 flex-shrink-0 h-5 w-5 text-indigo-300" />
                 <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>{item}</span>
@@ -106,47 +108,11 @@ const MobileSection = ({ sectionData, activeSections, toggleSection }) => (
   </motion.div>
 );
 
-// 새로 추가된 NewsSection 컴포넌트
-const NewsSection = ({ isMobile }) => {
-  const [news, setNews] = useState([
-    { date: '2024-10-01', title: '린에이아이, 새로운 AI 모델 출시' },
-    { date: '2024-09-15', title: '2024 인공지능 박람회 참가 성료' },
-    { date: '2024-08-30', title: '린에이아이, 시리즈 B 투자 유치 성공' },
-  ]);
-
-  return (
-    <motion.div
-      className={`mt-8 bg-white rounded-lg p-6 shadow-lg ${isMobile ? 'mx-2' : 'mx-4'}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h3 className="text-2xl font-bold mb-4 text-indigo-700">회사 소식</h3>
-      <ul className="space-y-4">
-        {news.map((item, index) => (
-          <motion.li
-            key={index}
-            className="flex items-center space-x-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Calendar className="text-indigo-500" />
-            <div>
-              <p className="text-sm text-gray-500">{item.date}</p>
-              <p className="font-semibold">{item.title}</p>
-            </div>
-          </motion.li>
-        ))}
-      </ul>
-      <motion.button
-        className="mt-4 flex items-center text-indigo-600 hover:text-indigo-800 transition-colors duration-300"
-        whileHover={{ x: 5 }}
-      >
-        더 많은 소식 보기 <ArrowRight className="ml-2" />
-      </motion.button>
-    </motion.div>
-  );
+// 최신 순으로 뉴스 정렬하는 함수
+const getLatestNews = () => {
+  return [...news]
+    .sort((a, b) => new Date(b.date.replace(/-/g, '/')) - new Date(a.date.replace(/-/g, '/'))) // 최신순 정렬
+    .slice(0, 3); // 상위 3개의 뉴스만 선택
 };
 
 const CompanySection = ({ isMobile }) => {
@@ -156,6 +122,7 @@ const CompanySection = ({ isMobile }) => {
   const historyContent = useContext(HistoryContext);
   const awardsContent = useContext(AwardsContext);
   const bussinessContent = useContext(BussinessContext);
+  const latestNews = getLatestNews(); 
 
   const router = useRouter();
 
@@ -186,7 +153,7 @@ const CompanySection = ({ isMobile }) => {
 
   const desktopDescription = (
     <>
-      <p className="font-bold mb-1" style={{fontSize:'40px'}}>린에이아이는</p>
+      <p className="font-bold mb-1" style={{ fontSize: '40px' }}>린에이아이는</p>
       <p className="text-gray-700 text-2xl font-semibold mb-6">
         AI가 필요한 모든 산업, 영역에 <span className="text-indigo-700 text-4xl font-bold">린에이아이의 AI 기술</span>을 적용하고자 합니다.
       </p>
@@ -199,7 +166,7 @@ const CompanySection = ({ isMobile }) => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      style={{  borderRadius: '50px 0 50px 0' }}
+      style={{ borderRadius: '50px 0 50px 0' }}
     >
       <div className="container mx-auto">
         {/* 제목 및 설명 */}
@@ -220,12 +187,9 @@ const CompanySection = ({ isMobile }) => {
           <DesktopSection sectionData={sectionData} activeSections={activeSections} toggleSection={toggleSection} />
         )}
 
-        {/* 새로 추가된 NewsSection */}
-        <NewsSection isMobile={isMobile} />
-
         {/* 하단 버튼 */}
         <motion.div
-          className={`text-right ${isMobile ? 'mt-4' : 'mt-6'}`}
+          className={`flex flex-row justify-end items-center text-indigo-500 font-semibold ${isMobile ? 'mt-4' : 'mt-6'}`}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
@@ -233,13 +197,41 @@ const CompanySection = ({ isMobile }) => {
           <button
             onClick={() => router.push('/history')}
             style={{ fontFamily: "NanumSquareBold" }}
-            className={`text-indigo-500 rounded-full font-semibold transition-colors hover:text-indigo-700 ${
-              isMobile ? 'px-6 py-2 text-lg' : 'px-8 py-3 text-xl'
-            }`}
+            className={` transition-colors hover:text-indigo-700 py-1 ${isMobile ? 'text-lg' : 'text-xl'}`}
           >
-            자세히 보기
+            자세히 보기 
           </button>
+          <ArrowRight className="ml-1 h-5 w-5 " />
+        
+        
         </motion.div>
+
+        <div className="bg-white rounded-lg p-6 mt-4 md:mt-10 space-y-4 text-left w-full md:w-1/2">
+          <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회사 소식</h2>
+          <ul className="space-y-4 px-0 md:px-4">
+            {latestNews.map((news) => (
+              <li 
+                key={news.id} 
+                className="flex justify-between space-x-2 items-center border-b pb-2 cursor-pointer" 
+                onClick={() => router.push(news.link)}
+              >
+                <h3
+                  className="text-base font-semibold text-black truncate"
+                  style={{ maxWidth: '70%' }}
+                >
+                  {news.title}
+                </h3>
+                <p className="text-xs text-gray-500 hidden md:block whitespace-nowrap">{news.date}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-row justify-end text-indigo-500 font-semibold text-sm">
+            <button className="" onClick={() => router.push('/news')}>
+              모든 소식 보기
+            </button>
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </div>
+        </div>
       </div>
     </motion.div>
   );

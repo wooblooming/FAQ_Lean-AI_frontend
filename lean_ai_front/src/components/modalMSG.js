@@ -15,13 +15,13 @@ const ModalMSG = ({ show, onClose, title, children }) => {
                 {/* 모달 닫기 버튼 */}
                 <button
                     onClick={onClose}  // 버튼 클릭 시 onClose 함수를 호출하여 모달을 닫음
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 font-bold"
                 >
                     {/* X 문자로 표시되는 닫기 아이콘 */}
-                    &times;
+                    X
                 </button>
                 {/* 모달의 제목이 있을 경우 렌더링 */}
-                {title && <h2 className="text-2xl font-bold mb-4">{title}</h2>}
+                {title && <h2 className="text-2xl font-bold mb-4" style={{fontFamily:'NanumSquareExtraBold'}}>{title}</h2>}
                 {/* 모달의 자식 요소들을 표시하는 영역 */}
                 <div className="max-h-[calc(80vh-4rem)] text-center font-normal text-base">
                     {children}  {/* 모달의 본문 내용 */}

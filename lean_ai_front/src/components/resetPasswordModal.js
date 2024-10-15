@@ -1,46 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
-import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import ModalMSG from '../components/modalMSG';
+import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 function ModalResetPassword({ show, onClose, phone }) {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMessage, setModalMessage] = useState(''); // 모달에 표시할 메시지
+    const [modalMessage, setModalMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
 
     const router = useRouter();
 
     useEffect(() => {
-        // 모달이 열릴 때마다 입력 필드 초기화
         if (show) {
             setNewPassword('');
             setConfirmPassword('');
         }
     }, [show]);
 
-    // 모달 내 확인 버튼을 클릭했을 때 모달을 닫는 함수
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setNewPassword('');
         setConfirmPassword('');
-        setModalMessage(''); // 모달 메시지 초기화
-        onClose(); // 모달 종료 시 초기화 작업과 함께 onClose 호출
+        setModalMessage('');
+        onClose();
     };
 
-    // 에러 메시지 모달 닫기
     const handleErrorMessageModalClose = () => {
         setShowErrorMessageModal(false);
-        setErrorMessage(''); // 에러 메시지 초기화
+        setErrorMessage('');
     };
 
     const handleResetPassword = async () => {
         if (newPassword !== confirmPassword) {
             setErrorMessage('비밀번호가 일치하지 않습니다.');
-            setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+            setShowErrorMessageModal(true);
             return;
         }
 
@@ -60,73 +57,65 @@ function ModalResetPassword({ show, onClose, phone }) {
 
             if (data.success) {
                 setModalMessage('비밀번호가 성공적으로 변경되었습니다.');
-                setIsModalOpen(true); // 인증 번호 전송 후 모달 열기
-
-                router.push('/login');
+                setIsModalOpen(true);
             } else {
                 setErrorMessage(data.message);
-                setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+                setShowErrorMessageModal(true);
             }
         } catch (error) {
             console.error('비밀번호 재설정 오류:', error);
             setErrorMessage('비밀번호 재설정 중 오류가 발생했습니다.');
-            setShowErrorMessageModal(true); // 오류 메시지를 모달에 표시
+            setShowErrorMessageModal(true);
         }
     };
 
+    const handleConfirmAndRedirect = () => {
+        setIsModalOpen(false);
+        router.push('/login'); // 로그인 페이지로 이동
+    };
+
     return show ? (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-lg font-bold mb-4">비밀번호 재설정</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 font-sans">
+            <div className="bg-white p-6 rounded-lg shadow-lg space-y-4">
+                <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: 'NanumSquareExtraBold' }}>비밀번호 재설정</h2>
                 <input
                     type="password"
                     placeholder="새 비밀번호"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="mb-2 p-2 border border-gray-300 rounded w-full"
+                    className="p-2 border border-gray-300 rounded w-full"
                 />
                 <input
                     type="password"
                     placeholder="비밀번호 확인"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="mb-2 p-2 border border-gray-300 rounded w-full"
+                    className="p-2 border border-gray-300 rounded w-full"
                 />
                 {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                 <div className="flex justify-end mt-4">
-                    <button onClick={handleCloseModal} className="text-white bg-gray-500 rounded-md px-4 py-2 mr-2">취소</button>
-                    <button onClick={handleResetPassword} className="text-white bg-blue-500 rounded-md px-4 py-2">비밀번호 재설정</button>
+                    <button onClick={handleCloseModal} className="text-gray-500 px-3 py-2 font-semibold rounded-md hover:ring-2 ring-gray-400">
+                        취소
+                    </button>
+                    <button onClick={handleResetPassword} className="text-blue-500 px-3 py-2 font-semibold rounded-md hover:ring-2 ring-blue-400">
+                        비밀번호 재설정
+                    </button>
                 </div>
 
-                {/* 모달창 */}
-                <ModalMSG show={isModalOpen} onClose={handleCloseModal} title=" ">
-                    {modalMessage}
-                    <div className="flex justify-end mt-4">
-                        <button onClick={handleCloseModal} className="text-white bg-gray-500 rounded-md px-4 py-2 mr-2">취소</button>
-                        <button onClick={handleResetPassword} className="text-white bg-blue-500 rounded-md px-4 py-2">비밀번호 재설정</button>
-                    </div>
+                {/* 성공 메시지 모달 */}
+                <ModalMSG title="Success" show={isModalOpen} onClose={handleConfirmAndRedirect} >
+                    <p>{modalMessage}</p>
                 </ModalMSG>
 
                 {/* 에러 메시지 모달 */}
                 <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
-                    <p>
-                        {typeof errorMessage === 'object' ? (
-                            Object.entries(errorMessage).map(([key, value]) => (
-                                <span key={key}>
-                                    {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
-                                </span>
-                            ))
-                        ) : (
-                            errorMessage
-                        )}
+                    <p>{typeof errorMessage === 'object'
+                        ? Object.entries(errorMessage).map(([key, value]) => (
+                            <span key={key}>{key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br /></span>
+                          ))
+                        : errorMessage}
                     </p>
-                    <div className="flex justify-center mt-4">
-                        <button onClick={handleErrorMessageModalClose} className="text-white bg-violet-300 rounded-md px-4 py-2 font-normal border-l hover:bg-violet-500 ">
-                            확인
-                        </button>
-                    </div>
                 </ModalErrorMSG>
-
             </div>
         </div>
     ) : null;

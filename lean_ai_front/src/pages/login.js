@@ -55,9 +55,12 @@ const Login = () => {
     };
 
     return (
-        <div className="bg-violet-100 flex justify-center items-center h-screen font-sans" >
+        <div className="bg-violet-50 flex justify-center items-center h-screen font-sans" >
             <div className=" bg-white rounded-lg shadow-lg p-8 max-w-md m-10" style={{ width: '400px' }}>
-                <h1 className="text-4xl font-bold text-indigo-600 text-center mb-8" >
+                <h1 className="text-3xl font-bold text-indigo-600 text-center mb-8 cursor-pointer" 
+                    style={{fontFamily:'NanumSquareExtraBold'}}
+                    onClick={()=> router.push('/')}
+                >
                     MUMUL
                 </h1>
                 <div className="space-y-4">
@@ -83,7 +86,7 @@ const Login = () => {
                         />
                     </div>
                     <button
-                        className="bg-gradient-to-r from-purple-400 to-blue-400 text-white font-bold py-2 px-4 rounded-md w-full"
+                        className="bg-indigo-500 text-white text-lg font-semibold py-2 px-4 rounded-full w-full"
                         onClick={handleLoginClick}
                     >
                         로그인
@@ -101,14 +104,11 @@ const Login = () => {
                         <span><Image src={naverIcon} className='mr-2 w-4 h-4' alt="naver" /></span>네이버 계정으로 로그인
                     </button> */}
                 </div>
-                <div className="mt-6 text-center text-gray-500 ">
-                    <p>계정이 없나요?
-                        <Link href="/signupStep1" className="underline text-blue-500 p-1 m-1">회원가입 </Link>
-                    </p>
-                    <p className="mt-2">
-                        <Link href="/findingId" className="text-blue-500">아이디 찾기</Link>
+                <div className="mt-4 text-center text-gray-500 ">
+                    <p>
+                        <Link href="/signupStep1" className="hover:underline text-blue-500 m-1">회원가입</Link>
                         {" | "}
-                        <Link href="/findingPassword" className="text-blue-500">비밀번호 찾기</Link>
+                        <Link href="/findAccount" className="hover:underline text-blue-500 m-1">계정찾기</Link>
                     </p>
                 </div>
 

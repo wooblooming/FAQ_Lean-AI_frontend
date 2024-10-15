@@ -168,18 +168,15 @@ const SignupStep1 = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-indigo-100">
-            <div className="bg-white p-8 rounded-md shadow-lg max-w-md w-full">
-                {/* 상단 뒤로 가기 화살표와 회원가입 텍스트 */}
-                <div className="flex items-center mb-6">
-                    <Link href="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-800">
-                        <ArrowLeft className="mr-2 text-2xl" /> {/* 화살표 아이콘 크기 조정 */}
-                        <span className="text-xl font-bold text-violet-500">회원가입</span>
-                    </Link>
-                </div>
-                {/* 환영 메시지 */}
-                <h1 className="text-2xl font-bold mb-2 text-gray-800">Mumul에 오신 것을 환영합니다!</h1>
-                <p className="mb-4 text-gray-600 ">더 나은 서비스를 위해 여러분의 기본 정보를 입력해주세요</p>
+        <div className="min-h-screen flex flex-col justify-center items-center bg-violet-50 px-2 md:px-0">
+            <div className="bg-white p-8 rounded-md shadow-lg max-w-md w-full space-y-3 ">
+                <h1 className="text-3xl font-bold text-indigo-600 text-center cursor-pointer"
+                    style={{fontFamily:'NanumSquareExtraBold'}}
+                    onClick={() => router.push('/')}
+                >
+                    회원가입
+                </h1>
+                <p className="text-lg font-semibold text-gray-600 ">기본 정보를 입력해주세요</p>
 
                 {/* 아이디 입력 및 중복 확인 */}
                 <div className="flex items-center justify-start mb-2 w-full space-x-4 ">
@@ -194,14 +191,14 @@ const SignupStep1 = () => {
                         />
                         <label htmlFor="user-id" className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                     </div>
-                    <button className="flex items-center justify-end text-center bg-violet-500 text-white rounded-md px-4 py-2 font-medium whitespace-nowrap"
+                    <button className="flex items-center justify-end text-indigo-500 rounded-md px-4 py-2 hover:font-semibold whitespace-nowrap"
                         onClick={() => setShowIdCheckModal(true)}>
                         아이디 확인
                     </button>
                 </div>
                 <div>
                     {/* 비밀번호 입력 */}
-                    <label className="flex items-center text-gray-700 w-full" htmlFor="password">
+                    <label className="flex items-center text-gray-700 w-full mb-2" htmlFor="password">
                         <div className="relative flex-grow">
                             <input type="password"
                                 name="password"
@@ -215,9 +212,13 @@ const SignupStep1 = () => {
                     </label>
                     {/* 비밀번호가 정규식에 적합한지 여부에 따라 출력 메시지가 달라짐 */}
                     {!passwordValid ? (
-                        <p className="text-red-500 text-xs mt-1 font-medium mb-3">비밀번호가 8자 이상 영문 대문자, 소문자, 숫자, 특수문자 중 2가지 이상인지 확인해주세요</p>
+                        <p className="text-red-400 text-sm font-medium">
+                            비밀번호가 8~20자 이내인지, 알파벳(대/소문자), 숫자, 특수문자 중 최소 2가지를 포함하는지 확인해주세요.
+                        </p>
                     ) : (
-                        <p className="text-gray-500 text-xs mt-1 font-medium text-start mb-3 whitespace-pre-line ">영문 대문자와 소문자, 숫자, 특수문자 중 2가지 이상을 조합하여  8자~20자로 입력해주세요.</p>
+                        <p className="text-gray-600 text-sm font-medium whitespace-pre-line">
+                            8~20자 비밀번호를 입력하고, 알파벳(대/소문자), 숫자, 특수문자 중 최소 2가지를 포함해야 합니다.
+                        </p>
                     )}
                 </div>
 
@@ -237,7 +238,7 @@ const SignupStep1 = () => {
                     </label>
                     {/* 비밀번호와 비밀번호 확인란 입력값이 동일한지 확인 */}
                     {!passwordsMatch && (
-                        <p className="text-red-500 text-xs mt-1 font-medium mb-3">비밀번호가 일치하지 않습니다.</p>
+                        <p className="text-red-500 text-sm font-medium">비밀번호가 일치하지 않습니다.</p>
                     )}
                 </div>
 
@@ -284,7 +285,7 @@ const SignupStep1 = () => {
                                 />
                                 <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                             </div>
-                            <button className="flex items-center justify-end text-center bg-violet-500 text-white rounded-md px-2 py-2 font-medium whitespace-nowrap"
+                            <button className="flex items-center justify-end text-indigo-500 rounded-md px-4 py-2 hover:font-semibold whitespace-nowrap"
                                 onClick={handleSendCode}
                             >
                                 인증번호 받기
@@ -311,22 +312,22 @@ const SignupStep1 = () => {
                 </div>
 
                 <button
-                    className="w-full bg-violet-500 text-white py-2 rounded-md"
+                    className="w-full bg-indigo-500 text-white py-2 rounded-full text-lg font-semibold"
                     onClick={handleNextStep}
                 >
                     다음
                 </button>
 
-                
-            <div className="mt-4 text-center text-gray-500">
-                <p>이미 계정이 있나요?
-                    <Link href="/login" className="underline text-blue-500 p-1 m-1">로그인</Link>
-                </p>
-                <p className="mt-1.5 mb-2">
-                    계정을 잊어버리셨나요?
-                    <Link href="/findingId" className="underline text-blue-500 p-1 m-1">계정찾기</Link>
-                </p>
-            </div>
+
+                <div className="mt-4 text-center text-gray-500">
+                    <p>이미 계정이 있나요?
+                        <Link href="/login" className="underline text-blue-500 p-1 m-1">로그인</Link>
+                    </p>
+                    <p className="mt-1.5 mb-2">
+                        계정을 잊어버리셨나요?
+                        <Link href="/findAccount" className="underline text-blue-500 p-1 m-1">계정찾기</Link>
+                    </p>
+                </div>
 
                 {/* 아이디 중복 검사 및 정규식 적합 검사하는 모달 */}
                 <IdCheckModal

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
-import { Search, ChevronDown, ChevronUp, MessageCircle, CreditCard, Settings, HelpCircle, ArrowLeft } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, ChevronLeft, MessageCircle, CreditCard, Settings, HelpCircle } from 'lucide-react';
 
 export const faqs = [
   { id: 1, category: '계정', question: 'AI 챗봇 서비스를 어떻게 시작하나요?', answer: 'AI 챗봇 서비스는 회원가입 후 대시보드에서 간단한 설정으로 시작할 수 있습니다.' },
@@ -29,14 +29,14 @@ const FAQPage = () => {
   );
 
   return (
-    <div className="min-h-screen py-12 px-4" style={{ backgroundColor: '#FFFFF2' }}>
-      <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#DCDAF6', borderRadius: '50px 0 50px 0' }}>
+    <div className="min-h-screen py-12 px-4 font-sans bg-violet-50" >
+      <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#fff', borderRadius: '50px 0 50px 0' }}>
         <div className="flex items-center mb-12">
-          <ArrowLeft 
+          <ChevronLeft 
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" 
             onClick={() => router.back()} 
           />
-          <h1 className="text-4xl font-bold text-center">자주 묻는 질문</h1>
+          <h1 className="text-3xl font-bold text-center text-indigo-600" style={{fontFamily:'NanumSquareExtraBold'}}>자주 묻는 질문</h1>
         </div>
 
         {/* 검색 바 */}
@@ -71,15 +71,15 @@ const FAQPage = () => {
         {/* FAQ 리스트 */}
         <div className="space-y-4">
           {filteredFaqs.map((faq) => (
-            <div key={faq.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={faq.id} className="bg-indigo-100 rounded-lg overflow-hidden">
               <button
                 className="w-full text-left px-6 py-4 flex justify-between items-center"
                 onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
               >
                 {expandedId === faq.id ? (
-                  <div className="font-bold text-lg text-indigo-500">{faq.question}</div>
+                  <div className="font-semibold text-xl text-indigo-500">{faq.question}</div>
                 ) : (
-                  <div className="font-semibold text-lg">{faq.question}</div>
+                  <div className="font-semibold  text-xl">{faq.question}</div>
                 )}
                 {expandedId === faq.id ? (
                   <ChevronUp className="h-5 w-5 text-indigo-500" />
@@ -88,8 +88,8 @@ const FAQPage = () => {
                 )}
               </button>
               {expandedId === faq.id && (
-                <div className="px-6 py-4">
-                  <p className="text-gray-600">{faq.answer}</p>
+                <div className="px-6 py-4 bg-white">
+                  <p className="text-gray-600 text-lg">{faq.answer}</p>
                 </div>
               )}
             </div>

@@ -1,93 +1,88 @@
 import React from 'react';
 
-const UserProfileForm = ({ 
-    name, setName, 
-    ID, setID,
-    email, setEmail, 
-    phoneNumber, setPhoneNumber, 
-    handleSendCode,
-    showCodeModal,setShowCodeModal,
+const UserProfileForm = ({
+  name, setName,
+  ID, setID,
+  email, setEmail,
+  phoneNumber, setPhoneNumber,
+  handleSendCode,
+  showCodeModal, setShowCodeModal,
 }) => (
-    <div className="flex flex-col mt-4 font-sans">
-    <div className='flex flex-col items-start font-semibold mb-2 '>사용자 정보</div>
-    <div className='flex flex-col items-start mb-4 ml-2'>
-      <div className='flex flex-row '>
-        <div className='text-sm text-gray-400 mr-1.5 '>이름</div>
-        <label htmlFor="user-name" className=" text-red-500">*</label>
-      </div>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        style={{
-          border: 'none',
-          borderBottom: '1.5px solid #8b5cf6',
-          outline: 'none',
-          padding: '4px 0',
-          width: '100%',
-        }}
-      />
-    </div>
-
-    <div className='flex flex-col items-start mb-4 ml-2'>
-      <div className='flex flex-row '>
-        <div className='text-sm text-gray-400 mr-1.5 '>아이디</div>
-      </div>
-      <div
-        type="id"
-        style={{
-          border: 'none',
-          borderBottom: '1.5px solid #8b5cf6',
-          outline: 'none',
-          padding: '4px 0',
-          width: '100%',
-        }}
-      >
-        <div className='text-left'>{ID}</div>
-      </div>
-    </div>
-
-    <div className='flex flex-col items-start mb-4 ml-2'>
-      <div className='flex flex-row '>
-        <div className='text-sm text-gray-400 mr-1.5 '>이메일</div>
-      </div>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={{
-          border: 'none',
-          borderBottom: '1.5px solid #8b5cf6',
-          outline: 'none',
-          padding: '4px 0',
-          width: '100%',
-        }}
-      />
-    </div>
-
-    <div className='flex flex-col items-start mb-4 ml-2'>
-      <div className='flex flex-row '>
-        <div className='text-sm text-gray-400 mr-1.5 '>전화번호</div>
-        <label htmlFor="user-phone" className=" text-red-500">*</label>
-      </div>
-      <div className='flex flex-row space-x-4'>
+  <div className="flex flex-col items-start py-4 font-sans space-y-2">
+    <div className='font-semibold'>사용자 정보</div>
+    <div className='flex flex-col px-2 '>
+      <div className='flex flex-col '>
+          <div className='text-sm text-gray-400 mr-1.5 whitespace-nowrap text-left'>이름</div>
         <input
           type="text"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           style={{
             border: 'none',
-            borderBottom: '1.5px solid #8b5cf6',
+            borderBottom: '1.5px solid #6366f1',
             outline: 'none',
-            padding: '4px 0',
+            padding: '2px 0',
             width: '100%',
+            marginBottom: '14px'
           }}
         />
-        <button className="flex items-center justify-end text-center bg-violet-400 text-white rounded-md px-2 py-2 font-medium whitespace-nowrap"
-          onClick={handleSendCode}
+      </div>
+
+      <div className='flex flex-col '>
+          <div className='text-sm text-gray-400 mr-1.5 text-left'>아이디</div>
+        <div
+          type="id"
+          style={{
+            border: 'none',
+            borderBottom: '1.5px solid #6366f1',
+            outline: 'none',
+            padding: '2px 0',
+            width: '100%',
+            marginBottom: '14px'
+          }}
         >
-          인증번호 받기
-        </button>
+          <div className='text-left'>{ID}</div>
+        </div>
+      </div>
+
+      <div className='flex flex-col'>
+          <div className='text-sm text-gray-400 text-left'>이메일</div>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{
+            border: 'none',
+            borderBottom: '1.5px solid #6366f1',
+            outline: 'none',
+            padding: '2px 0',
+            width: '100%',
+            marginBottom: '14px'
+          }}
+        />
+      </div>
+
+      <div className='flex flex-col '>
+          <div className='text-sm text-gray-400 mr-1.5 text-left'>전화번호</div>
+        <div className='flex flex-row justify-between'>
+          <input
+            type="text"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            style={{
+              border: 'none',
+              borderBottom: '1.5px solid #6366f1',
+              outline: 'none',
+              padding: '2px 0',
+              width: '100%',
+            }}
+          />
+          <button className="text-center text-indigo-500 hover:font-semibold px-2 font-medium whitespace-nowrap"
+            onClick={handleSendCode}
+          >
+            인증번호 받기
+          </button>
+        </div>
       </div>
     </div>
 
@@ -105,7 +100,7 @@ const UserProfileForm = ({
         <button onClick={handleCodeModalClose}>닫기</button>
       </div>
     )}
-    </div>
+  </div>
 );
 
 export default UserProfileForm;

@@ -71,7 +71,7 @@ const SnsConnect = ({ snsList, toggleSnsConnection }) => {
       }
 
       input:checked + .slider {
-        background-color: #8b5cf6;
+        background-color: #6366f1;
       }
 
       input:checked + .slider:before {

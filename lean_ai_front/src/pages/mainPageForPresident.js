@@ -28,6 +28,14 @@ const Card = ({ children, className, ...props }) => (
   </div>
 );
 
+// 최신 순으로 정렬하는 함수
+const getLatestAnnouncements = () => {
+  return [...announcements]
+    .sort((a, b) => new Date(b.date.replace(/-/g, '/')) - new Date(a.date.replace(/-/g, '/'))) // 최신순 정렬
+    .slice(0, 3); // 상위 3개만 선택
+};
+
+
 const MainPageWithMenu = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false);
@@ -42,8 +50,8 @@ const MainPageWithMenu = () => {
 
   const buttonRefs = useRef([]);
   const router = useRouter();
-  const latestAnnouncements = announcements.slice(0, 3); // 상위 3개의 공지사항만 선택
-  const latestFaqs = faqs.slice(0, 3); // 상위 3개의 FAQ만 선택
+  const latestAnnouncements = getLatestAnnouncements();
+  const latestFaqs = faqs.slice(0, 3);
 
   const handleResize = () => {
     const isMobileDevice = window.innerWidth <= 768;
@@ -115,9 +123,9 @@ const MainPageWithMenu = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen font-sans bg-violet-50">
-      <div className="flex-grow">
-      <Header
+    <div className="flex flex-col min-h-screen bg-violet-50">
+      <div className="flex-grow font-sans ">
+        <Header
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
           errorMessage={errorMessage}
@@ -197,10 +205,10 @@ const MainPageWithMenu = () => {
                     {latestFaqs.map((faq) => (
                       <li key={faq.id} className="overflow-hidden">
                         <button
-                          className="w-full text-left px-0 md:px-4 flex justify-between items-center "
+                          className="w-full text-left px-0 md:px-4 flex justify-between items-center font-semibold"
                           onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
                         >
-                          <span className={expandedId === faq.id ? 'text-indigo-500 text-lg font-semibold' : 'font-semibold'}>{faq.question}</span>
+                          <span className={expandedId === faq.id ? 'text-indigo-500 ' : ''}>{faq.question}</span>
                           {expandedId === faq.id ? <ChevronUp className="h-5 w-5 text-indigo-500" /> : <ChevronDown className="h-5 w-5 text-indigo-500" />}
                         </button>
                         {expandedId === faq.id && <p className="px-6 py-2 text-gray-600 ">{faq.answer}</p>}
