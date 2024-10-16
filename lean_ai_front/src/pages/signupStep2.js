@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import { ChevronLeft } from 'lucide-react';
 import TermsOfServiceModal from '../components/termsOfServiceModal';
 import MarketingModal from '../components/marketingModal';
 import ModalMSG from '../components/modalMSG';

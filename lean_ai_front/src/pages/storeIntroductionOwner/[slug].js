@@ -14,6 +14,7 @@ const StoreIntroduceOwner = () => {
   const { slug } = router.query; // URL에서 slug 파라미터 가져옴
   const [storeData, setStoreData] = useState(null); // 매장 데이터를 저장
   const [storeCategory, setStoreCategory] = useState('');
+  const [menuPrice, setMenuPrice] = useState(null);
   const [agentId, setAgentId] = useState(null); // 챗봇의 agentId를 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
   const [activeTab, setActiveTab] = useState('home'); // 활성 탭 관리
@@ -65,9 +66,8 @@ const StoreIntroduceOwner = () => {
             }
           );
           setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
-          setAgentId(storeData.agent_id); // 챗봇의 agentId를 설정
-          setStoreCategory(storeData.store_category);
-          //console.log("Store Data:", response.data); // 데이터 확인
+          console.log("Store Data:", response.data); // 데이터 확인
+
         } catch (error) {
           console.error("Error fetching store data:", error);
         } finally {
@@ -79,12 +79,16 @@ const StoreIntroduceOwner = () => {
     }
   }, [slug]); // slug가 변경될 때마다 데이터를 다시 가져옴
 
-    // storeData가 변경된 이후에 agent_id를 설정
-    useEffect(() => {
-      if (storeData && storeData.agent_id) {
-        setAgentId(storeData.agent_id);
-      }
-    }, [storeData]); // storeData가 업데이트될 때마다 실행
+  // storeData가 변경된 이후에 agent_id를 설정
+  useEffect(() => {
+    if (storeData) {
+      setAgentId(storeData.agent_id);
+      setStoreCategory(storeData.store_category);
+      setMenuPrice(JSON.parse(storeData.menu_prices));
+
+      console.log("menu_price : ", menuPrice);
+    }
+  }, [storeData]); // storeData가 업데이트될 때마다 실행
 
   // 로딩 중일 때 로딩 컴포넌트를 표시
   if (isLoading) {
@@ -194,15 +198,21 @@ const StoreIntroduceOwner = () => {
             {activeTab === 'menu' && (
               <div>
                 <h3 className="font-bold text-xl mb-4">{menuTitle}</h3>
-                {storeData.menu_prices ? (
-                  <p className='whitespace-pre-line mb-4'>
-                    {storeData.menu_prices}
-                  </p>
+                {storeData.menu_price ? (
+                  <div className='space-y-2'>
+                    {JSON.parse(storeData.menu_price).map((menu, index) => (
+                      <div key={index} className="flex justify-between">
+                        <span>{menu.name}</span>
+                        <span>{menu.price.toLocaleString()} 원</span> {/* 가격에 천 단위 콤마 추가 */}
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <p className='whitespace-pre-line mb-4'>메뉴 정보가 없습니다.</p>
                 )}
               </div>
             )}
+
           </div>
 
           {/* Chatbot */}

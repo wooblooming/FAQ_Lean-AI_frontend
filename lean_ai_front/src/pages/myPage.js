@@ -460,7 +460,7 @@ const MyPage = () => {
         <div className='flex justify-between items-center'>
         <ChevronLeft 
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" 
-            onClick={() => router.push('/login')} 
+            onClick={() => router.push('/mainPageForPresident')} 
           /> 
           <p className='font-semibold mt-2.5'> </p>
           <button
