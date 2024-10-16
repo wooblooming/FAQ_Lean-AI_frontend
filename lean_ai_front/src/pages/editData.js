@@ -26,10 +26,11 @@ export default function DataEditPage() {
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/templates/mumul service data guideline.xlsx';
-    link.download = 'mumul service data guideline.xlsx';
+    link.href = '/templates/mumul_service_data_guideline.xlsx'; 
+    link.download = 'mumul_service_data_guideline.xlsx';
     link.click();
   };
+  
 
   const handleSubmit = async () => {
     const files = fileInputRef.current?.files; // 파일 참조
@@ -92,9 +93,9 @@ export default function DataEditPage() {
           </p>
           <button
             onClick={handleDownload}
-            className="w-full text-indigo-500 font-medium hover:font-bold hover:underline py-1 rounded flex items-center justify-center transition duration-300"
+            className="w-full py-1 rounded flex text-indigo-500 items-center justify-center transition duration-300"
           >
-            <ArrowDown className="mr-2 h-4 w-4" /> 양식 다운로드
+            <ArrowDown className="mr-2 h-4 w-4" /> <span className="text-indigo-500 font-medium hover:font-bold hover:underline"> 양식 다운로드 </span>
           </button>
         </div>
 
