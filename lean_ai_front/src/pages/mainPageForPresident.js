@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
-import { Edit3, Eye, BarChart2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send } from 'lucide-react';
 import { announcements } from './notice';
 import { faqs } from './faq';
 import ChangeInfo from './changeInfo';
 import EditData from './editData';
+import RequestData from './reqestData';
 import Modal from '../components/modal';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
@@ -40,6 +41,7 @@ const MainPageWithMenu = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false);
   const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false);
+  const [isRequestDataModalOpen, setIsReqestDataModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
@@ -133,20 +135,20 @@ const MainPageWithMenu = () => {
           handleErrorMessageModalClose={() => setShowErrorMessageModal(false)}
         />
 
-        <main className="container md:mx-auto px-2 md:px-0 py-10 mt-12">
+        <main className="container md:mx-auto px-2 md:px-4 py-10 mt-12 flex-grow flex justify-center items-center">
           <div className="flex flex-col justify-center items-center text-center space-y-10">
             <h2 className="text-2xl md:text-3xl mt-5 md:mt-10" style={{ fontFamily: 'NanumSquareBold' }}>
               안녕하세요! {storeName}님!
             </h2>
 
-            <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5">
-              <div className="grid md:grid-cols-3 gap-2 md:gap-4">
+            <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center">
+              <div className="grid md:grid-cols-4 gap-2 md:gap-4">
                 {/* 버튼 영역 */}
                 <Card>
                   <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     매장 정보 변경
                   </h3>
-                  <p>사업장 정보를 수정하여 최신 상태로 유지하세요</p>
+                  <p>사업장 정보를 수정하여 <br/> 최신 상태로 유지해보세요</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={Edit3} onClick={() => setIsChangeInfoModalOpen(true)}> 정보 수정</Button>
                   </div>
@@ -156,7 +158,7 @@ const MainPageWithMenu = () => {
                   <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }} >
                     챗봇 미리보기
                   </h3>
-                  <p>고객에게 보여지는 챗봇 화면을 미리 확인하세요</p>
+                  <p>고객에게 보여지는 <br/> 챗봇 화면을 미리 확인해보세요</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={Eye} onClick={goToChatbot}>미리보기</Button>
                   </div>
@@ -164,11 +166,21 @@ const MainPageWithMenu = () => {
 
                 <Card>
                   <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-                    데이터 수정
+                    데이터 등록
                   </h3>
-                  <p>챗봇 데이터를 수정하고 성능을 개선하세요</p>
+                  <p>FAQ 데이터 등록을 통해 <br/> 서비스 맞춤 설정을 시작하세요.</p>
                   <div className='flex justify-center items-center'>
-                    <Button icon={BarChart2} onClick={() => setIsEditDataModalOpen(true)}> 데이터 수정</Button>
+                    <Button icon={ClipboardList} onClick={() => setIsEditDataModalOpen(true)}> 데이터 등록</Button>
+                  </div>
+                </Card>
+
+                <Card>
+                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                    서비스 요청
+                  </h3>
+                  <p>FAQ 수정이나 서비스 관련 요청을 <br /> 편하게 문의하세요.</p>
+                  <div className='flex justify-center items-center'>
+                    <Button icon={Send} onClick={() => setIsReqestDataModalOpen(true)}> 문의하기</Button>
                   </div>
                 </Card>
               </div>
@@ -235,7 +247,6 @@ const MainPageWithMenu = () => {
         </main>
       </div>
 
-      {/* Footer 섹션 - 항상 화면 아래에 위치 */}
       <Footer className="w-full mt-auto hidden md:block" isMobile={isMobile} />
 
       {isChangeInfoModalOpen && (
@@ -249,6 +260,14 @@ const MainPageWithMenu = () => {
           onClose={() => { setIsEditDataModalOpen(false); }}
         >
           <EditData />
+        </Modal>
+      )}
+
+      {isRequestDataModalOpen && (
+        <Modal
+          onClose={() => { setIsReqestDataModalOpen(false); }}
+        >
+          <RequestData />
         </Modal>
       )}
 

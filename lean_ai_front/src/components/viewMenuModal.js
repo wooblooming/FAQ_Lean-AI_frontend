@@ -229,7 +229,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
   if (!show) return null;
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={`${styles.modalOverlay} z-30`} >
       <div className={`${styles.modalContent} relative mx-2`}>
         <button
           onClick={onClose}

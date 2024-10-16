@@ -82,7 +82,7 @@ const LandingPageContent = () => {
       <Nav isMobile={isMobile} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
 
       {/* 메인 섹션 */}
-      <div name='main' className="container md:mx-auto px-2 md:px-0 py-10 mt-12 ">
+      <div name='main' className="container md:mx-auto px-4 md:px-0 py-10 mt-12 ">
         <motion.main
           className="flex flex-col md:flex-row items-center  "
           initial="hidden"
@@ -126,7 +126,7 @@ const LandingPageContent = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  무물 서비스 이용하기
+                  무물 이용하기
                 </motion.button>
                 <motion.button
                   className="text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-pre-line bg-cyan-500"
@@ -142,10 +142,10 @@ const LandingPageContent = () => {
             </div>
           ) : (
             // PC 버전
-            <div className="flex w-full h-full justify-between items-center ">
+            <div className="flex w-full h-full justify-between items-center sm:px-4">
               {/* 텍스트 섹션 */}
               <motion.div
-                className="w-full md:w-1/3 md:mr-32"
+                className="w-full md:w-1/3 "
                 variants={textVariants}
                 transition={{ duration: 0.8 }}
               >
@@ -167,16 +167,16 @@ const LandingPageContent = () => {
 
                   <div className='flex flex-row space-x-4 '>
                     <motion.button
-                      className="text-white px-8 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
+                      className="text-white px-6 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
                       style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareExtraBold' }}
                       onClick={handleClick}
                       whileHover={{ scale: 1.05 }} // hover 시 버튼 확대
                       whileTap={{ scale: 0.95 }} // 클릭 시 버튼 축소
                     >
-                      무물 서비스 이용하기
+                       무물 이용하기
                     </motion.button>
                     <motion.button
-                      className="bg-cyan-500 text-white px-8 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
+                      className="bg-cyan-500 text-white px-6 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
                       style={{ fontFamily: 'NanumSquareExtraBold', }}
                       onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
                       whileHover={{ scale: 1.05 }} // hover 시 버튼 확대
@@ -190,7 +190,7 @@ const LandingPageContent = () => {
               </motion.div>
 
               {/* 이미지 슬라이더 섹션 - PC 버전 */}
-              <div className="w-2/3 md:block">
+              <div className="w-3/5 md:block">
                 <SliderComponent />
               </div>
             </div>

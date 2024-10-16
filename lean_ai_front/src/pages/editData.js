@@ -1,140 +1,157 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { ArrowDown, Upload } from "lucide-react";
+import ModalMSG from '../components/modalMSG';
+import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 export default function DataEditPage() {
-  const [fileNames, setFileNames] = useState([]); // 여러 파일 이름 저장
-  const [content, setContent] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState([]);
+  const [fileNames, setFileNames] = useState([]);
+  const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+
+  const fileInputRef = useRef(null); // useRef로 파일 입력 참조
 
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files); // 여러 파일 배열로 변환
-    const names = files.map((file) => file.name); // 파일 이름 배열 생성
+    const files = Array.from(event.target.files);
+    const names = files.map((file) => file.name);
     setFileNames(names);
-  };
-
-  const openModal = (message) => {
-    setModalMessage(message);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalMessage('');
   };
 
   const resetForm = () => {
     setFileNames([]);
-    setContent('');
-    document.getElementById('fileInput').value = ''; // 파일 입력 초기화
+    if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 입력 초기화
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/templates/mumul service data guideline.xlsx';
+    link.download = 'mumul service data guideline.xlsx';
+    link.click();
   };
 
   const handleSubmit = async () => {
-    const fileInput = document.getElementById('fileInput');
+    const files = fileInputRef.current?.files; // 파일 참조
+    console.log("click button");
 
-    if (!content && !fileInput.files.length) {
-      openModal('파일이나 요청 사항 중 하나를 입력해주세요.');
+    if (!files || files.length === 0) {
+      setErrorMessage('파일을 업로드 해주세요.');
+      setShowErrorMessageModal(true);
       return;
     }
 
     const formData = new FormData();
+    Array.from(files).forEach((file) => formData.append('files', file));
 
-    if (content) {
-      formData.append('content', content);
+    // FormData 데이터 출력
+    console.log('FormData에 포함된 데이터:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
     }
 
-    Array.from(fileInput.files).forEach((file) => {
-      formData.append('files', file); // 여러 파일 추가
-    });
+    console.log(config.apiDomain);
 
     try {
       const response = await fetch(`${config.apiDomain}/api/edit/`, {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         }
       });
 
       if (response.ok) {
-        openModal('요청되었습니다!');
+        setMessage('데이터가 등록되었습니다!');
+        setShowMessageModal(true);
         resetForm();
       } else {
-        console.error('요청 전송 실패:', response.statusText);
+        const errorData = await response.json();
+        console.error('요청 전송 실패:', errorData);
+        setErrorMessage('데이터 등록에 실패했습니다.');
+        setShowErrorMessageModal(true);
       }
     } catch (error) {
       console.error('요청 전송 중 오류 발생:', error);
+      setErrorMessage('전송 중 오류가 발생했습니다.');
+      setShowErrorMessageModal(true);
     }
   };
 
   return (
-    <div className="relative z-10 flex flex-col">
-      <div className='fixed inset-0 flex items-center justify-center'>
-        <div className="flex flex-col rounded-lg p-8 w-full max-w-md text-center space-y-4">
-          <div className="rounded-lg p-8 w-full">
-            <div className="mb-3 flex items-center justify-center">
-              <h1 className="text-3xl font-bold text-indigo-600 text-center cursor-pointer" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-                데이터 등록하기
-              </h1>
-            </div>
+    <div className="flex flex-col w-full max-w-md p-8 bg-white rounded-lg items-center justify-center">
+      <h1 className="text-3xl font-bold text-indigo-600 text-center mb-6" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+        데이터 등록하기
+      </h1>
 
-            <p className="text-sm text-gray-600 text-center">아래 버튼을 눌러 파일을 첨부해주세요.</p>
-
-            <div className="mb-6">
-              <input
-                type="file"
-                id="fileInput"
-                className="hidden"
-                multiple // 여러 파일 업로드 허용
-                onChange={handleFileChange}
-              />
-
-              <button
-                className="w-full bg-indigo-500 text-white text-center font-medium py-3 rounded-lg"
-                onClick={() => document.getElementById('fileInput').click()}
-              >
-                파일 첨부
-              </button>
-
-              <p className="mt-2 text-sm text-gray-700">
-                {fileNames.length > 0
-                  ? `선택된 파일: ${fileNames.join(', ')}`
-                  : '선택된 파일이 없습니다.'}
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block mb-2 text-left font-semibold">요청 사항</label>
-              <textarea
-                placeholder="내용 입력"
-                className="w-full p-3 rounded-lg border h-32 resize-none"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              ></textarea>
-              <p className="text-sm text-gray-500 mt-2">*파일이 없으시더라도 수정 요청이 가능합니다.</p>
-            </div>
-
-            <div className="text-center">
-              <button className="bg-indigo-500 text-white text-center font-medium py-3 px-6 rounded-lg w-full" onClick={handleSubmit}>
-                요청하기
-              </button>
-            </div>
-          </div>
+      <main className="p-4">
+        <div className="space-y-2 mt-4">
+          <h2 className="text-lg font-semibold">데이터 등록 양식 다운로드</h2>
+          <p className="text-sm text-gray-600">
+            데이터 등록에 필요한 양식을 <br /> 다운로드하려면 아래 버튼을 클릭하세요.
+          </p>
+          <button
+            onClick={handleDownload}
+            className="w-full text-indigo-500 font-medium hover:font-bold hover:underline py-1 rounded flex items-center justify-center transition duration-300"
+          >
+            <ArrowDown className="mr-2 h-4 w-4" /> 양식 다운로드
+          </button>
         </div>
-      </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-xl font-bold mb-4 text-center">{modalMessage}</h2>
-            <div className="text-center">
-              <button className="bg-red-500 text-white py-2 px-4 rounded-lg" onClick={closeModal}>
-                확인
-              </button>
-            </div>
+        <div className="space-y-5 mt-20">
+          <h2 className="text-lg font-semibold">파일 업로드</h2>
+          <p className="text-sm text-gray-600">
+            작성한 양식을 업로드하려면 <br /> 파일을 선택하고 업로드 버튼을 클릭하세요.
+          </p>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <input
+              ref={fileInputRef} // useRef로 파일 입력 참조
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              className="block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-md file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-indigo-50 file:text-gray-700
+                  hover:file:bg-indigo-100 cursor-pointer"
+            />
           </div>
+          <button
+            onClick={handleSubmit}
+            disabled={fileNames.length === 0}
+            className={`w-full py-2 px-4 rounded flex items-center justify-center transition duration-300 ${
+              fileNames.length > 0
+                ? 'bg-indigo-500 hover:bg-indigo-600 text-white font-bold'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <Upload className="mr-2 h-4 w-4" /> 파일 업로드
+          </button>
+
+          {fileNames.length > 0 && (
+            <p className="mt-2 text-sm text-gray-600">
+              선택된 파일: {fileNames.join(', ')}
+            </p>
+          )}
         </div>
-      )}
+      </main>
+
+      <ModalMSG
+        show={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        title="Success"
+      >
+        <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
+      </ModalMSG>
+
+      <ModalErrorMSG
+        show={showErrorMessageModal}
+        onClose={() => setShowErrorMessageModal(false)}
+        title="Error"
+      >
+        <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+      </ModalErrorMSG>
     </div>
   );
 }

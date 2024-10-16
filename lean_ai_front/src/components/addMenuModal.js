@@ -188,8 +188,8 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
     };
     
     return (
-        <div className="modalOverlay z-50">
-            <div className="modalContent relative mx-2 max-h-screen">
+        <div className="modalOverlay z-50 ">
+            <div className="modalContent relative m-4 max-h-screen overflow-y-auto scroll-auto ">
                 <p className="text-2xl font-bold text-gray-800 text-center w-full mt-4">{menuTitle} 추가</p>
 
                 <button
@@ -426,7 +426,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                 <ModalMSG
                     show={showMessageModal}
                     onClose={() => setShowMessageModal(false)}
-                    title="성공"
+                    title="Success"
                 >
                     <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
                 </ModalMSG>

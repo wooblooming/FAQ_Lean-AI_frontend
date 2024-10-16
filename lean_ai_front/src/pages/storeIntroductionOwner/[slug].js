@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import axios from 'axios';
+import { ChevronLeft } from 'lucide-react';
+import { motion } from "framer-motion";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
 import { useSwipeable } from 'react-swipeable'; // Swipeable Hook 사용
@@ -50,7 +51,6 @@ const StoreIntroduceOwner = () => {
       const fetchStoreData = async () => {
         try {
           const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-          //console.log('Decoded slug:', decodedSlug);
 
           const token = sessionStorage.getItem('token');
           const response = await axios.post(`${config.apiDomain}/api/storesinfo/`,
@@ -66,6 +66,7 @@ const StoreIntroduceOwner = () => {
             }
           );
           setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
+          setMenuPrice(JSON.parse(response.data.menu_prices)); // 메뉴 데이터를 파싱해서 저장
           console.log("Store Data:", response.data); // 데이터 확인
 
         } catch (error) {
@@ -84,11 +85,21 @@ const StoreIntroduceOwner = () => {
     if (storeData) {
       setAgentId(storeData.agent_id);
       setStoreCategory(storeData.store_category);
-      setMenuPrice(JSON.parse(storeData.menu_prices));
-
-      console.log("menu_price : ", menuPrice);
     }
   }, [storeData]); // storeData가 업데이트될 때마다 실행
+
+  // 메뉴를 카테고리별로 그룹화하는 함수
+  const groupMenuByCategory = (menuList) => {
+    const groupedMenu = menuList.reduce((acc, menu) => {
+      const { category } = menu;
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(menu);
+      return acc;
+    }, {});
+    return groupedMenu;
+  };
 
   // 로딩 중일 때 로딩 컴포넌트를 표시
   if (isLoading) {
@@ -104,40 +115,32 @@ const StoreIntroduceOwner = () => {
     setActiveTab(tab); // 클릭한 탭을 활성화
   };
 
-  const menuTitle = getMenuTitle(storeData.store_category); // 메뉴 탭 이름 설정
+  const menuTitle = getMenuTitle(storeCategory); // 메뉴 탭 이름 설정
+
+  // 메뉴를 카테고리별로 묶기
+  const groupedMenu = menuPrice ? groupMenuByCategory(menuPrice) : null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg shadow-lg relative"
+      <div className="bg-white rounded-lg shadow-lg relative font-sans w-full h-full overflow-y-auto"
         style={{ width: '90%', maxWidth: '400px', height: '95%', maxHeight: '675px' }}>
-        <div className="w-full h-full overflow-y-auto"> {/* 모달 내부에 콘텐츠 배치 */}
-          <Link href="/mainPageForPresident" className="absolute top-4 left-0 text-gray-500 focus:outline-none">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </Link>
-          <div className=" mb-2" style={{ height: '45%', maxHeight: '200px' }}>
-            <img
-              src={
-                storeData.store_image
-                  ? `${config.apiDomain}${storeData.store_image}`
-                  : '/testBanner.png'  // 기본 이미지
-              }
-              alt="Store"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <div className="relative">
+          <img
+            src={
+              storeData.store_image
+                ? `${config.apiDomain}${storeData.store_image}`
+                : '/testBanner.png'  // 기본 이미지
+            }
+            alt="Store"
+            className="w-full h-48 object-cover"
+          />
+          <ChevronLeft
+            className="absolute top-4 left-1 h-8 w-8 text-indigo-700  cursor-pointer"
+            onClick={() => router.push('/mainPageForPresident')}
+          />
+        </div>
+
+          {/* 매장 정보 섹션에 애니메이션 추가 */}
           <div className='flex flex-col my-3 pl-4'>
             <p id="storeName" className="font-bold text-2xl">{storeData.store_name}</p>
             <p className='whitespace-pre-line text-base mt-1'>
@@ -146,26 +149,33 @@ const StoreIntroduceOwner = () => {
           </div>
 
           {/* 탭 메뉴 */}
-          <div className="tabs flex justify-around border-b-2 border-gray-300">
+          <div className="tabs flex justify-around border-b-2 font-medium border-gray-300">
             <button
-              className={`p-2 w-1/3  ${activeTab === 'home' ? 'text-violet-500 text-lg font-bold border-b-2 border-violet-400' : ''}`}
+              className={`p-2 w-1/3 ${activeTab === 'home' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
+              style={{ fontFamily: activeTab === 'home' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
               onClick={() => handleTabClick('home')}
             >
-              Home
+              매장
             </button>
             <button
-              className={`p-2 w-1/3  ${activeTab === 'menu' ? 'text-violet-500 text-lg font-bold border-b-2 border-violet-400' : ''}`}
+              className={`p-2 w-1/3 ${activeTab === 'menu' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
+              style={{ fontFamily: activeTab === 'menu' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
               onClick={() => handleTabClick('menu')}
             >
               {menuTitle}
             </button>
+
           </div>
 
           {/* 탭 내용 */}
-          <div {...handlers} className="tab-content p-4 font-sans mt-3">
+          <div {...handlers} className="tab-content p-4 font-sans mt-3" style={{ fontFamily: 'NanumSquareBold' }}>
             {activeTab === 'home' && (
-              <div id='home' >
-                <h3 className="font-bold text-xl ml-2 mb-4">매장 정보</h3>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <h3 className="font-bold text-2xl ml-2 mb-4" style={{ fontFamily: 'NanumSquareExtraBold' }}>매장 정보</h3>
                 <div id='location' className='flex flex-col ml-6 text-lg'>
                   <div className='flex items-center mb-3'>
                     <FontAwesomeIcon icon={faLocationDot} />
@@ -192,32 +202,60 @@ const StoreIntroduceOwner = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {activeTab === 'menu' && (
-              <div>
-                <h3 className="font-bold text-xl mb-4">{menuTitle}</h3>
-                {storeData.menu_price ? (
-                  <div className='space-y-2'>
-                    {JSON.parse(storeData.menu_price).map((menu, index) => (
-                      <div key={index} className="flex justify-between">
-                        <span>{menu.name}</span>
-                        <span>{menu.price.toLocaleString()} 원</span> {/* 가격에 천 단위 콤마 추가 */}
+              <div className="space-y-4">
+                <motion.h2
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-2xl font-bold mb-4 "
+                  style={{ fontFamily: 'NanumSquareExtraBold' }}
+                >
+                  {menuTitle}
+                </motion.h2>
+                {groupedMenu ? (
+                  Object.entries(groupedMenu).map(([category, menus], index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="mb-6"
+                    >
+                      <h3 className="text-base font-semibold mb-3 text-indigo-600" >{category}</h3>
+                      <div className="space-y-3">
+                        {menus.map((menu, itemIndex) => (
+                          <motion.div
+                            key={itemIndex}
+                            whileTap={{ scale: 0.98 }}
+                            className="bg-violet-50 rounded-lg shadow-sm overflow-hidden transition-shadow duration-300 hover:shadow-md flex items-center"
+                          >
+                            <img
+                              src={menu.image ? `${config.apiDomain}${menu.image}` : '/menu_default_image.png'}
+                              alt={menu.name}
+                              className="w-24 h-24 object-cover"
+                            />
+                            <div className="p-3 flex-1 text-sm font-semibold text-gray-800 ">
+                              <p className="mb-1">{menu.name}</p>
+                              <p className="">{menu.price.toLocaleString()} 원</p>
+                            </div>
+                          </motion.div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </motion.div>
+                  ))
                 ) : (
                   <p className='whitespace-pre-line mb-4'>메뉴 정보가 없습니다.</p>
                 )}
               </div>
             )}
-
           </div>
 
           {/* Chatbot */}
           {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}
-        </div>
       </div>
     </div>
   );
