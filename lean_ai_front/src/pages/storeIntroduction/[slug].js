@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { ChevronLeft } from 'lucide-react';
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
@@ -66,9 +65,21 @@ const StoreIntroduce = () => {
               },
             }
           );
-          setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
-          setMenuPrice(JSON.parse(response.data.menu_prices)); // 메뉴 데이터를 파싱해서 저장
-          //console.log("Store Data:", response.data); // 데이터 확인
+          // 응답 데이터가 비어 있는지 확인
+        if (response.data && response.data.menu_prices) {
+          // JSON.parse()를 안전하게 사용
+          try {
+            const menuPrices = JSON.parse(response.data.menu_prices);
+            setMenuPrice(menuPrices); // 메뉴 데이터를 파싱해서 저장
+          } catch (parseError) {
+            console.error("Error parsing menu prices:", parseError);
+          }
+        } else {
+          console.error("No menu_prices found in response data.");
+        }
+
+        setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
+        //console.log("Store Data:", response.data); // 데이터 확인
 
         } catch (error) {
           console.error("Error fetching store data:", error);
@@ -146,15 +157,19 @@ const StoreIntroduce = () => {
             className="w-full h-48 object-cover"
           />
         </div>
-
+  
         {/* 매장 정보 섹션에 애니메이션 추가 */}
         <div className='flex flex-col my-3 pl-4'>
-          <p id="storeName" className="font-bold text-2xl">{storeData.store_name}</p>
-          <p className='whitespace-pre-line text-base mt-1'>
-            {storeData.store_introduction}
-          </p>
+          {storeData.store_name && (
+            <p id="storeName" className="font-bold text-2xl">{storeData.store_name}</p>
+          )}
+          {storeData.store_introduction && (
+            <p className='whitespace-pre-line text-base mt-1'>
+              {storeData.store_introduction}
+            </p>
+          )}
         </div>
-
+  
         {/* 탭 메뉴 */}
         <div className="tabs flex justify-around border-b-2 font-medium border-gray-300">
           <button
@@ -171,11 +186,10 @@ const StoreIntroduce = () => {
           >
             {menuTitle}
           </button>
-
         </div>
-
+  
         {/* 탭 내용 */}
-        <div {...handlers} className="tab-content p-4 font-sans mt-3" style={{ fontFamily: 'NanumSquareBold' }}>
+        <div {...handlers} className="tab-content p-4 font-sans mt-3" style={{ fontFamily: 'NanumSquare' }}>
           {activeTab === 'home' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -184,34 +198,42 @@ const StoreIntroduce = () => {
             >
               <h3 className="font-bold text-2xl ml-2 mb-4" style={{ fontFamily: 'NanumSquareExtraBold' }}>매장 정보</h3>
               <div id='location' className='flex flex-col ml-6 text-lg'>
-                <div className='flex items-center mb-3'>
-                  <FontAwesomeIcon icon={faLocationDot} />
-                  <p className='whitespace-pre-line ml-2'>
-                    {storeData.store_address}
-                  </p>
-                </div>
-                <div id='clock' className='flex items-center mb-3'>
-                  <FontAwesomeIcon icon={faClock} />
-                  <p className='whitespace-pre-line ml-2'>
-                    {storeData.store_hours}
-                  </p>
-                </div>
-                <div id='phone' className='flex items-center mb-3'>
-                  <FontAwesomeIcon icon={faPhone} />
-                  <p className='whitespace-pre-line ml-2'>
-                    {storeData.store_tel}
-                  </p>
-                </div>
-                <div id='store' className='flex items-center mb-3'>
-                  <FontAwesomeIcon icon={faStore} />
-                  <p className='whitespace-pre-line ml-2'>
-                    {/*반려동물 동반가능, 주차 가능*/}
-                  </p>
-                </div>
+                {storeData.store_address && (
+                  <div className='flex items-center mb-3'>
+                    <FontAwesomeIcon icon={faLocationDot} />
+                    <p className='whitespace-pre-line ml-2'>
+                      {storeData.store_address}
+                    </p>
+                  </div>
+                )}
+                {storeData.store_hours && (
+                  <div id='clock' className='flex items-center mb-3'>
+                    <FontAwesomeIcon icon={faClock} />
+                    <p className='whitespace-pre-line ml-2'>
+                      {storeData.store_hours}
+                    </p>
+                  </div>
+                )}
+                {storeData.store_tel && (
+                  <div id='phone' className='flex items-center mb-3'>
+                    <FontAwesomeIcon icon={faPhone} />
+                    <p className='whitespace-pre-line ml-2'>
+                      {storeData.store_tel}
+                    </p>
+                  </div>
+                )}
+                {storeData.store_information && (
+                  <div id='information' className='flex items-center mb-3'>
+                    <FontAwesomeIcon icon={faStore} />
+                    <p className='whitespace-pre-line ml-2'>
+                      {storeData.store_information}
+                    </p>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
-
+  
           {activeTab === 'menu' && (
             <div className="space-y-2">
               <motion.h2
@@ -234,8 +256,7 @@ const StoreIntroduce = () => {
                     >
                       <h3 className="text-lg font-semibold text-white">{category}</h3>
                     </motion.div>
-
-
+  
                     {/* 메뉴 목록 (아코디언) */}
                     {openCategories[category] && (
                       <motion.div
@@ -260,14 +281,14 @@ const StoreIntroduce = () => {
                                 <p className="">{menu.price.toLocaleString()} 원</p>
                               </div>
                             </motion.div>
-
+  
                             {/* 구분선 추가 (마지막 메뉴는 제외) */}
                             {itemIndex < menus.length - 1 && (
                               <div className="border-t border-gray-300 my-2 mx-4 "></div>
                             )}
                           </React.Fragment>
                         ))}
-
+  
                       </motion.div>
                     )}
                   </div>
@@ -278,12 +299,12 @@ const StoreIntroduce = () => {
             </div>
           )}
         </div>
-
+  
         {/* Chatbot */}
         {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}
       </div>
     </div>
   );
-};
+};  
 
 export default StoreIntroduce;
