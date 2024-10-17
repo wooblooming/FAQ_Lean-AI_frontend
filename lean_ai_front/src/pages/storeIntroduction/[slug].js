@@ -57,7 +57,7 @@ const StoreIntroduce = () => {
           const response = await axios.post(`${config.apiDomain}/api/storesinfo/`,
             {
               slug: decodedSlug, // 디코딩 된 slug로 데이터 
-              type: 'customer', // 고객 유형으로 데이터 요청
+              type: 'customer', // 업주 유형으로 데이터 요청
             },
             {
               headers: {
@@ -115,7 +115,8 @@ const StoreIntroduce = () => {
   }
 
   // 매장 데이터가 없을 경우
-  if (!storeData) {sto
+  if (!storeData) {
+    sto
     return <div>Store not found.</div>;
   }
 
@@ -133,7 +134,7 @@ const StoreIntroduce = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg relative font-sans overflow-y-auto "
-        style={{ width: '95%', height: '95%' }}>
+        style={{ width: '95%', maxWidth: '430px', height: '95%' }}>
         <div className="relative">
           <img
             src={
@@ -161,7 +162,7 @@ const StoreIntroduce = () => {
             style={{ fontFamily: activeTab === 'home' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
             onClick={() => handleTabClick('home')}
           >
-            매장
+            홈
           </button>
           <button
             className={`p-2 w-1/3 ${activeTab === 'menu' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
@@ -244,22 +245,29 @@ const StoreIntroduce = () => {
                         className=""
                       >
                         {menus.map((menu, itemIndex) => (
-                          <motion.div
-                            key={itemIndex}
-                            whileTap={{ scale: 0.98 }}
-                            className="bg-indigo-100 rounded-b-md shadow-sm overflow-hidden transition-shadow duration-300 hover:shadow-md flex items-center"
-                          >
-                            <img
-                              src={menu.image ? `${config.apiDomain}${menu.image}` : '/menu_default_image.png'}
-                              alt={menu.name}
-                              className="w-16 h-16 object-cover"
-                            />
-                            <div className="p-3 flex-1 text-sm font-semibold text-gray-800">
-                              <p className="mb-1">{menu.name}</p>
-                              <p className="">{menu.price.toLocaleString()} 원</p>
-                            </div>
-                          </motion.div>
+                          <React.Fragment key={itemIndex}>
+                            <motion.div
+                              whileTap={{ scale: 0.98 }}
+                              className="bg-white overflow-hidden duration-300 flex items-center"
+                            >
+                              <img
+                                src={menu.image ? `${config.apiDomain}${menu.image}` : '/menu_default_image.png'}
+                                alt={menu.name}
+                                className="w-16 h-16 object-cover"
+                              />
+                              <div className="p-3 flex-1 text-sm font-semibold text-gray-800">
+                                <p className="mb-1">{menu.name}</p>
+                                <p className="">{menu.price.toLocaleString()} 원</p>
+                              </div>
+                            </motion.div>
+
+                            {/* 구분선 추가 (마지막 메뉴는 제외) */}
+                            {itemIndex < menus.length - 1 && (
+                              <div className="border-t border-gray-300 my-2 mx-4 "></div>
+                            )}
+                          </React.Fragment>
                         ))}
+
                       </motion.div>
                     )}
                   </div>

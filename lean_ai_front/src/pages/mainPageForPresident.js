@@ -141,11 +141,11 @@ const MainPageWithMenu = () => {
               안녕하세요! {storeName}님!
             </h2>
 
-            <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center">
+            <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center text-center">
               <div className="grid md:grid-cols-4 gap-2 md:gap-4">
                 {/* 버튼 영역 */}
                 <Card>
-                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                  <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     매장 정보 변경
                   </h3>
                   <p>사업장 정보를 수정하여 <br/> 최신 상태로 유지해보세요</p>
@@ -155,7 +155,7 @@ const MainPageWithMenu = () => {
                 </Card>
 
                 <Card>
-                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }} >
+                  <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }} >
                     챗봇 미리보기
                   </h3>
                   <p>고객에게 보여지는 <br/> 챗봇 화면을 미리 확인해보세요</p>
@@ -165,7 +165,7 @@ const MainPageWithMenu = () => {
                 </Card>
 
                 <Card>
-                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                  <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     데이터 등록
                   </h3>
                   <p>FAQ 데이터 등록을 통해 <br/> 서비스 맞춤 설정을 시작하세요.</p>
@@ -175,7 +175,7 @@ const MainPageWithMenu = () => {
                 </Card>
 
                 <Card>
-                  <h3 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                  <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     서비스 요청
                   </h3>
                   <p>FAQ 수정이나 서비스 관련 요청을 <br /> 편하게 문의하세요.</p>
@@ -188,7 +188,7 @@ const MainPageWithMenu = () => {
               {/* 공지사항, FAQ, 통계 및 분석 섹션 */}
               <div className="grid md:grid-cols-3 gap-2 md:gap-4 mt-10">
                 {/* 공지사항 섹션 */}
-                <div className="bg-white rounded-lg p-6 space-y-4 text-left">
+                <div className="bg-white rounded-lg p-6 space-y-4 ">
                   <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>공지사항</h2>
                   <ul className="space-y-4 px-0 md:px-4">
                     {latestAnnouncements.map((announcement) => (
@@ -211,7 +211,7 @@ const MainPageWithMenu = () => {
                 </div>
 
                 {/* FAQ 섹션 */}
-                <div className="bg-white rounded-lg p-6 space-y-4 text-left">
+                <div className="bg-white rounded-lg p-6 space-y-4">
                   <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>자주 묻는 질문</h2>
                   <ul className="space-y-2 md:space-y-4  ">
                     {latestFaqs.map((faq) => (
@@ -221,9 +221,9 @@ const MainPageWithMenu = () => {
                           onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
                         >
                           <span className={expandedId === faq.id ? 'text-indigo-500 ' : ''}>{faq.question}</span>
-                          {expandedId === faq.id ? <ChevronUp className="h-5 w-5 text-indigo-500" /> : <ChevronDown className="h-5 w-5 text-indigo-500" />}
+                          {expandedId === faq.id ? <ChevronUp className="h-4 w-4 text-indigo-500" /> : <ChevronDown className="h-5 w-5 text-indigo-500" />}
                         </button>
-                        {expandedId === faq.id && <p className="px-6 py-2 text-gray-600 ">{faq.answer}</p>}
+                        {expandedId === faq.id && <p className="px-6 py-2 text-gray-600 text-sm ">{faq.answer}</p>}
                       </li>
                     ))}
                   </ul>
@@ -235,8 +235,8 @@ const MainPageWithMenu = () => {
                 </div>
 
                 {/* 통계 및 분석 섹션 */}
-                <div className="bg-white rounded-lg p-6 space-y-4 text-left">
-                  <h2 className="text-2xl text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>통계 및 분석</h2>
+                <div className="bg-white rounded-lg p-6 space-y-4 text-center">
+                  <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>통계 및 분석</h2>
                   <p className="text-gray-700 px-0 md:px-4">데이터가 준비 중입니다.</p>
                 </div>
               </div>

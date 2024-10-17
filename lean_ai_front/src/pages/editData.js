@@ -80,28 +80,30 @@ export default function DataEditPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-md p-8 bg-white rounded-lg items-center justify-center">
-      <h1 className="text-3xl font-bold text-indigo-600 text-center mb-6" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+    <div className="flex flex-col w-full max-w-md px-2 py-8 bg-white rounded-lg items-center justify-center space-y-5">
+      <h1 className="text-3xl font-bold text-indigo-600 text-center " style={{ fontFamily: 'NanumSquareExtraBold' }}>
         데이터 등록하기
       </h1>
 
-      <main className="p-4">
+      <main className="p-4 space-y-16">
         <div className="space-y-2 mt-4">
-          <h2 className="text-lg font-semibold">데이터 등록 양식 다운로드</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="text-xl font-semibold">데이터 등록 양식 다운로드</h2>
+          <p className="text-sm text-gray-500">
             데이터 등록에 필요한 양식을 <br /> 다운로드하려면 아래 버튼을 클릭하세요.
           </p>
           <button
             onClick={handleDownload}
-            className="w-full py-1 rounded flex text-indigo-500 items-center justify-center transition duration-300"
+            className="w-full py-2 px-4 rounded flex bg-indigo-500 text-white  items-center justify-center transition duration-300"
           >
-            <ArrowDown className="mr-2 h-4 w-4" /> <span className="text-indigo-500 font-medium hover:font-bold hover:underline"> 양식 다운로드 </span>
+            <ArrowDown className="mr-2 h-4 w-4" /> <span className="font-medium hover:font-bold hover:underline"> 양식 다운로드 </span>
           </button>
         </div>
 
-        <div className="space-y-5 mt-20">
-          <h2 className="text-lg font-semibold">파일 업로드</h2>
-          <p className="text-sm text-gray-600">
+        <div className="border-t border-gray-300 "></div>
+
+        <div className="space-y-3 ">
+          <h2 className="text-xl font-semibold">파일 업로드</h2>
+          <p className="text-sm text-gray-500">
             작성한 양식을 업로드하려면 <br /> 파일을 선택하고 업로드 버튼을 클릭하세요.
           </p>
           <div className="grid w-full max-w-sm items-center gap-1.5">
