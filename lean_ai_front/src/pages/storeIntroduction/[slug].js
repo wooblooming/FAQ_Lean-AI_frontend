@@ -151,7 +151,7 @@ const StoreIntroduce = () => {
             src={
               storeData.store_image
                 ? `${config.apiDomain}${storeData.store_image}`
-                : '/testBanner.png'  // 기본 이미지
+                : '/mumullogo.jpg'  // 기본 이미지
             }
             alt="Store"
             className="w-full h-48 object-cover"

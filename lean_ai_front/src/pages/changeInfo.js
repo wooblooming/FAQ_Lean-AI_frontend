@@ -38,6 +38,14 @@ const ChangeInfo = ({ initialData }) => {
 
   const router = useRouter();
 
+  const businessTypeMap = {
+    'FOOD': '음식점',
+    'RETAIL': '판매점',
+    'UNMANNED': '무인매장',
+    'PUBLIC': '공공기관',
+    'OTHER': '기타'
+  };
+
   // 매장 정보 가져오기
   useEffect(() => {
     const fetchData = async () => {
@@ -339,7 +347,6 @@ const ChangeInfo = ({ initialData }) => {
                 {storeIntroduction}
               </p>
             </div>
-
           </div>
 
           <div id="category" className="flex flex-row items-start text-center ">
@@ -348,7 +355,7 @@ const ChangeInfo = ({ initialData }) => {
                 비즈니스종류 :&nbsp;
               </p>
               <p className=" whitespace-pre ">
-                {storeCategory}
+                {businessTypeMap[storeCategory] || storeCategory}
               </p>
             </div>
             <button
@@ -376,21 +383,24 @@ const ChangeInfo = ({ initialData }) => {
             </button>
           </div>
 
-          <div id="storeLocation" className="flex flex-row items-start text-center whitespace-pre-line">
-            <div className='flex flex-row items-start text-start'>
-              <p className=" whitespace-pre-line font-semibold">
-                매장위치 :&nbsp;
+          
+          <div id="storeLocation" className="flex flex-row items-start text-center ">
+            <div className='flex flex-col items-start text-start'>
+              <p className=" whitespace-pre font-semibold">
+              매장위치 :
+                <button
+                  onClick={() => openEditModal('storeAddress')}
+                  className="ml-px text-gray-500"
+                >
+                  <EditIcon style={{ width: '20px', height: '20px' }} />
+                </button>
+                <br />
               </p>
-              <p className=" whitespace-pre ">
+              <p className=" whitespace-pre-line ml-2 mb-1">
                 {storeAddress}
               </p>
             </div>
-            <button
-              onClick={() => openEditModal('storeAddress')}
-              className="ml-px text-gray-500"
-            >
-              <EditIcon style={{ width: '20px', height: '20px' }} />
-            </button>
+
           </div>
 
           <div id="storeTel" className="flex flex-row items-start text-center ">

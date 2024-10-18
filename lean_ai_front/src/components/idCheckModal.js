@@ -27,7 +27,7 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete }) => {
             if (response.status === 409) {
                 // ID가 이미 존재하는 경우
                 onIdCheckComplete(false);
-                setErrorMessage(result.message || '이미 사용 중인 사용자 이름입니다.');
+                setErrorMessage(result.message || '이미 사용 중인 사용자 아이디입니다.');
                 setShowErrorModal(true);  // 에러 모달 표시
             } else if (response.status === 400) {
                 // ID가 정규식 조건에 적합하지 않은 경우

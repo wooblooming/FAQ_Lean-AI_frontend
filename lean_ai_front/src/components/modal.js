@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 import PropTypes from 'prop-types';
 
 const Modal = ({ children, onClose }) => {
@@ -10,11 +11,11 @@ const Modal = ({ children, onClose }) => {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 font-bold z-20" // z-index를 낮춤
-          style={{ padding: '10px', cursor: 'pointer' }}
+          className=" " // z-index를 낮춤
+          style={{ cursor: 'pointer' }}
           aria-label="Close"
         >
-          X
+          <X className="absolute top-4 right-4 bg-indigo-500 rounded-full text-white z-20 p-1"/>
         </button>
         <div className="w-full h-full overflow-y-auto scroll-auto"> {/* 모달의 내부 */}
           {children}

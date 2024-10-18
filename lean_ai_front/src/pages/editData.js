@@ -26,8 +26,8 @@ export default function DataEditPage() {
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/templates/mumul_service_data_guideline.xlsx'; 
-    link.download = 'mumul_service_data_guideline.xlsx';
+    link.href = '/templates/[무물] 초기 데이터 입력 양식.xlsx'; 
+    link.download = '[무물] 초기 데이터 입력 양식.xlsx';
     link.click();
   };
   

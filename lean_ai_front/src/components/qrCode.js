@@ -6,14 +6,38 @@ const QRCodeSection = ({
   toggleQrCode, handleDownloadQrCode, handleGenerateQrCode
 }) => {
 
-  // QR 코드 URL이 상대 경로일 경우에만 절대 경로로 변환
-  useEffect(() => {
-    console.log(qrUrl);
-    if (qrUrl && !qrUrl.startsWith("http")) {
-      // QR 코드 URL이 "https://mumulai.com/media/"로 시작하지 않으면 절대 경로로 변환
-      setQrUrl(`${qrUrl}`);
+  // QR 코드 파일이 서버에 생성되었는지 확인하는 함수
+  const checkQrCodeFileExists = async (url) => {
+    try {
+      const response = await fetch(url);
+      return response.ok;
+    } catch (error) {
+      return false;
     }
-  }, [qrUrl]);
+  };
+
+  // QR 코드 생성 후 폴링을 통해 파일이 존재하는지 확인하고 업데이트
+  const handleGenerateAndDisplayQrCode = async () => {
+    await handleGenerateQrCode(); // QR 코드 생성 함수 실행
+    const newQrUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/qr_codes/qr_${selectedStoreId}.png`; // 예상되는 QR 코드 경로 설정
+    setQrUrl(newQrUrl); // QR 코드 URL 설정
+
+    // 일정 시간 동안 주기적으로 파일이 생성되었는지 확인
+    const pollInterval = 1000; // 1초 간격
+    const maxAttempts = 15; // 최대 15번 시도 (15초)
+
+    let attempts = 0;
+    const pollForQrCode = setInterval(async () => {
+      const fileExists = await checkQrCodeFileExists(newQrUrl);
+      if (fileExists || attempts >= maxAttempts) {
+        clearInterval(pollForQrCode); // 파일이 존재하거나 최대 시도 횟수에 도달하면 폴링 종료
+        if (fileExists) {
+          setQrUrl(newQrUrl); // 파일이 존재할 경우 QR 코드 이미지 업데이트
+        }
+      }
+      attempts++;
+    }, pollInterval);
+  };
 
   return (
     <div className='flex flex-col items-start mb-4'>
@@ -45,7 +69,7 @@ const QRCodeSection = ({
       {!qrUrl ? (
         <button
           className='border-none text-blue-400 underline text-sm font-semibold mb-2 ml-2 mt-2'
-          onClick={handleGenerateQrCode}
+          onClick={handleGenerateAndDisplayQrCode} // QR 코드 생성 및 즉시 표시
         >
           QR 코드 생성하기
         </button>

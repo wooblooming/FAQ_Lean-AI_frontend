@@ -13,6 +13,7 @@ import EventAlertModal from '../components/eventModal'; // 이벤트 모달 컴�
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 import config from '../../config';
+import ConfirmModal from '../components/confirmModal';
 
 const MyPage = () => {
   // 모달 및 UI 상태 관련 변수
@@ -22,6 +23,7 @@ const MyPage = () => {
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달의 열림/닫힘 상태
   const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달의 열림/닫힘 상태
   const [showQrCode, setShowQrCode] = useState(false); // QR 코드 표시 상태
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [snsList, setSnsList] = useState([
     { name: 'kakao', displayName: '카카오', icon: kakaoIcon, isConnected: false },
     { name: 'naver', displayName: '네이버', icon: naverIcon, isConnected: false },
@@ -454,6 +456,43 @@ const MyPage = () => {
     );
   };
 
+  // 탈퇴 확인 모달을 열기 위한 함수
+  const handleAccountDeletionClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  // 탈퇴 모달에서 확인을 눌렀을 때 탈퇴 처리
+  const handleConfirmAccountDeletion = async () => {
+    setShowDeleteModal(false); // 모달 닫기
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      setErrorMessage("로그인 후 이용해주세요.");
+      setShowErrorMessageModal(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.apiDomain}/api/deactivate-account/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setMessage("회원탈퇴가 완료되었습니다.");
+        setShowMessageModal(true);
+        // 탈퇴 후 로그아웃 등의 추가 처리 필요
+      } else {
+        setErrorMessage("회원탈퇴에 실패했습니다.");
+        setShowErrorMessageModal(true);
+      }
+    } catch (error) {
+      setErrorMessage("회원탈퇴 요청 중 오류가 발생했습니다.");
+      setShowErrorMessageModal(true);
+    }
+  };
+
   return (
     <div className="bg-indigo-100 flex items-center justify-center relative font-sans min-h-screen">
       <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
@@ -536,6 +575,26 @@ const MyPage = () => {
           toggleEventOn={toggleEventOn}
         />
         
+        {/* 회원 탈퇴 버튼 */}
+        <button
+          className="text-red-600 font-bold mt-4 hover:underline"
+          onClick={handleAccountDeletionClick}  // 탈퇴 모달 열기
+        >
+          회원탈퇴
+        </button>
+
+        {/* Confirm Modal for Account Deletion */}
+        <ConfirmModal
+          show={showDeleteModal}
+          onClose={(confirmed) => {
+            setShowDeleteModal(false);
+            if (confirmed) {
+              handleConfirmAccountDeletion(); // 탈퇴 확정 시 처리
+            }
+          }}
+          message="정말 탈퇴를 하시겠습니까?"  // 탈퇴 확인 메시지
+        />
+
         {/* 추후 업데이트 */}
         {/* SNS 연결 섹션 
         <SnsConnect

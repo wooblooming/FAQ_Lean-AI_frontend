@@ -14,7 +14,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 관리
   const [menuOpen, setMenuOpen] = useState(false); // 메뉴 열림/닫힘 상태 관리
   const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 열림/닫힘 상태 관리
-  const [isLoading, setIsLoading] = useState(false); // qr 코드 이미지 로딩 상태
+  const [isLoading, setIsLoading] = useState(false); // QR 코드 이미지 로딩 상태
   const [showQrModal, setShowQrModal] = useState(false); // QR 코드 모달 열림/닫힘 상태 관리
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 열림/닫힘 상태 관리
   const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달 열림/닫힘 상태 관리
@@ -51,12 +51,12 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       if (data.qr_code_image_url) {
         const mediaUrl = decodeURIComponent(data.qr_code_image_url);
         setQrCodeImageUrl(mediaUrl);
+        setStoreName(data.store_name || '');
       } else {
         setQrCodeImageUrl(null);
         console.warn("QR Code URL is null.");
+        router.push('/myPage'); // QR 코드 URL이 없으면 /myPage로 리다이렉트
       }
-
-      setStoreName(data.store_name || '');
     } catch (error) {
       console.error('Error fetching QR code:', error);
       setErrorMessage('QR 코드 로딩 중 오류가 발생했습니다.');
@@ -121,6 +121,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     setShowQrModal(true);
     await fetchQRCode();
   };
+
   return (
     <div>
       {/* 헤더 섹션 */}

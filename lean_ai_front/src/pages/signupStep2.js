@@ -101,11 +101,15 @@ const SignupStep2 = () => {
         <div className="min-h-screen flex flex-col justify-center items-center bg-violet-50">
             <div className="bg-white px-10 py-8 rounded-md shadow-lg max-w-md w-full space-y-3">
                 <div className="flex items-center mb-12">
-                    <ChevronLeft
-                        className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-                        onClick={() => router.back()}
-                    />
-                    <h1 className="text-3xl font-bold text-center text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회원가입</h1>
+                    <div className="flex-shrink-0">
+                        <ChevronLeft
+                            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+                            onClick={() => router.back()}
+                        />
+                    </div>
+                    <div className="flex-grow text-center">
+                        <h1 className="text-3xl font-bold text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회원가입</h1>
+                    </div>
                 </div>
 
                 {/* 드롭다운 */}

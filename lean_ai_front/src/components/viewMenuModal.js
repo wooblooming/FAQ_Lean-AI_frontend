@@ -3,6 +3,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Edit3 as EditIcon, Check as CheckIcon, X as CancelIcon } from 'lucide-react';
+import ModalMSG from './modalMSG.js';
 import ModalErrorMSG from './modalErrorMSG';
 import ConfirmDeleteModal from '../components/confirmDeleteModal'; // 삭제 확인 모달 컴포넌트
 import config from '../../config';
@@ -39,7 +40,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
             },
             body: JSON.stringify({
               action: 'view',
-              slug: storeSlug,
+              slug: slug
             }),
           });
 
@@ -82,12 +83,12 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
       formData.append('name', menuItem.name);
       formData.append('price', Math.round(menuItem.price));
       formData.append('category', menuItem.category);
-  
+
       // 이미지가 파일 형식인 경우에만 추가
       if (menuItem.image instanceof File) {
         formData.append('image', menuItem.image);
       }
-  
+
       const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
         method: 'POST',
         headers: {
@@ -95,19 +96,19 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         const updatedImage =
           menuItem.image instanceof File
             ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${result.updated_menus[0]?.image}`
             : menuItem.image; // 기존 이미지 유지
-  
+
         const updatedMenuItem = {
           ...menuItem,
           image: updatedImage,
         };
-  
+
         setUpdatedMenuItems((prevItems) =>
           prevItems.map((item) =>
             item.menu_number === menuItem.menu_number ? updatedMenuItem : item
@@ -118,7 +119,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
             item.menu_number === menuItem.menu_number ? updatedMenuItem : item
           )
         );
-  
+
         setMessage(`"${menuItem.name}" 항목이 성공적으로 수정되었습니다.`);
         setShowMessageModal(true);
       } else {
@@ -134,7 +135,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
       setEditingItem(null);
     }
   };
-  
+
 
   const handleCancelEdit = () => {
     setEditingItem(null);
@@ -267,8 +268,8 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
                                   (menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
                                     ? menu.image
                                     : menu.image
-                                    ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
-                                    : '/menu_default_image.png')
+                                      ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
+                                      : '/menu_default_image.png')
                                 }
                                 alt={menu.name}
                                 className={styles.menuEditImage}
@@ -312,8 +313,8 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
                                   menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
                                     ? menu.image
                                     : menu.image
-                                    ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
-                                    : '/menu_default_image.png'
+                                      ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
+                                      : '/menu_default_image.png'
                                 }
                                 alt={menu.name}
                                 className={styles.menuImage}
@@ -349,6 +350,15 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         onConfirm={confirmDelete}
         itemName={confirmDeleteItem?.name}
       />
+
+
+      <ModalMSG
+        show={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        title="Success"
+      >
+        <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
+      </ModalMSG>
 
       <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)} title="Error">
         <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
