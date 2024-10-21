@@ -23,15 +23,20 @@ export default function DataEditPage() {
     setFileNames([]);
     if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 입력 초기화
   };
-
+  
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/templates/[무물] 초기 데이터 입력 양식.xlsx'; 
+    link.href = '/templates/mumul_service_data_guideline_2.xlsx';
+    
+    // 파일명에 한글을 직접 사용
     link.download = '[무물] 초기 데이터 입력 양식.xlsx';
+    
+    document.body.appendChild(link); // a 태그를 DOM에 추가
     link.click();
+    document.body.removeChild(link); // 클릭 후 a 태그 삭제
   };
   
-
+  
   const handleSubmit = async () => {
     const files = fileInputRef.current?.files; // 파일 참조
     console.log("click button");

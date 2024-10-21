@@ -184,18 +184,18 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
             const token = sessionStorage.getItem('token');
             const formData = new FormData();
             const storeSlug = (slug);
-    
+
             if (menuItems.length === 0) {
                 throw new Error("메뉴 데이터가 없습니다."); // 메뉴 항목이 없을 경우 예외 처리
             }
-    
+
             for (const [index, item] of menuItems.entries()) {
                 formData.append(`menus[${index}][slug]`, storeSlug);
                 formData.append(`menus[${index}][name]`, item.name || '');
                 formData.append(`menus[${index}][price]`, item.price || 0);
                 formData.append(`menus[${index}][category]`, item.category || '');
                 formData.append(`menus[${index}][menu_number]`, item.menu_number || '');
-            
+
                 if (item.image instanceof File) {
                     formData.append(`menus[${index}][image]`, item.image);
                 } else {
@@ -205,10 +205,10 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                     formData.append(`menus[${index}][image]`, defaultImageBlob, 'menu_default_image.png');
                 }
             }
-            
-    
+
+
             formData.append('action', editItemId ? 'update' : 'create');
-    
+
             const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
                 method: 'POST',
                 headers: {
@@ -216,21 +216,21 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                 },
                 body: formData,
             });
-    
+
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("서버 응답 에러 상태:", response.status, response.statusText);
                 console.error("서버 응답 데이터:", errorData);
                 throw new Error(errorData.error || '서버 전송에 실패했습니다.');
             }
-            
-    
+
+
             const result = await response.json();
             onSave(result);
-    
+
             setMessage(`${menuTitle}이(가) 성공적으로 저장되었습니다.`);
             setShowMessageModal(true);
-    
+
             setNewItem({ image: '', name: '', price: '', category: '', store: '' });
             setMenuItems([]);
             setEditItemId(null);
@@ -316,6 +316,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                             isClearable
                             placeholder="분류를 선택하세요"
                             onCreateOption={handleCreateNewCategory}
+                            formatCreateLabel={(inputValue) => `추가 "${inputValue}"`}  // Create 텍스트를 '추가'로 변경
                         />
 
                         <button

@@ -11,15 +11,15 @@ import {
 
 // Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
 const ownerSteps = [
-  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner1.png" },
-  { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀, 한글파일로 제공되는 양식에 정보 입력하여 업로드, 초기 데이터는 영업일 기준 3일 내, 수정 데이터는 영업일 기준 1일 내 반영됩니다.", image: "/owner2.png" },
-  { icon: Store, title: "실시간 매장 기본정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 간단한 매장 기본정보는 실시간으로 반영됩니다.", image: "/owner3.png" },
+  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner_1.png" },
+  { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀, 한글파일로 제공되는 양식에 정보 입력하여 업로드, 초기 데이터는 영업일 기준 3일 내, 수정 데이터는 영업일 기준 1일 내 반영됩니다.", image: "/owner_2.png" },
+  { icon: Store, title: "실시간 매장 기본정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 간단한 매장 기본정보는 실시간으로 반영됩니다.", image: "/owner_3.png" },
 ];
 
 const customerSteps = [
-  { icon: QrCode, title: "QR코드 스캔", description: "업장마다 고유의 QR코드를 제공, 테이블, 벽 의자 어디에든 설치 가능합니다", image: "/customer1.png" },
-  { icon: AppWindow, title: "매장 정보 확인", description: "노출하시고자 하는 정보를 고객들이 확인할 수 있습니다.", image: "/customer2.png" },
-  { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 업장에 필요한 모든 정보를 제공합니다.", image: "/customer3.png" },
+  { icon: QrCode, title: "QR코드 스캔", description: "업장마다 고유의 QR코드를 제공, 테이블, 벽 의자 어디에든 설치 가능합니다", image: "/customer_1.png" },
+  { icon: AppWindow, title: "매장 정보 확인", description: "노출하시고자 하는 정보를 고객들이 확인할 수 있습니다.", image: "/customer_2.png" },
+  { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 업장에 필요한 모든 정보를 제공합니다.", image: "/customer_3.png" },
 ];
 
 // Features Data (서비스 소개 섹션 데이터)**
