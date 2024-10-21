@@ -8,6 +8,7 @@ import ChangeInfo from './changeInfo';
 import EditData from './editData';
 import RequestData from './reqestData';
 import Modal from '../components/modal';
+import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 import Footer from '../components/footer';
@@ -43,7 +44,9 @@ const MainPageWithMenu = () => {
   const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false);
   const [isRequestDataModalOpen, setIsReqestDataModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [message, setMessage] = useState(''); 
   const [errorMessage, setErrorMessage] = useState('');
+  const [showMessageModal, setShowMessageModal] = useState(false); 
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [storeName, setStoreName] = useState('');
   const [slug, setStoreSlug] = useState('');
@@ -74,19 +77,15 @@ const MainPageWithMenu = () => {
   const fetchStoreInfo = async () => {
     try {
       const token = sessionStorage.getItem('token');
-      if (!token) {
-        router.push('/login');
-        return;
-      }
-
+  
       const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`, // 헤더에 토큰이 제대로 추가됐는지 확인
         },
       });
-
+  
       if (response.status === 401) {
         setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
         setShowErrorMessageModal(true);
@@ -94,11 +93,11 @@ const MainPageWithMenu = () => {
         router.push('/login');
         return;
       }
-
+  
       if (!response.ok) {
         throw new Error(`Failed to fetch store information: ${response.statusText}`);
       }
-
+  
       const storeData = await response.json();
       if (storeData && storeData.length > 0) {
         setStoreName(storeData[0].store_name);
@@ -112,7 +111,7 @@ const MainPageWithMenu = () => {
       setShowErrorMessageModal(true);
     }
   };
-
+  
   if (!isMounted) {
     return null;
   }

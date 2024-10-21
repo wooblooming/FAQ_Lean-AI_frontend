@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react'; // ChevronDown 아이콘 추가
 import LogoutModal from '../components/logout'; // 로그아웃 모달 컴포넌트
 
 const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+  const [mobileSubMenuOpenIndex, setMobileSubMenuOpenIndex] = useState(null); // 모바일에서 열려 있는 서브메뉴 상태
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navRef = useRef(null);
   const router = useRouter();
@@ -42,6 +43,10 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
 
   const toggleSubMenu = () => {
     setIsSubMenuOpen(!isSubMenuOpen);
+  };
+
+  const toggleMobileSubMenu = (index) => {
+    setMobileSubMenuOpenIndex(mobileSubMenuOpenIndex === index ? null : index);
   };
 
   const handleLoginLogoutClick = () => {
@@ -125,20 +130,43 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
         </div>
       </header>
 
+      {/* 모바일 메뉴 */}
       {isMobileMenuOpen && (
         <div className="fullscreen-overlay fixed inset-0 flex flex-col justify-center items-center">
-          <ul className="space-y-4 text-lg text-white">
+          <ul className="space-y-4 text-lg text-black font-semibold">
             {navItems.map((item, index) => (
               <li key={index}>
-                <button
-                  className="text-3xl"
-                  onClick={() => {
-                    toggleMobileMenu();
-                    handleSectionClick(item.link);
-                  }}
-                >
-                  {item.title}
-                </button>
+                {item.subItems ? (
+                  <>
+                    <button
+                      className="text-3xl flex items-center justify-between w-full"
+                      onClick={() => toggleMobileSubMenu(index)}
+                    >
+                      {item.title}
+                    </button>
+                    {mobileSubMenuOpenIndex === index && (
+                      <ul className="pl-4 mt-2 space-y-2">
+                        {item.subItems.map((subItem, subIndex) => (
+                          <li key={subIndex}>
+                            <Link href={subItem.link} className="text-xl " onClick={toggleMobileMenu}>
+                              - {subItem.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    className="text-3xl"
+                    onClick={() => {
+                      toggleMobileMenu();
+                      handleSectionClick(item.link);
+                    }}
+                  >
+                    {item.title}
+                  </button>
+                )}
               </li>
             ))}
             <li>

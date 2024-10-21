@@ -23,13 +23,13 @@ const StoreIntroduceOwner = () => {
 
   // 메뉴 탭 이름 설정 함수
   const getMenuTitle = (storeCategory) => {
-    return storeCategory === 'RESTAURANT'
+    return storeCategory === 'FOOD'
       ? '메뉴'
-      : storeCategory === 'RETAIL'
+      : storeCategory === 'RETAIL' || storeCategory === 'UNMANNED'
         ? '상품'
         : storeCategory === 'PUBLIC'
           ? '서비스'
-          : '기타';
+          : '기타'
   };
 
   // Swipeable hook 설정: 좌우 스와이프로 탭 전환
@@ -80,7 +80,7 @@ const StoreIntroduceOwner = () => {
         }
 
         setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
-        //console.log("Store Data:", response.data); // 데이터 확인
+        console.log("Store Data:", response.data); // 데이터 확인
 
         } catch (error) {
           console.error("Error fetching store data:", error);

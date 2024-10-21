@@ -22,13 +22,13 @@ const StoreIntroduce = () => {
 
   // 메뉴 탭 이름 설정 함수
   const getMenuTitle = (storeCategory) => {
-    return storeCategory === 'RESTAURANT'
+    return storeCategory === 'FOOD'
       ? '메뉴'
-      : storeCategory === 'RETAIL'
+      : storeCategory === 'RETAIL' || storeCategory === 'UNMANNED'
         ? '상품'
         : storeCategory === 'PUBLIC'
           ? '서비스'
-          : '기타';
+          : '기타'
   };
 
   // Swipeable hook 설정: 좌우 스와이프로 탭 전환

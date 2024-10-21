@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useSwipeable } from "react-swipeable";
+import { useInView } from 'react-intersection-observer';
 import {
   Utensils, Monitor, ShoppingCart, Landmark, ChevronLeft, ChevronRight,
   UserPlus, PencilLine, Store, QrCode, Bot, FileCode2, HelpCircle, Brain, FileText, AppWindow
 } from 'lucide-react';
+
 
 // Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
 const ownerSteps = [
@@ -74,6 +76,7 @@ function FlipCard({ step, index }) {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.2 }}
+      style={{ minHeight: '500px' }}
     >
       <motion.div
         className="w-full h-full relative"
@@ -83,8 +86,8 @@ function FlipCard({ step, index }) {
       >
         {/* 카드 앞면 */}
         <div className="absolute w-full h-full backface-hidden" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
-          <Image src={step.image} alt={`Step ${index + 1} illustration`} fill style={{ objectFit: "cover" }} className="rounded-lg" />
-          <div className="absolute bottom-4 right-4 text-indigo-500">
+          <Image src={step.image} alt={`Step ${index + 1} illustration`} fill style={{ objectFit: "contain" }} className="rounded-lg " />
+          <div className="absolute -bottom-8 right-4 text-indigo-500">
             <p className="text-sm" style={{ fontFamily: "NanumSquareBold" }}>클릭하여 자세히 보기</p>
           </div>
         </div>
@@ -142,9 +145,27 @@ const ServiceSection = ({ isMobile }) => {
     trackMouse: true,
   });
 
+  // useInView를 사용하여 각 섹션이 뷰포트에 들어오는지 확인
+  const [featuresRef, featuresInView] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [beltRef, beltInView] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [guidelineRef, guidelineInView] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [advantagesRef, advantagesInView] = useInView({ triggerOnce: true, threshold: 0.2 });
+
+  // 애니메이션 설정
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+  };
+
   // Features 섹션 렌더링 함수 (데스크탑)
   const renderFeatures = () => (
-    <div className="w-full px-4">
+    <motion.div
+      className="w-full px-4"
+      ref={featuresRef}
+      initial="hidden"
+      animate={featuresInView ? "visible" : "hidden"}
+      variants={fadeInUp}
+    >
       <p className="text-center font-semibold m-8 text-4xl " style={{ fontFamily: "NanumSquareExtraBold" }}>
         <span className="text-indigo-600">MUMUL 서비스</span>에서는 무엇을 할 수 있을까요?
       </p>
@@ -157,24 +178,36 @@ const ServiceSection = ({ isMobile }) => {
           </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 
   // 텍스트 벨트 섹션 렌더링 함수
   const renderTextBeltSection = () => (
-    <div className="bg-white py-5 w-full">
+    <motion.div
+      className="bg-white py-5 w-full"
+      ref={beltRef}
+      initial="hidden"
+      animate={beltInView ? "visible" : "hidden"}
+      variants={fadeInUp}
+    >
       <div className="-skew-y-3 h-auto flex flex-col text-center text-white w-full py-7 bg-indigo-600" style={{ fontFamily: "NanumSquareBold" }}>
         <p style={{ fontFamily: "NanumSquareExtraBold", fontSize: "40px" }}>대충 물어봐도 찰떡같이! <br />
           <span style={{ fontFamily: "NanumSquareBold", fontSize: "30px" }}>MUMUL Bot은 사전학습 데이터 기반 AI 챗봇입니다 <br /> 고객의 문의, 대화의 맥락을 이해해서 알맞은 답변을 제공합니다.</span>
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 
   // 업주 & 고객 가이드라인 섹션 랜더링 함수 (데스크탑)
   const renderGuideline = () => (
-    <div className="flex flex-col items-center justify-center w-11/12 md:w-full ">
-      <div name="ownerGuideline" className="w-full p-10 bg-indigo-100 mt-12 mx-4 rounded-xl">
+    <motion.div
+      className="flex flex-col items-center justify-center w-11/12 md:w-full"
+      ref={guidelineRef}
+      initial="hidden"
+      animate={guidelineInView ? "visible" : "hidden"}
+      variants={fadeInUp}
+    >
+      <div name="ownerGuideline" className="w-full px-10 py-16 bg-indigo-100 mt-12 mx-4 rounded-xl">
         <p className="text-3xl md:text-4xl font-bold text-center py-4 justify-center whitespace-normal md:whitespace-nowrap mb-6 w-full " style={{ fontFamily: 'NanumSquareExtraBold' }}>
           <span className="text-indigo-600 ">MUMUL 서비스</span>는 간단히 사용 할 수 있습니다
         </p>
@@ -182,7 +215,7 @@ const ServiceSection = ({ isMobile }) => {
           <p className="text-xl md:text-3xl font-bold text-start py-4 justify-center whitespace-normal md:whitespace-nowrap w-full text-gray-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
             <span className="text-indigo-500 ">업주</span>는 쉬운 정보 입력
           </p>
-          <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full px-4">
+          <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full px-4" >
             {ownerSteps.map((step, index) => (<FlipCard key={index} step={step} index={index} />))}
           </div>
         </div>
@@ -191,18 +224,24 @@ const ServiceSection = ({ isMobile }) => {
             <p className="text-xl md:text-3xl font-bold text-start py-4 justify-center whitespace-normal md:whitespace-nowrap w-full text-gray-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
               <span className="text-indigo-500 font-extrabold">고객</span>은 쉬운 접근
             </p>
-            <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full px-4 ">
+            <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full px-4 " >
               {customerSteps.map((step, index) => (<FlipCard key={index} step={step} index={index} />))}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 
   // MUMUL 장점 섹션 렌더링 함수 (데스크탑)
   const renderAdvantages = () => (
-    <div className="w-full ">
+    <motion.div
+      className="w-full"
+      ref={advantagesRef}
+      initial="hidden"
+      animate={advantagesInView ? "visible" : "hidden"}
+      variants={fadeInUp}
+    >
       <div className="flex flex-col w-full mb-20">
         <p className="text-center font-semibold m-8 text-4xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
           <span className="text-indigo-600">MUMUL</span>을 선택해야 하는 이유!
@@ -279,21 +318,21 @@ const ServiceSection = ({ isMobile }) => {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 
   // Features 섹션 렌더링 함수 (모바일)
   const renderFeaturesMobile = () => (
-    <div className="w-full px-4">
+    <div className="px-4">
       <p className="text-center font-semibold mb-4 text-3xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
         <span className="text-indigo-600">MUMUL 서비스</span>에서는 <br /> 무엇을 할 수 있을까요?
       </p>
-      <div {...swipeHandlersForFeatures} className="relative w-full bg-indigo-50 rounded-lg shadow-lg p-6">
+      <div {...swipeHandlersForFeatures} className="bg-indigo-50 rounded-lg shadow-lg p-6">
         <div className="flex justify-center items-center space-x-4">
           <motion.div
             className="w-full flex items-start flex-col space-y-2"
             key={features[featureIndex].text}
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.5 }}
@@ -320,8 +359,8 @@ const ServiceSection = ({ isMobile }) => {
 
   // 가이드라인 섹션 렌더링 함수 (모바일) 
   const renderGuidelineMobile = () => (
-    <div className="px-4">
-      <div className="w-full px-2 py-6 bg-indigo-100 rounded-lg ">
+    <div className="px-4" style={{ height: '1010px' }}>
+      <div className="w-full h-full px-2 py-6 bg-indigo-100 rounded-lg">
         <p className="text-3xl font-bold text-center mb-4 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
           <span className="text-indigo-600">MUMUL 서비스</span>는 <br />간단합니다
         </p>
@@ -329,8 +368,8 @@ const ServiceSection = ({ isMobile }) => {
           <button className={`px-4 py-2 rounded-l-lg ${isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(true)}>업주 가이드라인</button>
           <button className={`px-4 py-2 rounded-r-lg ${!isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(false)}>고객 가이드라인</button>
         </div>
-        <div className="relative w-full px-4 py-6 rounded-lg bg-white " style={{ height: '430px' }}>
-          <div className="text-center mb-4 ">
+        <div className="relative w-full h-full px-4 py-6 rounded-lg bg-white" style={{ height: '824px' }}>
+          <div className="text-center mb-4">
             <div className="flex justify-center mb-2 space-x-2">
               {React.createElement(steps[currentStep].icon, { className: "w-8 h-8 text-indigo-600" })}
               <h3 className="text-xl font-bold text-indigo-600 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>{steps[currentStep].title}</h3>
@@ -343,24 +382,27 @@ const ServiceSection = ({ isMobile }) => {
           </div>
           {/* 화살표 버튼 */}
           <div className="absolute inset-y-1/2 left-0 transform -translate-y-1/2">
-            <button className="p-2 bg-gray-500 rounded-full shadow-md hover:bg-indigo-400 transition" onClick={handlePrev}><ChevronLeft className="w-6 h-6 text-white " /></button>
+            <button className="p-2 bg-gray-500 rounded-full shadow-md hover:bg-indigo-400 transition" onClick={handlePrev}><ChevronLeft className="w-6 h-6 text-white" /></button>
           </div>
           <div className="absolute inset-y-1/2 right-0 transform -translate-y-1/2">
-            <button className="p-2 bg-gray-500 rounded-full shadow-md hover:bg-indigo-400 transition" onClick={handleNext}><ChevronRight className="w-6 h-6 text-white " /></button>
+            <button className="p-2 bg-gray-500 rounded-full shadow-md hover:bg-indigo-400 transition" onClick={handleNext}><ChevronRight className="w-6 h-6 text-white" /></button>
           </div>
           {/* 하단 인디케이터 */}
-          <div className="flex justify-center mt-4 space-x-2">
-            {steps.map((_, index) => (<div key={index} className={`w-3 h-3 rounded-full ${index === currentStep ? 'bg-indigo-400' : 'bg-gray-300'}`}></div>))}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+            {steps.map((_, index) => (
+              <div key={index} className={`w-3 h-3 rounded-full ${index === currentStep ? 'bg-indigo-400' : 'bg-gray-300'}`}></div>
+            ))}
           </div>
         </div>
       </div>
     </div>
   );
 
+
   // 장점 섹션 렌더링 함수 (모바일)
   const renderAdvantagesMobile = () => (
-    <div className="px-2">
-      <div className="w-full px-2 space-y-10">
+    <div className="px-4">
+      <div className="w-full space-y-10">
         {/* 장점 섹션 */}
         <div className="w-full ">
           <p className="text-3xl font-bold text-center mb-8 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
@@ -369,9 +411,9 @@ const ServiceSection = ({ isMobile }) => {
           {/* Swipeable 감싸기 */}
           <div {...swipeHandlersForGoodThings} className="relative w-full">
             <motion.div
-              className="w-full bg-white rounded-lg p-4 flex items-start flex-col space-y-2"
+              className=" rounded-lg p-4 flex items-start flex-col space-y-2"
               key={goodThings[goodThingIndex].text}
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.5 }}

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft } from 'lucide-react';
 import kakaoIcon from '../../public/btn_kakao.svg';
-import naverIcon from '../../public/btn_naver.svg';  
-import googleIcon from '../../public/btn_google.svg'; 
+import naverIcon from '../../public/btn_naver.svg';
+import googleIcon from '../../public/btn_google.svg';
 import UserProfileForm from '../components/userProfile';
 import QrCodeSection from '../components/qrCode';
 import EventSwitch from '../components/event';
@@ -13,7 +13,7 @@ import EventAlertModal from '../components/eventModal'; // 이벤트 모달 컴�
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 import config from '../../config';
-import ConfirmModal from '../components/confirmModal';
+import ConfirmDeleteAccountModal from '../components/confirmDeleteAccountModal.js';
 
 const MyPage = () => {
   // 모달 및 UI 상태 관련 변수
@@ -27,7 +27,7 @@ const MyPage = () => {
   const [snsList, setSnsList] = useState([
     { name: 'kakao', displayName: '카카오', icon: kakaoIcon, isConnected: false },
     { name: 'naver', displayName: '네이버', icon: naverIcon, isConnected: false },
-    { name: 'google', displayName: '구글', icon:  googleIcon, isConnected: false },
+    { name: 'google', displayName: '구글', icon: googleIcon, isConnected: false },
   ]); // SNS 연결 상태 관리
 
   // 사용자 및 사업자 정보 관련 변수
@@ -58,6 +58,7 @@ const MyPage = () => {
   const [isChanged, setIsChanged] = useState(false); // 데이터 변경 여부
 
   const router = useRouter();
+  const [token, setToken] = useState(null);
 
   // 이미지 모달
   const toggleImageModal = () => {
@@ -67,49 +68,6 @@ const MyPage = () => {
   // 이벤트 스위치를 눌렀을 때 이벤트 모달을 표시
   const toggleEventOn = () => {
     setShowEventAlertModal(true);  // 스위치를 눌렀을 때 모달을 열기만 함
-  };
-
-  // 이벤트 모달 닫기 처리
-  const handleEventAlertModalClose = async (confirmed) => {
-    setShowEventAlertModal(false);
-    if (confirmed) {
-      setIsEventOn(true);  // "예"를 눌렀을 때 스위치를 ON으로 변경
-      await updateMarketingStatus('Y');  // DB 업데이트
-    } else {
-      setIsEventOn(false); // "아니오"를 눌렀을 때 스위치를 OFF로 변경
-      await updateMarketingStatus('N');  // DB 업데이트
-    }
-  };
-  
-  // 마케팅 상태 업데이트 함수
-  const updateMarketingStatus = async (status) => {
-    try {
-      const token = sessionStorage.getItem('token');
-      if (!token) {
-        setErrorMessage("로그인 하신 후 이용해 주세요.");
-        return;
-      }
-
-      const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ marketing: status })
-      });
-
-      if (!response.ok) {
-        throw new Error('마케팅 상태 업데이트에 실패하였습니다.');
-      }
-
-      const data = await response.json();
-      setMessage("마케팅 상태가 업데이트되었습니다.");
-      setShowMessageModal(true);
-    } catch (error) {
-      setErrorMessage(error.message);
-      setShowErrorMessageModal(true);
-    }
   };
 
   // 일반 메시지 모달 닫기 처리
@@ -124,87 +82,21 @@ const MyPage = () => {
     setErrorMessage('');
   };
 
-  // 이미지 선택 시 처리하는 함수
-  const chooseImage = async (event) => {
-    const file = event.target.files[0]; // 파일 선택
-
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); // 임시 이미지 URL 생성
-      setProfileImage(imageUrl);
-
-      // 이미지 업로드 처리
-      const formData = new FormData();
-      formData.append('profile_photo', file);
-
-      try {
-        const token = sessionStorage.getItem('token');
-        const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to upload image');
-        }
-
-        const data = await response.json();
-        setMessage("프로필 이미지를 변경하였습니다.");
-        setShowMessageModal(true);
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        setErrorMessage("프로필 이미지 변경에 실패했습니다.");
-        setShowErrorMessageModal(true);
-      }
-    }
-    toggleImageModal(); // 이미지 모달 닫기
-  };
-
-  // 기본 이미지 적용 처리 함수
-  const applyDefaultImage = async () => {
-    const defaultImageUrl = `${config.apiDomain}/media/profile_photos/profile_default_img.jpg`;
-    setProfileImage(defaultImageUrl); // 기본 이미지 URL 설정
-
-    try {
-      const token = sessionStorage.getItem('token');
-      const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ profile_photo: `profile_photos/profile_default_img.jpg` }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile image');
-      }
-
-      const data = await response.json();
-      setMessage(data.message);
-      setShowMessageModal(true);
-    } catch (error) {
-      console.error('Error updating profile image:', error);
-      setErrorMessage(error);
-      setShowErrorMessageModal(true);
-    }
-
-    toggleImageModal();
-  };
+  // 컴포넌트가 처음 마운트될 때 토큰을 가져오는 함수
+  useEffect(() => {
+    const storedToken = sessionStorage.getItem('token');
+    setToken(storedToken);
+  }, []);
 
   // 초기 사용자 정보 및 스토어 데이터를 가져오는 함수
   useEffect(() => {
+      // token이 있을 때만 fetchUserData 실행
+  if (!token) {
+    return; // token이 없으면 아무것도 하지 않음
+  }
+
     const fetchUserData = async () => {
       try {
-        const token = sessionStorage.getItem('token');
-        if (!token) {
-          console.error('No token found');
-          setErrorMessage("로그인 하신 후 이용해 주세요");
-          setShowErrorMessageModal(true);
-          return;
-        }
 
         // 사용자 프로필 정보 가져오기
         const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
@@ -220,14 +112,14 @@ const MyPage = () => {
           setName(data.name || '');
           setEmail(data.email || '');
           setPhoneNumber(data.phone_number || '');
-          setIsEventOn(data.marketing === 'Y'); // 마케팅 동의 상태 초기화
+          setIsEventOn(data.marketing === 'N'); // 마케팅 동의 상태 초기화
           // QR 코드 처리
-        if (data.qr_code_url) {
-          const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
-          setQrUrl(mediaUrl);
-        } else {
-          setQrUrl(null); // QR 코드가 없으면 null 설정
-        }
+          if (data.qr_code_url) {
+            const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
+            setQrUrl(mediaUrl);
+          } else {
+            setQrUrl(null); // QR 코드가 없으면 null 설정
+          }
 
           if (data.profile_photo && !data.profile_photo.startsWith('http')) {
             setProfileImage(`${config.apiDomain}${data.profile_photo}`);
@@ -270,29 +162,129 @@ const MyPage = () => {
     };
 
     fetchUserData();
-  }, []); // 컴포넌트가 처음 마운트될 때 사용자 및 스토어 정보를 가져옴
+  }, [token]); // 컴포넌트가 처음 마운트될 때 사용자 및 스토어 정보를 가져옴
 
   // 데이터 변경 여부를 감지
   useEffect(() => {
     const hasChanged = (
       name !== initialData.name ||
       email !== initialData.email ||
-      phoneNumber !== initialData.phoneNumber 
+      phoneNumber !== initialData.phoneNumber
     );
     setIsChanged(hasChanged); // 변경 사항이 있으면 true 설정
   }, [name, email, phoneNumber, initialData]);
 
+
+  // 이벤트 모달 닫기 처리
+  const handleEventAlertModalClose = async (confirmed) => {
+    setShowEventAlertModal(false);
+    if (confirmed) {
+      setIsEventOn(true);  // "예"를 눌렀을 때 스위치를 ON으로 변경
+      await updateMarketingStatus('Y');  // DB 업데이트
+    } else {
+      setIsEventOn(false); // "아니오"를 눌렀을 때 스위치를 OFF로 변경
+      await updateMarketingStatus('N');  // DB 업데이트
+    }
+  };
+
+  // 마케팅 상태 업데이트 함수
+  const updateMarketingStatus = async (status) => {
+    try {
+
+      const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ marketing: status })
+      });
+
+      if (!response.ok) {
+        throw new Error('마케팅 상태 업데이트에 실패하였습니다.');
+      }
+
+      const data = await response.json();
+      setMessage("마케팅 상태가 업데이트되었습니다.");
+      setShowMessageModal(true);
+    } catch (error) {
+      setErrorMessage(error.message);
+      setShowErrorMessageModal(true);
+    }
+  };
+
+
+  // 이미지 선택 시 처리하는 함수
+  const chooseImage = async (event) => {
+    const file = event.target.files[0]; // 파일 선택
+
+    if (file) {
+      const imageUrl = URL.createObjectURL(file); // 임시 이미지 URL 생성
+      setProfileImage(imageUrl);
+
+      // 이미지 업로드 처리
+      const formData = new FormData();
+      formData.append('profile_photo', file);
+
+      try {
+        const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+
+        const data = await response.json();
+        setMessage("프로필 이미지를 변경하였습니다.");
+        setShowMessageModal(true);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        setErrorMessage("프로필 이미지 변경에 실패했습니다.");
+        setShowErrorMessageModal(true);
+      }
+    }
+    toggleImageModal(); // 이미지 모달 닫기
+  };
+
+  // 기본 이미지 적용 처리 함수
+  const applyDefaultImage = async () => {
+    const defaultImageUrl = `${config.apiDomain}/media/profile_photos/profile_default_img.jpg`;
+    setProfileImage(defaultImageUrl); // 기본 이미지 URL 설정
+
+    try {
+      const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ profile_photo: `profile_photos/profile_default_img.jpg` }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile image');
+      }
+
+      const data = await response.json();
+      setMessage(data.message);
+      setShowMessageModal(true);
+    } catch (error) {
+      console.error('Error updating profile image:', error);
+      setErrorMessage(error);
+      setShowErrorMessageModal(true);
+    }
+
+    toggleImageModal();
+  };
+
   // 변경 사항 저장 처리 함수
   const handleSaveChanges = async () => {
     try {
-      const token = sessionStorage.getItem('token');
-      if (!token) {
-        console.error('No token found');
-        setErrorMessage("로그인 하신 후 이용해 주세요");
-        setShowErrorMessageModal(true);
-        return;
-      }
-
       const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
         method: 'PUT',
         headers: {
@@ -392,12 +384,6 @@ const MyPage = () => {
   // QR 코드 생성 처리 함수
   const handleGenerateQrCode = async () => {
     try {
-      const token = sessionStorage.getItem('token');
-      if (!token) {
-        setErrorMessage("로그인 하신 후 이용해 주세요");
-        setShowErrorMessageModal(true);
-        return;
-      }
       if (!selectedStoreId) {
         setErrorMessage('스토어를 선택하세요.');
         setShowErrorMessageModal(true);
@@ -464,13 +450,6 @@ const MyPage = () => {
   // 탈퇴 모달에서 확인을 눌렀을 때 탈퇴 처리
   const handleConfirmAccountDeletion = async () => {
     setShowDeleteModal(false); // 모달 닫기
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-      setErrorMessage("로그인 후 이용해주세요.");
-      setShowErrorMessageModal(true);
-      return;
-    }
-
     try {
       const response = await fetch(`${config.apiDomain}/api/deactivate-account/`, {
         method: 'POST',
@@ -482,7 +461,8 @@ const MyPage = () => {
       if (response.ok) {
         setMessage("회원탈퇴가 완료되었습니다.");
         setShowMessageModal(true);
-        // 탈퇴 후 로그아웃 등의 추가 처리 필요
+        sessionStorage.removeItem('token');  // sessionStorage에서 토큰 삭제
+        router.push('/');  // 루트 페이지로 리다이렉트
       } else {
         setErrorMessage("회원탈퇴에 실패했습니다.");
         setShowErrorMessageModal(true);
@@ -497,10 +477,10 @@ const MyPage = () => {
     <div className="bg-indigo-100 flex items-center justify-center relative font-sans min-h-screen">
       <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
         <div className='flex justify-between items-center'>
-        <ChevronLeft 
-            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" 
-            onClick={() => router.push('/mainPageForPresident')} 
-          /> 
+          <ChevronLeft
+            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+            onClick={() => router.push('/mainPageForPresident')}
+          />
           <p className='font-semibold mt-2.5'> </p>
           <button
             className={`font-semibold text-lg ${isChanged ? 'text-indigo-500' : 'text-gray-500'}`}
@@ -574,7 +554,7 @@ const MyPage = () => {
           isEventOn={isEventOn}
           toggleEventOn={toggleEventOn}
         />
-        
+
         {/* 회원 탈퇴 버튼 */}
         <button
           className="text-red-600 font-bold mt-4 hover:underline"
@@ -583,8 +563,8 @@ const MyPage = () => {
           회원탈퇴
         </button>
 
-        {/* Confirm Modal for Account Deletion */}
-        <ConfirmModal
+        {/* 계정 삭제 모달 */}
+        <ConfirmDeleteAccountModal
           show={showDeleteModal}
           onClose={(confirmed) => {
             setShowDeleteModal(false);

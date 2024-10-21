@@ -85,6 +85,12 @@ const SignupStep1 = () => {
             return;
         }
 
+        if (password !== confirmPassword) {
+            setErrorMessage('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+            setShowErrorMessageModal(true);
+            return;
+        }
+
         if (!codeCheck) {
             setErrorMessage('핸드폰 인증을 해주세요.');
             setShowErrorMessageModal(true);
@@ -103,40 +109,46 @@ const SignupStep1 = () => {
         setErrorMessage('');
     };
 
-    // 핸드폰 번호로 인증번호 전송 요청
-    const handleSendCode = async () => {
-        // 핸드폰 번호가 '-' 없이 11자리인지 확인하는 정규식 
-        const phoneRegex = /^\d{11}$/;
-        if (!phoneRegex.test(formData.phone)) {
-            setPhoneError('핸드폰 번호를 확인해 주세요');
-            return;
+// 핸드폰 번호로 인증번호 전송 요청
+const handleSendCode = async () => {
+    // 핸드폰 번호가 '-' 없이 11자리인지 확인하는 정규식 
+    const phoneRegex = /^\d{11}$/;
+    if (!phoneRegex.test(formData.phone)) {
+        setPhoneError('핸드폰 번호를 확인해 주세요.');
+        return;
+    }
+
+    setPhoneError('');
+
+    // 인증 요청하여 백엔드에서 인증번호 전송 
+    try {
+        const response = await fetch(`${config.apiDomain}/api/send-code/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ phone: formData.phone, type: 'signup' }), // 회원가입 타입으로 요청
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // 인증번호가 성공적으로 전송된 경우
+            setCodeSent(true);
+            setShowCodeModal(true);
+            setVerificationError(null);  // 에러 메시지를 초기화
+        } else if (data.message === '이미 가입한 전화번호입니다.') {
+            // 핸드폰 번호가 이미 등록된 경우 에러 메시지 모달 표시
+            setErrorMessage('이미 가입된 번호입니다.');
+            setShowErrorMessageModal(true);
+        } else {
+            // 다른 에러 처리
+            setPhoneError(data.message);
         }
-
-        setPhoneError('');
-
-        // 인증 요청하여 백엔드에서 인증번호 전송 
-        try {
-            const response = await fetch(`${config.apiDomain}/api/send-code/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ phone: formData.phone, type: 'signup' }),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                setCodeSent(true);
-                setShowCodeModal(true);
-                setVerificationError(null);  // 에러 메시지를 초기화
-            } else {
-                setPhoneError(data.message);
-            }
-        } catch (error) {
-            setPhoneError('인증 번호 요청 중 오류가 발생했습니다.');
-        }
-    };
+    } catch (error) {
+        setPhoneError('인증 번호 요청 중 오류가 발생했습니다.');
+    }
+};
 
     // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
     const handleVerifyCode = async () => {

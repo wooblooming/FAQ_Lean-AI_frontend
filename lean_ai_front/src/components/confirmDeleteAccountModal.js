@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ConfirmModal = ({ show, onClose, message }) => {
+const ConfirmDeleteAccountModal = ({ show, onClose, message }) => {
   if (!show) return null;
 
   return (
@@ -10,14 +10,14 @@ const ConfirmModal = ({ show, onClose, message }) => {
         <p className="mb-4">{message}</p>
         <div className="flex justify-center gap-4">
           <button
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            onClick={() => onClose(true)}  // 탈퇴 확정 시
+            className="text-red-500 px-4 py-2 font-semibold rounded-md hover:ring-2 ring-red-400"
+            onClick={() => onClose(true)}
           >
             탈퇴하기
           </button>
           <button
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            onClick={() => onClose(false)}  // 탈퇴 취소 시
+            className="text-gray-500 px-4 py-2 font-semibold rounded-md hover:ring-2 ring-gray-400"
+            onClick={() => onClose(false)}
           >
             취소
           </button>
@@ -27,4 +27,4 @@ const ConfirmModal = ({ show, onClose, message }) => {
   );
 };
 
-export default ConfirmModal;
+export default ConfirmDeleteAccountModal;

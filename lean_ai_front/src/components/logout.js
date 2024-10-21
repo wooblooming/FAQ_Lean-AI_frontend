@@ -16,13 +16,13 @@ const LogoutModal = ({ show, onConfirm, onCancel }) => {
         <p className="mb-4 text-center">로그아웃하시겠습니까?</p>
         <div className="flex space-x-4 mt-2 items-center justify-center">
           <button
-            className="bg-red-300 text-white px-4 py-2 rounded focus hover:bg-red-500"
+            className="text-red-500 px-4 py-2 font-semibold rounded-md hover:ring-2 ring-red-400"
             onClick={onConfirm}
           >
             로그아웃
           </button>
           <button
-            className="bg-gray-300 text-white px-4 py-2 rounded focus hover:bg-gray-500"
+            className="text-gray-500 px-4 py-2 font-semibold rounded-md hover:ring-2 ring-gray-400"
             onClick={onCancel}
           >
             취소
