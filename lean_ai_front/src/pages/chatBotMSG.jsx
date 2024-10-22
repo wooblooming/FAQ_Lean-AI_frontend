@@ -62,8 +62,33 @@ export default function Chatbot({ agentId }) {
         };
     }, [agentId]);
 
+    useEffect(() => {
+        const applyCustomStyle = () => {
+          const chatBubble = document.querySelector("#__next > div > div > div:nth-child(5) > df-messenger > df-messenger-chat-bubble");
+          
+          // chatBubble이 있을 때만 처리
+          if (chatBubble && chatBubble.shadowRoot) {
+            const titleBar = chatBubble.shadowRoot.querySelector("#df-chat-wrapper > df-messenger-titlebar");
+            
+            // titleBar이 있을 때만 처리
+            if (titleBar && titleBar.shadowRoot) {
+              const actionsElement = titleBar.shadowRoot.querySelector("div > div.actions");
+    
+              // actionsElement가 있을 때만 mix-blend-mode 설정
+              if (actionsElement) {
+                actionsElement.style.mixBlendMode = 'plus-lighter';  // CSS 속성은 camelCase로 설정
+              }
+            }
+          }
+        };
+    
+        // Chatbot이 로드된 후 스타일 적용
+        setTimeout(applyCustomStyle, 1000);  // 로드 후 1초 지연
+      }, []);
+
+
     return (
-        <>
+        <div>
             {sessionId && (
                 <df-messenger
                     location="asia-northeast1"
@@ -128,6 +153,6 @@ export default function Chatbot({ agentId }) {
                     ></df-messenger-chat-bubble>
                 </df-messenger>
             )}
-        </>
+        </div>
     );
 }
