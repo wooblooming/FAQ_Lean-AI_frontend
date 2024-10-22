@@ -327,7 +327,7 @@ const MyPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phone: phoneNumber, type: 'signup' }),
+        body: JSON.stringify({ phone: phoneNumber, type: 'mypage' }),
       });
 
       const data = await response.json();
@@ -355,7 +355,7 @@ const MyPage = () => {
         body: JSON.stringify({
           phone: phoneNumber,
           code: verificationCode,
-          type: 'signup'
+          type: 'mypage'
         }),
       });
 
@@ -520,19 +520,23 @@ const MyPage = () => {
 
         {/* 사용자 정보 입력 필드 */}
         <UserProfileForm
-          name={name}
-          setName={setName}
-          ID={ID}
-          setID={setID}
-          email={email}
-          setEmail={setEmail}
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-          handleSendCode={handleSendCode}
-          showCodeModal={showCodeModal}
-          setShowCodeModal={setShowCodeModal}
-
-        />
+        name={name}
+        setName={setName}
+        ID={ID}
+        setID={setID}
+        email={email}
+        setEmail={setEmail}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+        handleSendCode={handleSendCode}
+        showCodeModal={showCodeModal}
+        setShowCodeModal={setShowCodeModal}
+        handleCodeModalClose={handleCodeModalClose}  // 추가
+        handleVerifyCode={handleVerifyCode}  // 추가
+        verificationCode={verificationCode}  // 추가
+        setVerificationCode={setVerificationCode}  // 추가
+        errorMessage={errorMessage}  // 추가
+      />
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
@@ -619,8 +623,8 @@ const MyPage = () => {
           isOpen={showCodeModal}
           onClose={handleCodeModalClose}  // 에러 초기화를 위해 수정된 핸들러 사용
           onSubmit={handleVerifyCode}
-          verificationCode={verificationCode}
-          onChange={(e) => setVerificationCode(e.target.value)}
+          verificationCode={verificationCode}  // 전달된 verificationCode
+          onChange={(e) => setVerificationCode(e.target.value)}  // onChange 이벤트 핸들러
           errorMessage={errorMessage}
         />
 
