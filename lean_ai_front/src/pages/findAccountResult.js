@@ -52,7 +52,7 @@ const FindAccountResult = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: formData.id || undefined,
+          user_id: formData.id || undefined,
           phone: formData.phone,
           type: activeTab === 'id' ? 'findID' : 'findPW',
         }),

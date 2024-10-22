@@ -80,7 +80,7 @@ const LandingPageContent = () => {
             <div className="relative w-full flex flex-col items-center justify-center">
               {/* 이미지 슬라이더 섹션 - 모바일 */}
               <div className="w-full h-auto">
-                <img src='/index4.png'></img>
+                <img src='/index_mobile.png'></img>
               </div>
 
               {/* 텍스트 섹션 - 모바일 */}
