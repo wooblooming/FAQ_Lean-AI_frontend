@@ -321,18 +321,30 @@ const MyPage = () => {
       return;
     }
 
+    console.log({
+      phone: phoneNumber,
+      type: 'mypage',
+      user_id: ID,
+    });
+
     try {
       const response = await fetch(`${config.apiDomain}/api/send-code/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phone: phoneNumber, type: 'mypage' }),
+        body: JSON.stringify({
+          phone: phoneNumber,
+          type: 'mypage',
+          user_id : ID,
+        }),
       });
 
       const data = await response.json();
-
+      console.log('data : ',data);
+  
       if (data.success) {
+        setVerificationCode(''); // 모달을 열 때 인증번호 초기화
         setShowCodeModal(true); // 인증번호 입력 모달 열기
       } else {
         setErrorMessage(data.message);
@@ -355,7 +367,8 @@ const MyPage = () => {
         body: JSON.stringify({
           phone: phoneNumber,
           code: verificationCode,
-          type: 'mypage'
+          type: 'mypage',
+          user_id : ID,
         }),
       });
 
@@ -363,11 +376,11 @@ const MyPage = () => {
 
       if (data.success) {
         setShowCodeModal(false); // 인증 완료 후 모달 닫기
-        setMessage('핸드폰 번호 인증이 완료되었습니다.');
-        setShowMessageModal(true);
+        setMessage(data.message); // 백엔드에서 받은 메시지를 그대로 출력
+        setShowMessageModal(true); // 메시지 모달 열기
       } else {
-        setErrorMessage(data.message);
-        setShowErrorMessageModal(true);
+        setErrorMessage(data.message); // 에러 메시지도 백엔드 응답을 그대로 출력
+        setShowErrorMessageModal(true); // 에러 메시지 모달 열기
       }
     } catch (error) {
       setErrorMessage('인증 확인 중 오류가 발생했습니다.');
