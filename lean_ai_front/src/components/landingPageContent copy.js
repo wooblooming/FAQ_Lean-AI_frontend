@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Image from "next/image";
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import Nav from '../components/navBar';
-
 import SliderComponent from '../components/indexSlider';
 import CompanySection from '../components/companySection';
 import ServiceSection from '../components/serviceSection';
@@ -80,7 +78,7 @@ const LandingPageContent = () => {
             <div className="relative w-full flex flex-col items-center justify-center">
               {/* 이미지 슬라이더 섹션 - 모바일 */}
               <div className="w-full h-auto">
-                <img src='/index4.png'></img>
+                <SliderComponent />
               </div>
 
               {/* 텍스트 섹션 - 모바일 */}
@@ -119,7 +117,7 @@ const LandingPageContent = () => {
           ) : (
             <div className="flex w-full h-full justify-between items-center sm:px-4">
               {/* 텍스트 섹션 */}
-              <motion.div className="w-full md:w-1/3 z-20" variants={fadeInUp} transition={{ duration: 0.8 }}>
+              <motion.div className="w-full md:w-1/3" variants={fadeInUp} transition={{ duration: 0.8 }}>
                 <div name="text" className="flex flex-col justify-center items-center">
                   <div className="flex flex-col text-center text-gray-800 whitespace-nowrap text-4xl font-semibold space-y-4 mb-4">
                     <p>무엇이든 물어보세요</p>
@@ -128,7 +126,7 @@ const LandingPageContent = () => {
                     <p className="text-5xl font-bold text-indigo-600">AI챗봇으로</p>
                   </div>
 
-                  <div className="flex flex-row space-x-4 z-20">
+                  <div className="flex flex-row space-x-4">
                     <motion.button
                       className="text-white px-6 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
                       style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareExtraBold' }}
@@ -150,18 +148,9 @@ const LandingPageContent = () => {
               </motion.div>
 
               {/* 이미지 슬라이더 섹션 - PC */}
-              <div className="md:block z-10" style={{ width: '100%', height: '100%' }}>
-                <Image
-                  src='/index.png'
-                  alt='mumul'
-                  layout="fill" // 레이아웃을 fill로 설정하여 공간 전체를 차지하게 함
-                  objectFit="contain" // 이미지 비율을 유지하면서 공간에 맞춤
-                  className="rounded-lg"
-                  style={{ opacity: 0.8 }} // 투명도를 조정하여 텍스트가 보이게 할 수 있음
-                />
+              <div className="w-3/5 md:block">
+                <SliderComponent />
               </div>
-
-
             </div>
           )}
         </motion.main>
