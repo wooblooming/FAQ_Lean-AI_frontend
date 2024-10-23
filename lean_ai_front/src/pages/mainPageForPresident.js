@@ -6,7 +6,7 @@ import { announcements } from './notice';
 import { faqs } from './faq';
 import ChangeInfo from './changeInfo';
 import EditData from './editData';
-import RequestData from './reqestData';
+import RequestData from './requestData';
 import Modal from '../components/modal';
 import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG';

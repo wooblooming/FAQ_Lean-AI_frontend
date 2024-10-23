@@ -30,9 +30,9 @@ export default function DataEditPage() {
     const handleSubmit = async () => {
         const files = fileInputRef.current?.files;
 
-        console.log('제목:', title);
-        console.log('내용:', content);
-        console.log('파일 목록:', files);
+        //console.log('제목:', title);
+        //console.log('내용:', content);
+        //console.log('파일 목록:', files);
 
         // 제목, 내용, 파일 중 하나라도 있는지 확인
         if (!title && !content && (!files || files.length === 0)) {
@@ -54,7 +54,7 @@ export default function DataEditPage() {
                 body: formData,
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-                }
+                },
             });
 
             if (response.ok) {

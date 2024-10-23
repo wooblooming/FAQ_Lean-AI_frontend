@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import axios from 'axios';
-import { ChevronLeft } from 'lucide-react';
+import { useSwipeable } from 'react-swipeable'; 
 import { motion } from "framer-motion";
+import { ChevronLeft, TriangleAlert } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
-import { useSwipeable } from 'react-swipeable'; // Swipeable Hook 사용
-import Loading from '../../components/loading'; // 로딩 컴포넌트 import
-import Chatbot from '../chatBotMSG'; // 챗봇 컴포넌트 import
+import Loading from '../../components/loading'; 
+import AllergyModal from '../../components/allergyModal'; 
+import Chatbot from '../chatBotMSG'; 
 import config from '../../../config';
 
 const StoreIntroduceOwner = () => {
@@ -16,10 +16,13 @@ const StoreIntroduceOwner = () => {
   const [storeData, setStoreData] = useState(null); // 매장 데이터를 저장
   const [storeCategory, setStoreCategory] = useState('');
   const [menuPrice, setMenuPrice] = useState(null);
+  const [menuDetails, setMenuDetails] = useState(null); // 메뉴 세부 정보를 저장
   const [agentId, setAgentId] = useState(null); // 챗봇의 agentId를 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
   const [activeTab, setActiveTab] = useState('home'); // 활성 탭 관리
   const [openCategories, setOpenCategories] = useState({}); // 아코디언 상태 관리
+  const [token, setToken] = useState(null);
+  const [showAllergyModal, setShowAllergyModal] = useState(false); // 알레르기 모달 상태 관리
 
   // 메뉴 탭 이름 설정 함수
   const getMenuTitle = (storeCategory) => {
@@ -46,42 +49,51 @@ const StoreIntroduceOwner = () => {
     },
   });
 
+  // 컴포넌트가 처음 마운트될 때 토큰을 가져오는 함수
+  useEffect(() => {
+    const storedToken = sessionStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken); // 토큰을 가져와서 상태에 저장
+    }
+  }, []);
+
   // 매장 데이터를 가져오는 비동기 함수, 컴포넌트가 처음 마운트될 때 실행됨
   useEffect(() => {
-    if (slug) {
+    if (token && slug) { // 토큰과 slug가 모두 있을 때만 실행
       const fetchStoreData = async () => {
         try {
           const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-
-          const token = sessionStorage.getItem('token');
-          const response = await axios.post(`${config.apiDomain}/api/storesinfo/`,
-            {
-              slug: decodedSlug, // 디코딩 된 slug로 데이터 
-              type: 'owner', // 업주 유형으로 데이터 요청
+          const response = await fetch(`${config.apiDomain}/api/storesinfo/`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
             },
-            {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
+            body: JSON.stringify({
+              slug: decodedSlug,
+              type: 'owner',
+            }),
+          });
+
+          const data = await response.json();
+
           // 응답 데이터가 비어 있는지 확인
-        if (response.data && response.data.menu_prices) {
-          // JSON.parse()를 안전하게 사용
-          try {
-            const menuPrices = JSON.parse(response.data.menu_prices);
-            setMenuPrice(menuPrices); // 메뉴 데이터를 파싱해서 저장
-          } catch (parseError) {
-            console.error("Error parsing menu prices:", parseError);
+          if (data && data.menu_prices) {
+            // JSON.parse()를 안전하게 사용
+            try {
+              const menuPrices = JSON.parse(data.menu_prices);
+              setMenuPrice(menuPrices); // 메뉴 데이터를 파싱해서 저장
+
+              // 콘솔에 menuPrice 데이터를 출력
+              //console.log("Parsed menuPrices:", menuPrices)
+            } catch (parseError) {
+              console.error("Error parsing menu prices:", parseError);
+            }
+          } else {
+            console.error("No menu_prices found in response data.");
           }
-        } else {
-          console.error("No menu_prices found in response data.");
-        }
 
-        setStoreData(response.data); // 받아온 데이터를 storeData 상태에 저장
-        console.log("Store Data:", response.data); // 데이터 확인
-
+          setStoreData(data); // 받아온 데이터를 storeData 상태에 저장
         } catch (error) {
           console.error("Error fetching store data:", error);
         } finally {
@@ -91,7 +103,41 @@ const StoreIntroduceOwner = () => {
 
       fetchStoreData(); // 매장 데이터를 가져오는 함수 호출
     }
-  }, [slug]); // slug가 변경될 때마다 데이터를 다시 가져옴
+  }, [token, slug]); // token과 slug가 변경될 때마다 데이터를 다시 가져옴
+
+  // storeCategory가 'FOOD'일 때 menu-details API를 호출하여 메뉴 세부 정보를 가져옴
+  useEffect(() => {
+    const fetchMenuDetails = async () => {
+      if (storeCategory === 'FOOD' && token) {
+        try {
+          const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'view',
+              slug: slug,
+              type:'owner'
+            }),
+          });
+
+          const data = await response.json();
+          setMenuDetails(data); // 메뉴 세부 정보 저장
+          //console.log("Menu Details:", data); // 데이터 확인용 콘솔 출력
+        } catch (error) {
+          console.error("Error fetching menu details:", error);
+        }
+      }
+    };
+
+    fetchMenuDetails();
+  }, [storeCategory, token]); // storeCategory가 'FOOD'일 때와 token이 설정되었을 때만 실행
+
+  const toggleAllergyModal = () => {
+    setShowAllergyModal((prev) => !prev);
+  };
 
   // storeData가 변경된 이후에 agent_id를 설정
   useEffect(() => {
@@ -128,7 +174,6 @@ const StoreIntroduceOwner = () => {
 
   // 매장 데이터가 없을 경우
   if (!storeData) {
-    sto
     return <div>Store not found.</div>;
   }
 
@@ -162,7 +207,7 @@ const StoreIntroduceOwner = () => {
             onClick={() => router.push('/mainPageForPresident')}
           />
         </div>
-  
+
         {/* 매장 정보 섹션에 애니메이션 추가 */}
         <div className='flex flex-col my-3 pl-4'>
           {storeData.store_name && (
@@ -174,7 +219,7 @@ const StoreIntroduceOwner = () => {
             </p>
           )}
         </div>
-  
+
         {/* 탭 메뉴 */}
         <div className="tabs flex justify-around border-b-2 font-medium border-gray-300">
           <button
@@ -192,7 +237,7 @@ const StoreIntroduceOwner = () => {
             {menuTitle}
           </button>
         </div>
-  
+
         {/* 탭 내용 */}
         <div {...handlers} className="tab-content p-4 font-sans mt-3" style={{ fontFamily: 'NanumSquare' }}>
           {activeTab === 'home' && (
@@ -238,18 +283,25 @@ const StoreIntroduceOwner = () => {
               </div>
             </motion.div>
           )}
-  
+
           {activeTab === 'menu' && (
             <div className="space-y-2">
-              <motion.h2
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-2xl font-bold mb-4 "
-                style={{ fontFamily: 'NanumSquareExtraBold' }}
-              >
-                {menuTitle}
-              </motion.h2>
+              <div className='flex flex-row space-x-3 items-center'>
+                <motion.h2
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-2xl font-bold "
+                  style={{ fontFamily: 'NanumSquareExtraBold' }}
+                >
+                  {menuTitle}
+                </motion.h2>
+                {storeCategory === 'FOOD' && (
+                  <div className='flex flex-row text-indigo-600 space-x-1 cursor-pointer' onClick={toggleAllergyModal}>
+                    <TriangleAlert /> <p>알레르기 </p>
+                  </div>
+                )}
+              </div>
               {groupedMenu ? (
                 Object.entries(groupedMenu).map(([category, menus], index) => (
                   <div key={index}>
@@ -261,7 +313,7 @@ const StoreIntroduceOwner = () => {
                     >
                       <h3 className="text-lg font-semibold text-white">{category}</h3>
                     </motion.div>
-  
+
                     {/* 메뉴 목록 (아코디언) */}
                     {openCategories[category] && (
                       <motion.div
@@ -286,14 +338,14 @@ const StoreIntroduceOwner = () => {
                                 <p className="">{menu.price.toLocaleString()} 원</p>
                               </div>
                             </motion.div>
-  
+
                             {/* 구분선 추가 (마지막 메뉴는 제외) */}
                             {itemIndex < menus.length - 1 && (
                               <div className="border-t border-gray-300 my-2 mx-4 "></div>
                             )}
                           </React.Fragment>
                         ))}
-  
+
                       </motion.div>
                     )}
                   </div>
@@ -304,12 +356,19 @@ const StoreIntroduceOwner = () => {
             </div>
           )}
         </div>
-  
+
         {/* Chatbot */}
         {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}
       </div>
+
+      {/* Allergy Modal */}
+      <AllergyModal
+        show={showAllergyModal}
+        onClose={toggleAllergyModal}
+        menuDetails={menuDetails} // 메뉴 상세 데이터를 모달로 전달
+      />
     </div>
   );
-};  
+};
 
 export default StoreIntroduceOwner;

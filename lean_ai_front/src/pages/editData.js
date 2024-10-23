@@ -16,7 +16,7 @@ export default function DataEditPage() {
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     const names = files.map((file) => file.name);
-    setFileNames(names);
+    setFileNames(names);  // 상태 업데이트
   };
 
   const resetForm = () => {
@@ -51,12 +51,11 @@ export default function DataEditPage() {
     Array.from(files).forEach((file) => formData.append('files', file));
 
     // FormData 데이터 출력
-    console.log('FormData에 포함된 데이터:');
+    //console.log('FormData에 포함된 데이터:');
+    /*
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
-    }
-
-    console.log(config.apiDomain);
+    }*/
 
     try {
       const response = await fetch(`${config.apiDomain}/api/edit/`, {
@@ -138,9 +137,11 @@ export default function DataEditPage() {
           </button>
 
           {fileNames.length > 0 && (
-            <p className="mt-2 text-sm text-gray-600">
-              선택된 파일: {fileNames.join(', ')}
-            </p>
+            <ul className="mt-2 text-sm text-gray-600">
+            {fileNames.map((file, index) => (
+              <li key={index}>{file}</li>
+            ))}
+          </ul>
           )}
         </div>
       </main>

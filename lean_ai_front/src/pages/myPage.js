@@ -321,12 +321,6 @@ const MyPage = () => {
       return;
     }
 
-    console.log({
-      phone: phoneNumber,
-      type: 'mypage',
-      user_id: ID,
-    });
-
     try {
       const response = await fetch(`${config.apiDomain}/api/send-code/`, {
         method: 'POST',
@@ -341,8 +335,7 @@ const MyPage = () => {
       });
 
       const data = await response.json();
-      console.log('data : ',data);
-  
+ 
       if (data.success) {
         setVerificationCode(''); // 모달을 열 때 인증번호 초기화
         setShowCodeModal(true); // 인증번호 입력 모달 열기
