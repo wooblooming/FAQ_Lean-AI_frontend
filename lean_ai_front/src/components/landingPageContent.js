@@ -4,8 +4,6 @@ import Image from "next/image";
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import Nav from '../components/navBar';
-
-import SliderComponent from '../components/indexSlider';
 import CompanySection from '../components/companySection';
 import ServiceSection from '../components/serviceSection';
 import Footer from '../components/footer';
@@ -75,10 +73,10 @@ const LandingPageContent = () => {
           variants={{ visible: { transition: { staggerChildren: 0.3 } } }}
           style={{ height: '70vh' }}
         >
-          {/* 텍스트 섹션과 이미지 슬라이더를 PC와 모바일 버전으로 분리 */}
+          {/* 텍스트 섹션과 이미지를 PC와 모바일 버전으로 분리 */}
           {isMobile ? (
             <div className="relative w-full flex flex-col items-center justify-center">
-              {/* 이미지 슬라이더 섹션 - 모바일 */}
+              {/* 이미지 섹션 - 모바일 */}
               <div className="w-full h-auto">
                 <img src='/index_mobile.png'></img>
               </div>
@@ -149,7 +147,7 @@ const LandingPageContent = () => {
                 </div>
               </motion.div>
 
-              {/* 이미지 슬라이더 섹션 - PC */}
+              {/* 이미지 섹션 - PC */}
               <div className="md:block z-10" style={{ width: '100%', height: '100%' }}>
                 <Image
                   src='/index.png'

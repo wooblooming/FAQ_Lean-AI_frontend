@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 // ModalMSG 컴포넌트: 짧은 메시지가 있는 모달 창을 렌더링하는 컴포넌트
 const ModalErrorMSG = ({ show, onClose, title, children }) => {
@@ -15,11 +16,12 @@ const ModalErrorMSG = ({ show, onClose, title, children }) => {
             >
                 {/* 모달 닫기 버튼 */}
                 <button
-                    onClick={onClose}  // 버튼 클릭 시 onClose 함수를 호출하여 모달을 닫음
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                    onClick={onClose}
+                    className=" " // z-index를 낮춤
+                    style={{ cursor: 'pointer' }}
+                    aria-label="Close"
                 >
-                    {/* X 문자로 표시되는 닫기 아이콘 */}
-                    &times;
+                    <X className="absolute top-4 right-4 bg-indigo-500 rounded-full text-white z-20 p-1" />
                 </button>
                 {/* 모달의 제목이 있을 경우 렌더링 */}
                 {title && <h2 className="text-2xl font-bold mb-4">{title}</h2>}

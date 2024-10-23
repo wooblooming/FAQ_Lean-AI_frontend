@@ -17,7 +17,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
     { title: '서비스', link: 'services' },
     {
       title: '고객 지원',
-      link: '#support',
+      link: 'support',
       subItems: [
         { title: '공지사항', link: '/notice' },
         { title: 'FAQ', link: '/faq' },

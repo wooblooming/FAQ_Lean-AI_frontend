@@ -26,21 +26,21 @@ export const news = [
 
 const NewsCard = ({ category, title, date, content, link }) => (
   <motion.div
-    className="bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+    className="bg-indigo-100 rounded-lg shadow-lg overflow-hidden"
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.5 }}
   >
-    <div className="bg-purple-700 py-2 px-4">
-      <span className="text-white text-sm font-semibold">{category}</span>
+    <div className="bg-indigo-600 py-2 px-4 ">
+      <span className="text-white text-lg font-semibold">{category}</span>
     </div>
     <div className="p-6">
-      <h3 className="text-white text-xl font-bold mb-2">{title}</h3>
-      <p className="text-gray-300 mb-4">{content.substring(0, 100)}...</p>
-      <div className="text-purple-400 text-sm mb-4">{date}</div>
+      <h3 className="text-black text-xl font-bold mb-2">{title}</h3>
+      <p className="text-gray-600 mb-4">{content.substring(0, 100)}...</p>
+      <div className="text-gray-600 text-sm mb-4">{date}</div>
       <a
         href={link}
-        className="inline-block bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300"
+        className="inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -62,15 +62,15 @@ const Newsroom = () => {
   const displayedNews = filteredNews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="bg-gray-900 min-h-screen p-8 text-white">
-      <div className="max-w-6xl mx-auto">
+    <div className="bg-violet-50 min-h-screen p-8 text-indigo-600 flex items-center justify-center">
+      <div className="max-w-6xl bg-white rounded-lg p-4">
         <ArrowLeft
           className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
           onClick={() => router.back()}
         />
 
         <motion.h1
-          className="text-4xl font-bold text-center text-purple-400 mb-2"
+          className="text-4xl font-bold text-center text-indigo-600 mb-2"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -78,7 +78,7 @@ const Newsroom = () => {
           뉴스룸
         </motion.h1>
         <motion.h2
-          className="text-2xl font-semibold text-center text-gray-300 mb-12"
+          className="text-2xl font-semibold text-center text-gray-600 mb-12"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -98,8 +98,8 @@ const Newsroom = () => {
             <button
               key={filter}
               className={`px-6 py-2 rounded-full transition duration-300 ${activeFilter === filter
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-indigo-500 text-white shadow-lg'
+                  : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
                 }`}
               onClick={() => {
                 setActiveFilter(filter);
@@ -124,8 +124,8 @@ const Newsroom = () => {
             <button
               key={i}
               className={`px-4 py-2 rounded ${currentPage === i + 1
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
                 }`}
               onClick={() => setCurrentPage(i + 1)}
             >

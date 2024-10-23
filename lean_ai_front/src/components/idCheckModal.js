@@ -22,7 +22,7 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete }) => {
 
             const result = await response.json();
             // 디버깅: 서버 응답 확인
-            console.log(result);  
+            //console.log(result);  
 
             if (response.status === 409) {
                 // ID가 이미 존재하는 경우

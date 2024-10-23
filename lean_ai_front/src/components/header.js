@@ -3,21 +3,18 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react'; // 햄버거 메뉴와 닫기 아이콘 사용
 import LogoutModal from '../components/logout'; // 로그아웃 모달 컴포넌트 가져오기
-import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../config'; // config 파일에서 API URL 등을 가져오기
 
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null); // QR 코드 이미지 URL 관리
   const [storeName, setStoreName] = useState(''); // 스토어 이름 관리
-  const [message, setMessage] = useState(''); // 일반 메시지 관리
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 관리
   const [menuOpen, setMenuOpen] = useState(false); // 메뉴 열림/닫힘 상태 관리
   const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 열림/닫힘 상태 관리
   const [isLoading, setIsLoading] = useState(false); // QR 코드 이미지 로딩 상태
   const [showQrModal, setShowQrModal] = useState(false); // QR 코드 모달 열림/닫힘 상태 관리
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 열림/닫힘 상태 관리
-  const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달 열림/닫힘 상태 관리
 
   const qrCanvasRef = useRef(null); // QR 코드 이미지를 캔버스에 그리기 위한 참조 생성
   const router = useRouter();
@@ -237,10 +234,6 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
           </div>
         </div>
       )}
-      {/* 메시지 모달 */}
-      <ModalMSG show={showMessageModal} onClose={() => setShowMessageModal(false)} title=" ">
-        <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
-      </ModalMSG>
 
       {/* 에러 메시지 모달 */}
       <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)} title="Error">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 const ModalText = ({ show, onClose, title, children }) => {
   if (!show) return null;
@@ -12,9 +13,11 @@ const ModalText = ({ show, onClose, title, children }) => {
         {/* 모달 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-bold"
+          className=" " // z-index를 낮춤
+          style={{ cursor: 'pointer' }}
+          aria-label="Close"
         >
-          X
+          <X className="absolute top-4 right-4 bg-indigo-500 rounded-full text-white z-20 p-1"/>
         </button>
         {/* 모달의 제목이 있을 경우 렌더링 */}
         {title && <h2 className="text-2xl font-bold mb-4">{title}</h2>}

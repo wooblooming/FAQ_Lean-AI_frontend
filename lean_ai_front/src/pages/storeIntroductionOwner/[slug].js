@@ -203,7 +203,7 @@ const StoreIntroduceOwner = () => {
             className="w-full h-48 object-cover"
           />
           <ChevronLeft
-            className="absolute top-4 left-1 h-8 w-8 text-indigo-700  cursor-pointer"
+            className="absolute top-4 left-4 items-center bg-indigo-500 rounded-full text-white cursor-pointer"
             onClick={() => router.push('/mainPageForPresident')}
           />
         </div>
