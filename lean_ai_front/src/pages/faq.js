@@ -51,7 +51,7 @@ const FAQPage = () => {
         </div>
 
         {/* 카테고리 선택 */}
-        <div className="flex justify-center space-x-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 justify-center space-x-4 mb-8">
           {categories.map((category) => (
             <motion.button
               key={category.name}
@@ -62,8 +62,9 @@ const FAQPage = () => {
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveCategory(category.name)}
             >
-              <category.icon className="mr-2 h-5 w-5" />
-              {category.name}
+              <category.icon className='mr-2 md:h-5 md:w-5' />
+              <br className='block md:hidden'/>
+              <p className='whitespace-nowrap '> {category.name} </p>
             </motion.button>
           ))}
         </div>

@@ -298,9 +298,9 @@ const ChangeInfo = ({ initialData }) => {
 
   return (
     <div className='flex flex-col h-full w-full bg-white font-sans'>
-      <main  className="flex flex-col mt-1 flex-grow">
+      <main  className="flex flex-col flex-grow">
         {/* 배너 이미지 */}
-        <div id='banner' className=" bg-white relative h-auto "
+        <div id='banner' className="relative h-auto "
           style={{ height: '45%', maxHeight: '200px' }}
         >
           <img
