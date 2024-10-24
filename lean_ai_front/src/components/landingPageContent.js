@@ -150,7 +150,7 @@ const LandingPageContent = () => {
               {/* 이미지 섹션 - PC */}
               <div className="md:block z-10" style={{ width: '100%', height: '100%' }}>
                 <Image
-                  src='/index4.png'
+                  src='/index.png'
                   alt='mumul'
                   layout="fill" // 레이아웃을 fill로 설정하여 공간 전체를 차지하게 함
                   objectFit="contain" // 이미지 비율을 유지하면서 공간에 맞춤
