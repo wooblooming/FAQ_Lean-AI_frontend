@@ -429,15 +429,38 @@ const MyPage = () => {
       setShowErrorMessageModal(true);
       return;
     }
-
-    // 이미지 다운로드를 위한 링크 생성 및 클릭
-    const downloadLink = document.createElement('a');
-    downloadLink.href = qrUrl; // 백엔드에서 전달받은 QR 코드 이미지 URL
-    downloadLink.download = `${storeName}_qr_code.png`; // storeName을 파일명으로 설정
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink); // 링크 제거
+  
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+  
+    img.crossOrigin = 'Anonymous'; // CORS 문제 방지
+    img.src = qrUrl; // QR 코드 이미지 URL
+  
+    img.onload = () => {
+      // QR 코드 이미지의 크기에 맞게 캔버스 크기 설정
+      canvas.width = img.width;
+      canvas.height = img.height;
+  
+      // 캔버스에 QR 코드 이미지를 그리기
+      ctx.drawImage(img, 0, 0);
+  
+      // 캔버스를 이미지 데이터 URL로 변환하여 다운로드 처리
+      const dataUrl = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = dataUrl;
+      downloadLink.download = `${storeName}_qr_code.png`; // 파일 이름 설정
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink); // 링크 제거
+    };
+  
+    img.onerror = () => {
+      setErrorMessage('이미지를 불러오는 데 실패했습니다.');
+      setShowErrorMessageModal(true);
+    };
   };
+  
 
   // SNS 연결 상태 토글 함수
   const toggleSnsConnection = (snsName) => {

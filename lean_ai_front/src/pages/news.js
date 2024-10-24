@@ -90,7 +90,7 @@ const Newsroom = () => {
           {filters.map((filter) => (
             <button
               key={filter}
-              className={`px-6 py-2 rounded-full transition duration-300 ${activeFilter === filter
+              className={`px-6 py-2 rounded-full transition duration-300 whitespace-nowrap ${activeFilter === filter
                   ? 'bg-indigo-500 text-white shadow-lg'
                   : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
                 }`}

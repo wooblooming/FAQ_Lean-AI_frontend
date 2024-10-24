@@ -115,14 +115,14 @@ const LandingPageContent = () => {
               </div>
             </div>
           ) : (
-            <div className="flex w-full h-full justify-between items-center sm:px-4">
+            <div className="flex w-full h-full items-center sm:px-4">
               {/* 텍스트 섹션 */}
-              <motion.div className="w-full md:w-1/3 z-20" variants={fadeInUp} transition={{ duration: 0.8 }}>
+              <motion.div className="w-full md:w-1/3 z-20 mt-5" variants={fadeInUp} transition={{ duration: 0.8 }}>
                 <div name="text" className="flex flex-col justify-center items-center">
-                  <div className="flex flex-col text-center text-gray-800 whitespace-nowrap text-4xl font-semibold space-y-4 mb-4">
-                    <p>무엇이든 물어보세요</p>
-                    <p className="text-5xl font-bold text-indigo-600">QR코드로</p>
-                    <p>무엇이든 답해드려요</p>
+                  <div className="flex flex-col text-center text-gray-800 whitespace-nowrap text-4xl font-semibold mb-8">
+                    <p className="mb-3 ">무엇이든 물어보세요</p>
+                    <p className="text-5xl font-bold text-indigo-600 mb-8 ">QR코드로</p>
+                    <p className="mb-3 ">무엇이든 답해드려요</p>
                     <p className="text-5xl font-bold text-indigo-600">AI챗봇으로</p>
                   </div>
 
@@ -150,7 +150,7 @@ const LandingPageContent = () => {
               {/* 이미지 섹션 - PC */}
               <div className="md:block z-10" style={{ width: '100%', height: '100%' }}>
                 <Image
-                  src='/index.png'
+                  src='/index4.png'
                   alt='mumul'
                   layout="fill" // 레이아웃을 fill로 설정하여 공간 전체를 차지하게 함
                   objectFit="contain" // 이미지 비율을 유지하면서 공간에 맞춤
@@ -191,7 +191,7 @@ const LandingPageContent = () => {
         <ServiceSection isMobile={isMobile} />
       </motion.main>
 
-      {/* 도입문의 섹션 */}
+      {/* 도입질문 섹션 */}
       <main
         className="flex flex-col items-center justify-center text-center mt-28 p-10 mb-5 bg-indigo-200"
       >

@@ -7,7 +7,7 @@ const Chatbot = () => {
   const [chatMessages, setChatMessages] = useState([
     { sender: 'bot', image: 'chatbot.png' },
     { sender: 'bot', text: '안녕하세요 챗봇입니다.' },
-    { sender: 'bot', text: '문의하실 내용을 간단히 입력하시거나 아래 버튼을 눌러주세요.' },
+    { sender: 'bot', text: '질문하실 내용을 간단히 입력하시거나 아래 버튼을 눌러주세요.' },
     { sender: 'bot', text: '추천 검색어 ', buttons: ['추천 메뉴', '주문 조리시간', '브레이트 타임', '회장실 위치', '이벤트 확인'] }
   ]);
 

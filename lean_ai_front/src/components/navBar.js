@@ -13,10 +13,10 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   const router = useRouter();
 
   const navItems = [
-    { title: '회사 소개', link: 'company' },
+    { title: '회사소개', link: 'company' },
     { title: '서비스', link: 'services' },
     {
-      title: '고객 지원',
+      title: '고객지원',
       link: 'support',
       subItems: [
         { title: '공지사항', link: '/notice' },

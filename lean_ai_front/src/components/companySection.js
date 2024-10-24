@@ -21,7 +21,7 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
     animate={{ opacity: 1, y: 0 }}
   >
     <motion.div
-      className="p-4 md:p-6 flex justify-between items-center cursor-pointer bg-indigo-500 rounded-lg"
+      className="p-4 md:px-3 py-6 flex justify-between items-center cursor-pointer bg-indigo-500 rounded-lg"
       style={{
         borderRadius: activeSections[index] ? '8px 8px 0 0' : '',
         color: 'white',
@@ -44,26 +44,38 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
           animate="open"
           exit="closed"
           transition={{ duration: 0.3 }}
-          className="px-4 md:px-6 py-4 overflow-hidden rounded-lg"
+          className="px-4 md:px-2 py-4 overflow-hidden rounded-lg"
           style={{
             backgroundColor: '#fff',
             borderRadius: '0 0 8px 8px',
           }}
         >
           <ul className="space-y-2">
-            {content.split('\n').slice(0, 3).map((item, idx) => (
-              <li key={idx} className="flex items-start">
-                <ChevronRight className="mr-2 flex-shrink-0 h-5 w-5 text-indigo-300" />
-                <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>{item}</span>
-              </li>
-            ))}
+            {Array.isArray(content) ? (
+              // 배열 형태
+              content.slice(0, 3).map((item, idx) => (
+                <li key={idx} className="flex items-center">
+                  <ChevronRight className="mr-1 flex-shrink-0 h-5 w-5 text-indigo-300" />
+                  <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>
+                    <span className="font-bold">{item.year}</span> {item.content}
+                  </span>
+                </li>
+              ))
+            ) : (
+              // 문자열 형태
+              content.split('\n').slice(0, 3).map((item, idx) => (
+                <li key={idx} className="flex items-center">
+                  <ChevronRight className="mr-1 flex-shrink-0 h-5 w-5 text-indigo-300" />
+                  <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>{item}</span>
+                </li>
+              ))
+            )}
           </ul>
         </motion.div>
       )}
     </AnimatePresence>
   </motion.div>
 );
-
 // 데스크탑 UI
 const DesktopSection = ({ sectionData, activeSections, toggleSection }) => (
   <motion.div
@@ -141,7 +153,7 @@ const CompanySection = ({ isMobile }) => {
   // 모바일과 데스크탑에서 다른 텍스트를 적용
   const mobileDescription = (
     <div style={{ fontFamily: "NanumSquareExtraBold" }}>
-      <p className="font-bold text-3xl mb-2">린에이아이는</p>
+      <p className="font-bold text-3xl mb-2">(주)린에이아이는</p>
       <p className="text-gray-700 text-xl  ">
         AI가 필요한 모든 산업, 영역에 <br />
         <span className="text-indigo-700 text-2xl ">린에이아이의 AI 기술</span>
@@ -153,8 +165,8 @@ const CompanySection = ({ isMobile }) => {
 
   const desktopDescription = (
     <>
-      <p className="font-bold mb-1" style={{ fontSize: '40px' }}>린에이아이는</p>
-      <p className="text-gray-700 text-2xl font-semibold mb-6">
+      <p className="font-bold mb-4 text-5xl" >(주)린에이아이는</p>
+      <p className="text-gray-700 text-2xl font-semibold mb-8">
         AI가 필요한 모든 산업, 영역에 <span className="text-indigo-700 text-4xl font-bold">린에이아이의 AI 기술</span>을 적용하고자 합니다.
       </p>
     </>
@@ -207,7 +219,7 @@ const CompanySection = ({ isMobile }) => {
         </motion.div>
 
         <div className="bg-white rounded-lg p-6 mt-4 md:mt-10 space-y-4 text-left w-full md:w-1/2">
-          <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회사 소식</h2>
+          <h2 className="text-3xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회사 소식</h2>
           <ul className="space-y-4 px-0 md:px-4">
             {latestNews.map((news) => (
               <li 
@@ -216,16 +228,16 @@ const CompanySection = ({ isMobile }) => {
                 onClick={() => router.push(news.link)}
               >
                 <h3
-                  className="text-base font-semibold text-black truncate"
+                  className="text-lg font-semibold text-black truncate"
                   style={{ maxWidth: '70%' }}
                 >
                   {news.title}
                 </h3>
-                <p className="text-xs text-gray-500 hidden md:block whitespace-nowrap">{news.date}</p>
+                <p className="text-sm text-gray-500 hidden md:block whitespace-nowrap">{news.date}</p>
               </li>
             ))}
           </ul>
-          <div className="flex flex-row justify-end text-indigo-500 font-semibold text-sm">
+          <div className="flex flex-row justify-end items-center text-indigo-500 font-semibold px-2">
             <button className="" onClick={() => router.push('/news')}>
               모든 소식 보기
             </button>

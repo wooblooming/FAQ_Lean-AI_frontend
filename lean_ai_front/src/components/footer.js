@@ -11,7 +11,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold">MUMUL</h2>
-                        <p className="text-gray-400">AI 기반 고객 문의 관리 및 응대 솔루션을 제공하는 서비스입니다.</p>
+                        <p className="text-gray-400">AI 기반 고객 질문 관리 및 응대 솔루션을 제공하는 서비스입니다.</p>
                     </div>
 
                     <div className='hidden md:block'>
@@ -32,14 +32,14 @@ export default function Footer() {
                             <li><div className="hover:text-indigo-400 transition-colors"
                                 onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
                             >
-                                문의하기
+                                질문하기
                             </div>
                             </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">문의</h3>
+                        <h3 className="text-lg font-semibold mb-4">질문</h3>
                         <div className="grid grid-row-3 md:flex md:flex-col md:space-y-4 text-gray-400">
                             <a href="mailto:ch@lean-ai.com" className="flex items-center hover:text-indigo-400 transition-colors">
                                 <Mail size={24} className="mr-2" />

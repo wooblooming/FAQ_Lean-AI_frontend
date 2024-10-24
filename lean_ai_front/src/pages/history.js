@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { ArrowLeft } from 'lucide-react';
-
+import { motion, AnimatePresence } from 'framer-motion';
 
 const timelineData = [
   {
@@ -163,47 +163,20 @@ const timelineData = [
     },
 ];
 
-const TimelineEvent = ({ date, title, description }) => { 
+const TimelineEvent = ({ date, title, description }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const eventRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (eventRef.current) {
-      observer.observe(eventRef.current);
-    }
-
-    return () => {
-      if (eventRef.current) {
-        observer.unobserve(eventRef.current);
-      }
-    };
-  }, []);
 
   return (
-    <div 
-      ref={eventRef}
-      className={`mb-8 flex items-center group relative transition-all duration-1000 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+    <div
+      className=" flex items-center space-x-16 group relative transition-all duration-1000 ease-out"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex-shrink-0 w-24 text-sm font-medium text-gray-500">{date}</div>
-      <div className="w-full border-b border-gray-300 flex-grow ml-4 pb-4">
-        <h3 
-          className={`font-bold text-xl mb-1 transition-all duration-300 ease-in-out ${
-            isHovered ? 'text-blue-600 scale-105' : 'text-black'
+      <div className="flex-shrink-0 font-medium text-gray-700 px-2">{date}</div>
+      <div className="w-full flex-grow py-2">
+        <h3
+          className={`font-bold text-xl transition-all duration-300 ease-in-out ${
+            isHovered ? 'text-indigo-500 scale-105' : 'text-black'
           }`}
         >
           {title}
@@ -214,66 +187,70 @@ const TimelineEvent = ({ date, title, description }) => {
   );
 };
 
-const YearMarker = ({ year }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const yearRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (yearRef.current) {
-      observer.observe(yearRef.current);
-    }
-
-    return () => {
-      if (yearRef.current) {
-        observer.unobserve(yearRef.current);
-      }
-    };
-  }, []);
-
+const YearMarker = ({ year, onClick }) => {
   return (
-    <div 
-      ref={yearRef}
-      className={`mb-8 flex items-center transition-all duration-1000 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+    <div
+      onClick={onClick}
+      className="cursor-pointer my-3 flex items-center transition-all duration-300 ease-in-out"
     >
-      <div className="flex-shrink-0 w-24 font-bold text-2xl text-indigo-900">{year}</div>
-      <div className="w-full border-b-2 border-indigo-500 flex-grow ml-4"></div>
+      <div className="flex-shrink-0 w-24 font-bold text-3xl text-indigo-500">{year}</div>
+      <div className={'w-full border-b-2 flex-grow ml-4 transition-all duration-300 border-indigo-300'}></div>
     </div>
   );
 };
 
 const Timeline = () => {
+  const [openYears, setOpenYears] = useState({});
   const router = useRouter();
-  
+
+  const toggleYear = (year) => {
+    setOpenYears((prevOpenYears) => ({
+      ...prevOpenYears,
+      [year]: !prevOpenYears[year],
+    }));
+  };
+
   return (
-    <div className="min-h-screen p-4 font-sans" style={{ backgroundColor: '#FFFFF2' }}>
-      <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#DCDAF6', borderRadius: '50px 0 50px 0' }}>
-        <div className="flex items-center mb-12"> 
-          <ArrowLeft className="h-8 w-8 text-indigo-700 cursor-pointer mr-2" onClick={() =>router.push('/')} /> 
+    <div className="min-h-screen p-4 font-sans bg-violet-50">
+      <div
+        className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg bg-white"
+        style={{borderRadius: '50px 0 50px 0' }}
+      >
+        <div className="flex items-center mb-12">
+          <ArrowLeft
+            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+            onClick={() => router.push('/')}
+          />
           <h1 className="text-4xl font-bold text-center">린에이아이의 걸어온 길</h1>
         </div>
-      <div className="max-w-3xl mx-auto">
-        {timelineData.map((yearData) => (
-          <React.Fragment key={yearData.year}>
-            <YearMarker year={yearData.year} />
-            {yearData.events.map((event, index) => (
-              <TimelineEvent key={index} {...event} />
-            ))}
-          </React.Fragment>
-        ))}
+        <div className="max-w-3xl mx-auto">
+          {timelineData.map((yearData) => (
+            <React.Fragment key={yearData.year}>
+              <YearMarker
+                year={yearData.year}
+                onClick={() => toggleYear(yearData.year)}
+                isOpen={!!openYears[yearData.year]}
+              />
+              <AnimatePresence>
+                {openYears[yearData.year] && (
+                  <motion.div
+                    key={yearData.year}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    {yearData.events.map((event, index) => (
+                      <TimelineEvent key={index} {...event} />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </React.Fragment>
+          ))}
+        </div>
       </div>
-    </div>
     </div>
   );
 };

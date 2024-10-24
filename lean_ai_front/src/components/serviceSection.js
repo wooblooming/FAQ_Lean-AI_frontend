@@ -10,10 +10,10 @@ import {
 
 // Features Data (서비스 소개 섹션 데이터)**
 const features = [
-  { icon: FileCode2, text: "고객 문의에 적합한 키워드 추천", description: "고객 문의의 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
-  { icon: HelpCircle, text: "자주 묻는 질문 답변 매칭", description: "사전에 등록된 자주 묻는 질문(FAQ)과의 매칭을 통해 반복적인 문의에 대해 자동으로 답변을 제공합니다." },
-  { icon: Brain, text: "사전 학습 기반 답변 생성", description: "AI 챗봇이 사전 학습된 데이터를 바탕으로 고객의 다양한 문의에 대해 정확한 답변을 생성하고 제공합니다." },
-  { icon: FileText, text: "고객 문의 데이터 인사이팅", description: "고객 문의 데이터를 분석하여 문의 유형, 빈도 등의 정보를 도출하고, 고객 응대의 개선 방향을 제시합니다." },
+  { icon: FileCode2, text: "고객 질문에 적합한 대답 추천", description: "고객 질문 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
+  { icon: HelpCircle, text: "자주 묻는 질문 답변 매칭", description: "사전에 등록된 자주 묻는 질문(FAQ)과의 매칭을 통해 반복적인 질문에 대해 자동으로 답변을 제공합니다." },
+  { icon: Brain, text: "사전 학습 기반 답변 생성", description: "AI 챗봇이 사전 학습된 데이터를 바탕으로 고객의 다양한 질문에 대해 정확한 답변을 생성하고 제공합니다." },
+  { icon: FileText, text: "고객 질문 데이터 인사이팅", description: "고객 질문 데이터를 분석하여 질문 유형, 빈도 등의 정보를 도출하고, 고객 응대의 개선 방향을 제시합니다." },
 ];
 
 // Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
@@ -31,9 +31,9 @@ const customerSteps = [
 
 // GoodThings Data (장점 섹션 데이터)**
 const goodThings = [
-  { image: "/cost_saving.png", text: "인건 비용 절감", description: "반복적인 문의 응대 및 처리 작업을 자동화하여, 인력 운영에 따른 비용을 절감하고 보다 중요한 업무에 집중할 수 있도록 돕습니다." },
-  { image: "/comunications.png", text: "직원-고객 간 감정소비 감소", description: "AI 챗봇을 통해 고객의 불만이나 문의를 처리하여, 직원들이 겪는 감정적 소모를 줄이고 보다 건강한 근무 환경을 조성합니다." },
-  { image: "/efficiency.png", text: "업무 효율성 증대", description: "고객의 문의를 신속하게 해결하고 업무 프로세스를 최적화하여, 업무 효율성과 고객 만족도를 동시에 높입니다." },
+  { image: "/cost_saving.png", text: "인건 비용 절감", description: "반복적인 질문 응대 및 처리 작업을 자동화하여, 인력 운영에 따른 비용을 절감하고 보다 중요한 업무에 집중할 수 있도록 돕습니다." },
+  { image: "/comunications.png", text: "직원-고객 간 감정소비 감소", description: "AI 챗봇을 통해 고객의 불만이나 질문를 처리하여, 직원들이 겪는 감정적 소모를 줄이고 보다 건강한 근무 환경을 조성합니다." },
+  { image: "/efficiency.png", text: "업무 효율성 증대", description: "고객의 질문를 신속하게 해결하고 업무 프로세스를 최적화하여, 업무 효율성과 고객 만족도를 동시에 높입니다." },
 ];
 
 // usecase Data (활용 섹션 데이터)**
@@ -47,7 +47,7 @@ const usecase = [
   {
     name: "무인매장",
     icon: Monitor,
-    description: "키오스크 어떻게 써요? 이 물건 언제 들어와요? 물품 반납 어떻게 해요? 등 반복적인 질문들은 AI 챗봇을 통해 응대합니다. 매장 내 연락처로 몰려오는 전화 문의를 줄여 본업에 집중하거나 야간 시간을 활용하실 수 있습니다.",
+    description: "키오스크 어떻게 써요? 이 물건 언제 들어와요? 물품 반납 어떻게 해요? 등 반복적인 질문들은 AI 챗봇을 통해 응대합니다. 매장 내 연락처로 몰려오는 전화 질문를 줄여 본업에 집중하거나 야간 시간을 활용하실 수 있습니다.",
     exemple: "- 무인 스터디카페, 무인 숙박업소(에어비앤비), 무인 식료품점, 무인 스포츠업장 등"
   },
   {
@@ -70,12 +70,12 @@ function FlipCard({ step, index }) {
 
   return (
     <motion.div
-      className="w-full h-80 cursor-pointer perspective"
+      className="w-full cursor-pointer perspective"
       onClick={() => setIsFlipped(!isFlipped)}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.2 }}
-      style={{ minHeight: '500px' }}
+      style={{ minHeight: '850px' }}
     >
       <motion.div
         className="w-full h-full relative"
@@ -84,22 +84,31 @@ function FlipCard({ step, index }) {
         style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
       >
         {/* 카드 앞면 */}
-        <div className="absolute w-full h-full backface-hidden" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
-          <Image src={step.image} alt={`Step ${index + 1} illustration`} fill style={{ objectFit: "contain" }} className="rounded-lg " />
-          <div className="absolute -bottom-8 right-4 text-indigo-500">
-            <p className="text-sm" style={{ fontFamily: "NanumSquareBold" }}>클릭하여 자세히 보기</p>
+        <div className="absolute w-full h-full backface-hidden bg-violet-300 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center text-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
+          <div>
+            <div className="flex justify-center items-center text-center mb-3">
+              <div className="bg-white rounded-full p-3 mr-2">
+                {React.createElement(step.icon, { className: "w-6 h-6 text-indigo-600" })}
+              </div>
+              <h3 className="text-2xl text-gray-900 whitespace-pre-line" style={{ fontFamily: "NanumSquareExtraBold" }}>{step.title}</h3>
+            </div>
+            <p className="text-gray-700 text-xl h-32" style={{ fontFamily: "NanumSquareBold" }}>{step.description}</p>
+          </div>
+
+          <div className="absolute bottom-3 right-3 text-white">
+            <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>이미지로 미리 보기</p>
           </div>
         </div>
 
         {/* 카드 뒷면 */}
-        <div className="absolute w-full h-full backface-hidden bg-indigo-200 rounded-lg shadow-lg p-6 flex flex-col justify-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-          <div className="flex items-center mb-3">
-            <div className="bg-indigo-50 rounded-full p-3 mr-2">
-              {React.createElement(step.icon, { className: "w-5 h-5 text-indigo-600" })}
-            </div>
-            <h3 className="text-2xl text-gray-900 whitespace-pre-line" style={{ fontFamily: "NanumSquareExtraBold" }}>{step.title}</h3>
-          </div>
-          <p className="text-gray-700 text-lg" style={{ fontFamily: "NanumSquareBold" }}>{step.description}</p>
+        <div className="absolute w-full h-full backface-hidden justify-center items-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", position: "relative" }}>
+          <Image
+            src={step.image}
+            alt={`Step ${index + 1} illustration`}
+            layout="fill" // 실제 이미지 크기에 맞춰 렌더링
+            objectFit="cover"
+            className="rounded-lg border border-gray-400"
+          />
         </div>
       </motion.div>
     </motion.div>
@@ -170,9 +179,15 @@ const ServiceSection = ({ isMobile }) => {
       </p>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:mt-10">
         {features.map((feature, index) => (
-          <motion.div key={index} className="relative p-6 rounded-xl bg-indigo-50 shadow-lg" style={{ height: "400px" }} whileHover={{ scale: 1.05 }} onHoverStart={() => setHoveredIndex(index)} onHoverEnd={() => setHoveredIndex(null)}>
+          <motion.div
+            key={index}
+            className="relative p-6 rounded-xl bg-indigo-50 shadow-lg aspect-square"
+            whileHover={{ scale: 1.05 }}
+            onHoverStart={() => setHoveredIndex(index)}
+            onHoverEnd={() => setHoveredIndex(null)}
+          >
             <feature.icon className={`w-12 h-12 ${hoveredIndex === index ? "text-indigo-600" : "text-indigo-400"} transition-colors duration-300`} />
-            <h2 className="mt-4 text-2xl font-semibold text-indigo-800" style={{ fontFamily: "NanumSquareExtraBold" }}>{feature.text}</h2>
+            <h2 className="mt-4 text-2xl font-semibold text-indigo-800 whitespace-nowrap" style={{ fontFamily: "NanumSquareExtraBold" }}>{feature.text}</h2>
             <div className="mt-4 text-xl font-semibold text-gray-700" style={{ fontFamily: "NanumSquare" }}>{feature.description}</div>
           </motion.div>
         ))}
@@ -183,7 +198,7 @@ const ServiceSection = ({ isMobile }) => {
   // 텍스트 벨트 섹션 렌더링 함수
   const renderTextBeltSection = () => (
     <motion.div
-      className="bg-white py-5 w-full"
+      className="py-10 w-full"
       ref={beltRef}
       initial="hidden"
       animate={beltInView ? "visible" : "hidden"}
@@ -191,7 +206,7 @@ const ServiceSection = ({ isMobile }) => {
     >
       <div className="-skew-y-3 h-auto flex flex-col text-center text-white w-full py-7 bg-indigo-600" style={{ fontFamily: "NanumSquareBold" }}>
         <p style={{ fontFamily: "NanumSquareExtraBold", fontSize: "40px" }}>대충 물어봐도 찰떡같이! <br />
-          <span style={{ fontFamily: "NanumSquareBold", fontSize: "30px" }}>MUMUL Bot은 사전학습 데이터 기반 AI 챗봇입니다 <br /> 고객의 문의, 대화의 맥락을 이해해서 알맞은 답변을 제공합니다.</span>
+          <span style={{ fontFamily: "NanumSquareBold", fontSize: "30px" }}>무물봇은 사전학습 데이터 기반 AI 챗봇입니다 <br /> 고객의 질문, 대화의 맥락을 이해해서 알맞은 답변을 제공합니다.</span>
         </p>
       </div>
     </motion.div>
@@ -212,7 +227,7 @@ const ServiceSection = ({ isMobile }) => {
         </p>
         <div className="flex flex-col items-center space-y-2 w-full">
           <p className="text-xl md:text-3xl font-bold text-start py-4 justify-center whitespace-normal md:whitespace-nowrap w-full text-gray-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-            <span className="text-indigo-500 ">업주</span>는 쉬운 정보 입력
+            <span className="text-indigo-500 ">업주</span>는 쉬운 초기 셋팅
           </p>
           <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full px-4" >
             {ownerSteps.map((step, index) => (<FlipCard key={index} step={step} index={index} />))}
@@ -243,7 +258,7 @@ const ServiceSection = ({ isMobile }) => {
     >
       <div className="flex flex-col w-full mb-20">
         <p className="text-center font-semibold m-8 text-4xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
-          <span className="text-indigo-600">MUMUL</span>을 선택해야 하는 이유!
+          <span className="text-indigo-600">MUMUL</span>을 선택해야 하는 이유
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
           {goodThings.map((thing, index) => (
@@ -373,9 +388,9 @@ const ServiceSection = ({ isMobile }) => {
               {React.createElement(steps[currentStep].icon, { className: "w-8 h-8 text-indigo-600" })}
               <h3 className="text-xl font-bold text-indigo-600 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>{steps[currentStep].title}</h3>
             </div>
-            <p className="text-gray-700 mb-8" style={{ fontFamily: "NanumSquareBold" }}>{steps[currentStep].description}</p>
+            <p className="text-gray-700 mb-8 h-20" style={{ fontFamily: "NanumSquareBold" }}>{steps[currentStep].description}</p>
 
-            <div className="flex justify-center item-center border bordergray-600">
+            <div className="flex justify-center item-center border border-gray-600">
               <img src={steps[currentStep].image} alt={steps[currentStep].title} className="w-11/12 object-contain flex justify-center item-center rounded-lg" />
             </div>
           </div>
@@ -405,7 +420,7 @@ const ServiceSection = ({ isMobile }) => {
         {/* 장점 섹션 */}
         <div className="w-full ">
           <p className="text-3xl font-bold text-center mb-8 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
-            <span className="text-indigo-600">MUMUL</span>을 <br /> 선택해야 하는 이유!
+            <span className="text-indigo-600">MUMUL</span>을 <br /> 선택해야 하는 이유
           </p>
           {/* Swipeable 감싸기 */}
           <div {...swipeHandlersForGoodThings} className="relative w-full">
