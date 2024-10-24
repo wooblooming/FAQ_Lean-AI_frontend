@@ -130,8 +130,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       >
         {/* 로고 */}
         <div className="container md:mx-auto px-6 md:px-0 py-5">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl md:text-4xl font-bold text-white cursor-pointer">
+          <div className="flex items-center justify-between" style={{ fontFamily: 'NanumSquareBold' }}>
+            <Link href="/" className="text-2xl md:text-4xl font-bold text-white cursor-pointer" style={{ fontFamily: 'NanumSquareExtraBold' }}>
               MUMUL
             </Link>
 

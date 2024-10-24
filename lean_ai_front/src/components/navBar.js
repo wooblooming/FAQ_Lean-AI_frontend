@@ -73,7 +73,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
 
   return (
     <div ref={navRef}>
-      <header className="bg-indigo-600 fixed w-full z-20 transition-all duration-300 px-4">
+      <header className="bg-indigo-600 fixed w-full z-30 transition-all duration-300 px-4">
         <div className="container md:mx-auto px-6 md:px-0 py-5">
           <div className="flex items-center justify-between" style={{ fontFamily: 'NanumSquareBold' }}>
             <Link href="/" className="text-2xl md:text-4xl font-bold text-white cursor-pointer" style={{ fontFamily: 'NanumSquareExtraBold' }}>
