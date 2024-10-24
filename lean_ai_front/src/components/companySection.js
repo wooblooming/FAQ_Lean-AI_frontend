@@ -215,11 +215,10 @@ const CompanySection = ({ isMobile }) => {
           </button>
           <ArrowRight className="ml-1 h-5 w-5 " />
         
-        
         </motion.div>
 
-        <div className="bg-white rounded-lg p-6 mt-4 md:mt-10 space-y-4 text-left w-full md:w-1/2">
-          <h2 className="text-3xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회사 소식</h2>
+        <div className="bg-white rounded-lg p-6 mt-4 md:mt-20 space-y-4 text-left w-full md:w-1/2">
+          <h2 className="text-3xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회사소식</h2>
           <ul className="space-y-4 px-0 md:px-4">
             {latestNews.map((news) => (
               <li 

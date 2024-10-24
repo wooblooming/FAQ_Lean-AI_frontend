@@ -10,10 +10,10 @@ import {
 
 // Features Data (서비스 소개 섹션 데이터)**
 const features = [
-  { icon: FileCode2, text: "고객 질문에 적합한 대답 추천", description: "고객 질문 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
-  { icon: HelpCircle, text: "자주 묻는 질문 답변 매칭", description: "사전에 등록된 자주 묻는 질문(FAQ)과의 매칭을 통해 반복적인 질문에 대해 자동으로 답변을 제공합니다." },
-  { icon: Brain, text: "사전 학습 기반 답변 생성", description: "AI 챗봇이 사전 학습된 데이터를 바탕으로 고객의 다양한 질문에 대해 정확한 답변을 생성하고 제공합니다." },
-  { icon: FileText, text: "고객 질문 데이터 인사이팅", description: "고객 질문 데이터를 분석하여 질문 유형, 빈도 등의 정보를 도출하고, 고객 응대의 개선 방향을 제시합니다." },
+  { icon: FileCode2, title: "고객 질문에 적합한 답변 제공", description: "고객 질문 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
+  { icon: HelpCircle, title: "자주 묻는 질문 답변 매칭", description: "사전에 등록된 자주 묻는 질문(FAQ)과의 매칭을 통해 반복적인 질문에 대해 자동으로 답변을 제공합니다." },
+  { icon: Brain, title: "사전 학습 기반 답변 생성", description: "AI 챗봇이 사전 학습된 데이터를 바탕으로 고객의 다양한 질문에 대해 정확한 답변을 생성하고 제공합니다." },
+  { icon: FileText, title: "고객 질문 데이터 인사이팅", description: "고객 질문 데이터를 분석하여 질문 유형, 빈도 등의 정보를 도출하고, 고객 응대의 개선 방향을 제시합니다." },
 ];
 
 // Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
@@ -24,7 +24,7 @@ const ownerSteps = [
 ];
 
 const customerSteps = [
-  { icon: QrCode, title: "QR코드 스캔", description: "업장마다 고유의 QR코드를 제공, 테이블, 벽 의자 어디에든 설치 가능합니다", image: "/customer_1.png" },
+  { icon: QrCode, title: "QR코드 스캔", description: "업장마다 고유의 QR코드를 제공, 테이블, 벽, 의자 어디에든 설치 가능합니다", image: "/customer_1.png" },
   { icon: AppWindow, title: "매장 정보 확인", description: "노출하시고자 하는 정보를 고객들이 확인할 수 있습니다.", image: "/customer_2.png" },
   { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 업장에 필요한 모든 정보를 제공합니다.", image: "/customer_3.png" },
 ];
@@ -86,16 +86,16 @@ function FlipCard({ step, index }) {
         {/* 카드 앞면 */}
         <div className="absolute w-full h-full backface-hidden bg-violet-300 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center text-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
           <div>
-            <div className="flex justify-center items-center text-center mb-3">
-              <div className="bg-white rounded-full p-3 mr-2">
-                {React.createElement(step.icon, { className: "w-6 h-6 text-indigo-600" })}
+            <div className="flex justify-center space-x-3 items-center text-center mb-3">
+              <div className="bg-white rounded-full p-2">
+                {React.createElement(step.icon, { className: "w-7 h-7 text-indigo-600" })}
               </div>
               <h3 className="text-2xl text-gray-900 whitespace-pre-line" style={{ fontFamily: "NanumSquareExtraBold" }}>{step.title}</h3>
             </div>
             <p className="text-gray-700 text-xl h-32" style={{ fontFamily: "NanumSquareBold" }}>{step.description}</p>
           </div>
 
-          <div className="absolute bottom-3 right-3 text-white">
+          <div className="absolute top-4 left-4 text-white">
             <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>이미지로 미리 보기</p>
           </div>
         </div>
@@ -175,20 +175,20 @@ const ServiceSection = ({ isMobile }) => {
       variants={fadeInUp}
     >
       <p className="text-center font-semibold m-8 text-4xl " style={{ fontFamily: "NanumSquareExtraBold" }}>
-        <span className="text-indigo-600">MUMUL 서비스</span>에서는 무엇을 할 수 있을까요?
+        <span className="text-indigo-600">무물</span>에서는 무엇을 할 수 있을까요?
       </p>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:mt-10">
         {features.map((feature, index) => (
           <motion.div
             key={index}
-            className="relative p-6 rounded-xl bg-indigo-50 shadow-lg aspect-square"
+            className="relative px-4 py-6 rounded-xl bg-indigo-50 shadow-lg aspect-square"
             whileHover={{ scale: 1.05 }}
             onHoverStart={() => setHoveredIndex(index)}
             onHoverEnd={() => setHoveredIndex(null)}
           >
             <feature.icon className={`w-12 h-12 ${hoveredIndex === index ? "text-indigo-600" : "text-indigo-400"} transition-colors duration-300`} />
-            <h2 className="mt-4 text-2xl font-semibold text-indigo-800 whitespace-nowrap" style={{ fontFamily: "NanumSquareExtraBold" }}>{feature.text}</h2>
-            <div className="mt-4 text-xl font-semibold text-gray-700" style={{ fontFamily: "NanumSquare" }}>{feature.description}</div>
+            <h2 className="py-4 text-2xl font-semibold text-indigo-800 whitespace-nowrap" style={{ fontFamily: "NanumSquareExtraBold" }}>{feature.text}</h2>
+            <div className="text-xl font-semibold text-gray-700 h-32" style={{ fontFamily: "NanumSquare" }}>{feature.description}</div>
           </motion.div>
         ))}
       </div>
@@ -221,9 +221,9 @@ const ServiceSection = ({ isMobile }) => {
       animate={guidelineInView ? "visible" : "hidden"}
       variants={fadeInUp}
     >
-      <div name="ownerGuideline" className="w-full px-10 py-16 bg-indigo-100 mt-12 mx-4 rounded-xl">
+      <div name="ownerGuideline" className="w-full px-10 py-16 bg-indigo-100 mt-12 rounded-xl">
         <p className="text-3xl md:text-4xl font-bold text-center py-4 justify-center whitespace-normal md:whitespace-nowrap mb-6 w-full " style={{ fontFamily: 'NanumSquareExtraBold' }}>
-          <span className="text-indigo-600 ">MUMUL 서비스</span>는 간단히 사용 할 수 있습니다
+          <span className="text-indigo-600 ">무물</span>는 간단히 사용 할 수 있습니다
         </p>
         <div className="flex flex-col items-center space-y-2 w-full">
           <p className="text-xl md:text-3xl font-bold text-start py-4 justify-center whitespace-normal md:whitespace-nowrap w-full text-gray-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
@@ -258,7 +258,7 @@ const ServiceSection = ({ isMobile }) => {
     >
       <div className="flex flex-col w-full mb-20">
         <p className="text-center font-semibold m-8 text-4xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
-          <span className="text-indigo-600">MUMUL</span>을 선택해야 하는 이유
+          <span className="text-indigo-600">무물</span>을 선택해야 하는 이유
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
           {goodThings.map((thing, index) => (
@@ -291,7 +291,7 @@ const ServiceSection = ({ isMobile }) => {
       {/* 활용 섹션 */}
       <div className="w-full mx-auto bg-indigo-50 overflow-hidden px-6 py-10 rounded-xl mt-12">
         <p className="text-center font-semibold m-8 text-4xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
-          <span className="text-indigo-600">MUMUL</span>은 <br /> 이렇게 활용됩니다
+          <span className="text-indigo-600">무물</span>은 이렇게 활용됩니다
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           {/* Category buttons */}
@@ -321,7 +321,7 @@ const ServiceSection = ({ isMobile }) => {
               transition={{ duration: 0.5 }}
             >
               <h3 className=" mb-2 text-indigo-500" style={{ fontFamily: "NanumSquareExtraBold", fontSize: '22px' }}>
-                {usecase[activeCategory].name}에서 MUMUL 활용
+                {usecase[activeCategory].name}에서 무물 활용
               </h3>
               <p className="text-lg text-gray-700 leading-relaxed">{usecase[activeCategory].description}</p>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -339,13 +339,13 @@ const ServiceSection = ({ isMobile }) => {
   const renderFeaturesMobile = () => (
     <div className="px-4">
       <p className="text-center font-semibold mb-4 text-3xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
-        <span className="text-indigo-600">MUMUL 서비스</span>에서는 <br /> 무엇을 할 수 있을까요?
+        <span className="text-indigo-600">무물 서비스</span>에서는 <br /> 무엇을 할 수 있을까요?
       </p>
       <div {...swipeHandlersForFeatures} className="bg-indigo-50 rounded-lg shadow-lg p-6">
         <div className="flex justify-center items-center space-x-4">
           <motion.div
             className="w-full flex items-start flex-col space-y-2"
-            key={features[featureIndex].text}
+            key={features[featureIndex].title}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
@@ -355,7 +355,7 @@ const ServiceSection = ({ isMobile }) => {
               {React.createElement(features[featureIndex].icon, { className: "w-12 h-12 text-indigo-600" })}
             </div>
             <div className="text-center">
-              <h3 className="text-xl font-semibold text-indigo-800 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>{features[featureIndex].text}</h3>
+              <h3 className="text-xl font-semibold text-indigo-800 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>{features[featureIndex].title}</h3>
               <p className="text-gray-700 text-lg leading-relaxed" style={{ fontFamily: "NanumSquare" }}>{features[featureIndex].description}</p>
             </div>
           </motion.div>
@@ -376,7 +376,7 @@ const ServiceSection = ({ isMobile }) => {
     <div className="px-4" style={{ height: '1010px' }}>
       <div className="w-full h-full px-2 py-6 bg-indigo-100 rounded-lg">
         <p className="text-3xl font-bold text-center mb-4 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
-          <span className="text-indigo-600">MUMUL 서비스</span>는 <br />간단합니다
+          <span className="text-indigo-600">무물 서비스</span>는 <br />간단합니다
         </p>
         <div className="flex justify-center mb-6">
           <button className={`px-4 py-2 rounded-l-lg ${isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(true)}>업주 가이드라인</button>
@@ -420,7 +420,7 @@ const ServiceSection = ({ isMobile }) => {
         {/* 장점 섹션 */}
         <div className="w-full ">
           <p className="text-3xl font-bold text-center mb-8 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
-            <span className="text-indigo-600">MUMUL</span>을 <br /> 선택해야 하는 이유
+            <span className="text-indigo-600">무물</span>을 <br /> 선택해야 하는 이유
           </p>
           {/* Swipeable 감싸기 */}
           <div {...swipeHandlersForGoodThings} className="relative w-full">
@@ -456,7 +456,7 @@ const ServiceSection = ({ isMobile }) => {
         {/* 활용 섹션 */}
         <div className="w-full py-6 bg-indigo-100 rounded-lg p-2">
           <p className="text-3xl font-bold text-center mb-5 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
-            <span className="text-indigo-600">MUMUL</span>은 <br /> 이렇게 활용됩니다
+            <span className="text-indigo-600">무물</span>은 <br /> 이렇게 활용됩니다
           </p>
           <div className="grid grid-cols-2 justify-center gap-2">
             {/* Category Buttons */}
@@ -485,7 +485,7 @@ const ServiceSection = ({ isMobile }) => {
               transition={{ duration: 0.5 }}
             >
               <h3 className=" mb-2 text-indigo-500" style={{ fontFamily: "NanumSquareExtraBold", fontSize: '22px' }}>
-                {usecase[activeCategory].name}에서 MUMUL 활용
+                {usecase[activeCategory].name}에서 무물 활용
               </h3>
               <p className="text-lg text-gray-700 leading-relaxed">
                 {usecase[activeCategory].description}

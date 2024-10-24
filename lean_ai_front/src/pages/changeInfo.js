@@ -21,10 +21,11 @@ const ChangeInfo = ({ initialData }) => {
   const [storeTel, setStoreTel] = useState(''); // 매장 전화번호 상태
   const [storeInformation, setStoreInformation] = useState(''); // 매장 소개 상태
   const [slug, setSlug] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   const [storeImage, setStoreImage] = useState(null); // 이미지 파일 상태
   const [previewImage, setPreviewImage] = useState(''); // 미리보기 URL 상태
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 열림/닫힘 상태\
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 열림/닫힘 상태
   const [isAddMenuModalOpen, setIsAddMenuModalOpen] = useState(false);
   const [isViewMenuModalOpen, setIsViewMenuModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 수정 모달 열림/닫힘 상태
@@ -95,11 +96,22 @@ const ChangeInfo = ({ initialData }) => {
         console.error('Failed to fetch data:', error);
         setErrorMessage('매장 정보를 불러오는 데 실패했습니다.');
         setShowErrorMessageModal(true);
+      } finally {
+        setIsLoading(false); // 데이터 로드가 끝나면 로딩 상태를 false로 설정
       }
     };
 
     fetchData(); // 페이지가 로드될 때 데이터 가져오기
   }, [initialData]);
+
+  // 로딩 중일 때 보여줄 UI
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <p className="text-xl font-bold">로딩 중...</p>
+      </div>
+    );
+  }
 
   // 이미지 모달 열기 함수
   const openImageModal = () => {

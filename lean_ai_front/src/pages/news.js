@@ -36,8 +36,8 @@ const NewsCard = ({ category, title, date, content, onClick }) => (
       <span className="text-white text-lg font-semibold">{category}</span>
     </div>
     <div className="p-6">
-      <h3 className="text-black text-xl font-bold mb-2">{title}</h3>
-      <p className="text-gray-600 mb-4">{content.substring(0, 100)}...</p>
+      <h3 className="text-black text-xl font-bold mb-2 h-16">{title}</h3>
+      <p className="text-gray-600 h-24 ">{content}...</p>
       <div className="text-gray-600 text-sm mb-4">{date}</div>
     </div>
   </motion.div>
@@ -63,12 +63,12 @@ const Newsroom = () => {
         />
 
         <motion.h1
-          className="text-4xl font-bold text-center text-indigo-600 mb-2"
+          className="text-4xl font-bold text-center text-indigo-600 mb-4"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          뉴스
+          회사소식
         </motion.h1>
         <motion.h2
           className="text-2xl font-semibold text-center text-gray-600 mb-12"
@@ -76,8 +76,7 @@ const Newsroom = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          (주)린에이아이의 최신 소식을<br />
-          가장 신속하게 제공합니다.
+          (주)린에이아이의 소식을 신속하게 제공합니다.
         </motion.h2>
 
         {/* 필터 버튼 */}
@@ -105,7 +104,7 @@ const Newsroom = () => {
         </motion.div>
 
         {/* 뉴스 카드 그리드 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {displayedNews.map((item, index) => (
              <NewsCard key={item.id} {...item} onClick={() => router.push(item.link)} />
           ))}

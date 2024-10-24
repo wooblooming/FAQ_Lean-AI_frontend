@@ -170,7 +170,7 @@ const LandingPageContent = () => {
         ref={companyRef}
         id="company"
         name="company"
-        className="flex-grow px-0 md:px-6 py-20 "
+        className="flex-grow px-0 md:px-2 py-20 "
         initial="hidden"
         animate={companyInView ? 'visible' : 'hidden'}
         variants={fadeInUp}
@@ -183,7 +183,7 @@ const LandingPageContent = () => {
         ref={serviceRef}
         id="services"
         name="services"
-        className="flex-grow px-0 md:px-6 py-8 bg-white rounded-lg shadow-lg mx-2"
+        className="flex-grow px-0 md:px-2 py-8 bg-white rounded-lg shadow-lg mx-3"
         initial="hidden"
         animate={serviceInView ? 'visible' : 'hidden'}
         variants={fadeInUp}

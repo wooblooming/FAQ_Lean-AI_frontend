@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const timelineData = [
@@ -172,7 +172,7 @@ const TimelineEvent = ({ date, title, description }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex-shrink-0 font-medium text-gray-700 px-2">{date}</div>
+      <div className="flex-shrink-0 font-medium text-gray-600 px-2">{date}</div>
       <div className="w-full flex-grow py-2">
         <h3
           className={`font-bold text-xl transition-all duration-300 ease-in-out ${
@@ -181,7 +181,7 @@ const TimelineEvent = ({ date, title, description }) => {
         >
           {title}
         </h3>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className="text-sm text-gray-500 font-medium ">{description}</p>
       </div>
     </div>
   );
@@ -193,7 +193,7 @@ const YearMarker = ({ year, onClick }) => {
       onClick={onClick}
       className="cursor-pointer my-3 flex items-center transition-all duration-300 ease-in-out"
     >
-      <div className="flex-shrink-0 w-24 font-bold text-3xl text-indigo-500">{year}</div>
+      <div className="flex-shrink-0 w-24 font-bold text-3xl text-gray-600">{year}</div>
       <div className={'w-full border-b-2 flex-grow ml-4 transition-all duration-300 border-indigo-300'}></div>
     </div>
   );
@@ -217,11 +217,11 @@ const Timeline = () => {
         style={{borderRadius: '50px 0 50px 0' }}
       >
         <div className="flex items-center mb-12">
-          <ArrowLeft
+          <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
             onClick={() => router.push('/')}
           />
-          <h1 className="text-4xl font-bold text-center">린에이아이의 걸어온 길</h1>
+          <h1 className="text-4xl font-bold text-center text-indigo-600" style={{fontFamily:'NanumSquareExtraBold'}}>린에이아이의 걸어온 길</h1>
         </div>
         <div className="max-w-3xl mx-auto">
           {timelineData.map((yearData) => (

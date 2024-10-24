@@ -86,7 +86,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                     {item.subItems ? (
                       <>
                         <span
-                          className="text-white text-xl md:text-2xl font-medium hover:underline cursor-pointer"
+                          className="text-white text-xl md:text-2xl whitspace-nowrap font-medium hover:underline cursor-pointer"
                           onClick={toggleSubMenu}
                         >
                           {item.title}
@@ -94,8 +94,8 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                         {isSubMenuOpen && (
                           <ul className="absolute left-0 mt-2 py-2 rounded bg-white shadow-lg">
                             {item.subItems.map((subItem, subIndex) => (
-                              <li key={subIndex} className="px-4 py-2">
-                                <Link href={subItem.link} className="hover:text-indigo-600">
+                              <li key={subIndex} className="px-3 py-2">
+                                <Link href={subItem.link} className="hover:text-indigo-600 whitspace-nowrap">
                                   {subItem.title}
                                 </Link>
                               </li>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
-import { Search, ChevronDown, ChevronUp, ChevronLeft, MessageCircle, CreditCard, Settings, HelpCircle } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, ChevronLeft, CreditCard, Settings, HelpCircle ,UserRound } from 'lucide-react';
 
 export const faqs = [
   { id: 1, category: '계정', question: 'AI 챗봇 서비스를 어떻게 시작하나요?', answer: 'AI 챗봇 서비스는 회원가입 후 대시보드에서 간단한 설정으로 시작할 수 있습니다.' },
@@ -17,7 +17,7 @@ const FAQPage = () => {
 
   const categories = [
     { name: '모든 질문', icon: HelpCircle },
-    { name: '계정', icon: MessageCircle },
+    { name: '계정', icon: UserRound },
     { name: '결제', icon: CreditCard },
     { name: '서비스', icon: Settings },
   ];
