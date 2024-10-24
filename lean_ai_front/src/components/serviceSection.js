@@ -8,6 +8,13 @@ import {
   UserPlus, PencilLine, Store, QrCode, Bot, FileCode2, HelpCircle, Brain, FileText, AppWindow
 } from 'lucide-react';
 
+// Features Data (서비스 소개 섹션 데이터)**
+const features = [
+  { icon: FileCode2, text: "고객 문의에 적합한 키워드 추천", description: "고객 문의의 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
+  { icon: HelpCircle, text: "자주 묻는 질문 답변 매칭", description: "사전에 등록된 자주 묻는 질문(FAQ)과의 매칭을 통해 반복적인 문의에 대해 자동으로 답변을 제공합니다." },
+  { icon: Brain, text: "사전 학습 기반 답변 생성", description: "AI 챗봇이 사전 학습된 데이터를 바탕으로 고객의 다양한 문의에 대해 정확한 답변을 생성하고 제공합니다." },
+  { icon: FileText, text: "고객 문의 데이터 인사이팅", description: "고객 문의 데이터를 분석하여 문의 유형, 빈도 등의 정보를 도출하고, 고객 응대의 개선 방향을 제시합니다." },
+];
 
 // Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
 const ownerSteps = [
@@ -20,14 +27,6 @@ const customerSteps = [
   { icon: QrCode, title: "QR코드 스캔", description: "업장마다 고유의 QR코드를 제공, 테이블, 벽 의자 어디에든 설치 가능합니다", image: "/customer_1.png" },
   { icon: AppWindow, title: "매장 정보 확인", description: "노출하시고자 하는 정보를 고객들이 확인할 수 있습니다.", image: "/customer_2.png" },
   { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 업장에 필요한 모든 정보를 제공합니다.", image: "/customer_3.png" },
-];
-
-// Features Data (서비스 소개 섹션 데이터)**
-const features = [
-  { icon: FileCode2, text: "고객 문의에 적합한 키워드 추천", description: "고객 문의의 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
-  { icon: HelpCircle, text: "자주 묻는 질문 답변 매칭", description: "사전에 등록된 자주 묻는 질문(FAQ)과의 매칭을 통해 반복적인 문의에 대해 자동으로 답변을 제공합니다." },
-  { icon: Brain, text: "사전 학습 기반 답변 생성", description: "AI 챗봇이 사전 학습된 데이터를 바탕으로 고객의 다양한 문의에 대해 정확한 답변을 생성하고 제공합니다." },
-  { icon: FileText, text: "고객 문의 데이터 인사이팅", description: "고객 문의 데이터를 분석하여 문의 유형, 빈도 등의 정보를 도출하고, 고객 응대의 개선 방향을 제시합니다." },
 ];
 
 // GoodThings Data (장점 섹션 데이터)**
@@ -171,7 +170,7 @@ const ServiceSection = ({ isMobile }) => {
       </p>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:mt-10">
         {features.map((feature, index) => (
-          <motion.div key={index} className="relative p-6 rounded-xl bg-indigo-50 cursor-pointer shadow-lg" style={{ height: "400px" }} whileHover={{ scale: 1.05 }} onHoverStart={() => setHoveredIndex(index)} onHoverEnd={() => setHoveredIndex(null)}>
+          <motion.div key={index} className="relative p-6 rounded-xl bg-indigo-50 shadow-lg" style={{ height: "400px" }} whileHover={{ scale: 1.05 }} onHoverStart={() => setHoveredIndex(index)} onHoverEnd={() => setHoveredIndex(null)}>
             <feature.icon className={`w-12 h-12 ${hoveredIndex === index ? "text-indigo-600" : "text-indigo-400"} transition-colors duration-300`} />
             <h2 className="mt-4 text-2xl font-semibold text-indigo-800" style={{ fontFamily: "NanumSquareExtraBold" }}>{feature.text}</h2>
             <div className="mt-4 text-xl font-semibold text-gray-700" style={{ fontFamily: "NanumSquare" }}>{feature.description}</div>
@@ -250,7 +249,7 @@ const ServiceSection = ({ isMobile }) => {
           {goodThings.map((thing, index) => (
             <motion.div
               key={index}
-              className="relative p-6 rounded-xl cursor-pointer"
+              className="relative p-6 rounded-xl"
               whileHover={{ scale: 1.05 }}
               onHoverStart={() => setHoveredIndex(index)}
               onHoverEnd={() => setHoveredIndex(null)}

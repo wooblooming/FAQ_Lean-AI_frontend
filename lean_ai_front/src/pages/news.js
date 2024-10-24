@@ -24,9 +24,10 @@ export const news = [
 
 ];
 
-const NewsCard = ({ category, title, date, content, link }) => (
+const NewsCard = ({ category, title, date, content, onClick }) => (
   <motion.div
-    className="bg-indigo-100 rounded-lg shadow-lg overflow-hidden"
+    className="bg-indigo-100 rounded-lg shadow-lg overflow-hidden cursor-pointer"
+    onClick={onClick}
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.5 }}
@@ -38,14 +39,6 @@ const NewsCard = ({ category, title, date, content, link }) => (
       <h3 className="text-black text-xl font-bold mb-2">{title}</h3>
       <p className="text-gray-600 mb-4">{content.substring(0, 100)}...</p>
       <div className="text-gray-600 text-sm mb-4">{date}</div>
-      <a
-        href={link}
-        className="inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        더 보기
-      </a>
     </div>
   </motion.div>
 );
@@ -55,7 +48,7 @@ const Newsroom = () => {
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState('전체');
   const [currentPage, setCurrentPage] = useState(1);
-  const filters = ['전체', '회사 뉴스', '보도자료'];
+  const filters = ['전체', '회사뉴스', '보도자료'];
   const itemsPerPage = 6;
   const filteredNews = activeFilter === '전체' ? news : news.filter(item => item.category === activeFilter);
   const pageCount = Math.ceil(filteredNews.length / itemsPerPage);
@@ -75,7 +68,7 @@ const Newsroom = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          뉴스룸
+          뉴스
         </motion.h1>
         <motion.h2
           className="text-2xl font-semibold text-center text-gray-600 mb-12"
@@ -114,7 +107,7 @@ const Newsroom = () => {
         {/* 뉴스 카드 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedNews.map((item, index) => (
-            <NewsCard key={index} {...item} />
+             <NewsCard key={item.id} {...item} onClick={() => router.push(item.link)} />
           ))}
         </div>
 
