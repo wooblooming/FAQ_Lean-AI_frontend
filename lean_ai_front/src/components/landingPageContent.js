@@ -143,7 +143,7 @@ const LandingPageContent = () => {
               </div>
             </div>
           ) : (
-            <div className="flex w-full h-full items-center sm:px-4">
+            <div className="flex w-full h-full items-center">
               {/* 텍스트 섹션 */}
               <motion.div className="w-full md:w-1/3 z-20 mt-5" variants={fadeInUp} transition={{ duration: 0.8 }}>
                 <div name="text" className="flex flex-col justify-center items-center">
@@ -176,14 +176,14 @@ const LandingPageContent = () => {
               </motion.div>
 
               {/* 이미지 섹션 - PC */}
-              <div className=" md:block z-10 w-full h-full " style={{ height: "1200px" }}> {/* 높이 설정 추가 */}
+              <div className=" md:block z-10 w-full " style={{ height: "730px" }}> {/* 높이 설정 추가 */}
                 <CacheBustedImage
                   src='/index_desktop.png'
                   alt='mumul'
                   layout="fill"  
                   style={{ objectFit : "contain"}} 
                   className="rounded-lg"
-
+                  priority
                 />
               </div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
-import { ArrowLeft } from 'react-feather';
+import { ChevronLeft } from 'react-feather';
 
 export const news = [
   {
@@ -12,7 +12,7 @@ export const news = [
     content: '교육/지식 특화 sLLM(smaller Large Language Model) 플랫폼 기업 린에이아이(대표 김하연)와 과학 전문 미디어기업 동아사이언스(대표 장경애)가 과학/수학 교육 AI DT 사업을 위한 업무협약(MOU)을 체결했다.',
     link: 'https://www.thebigdata.co.kr/view.php?ud=2024081317185739339aeda69934_23'
   },
-  
+
   {
     id: 2,
     category: '보도자료',
@@ -57,27 +57,14 @@ const Newsroom = () => {
   return (
     <div className="bg-violet-50 min-h-screen p-8 text-indigo-600 flex items-center justify-center">
       <div className="max-w-6xl bg-white rounded-lg p-4">
-        <ArrowLeft
-          className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-          onClick={() => router.back()}
-        />
+        <div className='flex flex-row'>
+          <ChevronLeft
+            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+            onClick={() => router.back()}
+          />
 
-        <motion.h1
-          className="text-4xl font-bold text-center text-indigo-600 mb-4"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          회사소식
-        </motion.h1>
-        <motion.h2
-          className="text-2xl font-semibold text-center text-gray-600 mb-12"
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          (주)린에이아이의 소식을 신속하게 제공합니다.
-        </motion.h2>
+          <h1 className="text-4xl font-bold text-left text-indigo-600 mb-4" > 회사소식 </h1>
+        </div>
 
         {/* 필터 버튼 */}
         <motion.div
@@ -90,8 +77,8 @@ const Newsroom = () => {
             <button
               key={filter}
               className={`px-6 py-2 rounded-full transition duration-300 whitespace-nowrap ${activeFilter === filter
-                  ? 'bg-indigo-500 text-white shadow-lg'
-                  : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
+                ? 'bg-indigo-500 text-white shadow-lg'
+                : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
                 }`}
               onClick={() => {
                 setActiveFilter(filter);
@@ -106,7 +93,7 @@ const Newsroom = () => {
         {/* 뉴스 카드 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {displayedNews.map((item, index) => (
-             <NewsCard key={item.id} {...item} onClick={() => router.push(item.link)} />
+            <NewsCard key={item.id} {...item} onClick={() => router.push(item.link)} />
           ))}
         </div>
 
@@ -116,8 +103,8 @@ const Newsroom = () => {
             <button
               key={i}
               className={`px-4 py-2 rounded ${currentPage === i + 1
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
                 }`}
               onClick={() => setCurrentPage(i + 1)}
             >

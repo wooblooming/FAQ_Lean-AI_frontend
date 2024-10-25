@@ -8,10 +8,10 @@ export default function Footer() {
     return (
         <footer className="bg-gray-900 text-white hidden md:block">
             <div className="container md:mx-auto px-6 md:px-0 py-5">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-20">
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold">MUMUL</h2>
-                        <p className="text-gray-400">AI 기반 고객 질문 관리 및 응대 솔루션을 제공하는 서비스입니다.</p>
+                        <p className="text-gray-400 whitespace-nowrap">AI 기반 고객 질문 관리 및 응대 솔루션을<br/> 제공하는 서비스입니다.</p>
                     </div>
 
                     <div className='hidden md:block'>

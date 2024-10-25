@@ -1,33 +1,57 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import Link from 'next/link'
-import styles from '../styles/Custom404.module.css'
+import Image from 'next/image';
+import Link from 'next/link';
+
+const CacheBustedImage = ({ src, alt, ...props }) => {
+  const cacheBustSrc = `${src}?v=${Date.now()}`;
+
+  const imageLoader = ({ src, width, quality }) => {
+    return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
+  };
+
+  return (
+    <Image
+      src={cacheBustSrc}
+      alt={alt}
+      loader={imageLoader}
+      {...props}
+    />
+  );
+};
 
 export default function Custom404() {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>404 - 페이지를 찾을 수 없습니다</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div className="relative w-screen h-screen"> {/* 부모 div에 relative와 height 지정 */}
+      <CacheBustedImage
+        src="/error_desktop.png"
+        alt="error"
+        fill
+        style={{ objectFit: 'cover' }}
+        className="z-10 hidden md:block"
+      />
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          4<span className={styles.robot}>
-            <Image
-              src="/robot.png"
-              alt="Crying robot"
-              width={100}
-              height={100}
-            />
-          </span>4
-        </h1>
-        <p className={styles.description}>죄송합니다, 페이지를 찾을 수 없습니다.</p>
-        <p className={styles.subdescription}>복구를 위해 최선을 다할게요</p>
-        <Link href="/" className={styles.button}>
+    <CacheBustedImage
+        src="/error_mobile.png"
+        alt="error"
+        fill
+        style={{ objectFit: 'cover' }}
+        className="z-10 block md:hidden"
+      />
+
+      <Link href="/">
+        <p
+          className="bg-indigo-600 text-white px-16 py-3 rounded-full text-xl font-semibold text-center absolute z-20 hidden md:block"
+          style={{ bottom: '15%', left: '20%'}}
+        >
           홈으로 돌아가기
-        </Link>
-      </main>
+        </p>
+
+        <p
+          className="bg-indigo-600 text-white px-6 py-3 rounded-full text-xl font-semibold text-center absolute z-20 block md:hidden"
+          style={{ bottom: '20%', left: '30%'}}
+        >
+          홈으로 돌아가기
+        </p>
+      </Link>
     </div>
-  )
+  );
 }

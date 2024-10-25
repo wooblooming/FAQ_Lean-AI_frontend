@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <link rel="apple-touch-icon" type="image/png" href="/mumul_icon.png" sizes="96x96" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
         <title>MUMUL</title>
       </Head>
 
