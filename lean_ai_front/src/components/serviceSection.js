@@ -66,27 +66,28 @@ const usecase = [
   },
 ];
 
-
-const CacheBustedImage = ({ src, alt, width, height, ...props }) => {
-  // 타임스탬프나 버전을 URL에 추가
+const CacheBustedImage = ({ src, alt, width, height, priority, ...props }) => {
   const cacheBustSrc = `${src}?v=${Date.now()}`;
   
-  // next/image의 loader 프로퍼티를 사용하여 캐시 버스팅
   const imageLoader = ({ src, width, quality }) => {
     return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
   };
-  
+
   return (
-    <Image
-      src={cacheBustSrc}
-      alt={alt}
-      width={width}
-      height={height}
-      loader={imageLoader}
-      {...props}
-    />
+    <div style={{ position: "relative" }}>
+      <Image
+        src={cacheBustSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        loader={imageLoader}
+        priority={priority}
+        {...props}
+      />
+    </div>
   );
 };
+
 
 // FlipCard 컴포넌트**: 단계별 가이드라인을 카드 형태로 보여주고 클릭 시 회전하는 UI 컴포넌트
 function FlipCard({ step, index }) {
@@ -128,12 +129,11 @@ function FlipCard({ step, index }) {
         <div className="absolute w-full h-full backface-hidden flex justify-center items-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", position: "relative" }}>
           <CacheBustedImage
             src={step.image}
-            alt={`Step ${index + 1} illustration`}
-            layout="intrinsic"
+            alt={`Step ${index + 1}`}
             width={250} 
             height={300}
-            objectFit="cover"
             className="rounded-lg border border-gray-400 "
+            priority
           />
         </div>
       </motion.div>
@@ -296,7 +296,7 @@ const ServiceSection = ({ isMobile }) => {
               onHoverEnd={() => setHoveredIndex(null)}
             >
               <div className="flex justify-center mb-6">
-                <Image
+                <CacheBustedImage
                   src={thing.image}
                   alt={`${thing.text} 이미지`}
                   width={130}
@@ -459,7 +459,7 @@ const ServiceSection = ({ isMobile }) => {
               transition={{ duration: 0.5 }}
             >
               <div className="flex justify-center items-center w-full">
-                <Image src={goodThings[goodThingIndex].image} alt={`${goodThings[goodThingIndex].text} 이미지`} width={60} height={60} className="rounded-full" />
+                <CacheBustedImage src={goodThings[goodThingIndex].image} alt={`${goodThings[goodThingIndex].text} 이미지`} width={60} height={60} className="rounded-full" />
               </div>
               <div className="text-center">
                 <h3 className="text-xl font-semibold text-indigo-800 mb-2" >{goodThings[goodThingIndex].text}</h3>

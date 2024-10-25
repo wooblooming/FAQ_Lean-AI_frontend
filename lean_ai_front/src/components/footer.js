@@ -32,7 +32,7 @@ export default function Footer() {
                             <li><div className="hover:text-indigo-400 transition-colors"
                                 onClick={() => router.push('https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform')}
                             >
-                                질문하기
+                                도입 문의
                             </div>
                             </li>
                         </ul>
