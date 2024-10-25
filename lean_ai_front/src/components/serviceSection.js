@@ -18,7 +18,7 @@ const features = [
 
 // Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
 const ownerSteps = [
-  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner1.png" },
+  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner_1.png" },
   { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀, 한글파일로 제공되는 양식에 정보 입력하여 업로드, 초기 데이터는 영업일 기준 3일 내, 수정 데이터는 영업일 기준 1일 내 반영됩니다.", image: "/owner_2.png" },
   { icon: Store, title: "실시간 매장 기본정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 간단한 매장 기본정보는 실시간으로 반영됩니다.", image: "/owner_3.png" },
 ];
@@ -108,6 +108,7 @@ function FlipCard({ step, index }) {
             layout="fill" // 실제 이미지 크기에 맞춰 렌더링
             objectFit="cover"
             className="rounded-lg border border-gray-400"
+            key={`${step.image}?${new Date().getTime()}`}
           />
         </div>
       </motion.div>

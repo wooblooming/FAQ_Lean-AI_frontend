@@ -150,12 +150,13 @@ const LandingPageContent = () => {
               {/* 이미지 섹션 - PC */}
               <div className="md:block z-10" style={{ width: '100%', height: '100%' }}>
                 <Image
-                  src='/index.png'
+                  src='/index_desktop.png'
                   alt='mumul'
                   layout="fill" // 레이아웃을 fill로 설정하여 공간 전체를 차지하게 함
                   objectFit="contain" // 이미지 비율을 유지하면서 공간에 맞춤
                   className="rounded-lg"
                   style={{ opacity: 0.8 }} // 투명도를 조정하여 텍스트가 보이게 할 수 있음
+                  key={`/index_desktop.png?${new Date().getTime()}`} // key 속성에 타임스탬프 추가
                 />
               </div>
 
