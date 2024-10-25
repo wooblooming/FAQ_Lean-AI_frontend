@@ -153,7 +153,7 @@ const CompanySection = ({ isMobile }) => {
   // 모바일과 데스크탑에서 다른 텍스트를 적용
   const mobileDescription = (
     <div style={{ fontFamily: "NanumSquareExtraBold" }}>
-      <p className="font-bold text-3xl mb-2">(주)린에이아이는</p>
+      <p className="font-bold text-3xl mb-2">(주)린에이아이</p>
       <p className="text-gray-700 text-xl  ">
         AI가 필요한 모든 산업, 영역에 <br />
         <span className="text-indigo-700 text-2xl ">린에이아이의 AI 기술</span>
@@ -165,8 +165,8 @@ const CompanySection = ({ isMobile }) => {
 
   const desktopDescription = (
     <>
-      <p className="font-bold mb-4 text-5xl" >(주)린에이아이는</p>
-      <p className="text-gray-700 text-2xl font-semibold mb-8">
+      <p className="font-bold mb-6 text-5xl" >(주)린에이아이</p>
+      <p className="text-gray-700 text-3xl font-semibold mb-8">
         AI가 필요한 모든 산업, 영역에 <span className="text-indigo-700 text-4xl font-bold">린에이아이의 AI 기술</span>을 적용하고자 합니다.
       </p>
     </>
@@ -178,7 +178,6 @@ const CompanySection = ({ isMobile }) => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      style={{ borderRadius: '50px 0 50px 0' }}
     >
       <div className="container mx-auto">
         {/* 제목 및 설명 */}

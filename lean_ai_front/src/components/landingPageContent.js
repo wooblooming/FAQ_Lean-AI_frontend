@@ -69,7 +69,6 @@ const LandingPageContent = () => {
     };
     
     return (
-      <div style={{ position: "relative" }}>
       <Image
         src={cacheBustSrc}
         alt={alt}
@@ -78,7 +77,6 @@ const LandingPageContent = () => {
         loader={imageLoader}
         {...props}
       />
-      </div>
     );
   };
 
@@ -104,11 +102,10 @@ const LandingPageContent = () => {
               <CacheBustedImage
                   src='/index_mobile.png'
                   alt='mumul'
+                  layout="responsive"  // fill 대신 responsive 사용
                   width={500}  // 적절한 너비와 높이를 설정합니다.
                   height={300} 
-                  style={{ objectFit:"contain" }}
                   className="rounded-lg"
-                  priority
                 />
               </div>
 
@@ -179,13 +176,13 @@ const LandingPageContent = () => {
               </motion.div>
 
               {/* 이미지 섹션 - PC */}
-              <div className=" md:block z-10" >
+              <div className=" md:block z-10 w-full h-full " style={{ height: "1200px" }}> {/* 높이 설정 추가 */}
                 <CacheBustedImage
                   src='/index_desktop.png'
                   alt='mumul'
-                  fill
-                  style={{ objectFit:"contain" }}
-                  className='rounded-lg'
+                  layout="fill"  
+                  style={{ objectFit : "contain"}} 
+                  className="rounded-lg"
 
                 />
               </div>
