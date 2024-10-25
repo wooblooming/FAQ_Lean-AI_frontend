@@ -181,9 +181,10 @@ const LandingPageContent = () => {
                 <CacheBustedImage
                   src='/index_desktop.png'
                   alt='mumul'
-                  layout="fill"
+                  layout="fill"  
                   objectFit="contain" 
                   className="rounded-lg"
+
                 />
               </div>
             </div>

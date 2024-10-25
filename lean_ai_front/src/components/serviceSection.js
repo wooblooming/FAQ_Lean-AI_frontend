@@ -22,6 +22,7 @@ const ownerSteps = [
   { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner_1.png" },
   { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀파일로 제공되는 양식에 정보 입력하여 업로드 후 초기 데이터는 기준 3일, 수정 데이터는 기준 1일 내 반영됩니다.", image: "/owner_2.png" },
   { icon: Store, title: "실시간 매장 정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 기본 매장 정보는 실시간으로 반영됩니다.", image: "/owner_3.png" },
+
 ];
 
 const customerSteps = [
