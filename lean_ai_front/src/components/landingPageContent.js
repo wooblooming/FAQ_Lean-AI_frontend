@@ -59,6 +59,27 @@ const LandingPageContent = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
   };
 
+  const CacheBustedImage = ({ src, alt, width, height, ...props }) => {
+    // 타임스탬프나 버전을 URL에 추가
+    const cacheBustSrc = `${src}?v=${Date.now()}`;
+    
+    // next/image의 loader 프로퍼티를 사용하여 캐시 버스팅
+    const imageLoader = ({ src, width, quality }) => {
+      return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
+    };
+    
+    return (
+      <Image
+        src={cacheBustSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        loader={imageLoader}
+        {...props}
+      />
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-sans bg-violet-50">
       {/* Navigation Bar */}
@@ -75,14 +96,22 @@ const LandingPageContent = () => {
         >
           {/* 텍스트 섹션과 이미지를 PC와 모바일 버전으로 분리 */}
           {isMobile ? (
-            <div className="relative w-full flex flex-col items-center justify-center">
+            <div className="relative w-full flex flex-col space-y-10 items-center justify-center">
               {/* 이미지 섹션 - 모바일 */}
               <div className="w-full h-auto">
-                <img src='/index_mobile.png'></img>
+              <CacheBustedImage
+                  src='/index_mobile.png'
+                  alt='mumul'
+                  layout="responsive"  // fill 대신 responsive 사용
+                  width={500}  // 적절한 너비와 높이를 설정합니다.
+                  height={300} 
+                  objectFit="contain" 
+                  className="rounded-lg"
+                />
               </div>
 
               {/* 텍스트 섹션 - 모바일 */}
-              <div className="w-full mt-4 p-6 -skew-y-3 bg-white shadow-lg flex flex-col items-center space-y-4">
+              <div className="w-full p-6 -skew-y-3 bg-white shadow-lg flex flex-col items-center space-y-4">
                 <div className="text-gray-600 text-center whitespace-nowrap text-xl font-semibold">
                   <p>
                     무엇이든 물어보세요
@@ -148,18 +177,15 @@ const LandingPageContent = () => {
               </motion.div>
 
               {/* 이미지 섹션 - PC */}
-              <div className="md:block z-10" style={{ width: '100%', height: '100%' }}>
-                <Image
-                  src='/index.png'
+              <div className=" md:block z-10" >
+                <CacheBustedImage
+                  src='/index_desktop.png'
                   alt='mumul'
-                  layout="fill" // 레이아웃을 fill로 설정하여 공간 전체를 차지하게 함
-                  objectFit="contain" // 이미지 비율을 유지하면서 공간에 맞춤
+                  layout="fill"
+                  objectFit="contain" 
                   className="rounded-lg"
-                  style={{ opacity: 0.8 }} // 투명도를 조정하여 텍스트가 보이게 할 수 있음
                 />
               </div>
-
-
             </div>
           )}
         </motion.main>
@@ -170,7 +196,7 @@ const LandingPageContent = () => {
         ref={companyRef}
         id="company"
         name="company"
-        className="flex-grow px-0 md:px-2 py-20 "
+        className="flex-grow px-0 md:px-2 py-12 "
         initial="hidden"
         animate={companyInView ? 'visible' : 'hidden'}
         variants={fadeInUp}

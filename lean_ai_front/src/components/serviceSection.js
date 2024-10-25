@@ -8,6 +8,7 @@ import {
   UserPlus, PencilLine, Store, QrCode, Bot, FileCode2, HelpCircle, Brain, FileText, AppWindow
 } from 'lucide-react';
 
+
 // Features Data (서비스 소개 섹션 데이터)**
 const features = [
   { icon: FileCode2, title: "고객 질문에 적합한 답변 제공", description: "고객 질문 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
@@ -18,15 +19,15 @@ const features = [
 
 // Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
 const ownerSteps = [
-  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner1.png" },
-  { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀, 한글파일로 제공되는 양식에 정보 입력하여 업로드, 초기 데이터는 영업일 기준 3일 내, 수정 데이터는 영업일 기준 1일 내 반영됩니다.", image: "/owner_2.png" },
-  { icon: Store, title: "실시간 매장 기본정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 간단한 매장 기본정보는 실시간으로 반영됩니다.", image: "/owner_3.png" },
+  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner_1.png" },
+  { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀파일로 제공되는 양식에 정보 입력하여 업로드 후 초기 데이터는 기준 3일, 수정 데이터는 기준 1일 내 반영됩니다.", image: "/owner_2.png" },
+  { icon: Store, title: "실시간 매장 정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 기본 매장 정보는 실시간으로 반영됩니다.", image: "/owner_3.png" },
 ];
 
 const customerSteps = [
-  { icon: QrCode, title: "QR코드 스캔", description: "업장마다 고유의 QR코드를 제공, 테이블, 벽, 의자 어디에든 설치 가능합니다", image: "/customer_1.png" },
+  { icon: QrCode, title: "QR코드 스캔", description: "매장 고유의 QR코드를 제공하고 테이블, 벽, 의자 등 매장 어디든 설치 가능합니다", image: "/customer_1.png" },
   { icon: AppWindow, title: "매장 정보 확인", description: "노출하시고자 하는 정보를 고객들이 확인할 수 있습니다.", image: "/customer_2.png" },
-  { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 업장에 필요한 모든 정보를 제공합니다.", image: "/customer_3.png" },
+  { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 매장에 필요한 모든 정보를 제공합니다.", image: "/customer_3.png" },
 ];
 
 // GoodThings Data (장점 섹션 데이터)**
@@ -64,6 +65,28 @@ const usecase = [
   },
 ];
 
+
+const CacheBustedImage = ({ src, alt, width, height, ...props }) => {
+  // 타임스탬프나 버전을 URL에 추가
+  const cacheBustSrc = `${src}?v=${Date.now()}`;
+  
+  // next/image의 loader 프로퍼티를 사용하여 캐시 버스팅
+  const imageLoader = ({ src, width, quality }) => {
+    return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
+  };
+  
+  return (
+    <Image
+      src={cacheBustSrc}
+      alt={alt}
+      width={width}
+      height={height}
+      loader={imageLoader}
+      {...props}
+    />
+  );
+};
+
 // FlipCard 컴포넌트**: 단계별 가이드라인을 카드 형태로 보여주고 클릭 시 회전하는 UI 컴포넌트
 function FlipCard({ step, index }) {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -75,16 +98,16 @@ function FlipCard({ step, index }) {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.2 }}
-      style={{ minHeight: '850px' }}
+      style={{ minHeight: '500px' }}
     >
       <motion.div
-        className="w-full h-full relative"
+        className="w-full h-full relative  flex justify-center items-center"
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6 }}
         style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
       >
         {/* 카드 앞면 */}
-        <div className="absolute w-full h-full backface-hidden bg-violet-300 rounded-lg shadow-lg p-6 flex flex-col justify-center items-center text-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
+        <div className="absolute backface-hidden bg-violet-300 rounded-lg shadow-lg px-4 flex flex-col flex justify-center items-center text-center" style={{ width:"360px", height:"550px", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
           <div>
             <div className="flex justify-center space-x-3 items-center text-center mb-3">
               <div className="bg-white rounded-full p-2">
@@ -101,13 +124,15 @@ function FlipCard({ step, index }) {
         </div>
 
         {/* 카드 뒷면 */}
-        <div className="absolute w-full h-full backface-hidden justify-center items-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", position: "relative" }}>
-          <Image
+        <div className="absolute w-full h-full backface-hidden flex justify-center items-center" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)", position: "relative" }}>
+          <CacheBustedImage
             src={step.image}
             alt={`Step ${index + 1} illustration`}
-            layout="fill" // 실제 이미지 크기에 맞춰 렌더링
+            layout="intrinsic"
+            width={250} 
+            height={300}
             objectFit="cover"
-            className="rounded-lg border border-gray-400"
+            className="rounded-lg border border-gray-400 "
           />
         </div>
       </motion.div>
