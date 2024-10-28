@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 const LogoutModal = ({ show, onConfirm, onCancel }) => {
   if (!show) return null;
@@ -8,11 +9,12 @@ const LogoutModal = ({ show, onConfirm, onCancel }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg text-center relative" style={{ width: '350px' }}>
         <button
           onClick={onCancel}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-60"
+          className="absolute top-4 right-4 z-20 "
           aria-label="Close"
         >
-          &times;
+          <X className="bg-indigo-500 rounded-full text-white p-1"/>
         </button>
+        <h2 className="text-2xl text-left font-bold mb-4" style={{ fontFamily: 'NanumSquareExtraBold' }}>Logout</h2>
         <p className="mb-4 text-center">로그아웃하시겠습니까?</p>
         <div className="flex space-x-4 mt-2 items-center justify-center">
           <button

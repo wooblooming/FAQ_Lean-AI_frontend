@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import naverIcon from '../../public/btn_naver.svg';
 import googleIcon from '../../public/btn_google.svg';
 import UserProfileForm from '../components/userProfile';
 import QrCodeSection from '../components/qrCode';
 import EventSwitch from '../components/event';
-import SnsConnect from '../components/snsConnect'; // SNS 연결 컴포넌트
-import VerificationModal from '../components/verificationModal'; // 핸드폰 인증 기능이 있는 컴포넌트
-import EventAlertModal from '../components/eventModal'; // 이벤트 모달 컴포넌트
-import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
-import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import SnsConnect from '../components/snsConnect';
+import VerificationModal from '../components/verificationModal';
+import EventAlertModal from '../components/eventModal';
+import ModalMSG from '../components/modalMSG';
+import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 import ConfirmDeleteAccountModal from '../components/confirmDeleteAccountModal.js';
 
@@ -67,16 +67,16 @@ const MyPage = () => {
 
   // 이벤트 스위치를 눌렀을 때 이벤트 모달을 표시
   const toggleEventOn = () => {
-    setShowEventAlertModal(true);  // 스위치를 눌렀을 때 모달을 열기만 함
+    setShowEventAlertModal(true); 
   };
 
-  // 일반 메시지 모달 닫기 처리
+  // 일반 메시지 모달 닫기 & 초기화
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
     setMessage('');
   };
 
-  // 에러 메시지 모달 닫기 처리
+  // 에러 메시지 모달 닫기 & 초기화
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
     setErrorMessage('');
@@ -90,10 +90,10 @@ const MyPage = () => {
 
   // 초기 사용자 정보 및 스토어 데이터를 가져오는 함수
   useEffect(() => {
-      // token이 있을 때만 fetchUserData 실행
-  if (!token) {
-    return; // token이 없으면 아무것도 하지 않음
-  }
+    // token이 있을 때만 fetchUserData 실행
+    if (!token) {
+      return; // token이 없으면 아무것도 하지 않음
+    }
 
     const fetchUserData = async () => {
       try {
@@ -213,7 +213,6 @@ const MyPage = () => {
     }
   };
 
-
   // 이미지 선택 시 처리하는 함수
   const chooseImage = async (event) => {
     const file = event.target.files[0]; // 파일 선택
@@ -330,12 +329,12 @@ const MyPage = () => {
         body: JSON.stringify({
           phone: phoneNumber,
           type: 'mypage',
-          user_id : ID,
+          user_id: ID,
         }),
       });
 
       const data = await response.json();
- 
+
       if (data.success) {
         setVerificationCode(''); // 모달을 열 때 인증번호 초기화
         setShowCodeModal(true); // 인증번호 입력 모달 열기
@@ -361,7 +360,7 @@ const MyPage = () => {
           phone: phoneNumber,
           code: verificationCode,
           type: 'mypage',
-          user_id : ID,
+          user_id: ID,
         }),
       });
 
@@ -429,22 +428,22 @@ const MyPage = () => {
       setShowErrorMessageModal(true);
       return;
     }
-  
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
-  
+
     img.crossOrigin = 'Anonymous'; // CORS 문제 방지
     img.src = qrUrl; // QR 코드 이미지 URL
-  
+
     img.onload = () => {
       // QR 코드 이미지의 크기에 맞게 캔버스 크기 설정
       canvas.width = img.width;
       canvas.height = img.height;
-  
+
       // 캔버스에 QR 코드 이미지를 그리기
       ctx.drawImage(img, 0, 0);
-  
+
       // 캔버스를 이미지 데이터 URL로 변환하여 다운로드 처리
       const dataUrl = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
@@ -454,13 +453,13 @@ const MyPage = () => {
       downloadLink.click();
       document.body.removeChild(downloadLink); // 링크 제거
     };
-  
+
     img.onerror = () => {
       setErrorMessage('이미지를 불러오는 데 실패했습니다.');
       setShowErrorMessageModal(true);
     };
   };
-  
+
 
   // SNS 연결 상태 토글 함수
   const toggleSnsConnection = (snsName) => {
@@ -549,23 +548,23 @@ const MyPage = () => {
 
         {/* 사용자 정보 입력 필드 */}
         <UserProfileForm
-        name={name}
-        setName={setName}
-        ID={ID}
-        setID={setID}
-        email={email}
-        setEmail={setEmail}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
-        handleSendCode={handleSendCode}
-        showCodeModal={showCodeModal}
-        setShowCodeModal={setShowCodeModal}
-        handleCodeModalClose={handleCodeModalClose}  // 추가
-        handleVerifyCode={handleVerifyCode}  // 추가
-        verificationCode={verificationCode}  // 추가
-        setVerificationCode={setVerificationCode}  // 추가
-        errorMessage={errorMessage}  // 추가
-      />
+          name={name}
+          setName={setName}
+          ID={ID}
+          setID={setID}
+          email={email}
+          setEmail={setEmail}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          handleSendCode={handleSendCode}
+          showCodeModal={showCodeModal}
+          setShowCodeModal={setShowCodeModal}
+          handleCodeModalClose={handleCodeModalClose}  // 추가
+          handleVerifyCode={handleVerifyCode}  // 추가
+          verificationCode={verificationCode}  // 추가
+          setVerificationCode={setVerificationCode}  // 추가
+          errorMessage={errorMessage}  // 추가
+        />
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
@@ -596,18 +595,6 @@ const MyPage = () => {
           회원탈퇴
         </button>
 
-        {/* 계정 삭제 모달 */}
-        <ConfirmDeleteAccountModal
-          show={showDeleteModal}
-          onClose={(confirmed) => {
-            setShowDeleteModal(false);
-            if (confirmed) {
-              handleConfirmAccountDeletion(); // 탈퇴 확정 시 처리
-            }
-          }}
-          message="정말 탈퇴를 하시겠습니까?"  // 탈퇴 확인 메시지
-        />
-
         {/* 추후 업데이트 */}
         {/* SNS 연결 섹션 
         <SnsConnect
@@ -619,12 +606,12 @@ const MyPage = () => {
         {/* 이미지 모달 */}
         {isImageModalOpen && (
           <div id="imageModal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="modal-content bg-white p-6 rounded-lg shadow-lg text-center relative">
+            <div className="modal-content bg-white p-6 rounded-lg text-center"  style={{ width: '380px', position: 'relative' }}>
               <button
                 onClick={toggleImageModal}
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               >
-                &times;
+                <X className="bg-indigo-500 rounded-full text-white p-1"/>
               </button>
               <h2 className="text-2xl font-bold mb-4">프로필 사진 설정</h2>
               <input
@@ -663,16 +650,30 @@ const MyPage = () => {
           onClose={handleEventAlertModalClose}
         />
 
+        {/* 계정 삭제 모달 */}
+        <ConfirmDeleteAccountModal
+          show={showDeleteModal}
+          onClose={(confirmed) => {
+            setShowDeleteModal(false);
+            if (confirmed) {
+              handleConfirmAccountDeletion(); // 탈퇴 확정 시 처리
+            }
+          }}
+          message="정말 탈퇴를 하시겠습니까?"  // 탈퇴 확인 메시지
+        />
+        
+      {/* 성공 메시지 모달 */}
         <ModalMSG
           show={showMessageModal}
           onClose={handleMessageModalClose}
-          title=" "
+          title="Success"
         >
           <p style={{ whiteSpace: 'pre-line' }}>
             {message}
           </p>
         </ModalMSG>
 
+      {/* 에러 메시지 모달 */}
         <ModalErrorMSG
           show={showErrorMessageModal}
           onClose={handleErrorMessageModalClose}

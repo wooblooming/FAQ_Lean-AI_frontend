@@ -8,12 +8,11 @@ import ChangeInfo from './changeInfo';
 import EditData from './editData';
 import RequestData from './requestData';
 import Modal from '../components/modal';
-import ModalMSG from '../components/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 import Footer from '../components/footer';
 
-// 버튼 컴포넌트 (아이콘과 텍스트 정렬)
+// 버튼 컴포넌트 정의: 아이콘과 텍스트를 포함한 버튼 스타일 지정
 const Button = ({ children, icon: Icon, className, ...props }) => (
   <button
     className={`flex items-center justify-center space-x-2 mt-4 px-4 py-3 w-full bg-indigo-500 text-white rounded-lg font-semibold ${className}`}
@@ -24,80 +23,80 @@ const Button = ({ children, icon: Icon, className, ...props }) => (
   </button>
 );
 
+// 카드 컴포넌트 정의: 배경, 그림자, 여백 등을 스타일링하여 카드 UI로 사용
 const Card = ({ children, className, ...props }) => (
   <div className={`bg-white shadow rounded-lg p-6 space-y-3 ${className}`} {...props}>
     {children}
   </div>
 );
 
-// 최신 순으로 정렬하는 함수
+// 최신 순으로 공지사항을 정렬하여 상위 3개만 반환하는 함수
 const getLatestAnnouncements = () => {
   return [...announcements]
     .sort((a, b) => new Date(b.date.replace(/-/g, '/')) - new Date(a.date.replace(/-/g, '/'))) // 최신순 정렬
     .slice(0, 3); // 상위 3개만 선택
 };
 
-
 const MainPageWithMenu = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false);
-  const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false);
-  const [isRequestDataModalOpen, setIsReqestDataModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [message, setMessage] = useState(''); 
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showMessageModal, setShowMessageModal] = useState(false); 
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [storeName, setStoreName] = useState('');
-  const [slug, setStoreSlug] = useState('');
-  const [isMounted, setIsMounted] = useState(false);
-  const [expandedId, setExpandedId] = useState(null);
+  const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 상태
+  const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false); // 정보 수정 모달 상태
+  const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false); // 데이터 편집 모달 상태
+  const [isRequestDataModalOpen, setIsReqestDataModalOpen] = useState(false); // 데이터 요청 모달 상태
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 상태
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [storeName, setStoreName] = useState(''); // 상점 이름 상태
+  const [slug, setStoreSlug] = useState(''); // 상점 슬러그 상태
+  const [isMounted, setIsMounted] = useState(false); // 컴포넌트 마운트 상태
+  const [expandedId, setExpandedId] = useState(null); // FAQ 확장 상태 관리
 
-  const buttonRefs = useRef([]);
   const router = useRouter();
-  const latestAnnouncements = getLatestAnnouncements();
-  const latestFaqs = faqs.slice(0, 3);
+  const latestAnnouncements = getLatestAnnouncements(); // 최신 공지사항 가져오기
+  const latestFaqs = faqs.slice(0, 3); // FAQ 상위 3개만 선택
 
+  // 화면 크기에 따라 모바일 여부를 설정하는 함수
   const handleResize = () => {
     const isMobileDevice = window.innerWidth <= 768;
     setIsMobile(isMobileDevice);
   };
 
+  // 화면 크기 조정 시 이벤트 리스너 설정 및 초기 실행
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 컴포넌트 마운트 시 상점 정보 불러오기
   useEffect(() => {
     setIsMounted(true);
     fetchStoreInfo();
   }, []);
 
+  // 상점 정보 API 호출
   const fetchStoreInfo = async () => {
     try {
       const token = sessionStorage.getItem('token');
-  
       const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // 헤더에 토큰이 제대로 추가됐는지 확인
+          'Authorization': `Bearer ${token}`, // 토큰을 헤더에 추가하여 인증 요청
         },
       });
-  
-      if (response.status === 401) {
+
+      if (response.status === 401) { // 인증 실패 시 에러 처리
         setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
         setShowErrorMessageModal(true);
         sessionStorage.removeItem('token');
         router.push('/login');
         return;
       }
-  
+
       if (!response.ok) {
         throw new Error(`Failed to fetch store information: ${response.statusText}`);
       }
-  
+
       const storeData = await response.json();
       if (storeData && storeData.length > 0) {
         setStoreName(storeData[0].store_name);
@@ -111,11 +110,13 @@ const MainPageWithMenu = () => {
       setShowErrorMessageModal(true);
     }
   };
-  
+
+  // 상점 정보를 아직 불러오지 않았다면 null 반환
   if (!isMounted) {
     return null;
   }
 
+  // 챗봇 페이지로 이동하는 함수
   const goToChatbot = () => {
     if (slug) {
       const encodedSlug = encodeURIComponent(slug);
@@ -126,6 +127,7 @@ const MainPageWithMenu = () => {
   return (
     <div className="flex flex-col min-h-screen bg-violet-50">
       <div className="flex-grow font-sans ">
+        {/* 헤더 컴포넌트 */}
         <Header
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
@@ -134,15 +136,18 @@ const MainPageWithMenu = () => {
           handleErrorMessageModalClose={() => setShowErrorMessageModal(false)}
         />
 
+        {/* 메인 콘텐츠 */}
         <main className="container md:mx-auto px-2 md:px-4 py-10 mt-12 flex-grow flex justify-center items-center">
           <div className="flex flex-col justify-center items-center text-center space-y-10">
             <h2 className="text-2xl md:text-3xl mt-5 md:mt-10" style={{ fontFamily: 'NanumSquareBold' }}>
               안녕하세요! {storeName}님!
             </h2>
 
+            {/* 버튼 카드 영역 */}
             <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center text-center">
               <div className="grid md:grid-cols-4 gap-2 md:gap-4">
-                {/* 버튼 영역 */}
+                
+                {/* 매장 정보 변경 카드 */}
                 <Card>
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     매장 정보 변경
@@ -153,6 +158,7 @@ const MainPageWithMenu = () => {
                   </div>
                 </Card>
 
+                {/* 챗봇 미리보기 카드 */}
                 <Card>
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }} >
                     챗봇 미리보기
@@ -163,6 +169,7 @@ const MainPageWithMenu = () => {
                   </div>
                 </Card>
 
+                {/* 데이터 등록 카드 */}
                 <Card>
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     데이터 등록
@@ -173,6 +180,7 @@ const MainPageWithMenu = () => {
                   </div>
                 </Card>
 
+                {/* 서비스 요청 카드 */}
                 <Card>
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     서비스 요청
@@ -186,6 +194,7 @@ const MainPageWithMenu = () => {
 
               {/* 공지사항, FAQ, 통계 및 분석 섹션 */}
               <div className="grid md:grid-cols-3 gap-2 md:gap-4 mt-10">
+                
                 {/* 공지사항 섹션 */}
                 <div className="bg-white rounded-lg p-6 space-y-4 ">
                   <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>공지사항</h2>
@@ -240,20 +249,20 @@ const MainPageWithMenu = () => {
                 </div>
               </div>
             </main>
-
-
           </div>
         </main>
       </div>
 
       <Footer className="w-full mt-auto hidden md:block" isMobile={isMobile} />
 
+      {/* 정보 수정 모달 */}
       {isChangeInfoModalOpen && (
         <Modal onClose={() => setIsChangeInfoModalOpen(false)}>
           <ChangeInfo />
         </Modal>
       )}
 
+      {/* 데이터 편집 모달 */}
       {isEditDataModalOpen && (
         <Modal
           onClose={() => { setIsEditDataModalOpen(false); }}
@@ -262,6 +271,7 @@ const MainPageWithMenu = () => {
         </Modal>
       )}
 
+      {/* 데이터 요청 모달 */}
       {isRequestDataModalOpen && (
         <Modal
           onClose={() => { setIsReqestDataModalOpen(false); }}
@@ -270,6 +280,7 @@ const MainPageWithMenu = () => {
         </Modal>
       )}
 
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)}>
         <p style={{ whiteSpace: 'pre-line' }}>
           {typeof errorMessage === 'object' ? (

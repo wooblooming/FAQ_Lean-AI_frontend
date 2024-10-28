@@ -167,7 +167,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
             cursor: 'pointer',
           }}
         >
-          <X size={30} color="white" />
+          <X size={28} className="text-black "/>
         </button>
       )}
 
@@ -214,7 +214,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
               onClick={() => setShowQrModal(false)}
               className="absolute top-4 right-4 text-gray-500 font-bold"
             >
-              X
+              <X className="bg-indigo-500 rounded-full text-white p-1"/>
             </button>
             <h2 className="text-xl font-bold mb-2">챗봇 전용 QR 코드</h2>
             {isLoading ? (

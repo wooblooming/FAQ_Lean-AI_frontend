@@ -1,17 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Menu, X, ChevronDown } from 'lucide-react'; // ChevronDown 아이콘 추가
-import LogoutModal from '../components/logout'; // 로그아웃 모달 컴포넌트
+import { Menu, X } from 'lucide-react'; 
+import LogoutModal from '../components/logout'; 
 
 const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
-  const [mobileSubMenuOpenIndex, setMobileSubMenuOpenIndex] = useState(null); // 모바일에서 열려 있는 서브메뉴 상태
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 열림 상태
+  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false); // 하위 메뉴 열림 상태
+  const [mobileSubMenuOpenIndex, setMobileSubMenuOpenIndex] = useState(null); // 모바일 하위 메뉴 열림 인덱스
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 상태
   const navRef = useRef(null);
   const router = useRouter();
 
+  // 네비게이션 항목 설정
   const navItems = [
     { title: '회사소개', link: 'company' },
     { title: '서비스', link: 'services' },
@@ -25,6 +26,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
     },
   ];
 
+  // 모바일 메뉴가 열릴 때 스크롤 방지 설정
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -36,39 +38,46 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
     };
   }, [isMobileMenuOpen]);
 
+  // 모바일 메뉴 토글
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     setIsSubMenuOpen(false);
   };
 
+  // 데스크탑 서브 메뉴 토글
   const toggleSubMenu = () => {
     setIsSubMenuOpen(!isSubMenuOpen);
   };
 
+  // 모바일 서브 메뉴 토글 (특정 인덱스를 기준으로)
   const toggleMobileSubMenu = (index) => {
     setMobileSubMenuOpenIndex(mobileSubMenuOpenIndex === index ? null : index);
   };
 
+  // 로그인/로그아웃 버튼 클릭 핸들러
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
-      setShowLogoutModal(true);
+      setShowLogoutModal(true); // 로그아웃 모달 열기
     } else {
-      router.push('/login');
+      router.push('/login'); // 로그인 페이지로 이동
     }
   };
 
+  // 로그아웃 확정 시 실행되는 함수
   const handleLogoutConfirm = () => {
     sessionStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setShowLogoutModal(false);
+    setIsLoggedIn(false); // 로그인 상태 갱신
+    setShowLogoutModal(false); // 로그아웃 모달 닫기
   };
 
+  // 로그아웃 취소 시 모달 닫기
   const handleLogoutCancel = () => {
     setShowLogoutModal(false);
   };
 
+  // 페이지 섹션으로 이동
   const handleSectionClick = (section) => {
-    router.push(`/?section=${section}`); // 섹션으로 이동
+    router.push(`/?section=${section}`); // 섹션 이름을 쿼리로 추가하여 이동
   };
 
   return (
@@ -76,9 +85,11 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
       <header className="bg-indigo-600 fixed w-full z-30 transition-all duration-300 px-4">
         <div className="container md:mx-auto px-6 md:px-0 py-5">
           <div className="flex items-center justify-between" style={{ fontFamily: 'NanumSquareBold' }}>
+            {/* 로고 링크 */}
             <Link href="/" className="text-2xl md:text-4xl font-bold text-white cursor-pointer" style={{ fontFamily: 'NanumSquareExtraBold' }}>
               MUMUL
             </Link>
+            {/* 데스크탑 네비게이션 */}
             <nav className="hidden md:block">
               <ul className="flex justify-end space-x-8">
                 {navItems.map((item, index) => (
@@ -86,7 +97,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                     {item.subItems ? (
                       <>
                         <span
-                          className="text-white text-xl md:text-2xl whitspace-nowrap font-medium hover:underline cursor-pointer"
+                          className="text-white text-xl md:text-2xl whitespace-nowrap font-medium hover:underline cursor-pointer"
                           onClick={toggleSubMenu}
                         >
                           {item.title}
@@ -95,7 +106,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                           <ul className="absolute left-0 mt-2 py-2 rounded bg-white shadow-lg">
                             {item.subItems.map((subItem, subIndex) => (
                               <li key={subIndex} className="px-3 py-2">
-                                <Link href={subItem.link} className="hover:text-indigo-600 whitspace-nowrap">
+                                <Link href={subItem.link} className="hover:text-indigo-600 whitespace-nowrap">
                                   {subItem.title}
                                 </Link>
                               </li>
@@ -113,6 +124,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                     )}
                   </li>
                 ))}
+                {/* 로그인/로그아웃 버튼 */}
                 <li>
                   <button
                     className="text-white text-xl md:text-2xl font-medium hover:underline"
@@ -123,6 +135,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                 </li>
               </ul>
             </nav>
+            {/* 모바일 메뉴 버튼 */}
             <button className="md:hidden text-white" onClick={toggleMobileMenu}>
               {isMobileMenuOpen ? <X size={30} /> : <Menu size={30} />}
             </button>
@@ -148,7 +161,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                       <ul className="pl-4 mt-2 space-y-2">
                         {item.subItems.map((subItem, subIndex) => (
                           <li key={subIndex}>
-                            <Link href={subItem.link} className="text-xl " onClick={toggleMobileMenu}>
+                            <Link href={subItem.link} className="text-xl" onClick={toggleMobileMenu}>
                               - {subItem.title}
                             </Link>
                           </li>
@@ -169,6 +182,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                 )}
               </li>
             ))}
+            {/* 로그인/로그아웃 버튼 */}
             <li>
               <button className="text-3xl" onClick={handleLoginLogoutClick}>
                 {isLoggedIn ? 'Log out' : 'Log in'}
@@ -178,6 +192,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
         </div>
       )}
 
+      {/* 로그아웃 모달 */}
       <LogoutModal
         show={showLogoutModal}
         onConfirm={handleLogoutConfirm}
@@ -186,7 +201,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
 
       <style jsx>{`
         .fullscreen-overlay {
-          background: rgba(238, 242, 255, 0.5);
+          background: rgba(238, 242, 255, 0.5); // 배경 블러 효과
           backdrop-filter: blur(10px);
           z-index: 20;
         }

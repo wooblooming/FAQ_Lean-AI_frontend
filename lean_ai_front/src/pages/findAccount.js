@@ -8,23 +8,26 @@ import config from '../../config';
 
 function FindAccount() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('id'); // 'id' 또는 'password'
-  const [formData, setFormData] = useState({ id: '', phone: '', verificationCode: '' });
-  const [codeSent, setCodeSent] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0); // 제한 시간 초기값 0
+  const [activeTab, setActiveTab] = useState('id'); // 활성 탭: 'id' 또는 'password'
+  const [formData, setFormData] = useState({ id: '', phone: '', verificationCode: '' });  // 핸드폰 인증 폼 데이터 저장
+  const [codeSent, setCodeSent] = useState(false); // 인증번호 발송 상태
+  const [isModalOpen, setIsModalOpen] = useState(false); // 메시지 모달 열림 상태
+  const [modalMessage, setModalMessage] = useState(''); // 일반 메시지 모달 내용
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 모달 내용
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 열림 상태
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false); // 비밀번호 재설정 모달 열림 상태
+  const [timeLeft, setTimeLeft] = useState(0); // 인증 제한 시간
   const [timerActive, setTimerActive] = useState(false); // 타이머 활성화 상태
 
+   // 입력 값 변경 시 폼 상태 업데이트
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+ // 인증번호 전송
   const handleSendCode = async () => {
+    // 핸드폰 번호가 '-' 없이 11자리인지 확인하는 정규식 
     const phoneRegex = /^\d{11}$/;
     if (!phoneRegex.test(formData.phone)) {
       setErrorMessage('- 제외 숫자만 입력하세요');
@@ -60,6 +63,7 @@ function FindAccount() {
     }
   };
 
+  // 인증번호를 검증
   const handleVerifyCode = async () => {
     try {
       const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
@@ -74,6 +78,7 @@ function FindAccount() {
       });
 
       const data = await response.json();
+      // 인증 성공 시 activeTab에 따라 결과 화면으로 이동하거나 비밀번호 재설정 모달을 표시
       if (data.success) {
         if (activeTab === 'id') {
           sessionStorage.setItem('userId', data.user_id);

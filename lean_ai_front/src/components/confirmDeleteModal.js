@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { X } from 'lucide-react';
 
 const ConfirmDeleteModal = ({ show, onClose, onConfirm, itemName }) => {
     if (!show) return null;
@@ -8,11 +9,11 @@ const ConfirmDeleteModal = ({ show, onClose, onConfirm, itemName }) => {
         <div className="modalContent relative mx-2 p-2">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 z-50"
+          className="absolute top-4 right-4 text-gray-600 z-20"
           style={{ padding: '10px', cursor: 'pointer' }}
           aria-label="Close"
         >
-          X
+          <X className="bg-indigo-500 rounded-full text-white p-1"/>
         </button>
           <h2 className='mt-6'>{`${itemName}을(를) 삭제하시겠습니까?`}</h2>
           <div className="modalFooter space-x-2 flex flex-row items-center justify-center">

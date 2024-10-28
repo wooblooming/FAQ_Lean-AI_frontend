@@ -3,7 +3,9 @@ import { useRouter } from 'next/router';
 import { ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// 타임라인에 표시할 이벤트 데이터 설정
 const timelineData = [
+  // 연도별로 이벤트 데이터가 저장되어 있으며, 연도와 이벤트 정보로 구성됨
   {
     year: 2020,
     events: [
@@ -172,8 +174,10 @@ const TimelineEvent = ({ date, title, description }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* 이벤트 날짜 표시 */}
       <div className="flex-shrink-0 font-medium text-gray-600 px-2">{date}</div>
       <div className="w-full flex-grow py-2">
+        {/* 이벤트 제목 및 설명 */}
         <h3
           className={`font-bold text-xl transition-all duration-300 ease-in-out ${
             isHovered ? 'text-indigo-500 scale-105' : 'text-black'
@@ -190,19 +194,22 @@ const TimelineEvent = ({ date, title, description }) => {
 const YearMarker = ({ year, onClick }) => {
   return (
     <div
-      onClick={onClick}
+      onClick={onClick} // 클릭 시 해당 연도 이벤트 목록을 토글
       className="cursor-pointer my-3 flex items-center transition-all duration-300 ease-in-out"
     >
+      {/* 연도 표시 */}
       <div className="flex-shrink-0 w-24 font-bold text-3xl text-gray-600">{year}</div>
+      {/* 연도별 구분선 */}
       <div className={'w-full border-b-2 flex-grow ml-4 transition-all duration-300 border-indigo-300'}></div>
     </div>
   );
 };
 
 const Timeline = () => {
-  const [openYears, setOpenYears] = useState({});
+  const [openYears, setOpenYears] = useState({});  // 연도별 토글 함수가 열렸는지 여부 관리
   const router = useRouter();
 
+   // 연도별 토글 함수: 연도 클릭 시 이벤트 목록을 펼치거나 접음
   const toggleYear = (year) => {
     setOpenYears((prevOpenYears) => ({
       ...prevOpenYears,
@@ -223,14 +230,19 @@ const Timeline = () => {
           />
           <h1 className="text-4xl font-bold text-center text-indigo-600" style={{fontFamily:'NanumSquareExtraBold'}}>린에이아이의 걸어온 길</h1>
         </div>
+
+        {/* 타임라인 본문 */}
         <div className="max-w-3xl mx-auto">
           {timelineData.map((yearData) => (
             <React.Fragment key={yearData.year}>
+               {/* 연도 마커 표시 */}
               <YearMarker
                 year={yearData.year}
                 onClick={() => toggleYear(yearData.year)}
                 isOpen={!!openYears[yearData.year]}
               />
+
+              {/* 연도별 이벤트 애니메이션 */}
               <AnimatePresence>
                 {openYears[yearData.year] && (
                   <motion.div
@@ -247,6 +259,7 @@ const Timeline = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
+              
             </React.Fragment>
           ))}
         </div>

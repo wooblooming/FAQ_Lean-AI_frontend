@@ -10,7 +10,7 @@ const AllergyModal = ({ show, onClose, menuDetails }) => {
         <h2 className="text-xl font-bold mb-4">알레르기 정보</h2>
         <button
           onClick={onClose}
-          className=" " // z-index를 낮춤
+          className=" "
           style={{ cursor: 'pointer' }}
           aria-label="Close"
         >

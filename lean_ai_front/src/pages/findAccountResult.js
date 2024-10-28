@@ -9,37 +9,42 @@ import config from '../../config';
 
 const FindAccountResult = () => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('id'); // 'id' 또는 'password'
-  const [formData, setFormData] = useState({ id: '', phone: '', verificationCode: '' });
-  const [userId, setUserId] = useState(null);
-  const [dateJoined, setDateJoined] = useState(null);
-  const [codeSent, setCodeSent] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('id'); // 활성 탭: 'id' 또는 'password'
+  const [formData, setFormData] = useState({ id: '', phone: '', verificationCode: '', type:''}); // 핸드폰 인증 폼 데이터 저장
+  const [userId, setUserId] = useState(''); // 찾은 사용자 ID 저장
+  const [dateJoined, setDateJoined] = useState(''); // 가입일 저장
+  const [codeSent, setCodeSent] = useState(''); // 인증번호 발송 여부 상태
+  const [isModalOpen, setIsModalOpen] = useState(''); // 메시지 모달 상태
+  const [modalMessage, setModalMessage] = useState(''); // 모달 메시지 내용
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false); // 비밀번호 재설정 모달 상태
 
+  // 세션 저장된 사용자 정보 불러오기
   useEffect(() => {
-    // 세션 스토리지에서 데이터 불러오기
-    const storedUserId = sessionStorage.getItem('userId');
-    const storedDateJoined = sessionStorage.getItem('dateJoined');
-    const storedPhone = sessionStorage.getItem('phone');
+    const storedUserId = sessionStorage.getItem('userId') || '';
+    const storedDateJoined = sessionStorage.getItem('dateJoined') || '';
+    const storedPhone = sessionStorage.getItem('phone') || '';
 
     setUserId(storedUserId);
     setDateJoined(storedDateJoined);
     setFormData((prev) => ({ ...prev, phone: storedPhone }));
   }, []);
 
+  // 입력 필드에서 데이터가 변경될 때 formData 상태를 업데이트
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // id와 password 사이에서 탭을 변경
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
+
+ // 비밀번호 재설정을 위한 인증번호 전송
   const handleSendCode = async () => {
+    // 핸드폰 번호가 '-' 없이 11자리인지 확인하는 정규식 
     const phoneRegex = /^\d{11}$/;
     if (!phoneRegex.test(formData.phone)) {
       setErrorMessage('- 제외 숫자만 입력하세요');
@@ -60,7 +65,7 @@ const FindAccountResult = () => {
 
       const data = await response.json();
       if (data.success) {
-        setCodeSent(true);
+        setCodeSent(true); // 인증번호 발송 상태 업데이트
         setModalMessage('인증번호가 발송되었습니다!');
         setIsModalOpen(true);
       } else {
@@ -73,25 +78,24 @@ const FindAccountResult = () => {
     }
   };
 
+  // 비밀번호 재설정을 위한 인증번호를 검증
   const handleVerifyCode = async () => {
     try {
       const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          user_id:formData.id,
           phone: formData.phone,
           code: formData.verificationCode,
           type: activeTab === 'id' ? 'findID' : 'findPW',
         }),
       });
-
+    
       const data = await response.json();
+      // 인증 성공 시 비밀번호 재설정 모달을 표시
       if (data.success) {
-        if (activeTab === 'id') {
-          sessionStorage.setItem('userId', data.user_id);
-          sessionStorage.setItem('dateJoined', data.date_joined);
-          router.push('/findAccountResult');
-        } else {
+        if (activeTab === 'password') {
           setShowResetPasswordModal(true);
         }
       } else {
@@ -104,16 +108,19 @@ const FindAccountResult = () => {
     }
   };
 
+  // 일반 메시지 모달 닫기 & 초기화
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setModalMessage('');
   };
 
+  // 에러 메시지 모달 닫기 & 초기화
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
     setErrorMessage('');
   };
 
+  // 비밀번호 재설정 모달 닫기
   const handleCloseResetPasswordModal = () => {
     setShowResetPasswordModal(false);
   };
@@ -136,17 +143,15 @@ const FindAccountResult = () => {
         <div className="flex border-b mb-4">
           <button
             onClick={() => handleTabChange('id')}
-            className={`w-1/2 py-2 text-center ${
-              activeTab === 'id' ? 'text-indigo-600 border-b-2 border-indigo-600 font-bold' : 'text-gray-500'
-            }`}
+            className={`w-1/2 py-2 text-center ${activeTab === 'id' ? 'text-indigo-600 border-b-2 border-indigo-600 font-bold' : 'text-gray-500'
+              }`}
           >
             아이디 찾기
           </button>
           <button
             onClick={() => handleTabChange('password')}
-            className={`w-1/2 py-2 text-center ${
-              activeTab === 'password' ? 'text-indigo-600 border-b-2 border-indigo-600 font-bold' : 'text-gray-500'
-            }`}
+            className={`w-1/2 py-2 text-center ${activeTab === 'password' ? 'text-indigo-600 border-b-2 border-indigo-600 font-bold' : 'text-gray-500'
+              }`}
           >
             비밀번호 찾기
           </button>
@@ -169,6 +174,7 @@ const FindAccountResult = () => {
           </div>
         ) : (
           <div className="mt-4">
+            {/* 아이디 입력, 휴대폰 번호 입력, 인증번호 입력 필드 */}
             <div className="flex items-center mb-4">
               <input
                 type="text"
@@ -217,14 +223,17 @@ const FindAccountResult = () => {
         )}
       </div>
 
+      {/* 일반 메시지 모달 */}
       <ModalMSG title="Messege" show={isModalOpen} onClose={handleCloseModal}>
         {modalMessage}
       </ModalMSG>
 
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
         <p>{errorMessage}</p>
       </ModalErrorMSG>
 
+      {/* 비밀번호 재설정 모달 */}
       <ModalResetPassword show={showResetPasswordModal} onClose={handleCloseResetPasswordModal} phone={formData.phone} />
     </div>
   );

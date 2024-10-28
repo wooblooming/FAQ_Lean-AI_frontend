@@ -5,15 +5,16 @@ import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 function ModalResetPassword({ show, onClose, phone }) {
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+    const [newPassword, setNewPassword] = useState(''); // 새로운 비밀번호 입력값
+    const [confirmPassword, setConfirmPassword] = useState(''); // 비밀번호 확인 입력값
+    const [isModalOpen, setIsModalOpen] = useState(false); // 성공 모달 표시 여부
+    const [modalMessage, setModalMessage] = useState(''); // 성공 메시지 내용
+    const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
     const router = useRouter();
 
+    // 모달이 열릴 때 비밀번호 입력 필드를 초기화
     useEffect(() => {
         if (show) {
             setNewPassword('');
@@ -21,6 +22,7 @@ function ModalResetPassword({ show, onClose, phone }) {
         }
     }, [show]);
 
+    // 모달 닫기 함수
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setNewPassword('');
@@ -29,11 +31,13 @@ function ModalResetPassword({ show, onClose, phone }) {
         onClose();
     };
 
+    // 에러 모달 닫기 함수
     const handleErrorMessageModalClose = () => {
         setShowErrorMessageModal(false);
         setErrorMessage('');
     };
 
+    // 비밀번호 재설정 함수
     const handleResetPassword = async () => {
         if (newPassword !== confirmPassword) {
             setErrorMessage('비밀번호가 일치하지 않습니다.');
@@ -69,9 +73,10 @@ function ModalResetPassword({ show, onClose, phone }) {
         }
     };
 
+    // 성공 모달 확인 버튼 클릭 시 로그인 페이지로 이동
     const handleConfirmAndRedirect = () => {
         setIsModalOpen(false);
-        router.push('/login'); // 로그인 페이지로 이동
+        router.push('/login');
     };
 
     return show ? (
@@ -92,7 +97,6 @@ function ModalResetPassword({ show, onClose, phone }) {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="p-2 border border-gray-300 rounded w-full"
                 />
-                {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                 <div className="flex justify-end mt-4">
                     <button onClick={handleCloseModal} className="text-gray-500 px-3 py-2 font-semibold rounded-md hover:ring-2 ring-gray-400">
                         취소
@@ -112,7 +116,7 @@ function ModalResetPassword({ show, onClose, phone }) {
                     <p>{typeof errorMessage === 'object'
                         ? Object.entries(errorMessage).map(([key, value]) => (
                             <span key={key}>{key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br /></span>
-                          ))
+                        ))
                         : errorMessage}
                     </p>
                 </ModalErrorMSG>

@@ -9,10 +9,11 @@ import ServiceSection from '../components/serviceSection';
 import Footer from '../components/footer';
 
 const LandingPageContent = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
+  const [isMobile, setIsMobile] = useState(false); // 모바일 여부 상태
   const router = useRouter();
 
+  // 특정 섹션으로 스크롤 이동
   useEffect(() => {
     const { section } = router.query;
     if (section) {
@@ -30,27 +31,30 @@ const LandingPageContent = () => {
   // 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
   useEffect(() => {
     const token = sessionStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    setIsLoggedIn(!!token); // 토큰이 존재하면 로그인 상태로 설정
   }, []);
 
+  // 버튼 클릭 시 로그인 상태에 따른 페이지 이동
   const handleClick = () => {
-    if (isLoggedIn) {
+    if (isLoggedIn) { // 로그인 상태이면 메인 페이지로 이동
       router.push('/mainPageForPresident');
-    } else {
+    } else { // 로그인 상태가 아니면 로그인 페이지로 이동
       router.push('/login');
     }
   };
 
+  // 창 크기 조정 시 모바일 여부 확인
   const handleResize = () => {
     const isMobileDevice = window.innerWidth <= 768;
     setIsMobile(isMobileDevice);
   };
 
+  // 초기 설정 및 윈도우 리사이즈 이벤트 리스너 등록
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize); // 컴포넌트 언마운트 시 이벤트 제거
   }, []);
 
   // 애니메이션 설정
@@ -59,15 +63,12 @@ const LandingPageContent = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
   };
 
+  // 캐시 버스팅을 위한 이미지 컴포넌트
   const CacheBustedImage = ({ src, alt, width, height, ...props }) => {
-    // 타임스탬프나 버전을 URL에 추가
-    const cacheBustSrc = `${src}?v=${Date.now()}`;
-    
-    // next/image의 loader 프로퍼티를 사용하여 캐시 버스팅
+    const cacheBustSrc = `${src}?v=${Date.now()}`; // 타임스탬프 추가
     const imageLoader = ({ src, width, quality }) => {
       return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
     };
-    
     return (
       <Image
         src={cacheBustSrc}
@@ -82,7 +83,7 @@ const LandingPageContent = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-violet-50">
-      {/* Navigation Bar */}
+      {/* 네비게이션 바 */}
       <Nav isMobile={isMobile} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
 
       {/* 메인 섹션 */}
@@ -99,11 +100,11 @@ const LandingPageContent = () => {
             <div className="relative w-full flex flex-col space-y-10 items-center justify-center">
               {/* 이미지 섹션 - 모바일 */}
               <div className="w-full h-auto">
-              <CacheBustedImage
+                <CacheBustedImage
                   src='/index_mobile.png'
                   alt='mumul'
-                  layout="responsive"  // fill 대신 responsive 사용
-                  width={500}  // 적절한 너비와 높이를 설정합니다.
+                  layout="responsive"
+                  width={500}
                   height={300} 
                   className="rounded-lg"
                 />
@@ -123,6 +124,7 @@ const LandingPageContent = () => {
                 </div>
 
                 <div className="flex flex-col space-x-2">
+                  {/* 무물 이용하기 버튼 */}
                   <motion.button
                     className="text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-pre-line bg-indigo-600"
                     style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareBold' }}
@@ -130,6 +132,7 @@ const LandingPageContent = () => {
                   >
                     무물 이용하기
                   </motion.button>
+                  {/* 도입 신청하기 버튼 */}
                   <motion.button
                     className="text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-pre-line bg-cyan-500"
                     style={{ fontFamily: 'NanumSquareBold' }}
@@ -144,7 +147,7 @@ const LandingPageContent = () => {
             </div>
           ) : (
             <div className="flex w-full h-full items-center">
-              {/* 텍스트 섹션 */}
+              {/* 텍스트 섹션 - PC */}
               <motion.div className="w-full md:w-1/3 z-20 mt-5" variants={fadeInUp} transition={{ duration: 0.8 }}>
                 <div name="text" className="flex flex-col justify-center items-center">
                   <div className="flex flex-col text-center text-gray-800 whitespace-nowrap text-4xl font-semibold mb-8">
@@ -155,6 +158,7 @@ const LandingPageContent = () => {
                   </div>
 
                   <div className="flex flex-row space-x-4 z-20">
+                    {/* 무물 이용하기 버튼 */}
                     <motion.button
                       className="text-white px-6 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
                       style={{ backgroundColor: '#FF609E', fontFamily: 'NanumSquareExtraBold' }}
@@ -162,6 +166,7 @@ const LandingPageContent = () => {
                     >
                       무물 이용하기
                     </motion.button>
+                    {/* 도입 신청하기 버튼 */}
                     <motion.button
                       className="bg-cyan-500 text-white px-6 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
                       style={{ fontFamily: 'NanumSquareExtraBold' }}
@@ -176,7 +181,7 @@ const LandingPageContent = () => {
               </motion.div>
 
               {/* 이미지 섹션 - PC */}
-              <div className=" md:block z-10 w-full " style={{ height: "730px" }}> {/* 높이 설정 추가 */}
+              <div className=" md:block z-10 w-full " style={{ height: "730px" }}>
                 <CacheBustedImage
                   src='/index_desktop.png'
                   alt='mumul'
@@ -191,7 +196,7 @@ const LandingPageContent = () => {
         </motion.main>
       </div>
 
-      {/* 회사 Section */}
+      {/* 회사 섹션 */}
       <motion.main
         ref={companyRef}
         id="company"
@@ -238,24 +243,24 @@ const LandingPageContent = () => {
         </div>
       </main>
 
-      {/* Footer */}
+      {/* 푸터 */}
       <Footer isMobile={isMobile} />
 
+      {/* 스타일 */}
       <style jsx>{`
         .custom-text {
-          font-size: 28px; /* 기본 글씨 크기 */
+          font-size: 28px;
         }
         .custom-button {
-          font-size: 30px; /* 기본 버튼 글씨 크기 */
+          font-size: 30px;
         }
 
-        /* 모바일 환경에서 텍스트 크기 줄이기 */
         @media (max-width: 640px) {
           .custom-text {
             font-size: 21px;
           }
           .custom-button {
-            font-size: 25px; /* 모바일에서 버튼 글씨 크기 줄이기 */
+            font-size: 25px;
           }
         }
 

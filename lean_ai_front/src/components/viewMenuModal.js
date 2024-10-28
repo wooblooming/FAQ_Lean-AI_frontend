@@ -5,28 +5,29 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Edit3 as EditIcon, Check as CheckIcon, X as CancelIcon } from 'lucide-react';
 import ModalMSG from './modalMSG.js';
 import ModalErrorMSG from './modalErrorMSG';
-import ConfirmDeleteModal from '../components/confirmDeleteModal'; // 삭제 확인 모달 컴포넌트
+import ConfirmDeleteModal from '../components/confirmDeleteModal';
 import config from '../../config';
-import styles from '../styles/viewMenu.module.css'; // 모듈 CSS 파일 import
+import styles from '../styles/viewMenu.module.css';
 
 const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
-  const [menuItems, setMenuItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [expandedCategories, setExpandedCategories] = useState({});
+  const [menuItems, setMenuItems] = useState([]); // 초기 메뉴 데이터를 저장
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
+  const [error, setError] = useState(null); // 에러 메시지 관리
+  const [expandedCategories, setExpandedCategories] = useState({}); // 카테고리 확장 상태 관리
   const [editingItem, setEditingItem] = useState(null); // 수정 중인 아이템
   const [updatedMenuItems, setUpdatedMenuItems] = useState([]); // 수정된 아이템을 저장
   const [confirmDeleteItem, setConfirmDeleteItem] = useState(null); // 삭제할 항목
   const [previewImage, setPreviewImage] = useState(null); // 미리보기 이미지
 
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [showMessageModal, setShowMessageModal] = useState(false); // 성공 메시지 모달 상태
+  const [message, setMessage] = useState(''); // 성공 메시지 내용
 
-  const storeSlug = encodeURIComponent(slug);
+  const storeSlug = encodeURIComponent(slug); // 슬러그가 한글일 수 있으므로 인코딩
   const fileInputRef = useRef(null); // 파일 입력 필드에 대한 참조
 
+  // 메뉴 데이터를 가져오기
   useEffect(() => {
     if (show) {
       const fetchMenuItems = async () => {
@@ -39,17 +40,17 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              action: 'view',
-              slug: slug
-            }),
+              action: 'view', // API 요청을 위한 action 값
+              slug: slug // 메뉴를 조회할 슬러그 정보
+            }), 
           });
 
           const data = await response.json();
           if (Array.isArray(data) && data.length > 0) {
-            setMenuItems(data);
-            setUpdatedMenuItems(data); // 처음 로드할 때 메뉴 아이템을 복사해 수정 가능하도록 설정
-            const categories = [...new Set(data.map((item) => item.category))];
-            setExpandedCategories(categories.reduce((acc, category) => ({ ...acc, [category]: false }), {}));
+            setMenuItems(data); // 메뉴 항목을 상태에 저장
+            setUpdatedMenuItems(data); // 메뉴 항목을 복사해 수정 가능한 형태로 저장
+            const categories = [...new Set(data.map((item) => item.category))]; // 카테고리 중복 제거
+            setExpandedCategories(categories.reduce((acc, category) => ({ ...acc, [category]: false }), {})); // 각 카테고리 초기 확장 상태 설정
           } else {
             setError('메뉴 데이터가 비어있거나 올바르지 않습니다.');
           }
@@ -64,15 +65,18 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
     }
   }, [show, slug]);
 
+ // 카테고리 확장/축소 상태 토글
   const toggleCategory = (category) => {
-    setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] }));
+    setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] })); // expandedCategories 상태를 업데이트
   };
 
+  // 메뉴 항목 수정 모드 활성화
   const handleEditClick = (menuItem) => {
     setEditingItem(menuItem.menu_number);
     setPreviewImage(null); // 수정 시작 시 미리보기 초기화
   };
 
+  // 수정 내용 저장 및 서버에 업데이트
   const handleSaveEdit = async (menuItem) => {
     try {
       const token = sessionStorage.getItem('token');
@@ -101,7 +105,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         const result = await response.json();
         const updatedImage =
           menuItem.image instanceof File
-            ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${result.updated_menus[0]?.image}`
+            ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${result.updated_menus[0]?.image}` // 새 이미지 URL 설정
             : menuItem.image; // 기존 이미지 유지
 
         const updatedMenuItem = {
@@ -109,6 +113,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
           image: updatedImage,
         };
 
+// 수정된 데이터 상태 반영
         setUpdatedMenuItems((prevItems) =>
           prevItems.map((item) =>
             item.menu_number === menuItem.menu_number ? updatedMenuItem : item
@@ -136,25 +141,27 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
     }
   };
 
-
+  // 수정 취소
   const handleCancelEdit = () => {
     setEditingItem(null);
     setPreviewImage(null);
   };
 
+   // 입력 값 변경 시 업데이트 상태 반영
   const handleInputChange = (e, menuItem, field) => {
     const updatedItems = updatedMenuItems.map((item) =>
       item.menu_number === menuItem.menu_number ? { ...item, [field]: e.target.value } : item
     );
-    setUpdatedMenuItems(updatedItems);
+    setUpdatedMenuItems(updatedItems); // 변경된 입력 상태 업데이트
   };
 
+ // 이미지 변경 시 미리보기 생성 및 상태 업데이트
   const handleImageChange = (e, menuItem) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewImage(reader.result);
+        setPreviewImage(reader.result); // 미리보기 이미지 설정
       };
       reader.readAsDataURL(file);
 
@@ -165,10 +172,12 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
     }
   };
 
+    // 삭제 확인 모달 표시
   const handleDeleteClick = (menuItem) => {
     setConfirmDeleteItem(menuItem);
   };
 
+   // 삭제 항목 확인 후 서버에 삭제 요청
   const confirmDelete = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -219,6 +228,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
     }
   };
 
+ // 카테고리별로 메뉴 항목 그룹화
   const groupedMenuItems = updatedMenuItems.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
@@ -241,7 +251,8 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
           X
         </button>
         <div className={styles.modalHeader}>메뉴 목록</div>
-        <div className={styles.modalBody}>
+        <div className={styles.modalBody}> 
+          {/* 로딩 중 일때 */}
           {loading ? (
             <p>메뉴 데이터를 불러오는 중...</p>
           ) : error ? (
@@ -344,6 +355,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         </div>
       </div>
 
+      {/* 삭제 확인 모달 */}
       <ConfirmDeleteModal
         show={!!confirmDeleteItem}
         onClose={() => setConfirmDeleteItem(null)}
@@ -351,7 +363,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         itemName={confirmDeleteItem?.name}
       />
 
-
+      {/* 성공 메시지 모달 */}
       <ModalMSG
         show={showMessageModal}
         onClose={() => setShowMessageModal(false)}
@@ -360,6 +372,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
       </ModalMSG>
 
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)} title="Error">
         <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
       </ModalErrorMSG>

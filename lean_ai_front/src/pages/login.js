@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
-import Image from 'next/image';
 import naverIcon from '../../public/btn_naver.svg';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import googleIcon from '../../public/btn_google.svg';
@@ -18,10 +17,12 @@ const Login = () => {
 
     const router = useRouter();
 
+    // 에러 메시지 모달 닫기 함수
     const handleErrorMessageModalClose = () => {
         setShowErrorMessageModal(false); // 에러 메시지 모달을 닫음
     };
 
+    // 로그인 버튼 클릭 시 서버에 요청 전송
     const handleLoginClick = async () => {
         try {
             const response = await fetch(`${config.apiDomain}/api/login/`, {
@@ -38,8 +39,8 @@ const Login = () => {
             }
     
             const data = await response.json();
-            sessionStorage.setItem('token', data.access);  // 토큰 저장
-            router.push('/mainPageForPresident');
+            sessionStorage.setItem('token', data.access);  // 인증 토큰 저장
+            router.push('/mainPageForPresident'); // 메인 페이지로 이동
         } catch (error) {
             console.error('로그인 요청 중 오류 발생:', error);
             setErrorMessage(error.message); // 에러 메시지 설정
@@ -47,7 +48,7 @@ const Login = () => {
         }
     };
     
-    // 로그인 시 Enter 키 사용
+    // Enter 키를 눌렀을 때 로그인 함수 호출
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleLoginClick();
@@ -64,6 +65,7 @@ const Login = () => {
                     MUMUL
                 </h1>
                 <div className="space-y-4">
+                    {/* 아이디 입력 필드 */}
                     <div className="flex items-center border rounded-md px-4 py-2">
                         <FontAwesomeIcon icon={faUser} />
                         <input
@@ -74,6 +76,8 @@ const Login = () => {
                             className="ml-2 w-full border-none focus:ring-0"
                         />
                     </div>
+
+                    {/* 비밀번호 입력 필드 */}
                     <div className="flex items-center border rounded-md px-4 py-2">
                         <FontAwesomeIcon icon={faLock} />
                         <input
@@ -85,6 +89,8 @@ const Login = () => {
                             onKeyDown={handleKeyDown} // Enter 키를 누를 때 handleLoginClick 호출
                         />
                     </div>
+
+                    {/* 로그인 버튼 */}
                     <button
                         className="bg-indigo-500 text-white text-lg font-semibold py-2 px-4 rounded-full w-full"
                         onClick={handleLoginClick}
@@ -104,6 +110,8 @@ const Login = () => {
                         <span><Image src={naverIcon} className='mr-2 w-4 h-4' alt="naver" /></span>네이버 계정으로 로그인
                     </button> */}
                 </div>
+
+                {/* 회원가입, 계정찾기 링크 */}
                 <div className="mt-4 text-center text-gray-500 ">
                     <p>
                         <Link href="/signupStep1" className="hover:underline text-blue-500 m-1">회원가입</Link>

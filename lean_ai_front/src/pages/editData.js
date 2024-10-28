@@ -5,53 +5,55 @@ import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 export default function DataEditPage() {
-  const [fileNames, setFileNames] = useState([]);
-  const [message, setMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [fileNames, setFileNames] = useState([]); // 업로드된 파일 이름 목록 상태
+  const [message, setMessage] = useState(''); // 성공 메시지 상태
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 모달 상태
+  const [showMessageModal, setShowMessageModal] = useState(false); // 성공 모달 상태
 
-  const fileInputRef = useRef(null); // useRef로 파일 입력 참조
+  const fileInputRef = useRef(null); // 파일 입력 참조
 
+  // 파일 변경 시 호출되는 함수
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-    const names = files.map((file) => file.name);
-    setFileNames(names);  // 상태 업데이트
+    const files = Array.from(event.target.files); // 파일을 배열로 변환
+    const names = files.map((file) => file.name); // 파일 이름만 추출
+    setFileNames(names);  // 파일 이름 상태 업데이트
   };
 
+  // 파일 입력을 초기화하는 함수
   const resetForm = () => {
     setFileNames([]);
-    if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 입력 초기화
+    if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 입력 값 초기화
   };
   
+  // 양식 파일을 다운로드하는 함수
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/templates/mumul_service_data_guideline_2.xlsx';
+    link.href = '/templates/mumul_service_data_guideline_2.xlsx'; // 다운로드할 파일 경로
     
-    // 파일명에 한글을 직접 사용
+    // 다운로드 파일명 설정
     link.download = '[무물] 초기 데이터 입력 양식.xlsx';
     
     document.body.appendChild(link); // a 태그를 DOM에 추가
-    link.click();
+    link.click(); // 파일 다운로드 실행
     document.body.removeChild(link); // 클릭 후 a 태그 삭제
   };
   
-  
+  // 업로드된 파일을 서버로 제출하는 함수
   const handleSubmit = async () => {
     const files = fileInputRef.current?.files; // 파일 참조
-    console.log("click button");
 
+    // 파일이 없는 경우 에러 메시지 표시
     if (!files || files.length === 0) {
       setErrorMessage('파일을 업로드 해주세요.');
       setShowErrorMessageModal(true);
       return;
     }
 
-    const formData = new FormData();
-    Array.from(files).forEach((file) => formData.append('files', file));
+    const formData = new FormData(); // FormData 객체 생성
+    Array.from(files).forEach((file) => formData.append('files', file)); // 파일 추가
 
-    // FormData 데이터 출력
-    //console.log('FormData에 포함된 데이터:');
+    // FormData에 포함된 데이터 확인용
     /*
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
@@ -62,15 +64,17 @@ export default function DataEditPage() {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // 인증 토큰 추가
         }
       });
 
+      // 성공 시 성공 메시지 표시 및 폼 초기화
       if (response.ok) {
         setMessage('데이터가 등록되었습니다!');
         setShowMessageModal(true);
         resetForm();
       } else {
+        // 실패 시 에러 데이터 로깅 및 에러 메시지 표시
         const errorData = await response.json();
         console.error('요청 전송 실패:', errorData);
         setErrorMessage('데이터 등록에 실패했습니다.');
@@ -85,11 +89,13 @@ export default function DataEditPage() {
 
   return (
     <div className="flex flex-col w-full max-w-md px-2 py-8 bg-white rounded-lg items-center justify-center space-y-5">
+      {/* 페이지 제목 */}
       <h1 className="text-3xl font-bold text-indigo-600 text-center " style={{ fontFamily: 'NanumSquareExtraBold' }}>
         데이터 등록하기
       </h1>
 
       <main className="p-4 space-y-16">
+        {/* 양식 다운로드 섹션 */}
         <div className="space-y-2 mt-4">
           <h2 className="text-xl font-semibold">데이터 등록 양식 다운로드</h2>
           <p className="text-sm text-gray-500">
@@ -97,7 +103,7 @@ export default function DataEditPage() {
           </p>
           <button
             onClick={handleDownload}
-            className="w-full py-2 px-4 rounded flex bg-indigo-500 text-white  items-center justify-center transition duration-300"
+            className="w-full py-2 px-4 rounded flex bg-indigo-500 text-white items-center justify-center transition duration-300"
           >
             <ArrowDown className="mr-2 h-4 w-4" /> <span className="font-medium hover:font-bold hover:underline"> 양식 다운로드 </span>
           </button>
@@ -105,6 +111,7 @@ export default function DataEditPage() {
 
         <div className="border-t border-gray-300 "></div>
 
+        {/* 파일 업로드 섹션 */}
         <div className="space-y-3 ">
           <h2 className="text-xl font-semibold">파일 업로드</h2>
           <p className="text-sm text-gray-500">
@@ -112,7 +119,7 @@ export default function DataEditPage() {
           </p>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <input
-              ref={fileInputRef} // useRef로 파일 입력 참조
+              ref={fileInputRef} // 파일 입력 참조
               type="file"
               multiple
               onChange={handleFileChange}
@@ -126,16 +133,17 @@ export default function DataEditPage() {
           </div>
           <button
             onClick={handleSubmit}
-            disabled={fileNames.length === 0}
+            disabled={fileNames.length === 0} // 파일이 없는 경우 비활성화
             className={`w-full py-2 px-4 rounded flex items-center justify-center transition duration-300 ${
               fileNames.length > 0
-                ? 'bg-indigo-500 hover:bg-indigo-600 text-white font-bold'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-indigo-500 hover:bg-indigo-600 text-white font-bold' // 활성화 스타일
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed' // 비활성화 스타일
             }`}
           >
             <Upload className="mr-2 h-4 w-4" /> 파일 업로드
           </button>
 
+          {/* 업로드된 파일 목록 표시 */}
           {fileNames.length > 0 && (
             <ul className="mt-2 text-sm text-gray-600">
             {fileNames.map((file, index) => (
@@ -146,6 +154,7 @@ export default function DataEditPage() {
         </div>
       </main>
 
+      {/* 성공 메시지 모달 */}
       <ModalMSG
         show={showMessageModal}
         onClose={() => setShowMessageModal(false)}
@@ -154,6 +163,7 @@ export default function DataEditPage() {
         <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
       </ModalMSG>
 
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG
         show={showErrorMessageModal}
         onClose={() => setShowErrorMessageModal(false)}

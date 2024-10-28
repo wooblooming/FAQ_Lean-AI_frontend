@@ -14,7 +14,7 @@ export default function Footer() {
                         <p className="text-gray-400 whitespace-nowrap">AI 기반 고객 질문 관리 및 응대 솔루션을<br/> 제공하는 서비스입니다.</p>
                     </div>
 
-                    <div className='hidden md:block'>
+                    <div>
                         <h3 className="text-lg font-semibold mb-4">빠른 링크</h3>
                         <ul className="space-y-2 text-gray-400">
                             <li><Link href="/" className="hover:text-indigo-400 transition-colors">Home</Link></li>
@@ -24,7 +24,7 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    <div className='hidden md:block'>
+                    <div>
                         <h3 className="text-lg font-semibold mb-4">고객지원</h3>
                         <ul className="space-y-2 text-gray-400">
                             <li><Link href="/faq" className="hover:text-indigo-400 transition-colors">자주 묻는 질문(FAQ)</Link></li>

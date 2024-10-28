@@ -9,45 +9,46 @@ import config from '../../config';
 
 const SignupStep2 = () => {
     const router = useRouter();
-    const { username, password, name, dob, phone, email } = router.query;
+    const { username, password, name, dob, phone, email } = router.query; // 첫 번째 단계에서 전달된 사용자 정보
 
     const [formData, setFormData] = useState({
         businessType: '', businessName: '', address: ''
-    });
-    const [termsAccepted, setTermsAccepted] = useState(false);
-    const [marketingAccepted, setMarketingAccepted] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [showWarning, setShowWarning] = useState(false); // 경고 메시지 상태
-    const [showTermsModal, setShowTermsModal] = useState(false);
-    const [showMarketingModal, setShowMarketingModal] = useState(false);
-    const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+    }); // 사업자 정보 저장 상태
+    const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
+    const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
+    const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 저장
+    const [showWarning, setShowWarning] = useState(false); // 비즈니스 종류 미선택 경고
+    const [showTermsModal, setShowTermsModal] = useState(false); // 이용약관 모달 상태
+    const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
+    const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 환영 모달 상태
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
+    // 입력 필드 변경 처리 함수
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-
-        if (name === 'businessType' && value !== '') {
-            setShowWarning(false); // 선택 시 경고 메시지 숨김
-        }
+        setFormData({ ...formData, [name]: value }); // 입력된 값을 상태에 업데이트
+        if (name === 'businessType' && value !== '') setShowWarning(false); // 비즈니스 종류 선택 시 경고 메시지 숨김
     };
 
+    // 약관 동의 모달 열기
     const handleTermsCheckboxChange = () => setShowTermsModal(true);
 
+    // 회원가입 처리 함수
     const handleSignup = async () => {
         const { businessType, businessName, address } = formData;
 
         if (!businessType) {
-            setShowWarning(true); // 비즈니스 종류가 선택되지 않으면 경고 표시
+            setShowWarning(true); // 비즈니스 종류 미선택 시 경고 메시지 표시
             return;
         }
 
-        if (!businessType || !businessName || !address) {
+        if (!businessType || !businessName || !address) { // 필수 항목 미기입 시 에러 메시지 표시
             setErrorMessage('필수 항목들을 기입해주시길 바랍니다.');
             setShowErrorMessageModal(true);
             return;
         }
 
+        // 생년월일 형식 변환
         let dobFormatted = dob;
         if (dob.length === 6) {
             const yearPrefix = parseInt(dob.substring(0, 2)) > 24 ? '19' : '20';
@@ -65,19 +66,14 @@ const SignupStep2 = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username, password, name, dob: dobFormatted,
-                    phone, email: email || null,
-                    store_category: businessType,
-                    store_name: businessName,
-                    store_address: address,
-                    marketing: marketingValue,
+                    username, password, name, dob: dobFormatted, phone, email: email || null,
+                    store_category: businessType, store_name: businessName, store_address: address, marketing: marketingValue,
                 }),
             });
 
             const data = await response.json();
-            if (data.success) {
-                setShowWelcomeModal(true);
-            } else {
+            if (data.success) setShowWelcomeModal(true); // 성공 시 환영 모달 표시
+            else {
                 setErrorMessage(data.message || '회원가입에 실패했습니다.');
                 setShowErrorMessageModal(true);
             }
@@ -94,25 +90,24 @@ const SignupStep2 = () => {
 
     const handleWelcomeModalClose = () => {
         setShowWelcomeModal(false);
-        router.push('/login');
+        router.push('/login'); // 환영 모달 닫기 후 로그인 페이지로 이동
     };
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-violet-50">
             <div className="bg-white px-10 py-8 rounded-md shadow-lg max-w-md w-full space-y-3">
                 <div className="flex items-center mb-12">
-                    <div className="flex-shrink-0">
-                        <ChevronLeft
-                            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-                            onClick={() => router.back()}
-                        />
-                    </div>
+                    {/* 뒤로 가기 버튼 */}
+                    <ChevronLeft
+                        className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+                        onClick={() => router.back()}
+                    />
                     <div className="flex-grow text-center">
                         <h1 className="text-3xl font-bold text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회원가입</h1>
                     </div>
                 </div>
 
-                {/* 드롭다운 */}
+                {/* 비즈니스 종류 선택 - 드롭다운 */}
                 <div className="mb-4">
                     <select
                         name="businessType"
@@ -133,38 +128,35 @@ const SignupStep2 = () => {
                     )}
                 </div>
 
+                {/* 사업자명 입력 필드 */}
                 <div>
                     <label className="flex text-gray-700 mb-3">
-                        <div className="relative flex-grow">
-                            <input
-                                type="text"
-                                name="businessName"
-                                placeholder="매장명"
-                                value={formData.businessName}
-                                onChange={handleInputChange}
-                                className="border px-4 py-2 border-gray-300 rounded-md  w-full"
-                            />
-                            <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
-                        </div>
+                        <input
+                            type="text"
+                            name="businessName"
+                            placeholder="매장명"
+                            value={formData.businessName}
+                            onChange={handleInputChange}
+                            className="border px-4 py-2 border-gray-300 rounded-md w-full"
+                        />
                     </label>
                 </div>
 
+                {/* 주소 입력 필드 */}
                 <div>
                     <label className="flex text-gray-700 w-full">
-                        <div className="relative flex-grow">
-                            <input
-                                type="text"
-                                name="address"
-                                placeholder="주소"
-                                value={formData.address}
-                                onChange={handleInputChange}
-                                className="border px-4 py-2 border-gray-300 rounded-md w-full"
-                            />
-                            <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
-                        </div>
+                        <input
+                            type="text"
+                            name="address"
+                            placeholder="주소"
+                            value={formData.address}
+                            onChange={handleInputChange}
+                            className="border px-4 py-2 border-gray-300 rounded-md w-full"
+                        />
                     </label>
                 </div>
 
+                {/* 약관 및 마케팅 동의 체크박스 */}
                 <div className="flex items-center justify-center space-x-2 mt-4">
                     <input
                         type="checkbox"
@@ -191,6 +183,8 @@ const SignupStep2 = () => {
                         마케팅 활용 동의 및 광고 수신 동의(선택)
                     </label>
                 </div>
+
+                {/* 회원가입 버튼 */}
                 <button
                     className="bg-indigo-500 text-white py-2 px-4 rounded-md w-full mt-3 font-medium"
                     onClick={handleSignup}
@@ -198,21 +192,21 @@ const SignupStep2 = () => {
                     회원가입
                 </button>
 
-                {/* 이용약관 보여주는 모달 */}
+                {/* 이용약관 모달 */}
                 <TermsOfServiceModal
                     show={showTermsModal}
                     onClose={() => setShowTermsModal(false)}
                     onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
                 />
 
-                {/* 광고 및 마케팅 약관 보여주는 모달 */}
+                {/* 마케팅 약관 모달 */}
                 <MarketingModal
                     show={showMarketingModal}
                     onClose={() => setShowMarketingModal(false)}
                     onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
                 />
 
-                {/* 에러메시지 모달 */}
+                {/* 에러 메시지 모달 */}
                 <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
                     <p className='whitespace-pre-line'>
                         {typeof errorMessage === 'object' ? (
@@ -227,12 +221,11 @@ const SignupStep2 = () => {
                     </p>
                 </ModalErrorMSG>
 
-                {/* 회원가입 성공 및 환영 모달 */}
+                {/* 회원가입 성공 모달 */}
                 <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
                     <p className=''>{username}님 환영합니다!</p>
                 </ModalMSG>
-
-            </div >
+            </div>
         </div>
     );
 };

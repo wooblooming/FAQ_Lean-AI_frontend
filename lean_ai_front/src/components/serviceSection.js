@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 
-// Features Data (서비스 소개 섹션 데이터)**
+// Features Data (서비스 소개 섹션 데이터)
 const features = [
   { icon: FileCode2, title: "고객 질문에 적합한 답변 제공", description: "고객 질문 맥락을 분석하여 최적의 키워드와 답변을 추천해줌으로써, 더욱 정확하고 신속한 응대를 가능하게 합니다." },
   { icon: HelpCircle, title: "자주 묻는 질문 답변 매칭", description: "사전에 등록된 자주 묻는 질문(FAQ)과의 매칭을 통해 반복적인 질문에 대해 자동으로 답변을 제공합니다." },
@@ -17,7 +17,7 @@ const features = [
   { icon: FileText, title: "고객 질문 데이터 인사이팅", description: "고객 질문 데이터를 분석하여 질문 유형, 빈도 등의 정보를 도출하고, 고객 응대의 개선 방향을 제시합니다." },
 ];
 
-// Guide Data (업주/고객 가이드라인 데이터)**: 각각의 단계를 저장하고 있는 배열
+// Guide Data (업주/고객 가이드라인 데이터) : 각각의 단계를 저장하고 있는 배열
 const ownerSteps = [
   { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner_1.png" },
   { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀파일로 제공되는 양식에 정보 입력하여 업로드 후 초기 데이터는 기준 3일, 수정 데이터는 기준 1일 내 반영됩니다.", image: "/owner_2.png" },
@@ -31,14 +31,14 @@ const customerSteps = [
   { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 매장에 필요한 모든 정보를 제공합니다.", image: "/customer_3.png" },
 ];
 
-// GoodThings Data (장점 섹션 데이터)**
+// GoodThings Data (장점 섹션 데이터)
 const goodThings = [
   { image: "/cost_saving.png", text: "인건 비용 절감", description: "반복적인 질문 응대 및 처리 작업을 자동화하여, 인력 운영에 따른 비용을 절감하고 보다 중요한 업무에 집중할 수 있도록 돕습니다." },
   { image: "/comunications.png", text: "직원-고객 간 감정소비 감소", description: "AI 챗봇을 통해 고객의 불만이나 질문를 처리하여, 직원들이 겪는 감정적 소모를 줄이고 보다 건강한 근무 환경을 조성합니다." },
   { image: "/efficiency.png", text: "업무 효율성 증대", description: "고객의 질문를 신속하게 해결하고 업무 프로세스를 최적화하여, 업무 효율성과 고객 만족도를 동시에 높입니다." },
 ];
 
-// usecase Data (활용 섹션 데이터)**
+// usecase Data (활용 섹션 데이터)
 const usecase = [
   {
     name: "식당",
@@ -66,8 +66,9 @@ const usecase = [
   },
 ];
 
+// 이미지의 캐시를 방지하여 항상 최신 이미지를 불러오게 하는 함
 const CacheBustedImage = ({ src, alt, width, height, priority, ...props }) => {
-  const cacheBustSrc = `${src}?v=${Date.now()}`;
+  const cacheBustSrc = `${src}?v=${Date.now()}`; //  현재 시간을 기반으로 한 타임스탬프를 v라는 쿼리 파라미터로 추가
   
   const imageLoader = ({ src, width, quality }) => {
     return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
@@ -301,7 +302,7 @@ const ServiceSection = ({ isMobile }) => {
                   alt={`${thing.text} 이미지`}
                   width={130}
                   height={130}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // 적절한 sizes 값 설정
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
                 />
               </div>
               <h2 className="mt-4 text-xl font-semibold text-indigo-800 text-center whitespace-nowrap md:whitespace-pre-line" style={{ fontFamily: "NanumSquareExtraBold" }}>
@@ -320,7 +321,7 @@ const ServiceSection = ({ isMobile }) => {
           <span className="text-indigo-600">무물</span>은 이렇게 활용됩니다
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-          {/* Category buttons */}
+          {/* Category 버튼 */}
           <div className="grid grid-cols-2 gap-4">
             {usecase.map((category, index) => (
               <motion.button
@@ -336,7 +337,7 @@ const ServiceSection = ({ isMobile }) => {
             ))}
           </div>
 
-          {/* Description area */}
+          {/* Description 영역 */}
           {activeCategory !== null && (
             <motion.div
               className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"

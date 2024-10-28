@@ -5,7 +5,7 @@ const AnimationComponent = ({ onAnimationEnd }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onAnimationEnd(); // 애니메이션이 끝나면 부모 컴포넌트에서 전달한 콜백 호출
-    }, 3000); // 애니메이션 시간 (5초)
+    }, 3000); // 애니메이션 지속 시간
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 해제
   }, [onAnimationEnd]);

@@ -7,14 +7,13 @@ import { AwardsContext, AwardsProvider } from '../contexts/awardsContext';
 import { BussinessContext, BussinessProvider } from '../contexts/bussinessContext';
 import { news } from '../pages/news';
 
-
 // SectionItem 컴포넌트: 각 섹션의 반복적인 렌더링을 처리
 const SectionItem = ({ title, content, index, activeSections, toggleSection, isMobile }) => (
   <motion.div
     className="flex-1 rounded-lg overflow-hidden"
     style={{
       transition: 'border 0.3s ease-in-out',
-      backgroundColor: activeSections[index] ? '#fff' : '',
+      backgroundColor: activeSections[index] ? '#fff' : '', // 활성화된 섹션의 배경색 설정
     }}
     whileHover={{ scale: 1.03 }}
     initial={{ opacity: 0, y: -50 }}
@@ -23,7 +22,7 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
     <motion.div
       className="p-4 md:px-3 py-6 flex justify-between items-center cursor-pointer bg-indigo-500 rounded-lg"
       style={{
-        borderRadius: activeSections[index] ? '8px 8px 0 0' : '',
+        borderRadius: activeSections[index] ? '8px 8px 0 0' : '', // 활성화된 섹션의 테두리 모양 설정
         color: 'white',
         whiteSpace: 'nowrap',
       }}
@@ -47,12 +46,12 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
           className="px-4 md:px-2 py-4 overflow-hidden rounded-lg"
           style={{
             backgroundColor: '#fff',
-            borderRadius: '0 0 8px 8px',
+            borderRadius: '0 0 8px 8px', // 열림 상태에서 섹션의 테두리 모양 설정
           }}
         >
           <ul className="space-y-2">
             {Array.isArray(content) ? (
-              // 배열 형태
+              // 배열 형태의 컨텐츠를 처리
               content.slice(0, 3).map((item, idx) => (
                 <li key={idx} className="flex items-center">
                   <ChevronRight className="mr-1 flex-shrink-0 h-5 w-5 text-indigo-300" />
@@ -62,7 +61,7 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
                 </li>
               ))
             ) : (
-              // 문자열 형태
+              // 문자열 형태의 컨텐츠를 처리
               content.split('\n').slice(0, 3).map((item, idx) => (
                 <li key={idx} className="flex items-center">
                   <ChevronRight className="mr-1 flex-shrink-0 h-5 w-5 text-indigo-300" />
@@ -76,6 +75,7 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
     </AnimatePresence>
   </motion.div>
 );
+
 // 데스크탑 UI
 const DesktopSection = ({ sectionData, activeSections, toggleSection }) => (
   <motion.div
@@ -216,6 +216,7 @@ const CompanySection = ({ isMobile }) => {
         
         </motion.div>
 
+        {/* 회사 소식 섹션 */}
         <div className="bg-white rounded-lg p-6 mt-4 md:mt-20 space-y-4 text-left w-full md:w-1/2">
           <h2 className="text-3xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회사소식</h2>
           <ul className="space-y-4 px-0 md:px-4">

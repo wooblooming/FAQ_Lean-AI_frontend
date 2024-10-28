@@ -254,6 +254,7 @@ const handleSendCode = async () => {
                 </div>
 
                 <div className="flex space-x-2 mb-3">
+                    {/* 이름 입력 */}
                     <label className="flex items-center block text-gray-700 w-1/2">
                         <div className="relative w-full">
                             <input
@@ -267,6 +268,8 @@ const handleSendCode = async () => {
                             <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">*</label>
                         </div>
                     </label>
+
+                    {/* 생년월일 입력 */}
                     <label className="flex items-center justify-end text-gray-700 w-1/2">
                         <div className="relative w-full">
                             <input
@@ -283,6 +286,7 @@ const handleSendCode = async () => {
                 </div>
 
                 <div className="flex mb-3 ">
+                    {/* 핸드폰 번호 입력 */}
                     <label className="block text-gray-700 w-full">
                         <div className="flex items-center justify-start space-x-2.5">
                             <div className="relative flex-grow">
@@ -310,6 +314,7 @@ const handleSendCode = async () => {
                 </div>
 
                 <div>
+                    {/* 이메일 입력 */}
                     <label className="flex text-gray-700 mb-3 w-full">
                         <input
                             type="email"

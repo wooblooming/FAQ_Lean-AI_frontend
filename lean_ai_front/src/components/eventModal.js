@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 const EventAlertModal = ({ show, onClose }) => {
   if (!show) return null;
@@ -8,9 +9,9 @@ const EventAlertModal = ({ show, onClose }) => {
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center relative font-sans">
         <button
           onClick={() => onClose(false)}  // "아니오"를 누르면 false 전달
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold"
+          className="absolute top-4 right-4 z-20"
         >
-          X
+          <X className="bg-indigo-500 rounded-full text-white p-1"/>
         </button>
         <div className="flex flex-col items-center space-y-4">
           <h2 className="text-xl font-bold mb-4" style={{fontFamily:"NanumSquareExtraBold"}}>알림 설정 안내</h2>

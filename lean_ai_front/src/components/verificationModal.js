@@ -40,6 +40,7 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, verificationCode, onChan
                 style={{ maxWidth: '400px' }}
             >
                 <h2 className="text-2xl font-bold mb-4">인증번호 확인</h2>
+                {/* 인증번호 입력 */}
                 <div className='flex flex-row space-x-5 justify-center items-center'>
                     <input
                         type="text"

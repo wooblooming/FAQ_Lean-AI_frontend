@@ -295,7 +295,8 @@ const StoreIntroduceOwner = () => {
                   style={{ fontFamily: 'NanumSquareExtraBold' }}
                 >
                   {menuTitle}
-                </motion.h2>
+                </motion.h2> 
+                {/* 매장이 음식점일 때만 알레르기 모달 표시 */}
                 {storeCategory === 'FOOD' && (
                   <div className='flex flex-row text-indigo-600 space-x-1 cursor-pointer' onClick={toggleAllergyModal}>
                     <TriangleAlert /> <p>알레르기 </p>
@@ -314,7 +315,7 @@ const StoreIntroduceOwner = () => {
                       <h3 className="text-lg font-semibold text-white">{category}</h3>
                     </motion.div>
 
-                    {/* 메뉴 목록 (아코디언) */}
+                    {/* 메뉴 목록 */}
                     {openCategories[category] && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
