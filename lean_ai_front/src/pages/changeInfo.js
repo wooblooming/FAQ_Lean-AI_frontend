@@ -515,9 +515,8 @@ const ChangeInfo = ({ initialData }) => {
 
       {/* ViewMenuModal 모달 */}
       <ViewMenuModal
-        show={isViewMenuModalOpen}
+        isOpen={isViewMenuModalOpen}
         onClose={closeViewMenu}
-        title="메뉴 목록"
         slug={slug}
         menuTitle={menuTitle}
       />

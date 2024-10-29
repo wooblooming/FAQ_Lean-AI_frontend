@@ -310,7 +310,7 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
     };
 
     return (
-        <>
+        <div>
             <ModalText show={show} onClose={onClose} title="이용약관 및 개인정보 수집 동의">
                 <p>이용약관</p>
                 <div className="h-60 overflow-y-auto border rounded-md p-2 whitespace-pre-wrap font-normal mb-4">
@@ -352,7 +352,7 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
                     )}
                 </p>
             </ModalErrorMSG>
-        </>
+        </div>
     );
 };
 export default TermsOfServiceModal;

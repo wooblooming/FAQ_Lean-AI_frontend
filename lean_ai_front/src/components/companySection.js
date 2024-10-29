@@ -164,12 +164,12 @@ const CompanySection = ({ isMobile }) => {
   );
 
   const desktopDescription = (
-    <>
+    <div>
       <p className="font-bold mb-6 text-5xl" >(주)린에이아이</p>
       <p className="text-gray-700 text-3xl font-semibold mb-8">
         AI가 필요한 모든 산업, 영역에 <span className="text-indigo-700 text-4xl font-bold">린에이아이의 AI 기술</span>을 적용하고자 합니다.
       </p>
-    </>
+    </div>
   );
 
   return (

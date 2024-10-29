@@ -64,7 +64,7 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete }) => {
     }, [show]);
 
     return (
-        <>
+        <div>
             {show && !showErrorModal && (
                 <ModalMSG show={show} onClose={onClose} title="ID 확인">
                     {loading ? (
@@ -79,7 +79,7 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete }) => {
                     <p>{errorMessage}</p>
                 </ModalErrorMSG>
             )}
-        </>
+        </div>
     );
 };
 

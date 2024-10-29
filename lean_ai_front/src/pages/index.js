@@ -22,13 +22,13 @@ const LandingPage = () => {
   };
 
   return (
-    <>
+    <div>
       {showLandingPage ? (
         <LandingPageContent /> // 애니메이션이 끝난 후 실제 랜딩 페이지를 렌더링
       ) : (
         <AnimationComponent onAnimationEnd={handleAnimationEnd} /> // 애니메이션 실행
       )}
-    </>
+    </div>
   );
 };
 

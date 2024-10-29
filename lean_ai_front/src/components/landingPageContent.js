@@ -181,7 +181,7 @@ const LandingPageContent = () => {
               </motion.div>
 
               {/* 이미지 섹션 - PC */}
-              <div className=" md:block z-10 w-full " style={{ height: "730px" }}>
+              <div className=" md:block z-10 w-full py-16 " style={{ height: "730px" }}>
                 <CacheBustedImage
                   src='/index_desktop.png'
                   alt='mumul'

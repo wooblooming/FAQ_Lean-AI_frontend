@@ -12,11 +12,11 @@ export default function ErrorPage() {
     };
 
     return (
-        <>
+        <div>
         <ModalMSG show={showWModal} onClose={handleModalClose} title="메시지">
             <p className=''> 추후 추가 될 예정입니다.</p>
         </ModalMSG>
-        </>
+        </div>
 
     )
 }

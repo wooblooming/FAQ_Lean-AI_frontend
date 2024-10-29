@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
+        <link rel="icon" href="/favicon1.ico" type="image/x-icon"/>
         <title>MUMUL</title>
       </Head>
 

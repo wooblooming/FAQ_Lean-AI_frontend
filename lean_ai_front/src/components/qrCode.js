@@ -86,7 +86,7 @@ const QRCodeSection = ({
           QR 코드 생성하기
         </button>
       ) : (
-        <>
+        <div>
           {/* QR 코드 보기/접기 버튼 */}
           <button onClick={toggleQrCode} className="text-blue-400 underline text-sm font-semibold mb-2 ml-2 mt-2">
             {showQrCode ? 'QR 코드 접기' : 'QR 코드 보기'}
@@ -104,7 +104,7 @@ const QRCodeSection = ({
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

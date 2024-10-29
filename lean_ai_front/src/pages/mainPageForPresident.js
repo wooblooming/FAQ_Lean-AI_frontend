@@ -140,7 +140,7 @@ const MainPageWithMenu = () => {
         <main className="container md:mx-auto px-2 md:px-4 py-10 mt-12 flex-grow flex justify-center items-center">
           <div className="flex flex-col justify-center items-center text-center space-y-10">
             <h2 className="text-2xl md:text-3xl mt-5 md:mt-10" style={{ fontFamily: 'NanumSquareBold' }}>
-              안녕하세요! {storeName}님!
+              안녕하세요! <span className='hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer' onClick={()=> router.push('/myPage')}>{storeName}님</span>
             </h2>
 
             {/* 버튼 카드 영역 */}

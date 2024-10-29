@@ -220,7 +220,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
             {isLoading ? (
               <p>로딩 중입니다...</p>
             ) : (
-              <>
+              <div>
                 <canvas ref={qrCanvasRef} style={{ display: 'none' }} />
                 <img src={qrCodeImageUrl} alt="QR Code" className="mx-auto" />
                 <p
@@ -229,7 +229,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                 >
                   이미지 저장하기
                 </p>
-              </>
+              </div>
             )}
           </div>
         </div>

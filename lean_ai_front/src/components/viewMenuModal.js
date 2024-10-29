@@ -9,7 +9,7 @@ import ConfirmDeleteModal from '../components/confirmDeleteModal';
 import config from '../../config';
 import styles from '../styles/viewMenu.module.css';
 
-const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
+const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
   const [menuItems, setMenuItems] = useState([]); // 초기 메뉴 데이터를 저장
   const [loading, setLoading] = useState(true); // 로딩 상태 관리
   const [error, setError] = useState(null); // 에러 메시지 관리
@@ -29,7 +29,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
 
   // 메뉴 데이터를 가져오기
   useEffect(() => {
-    if (show) {
+    if (isOpen) {
       const fetchMenuItems = async () => {
         try {
           const token = sessionStorage.getItem('token');
@@ -63,7 +63,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
       };
       fetchMenuItems();
     }
-  }, [show, slug]);
+  }, [isOpen, slug]);
 
  // 카테고리 확장/축소 상태 토글
   const toggleCategory = (category) => {
@@ -237,7 +237,7 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
     return acc;
   }, {});
 
-  if (!show) return null;
+  if (!isOpen) return null;
 
   return (
     <div className={`${styles.modalOverlay} z-30`} >
@@ -250,15 +250,15 @@ const ViewMenuModal = ({ show, onClose, title, slug, menuTitle }) => {
         >
           X
         </button>
-        <div className={styles.modalHeader}>메뉴 목록</div>
+        <div className={styles.modalHeader}>{menuTitle} 목록</div>
         <div className={styles.modalBody}> 
           {/* 로딩 중 일때 */}
           {loading ? (
-            <p>메뉴 데이터를 불러오는 중...</p>
+            <p>{menuTitle} 데이터를 불러오는 중...</p>
           ) : error ? (
             <p className="error">{error}</p>
           ) : Object.keys(groupedMenuItems).length === 0 ? (
-            <p>등록된 메뉴가 없습니다.</p>
+            <p>등록된 {menuTitle}이/가 없습니다.</p>
           ) : (
             Object.entries(groupedMenuItems).map(([category, items]) => (
               <div key={category} className={styles.categoryGroup}>

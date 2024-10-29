@@ -456,7 +456,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <>
+                                                <div>
                                                     <img
                                                         src={getImagePreview(item.image)}
                                                         alt={item.name}
@@ -476,7 +476,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                                                     >
                                                         <EditIcon />
                                                     </button>
-                                                </>
+                                                </div>
                                             )}
                                         </div>
                                     ))

@@ -95,7 +95,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                 {navItems.map((item, index) => (
                   <li key={index} className="relative group">
                     {item.subItems ? (
-                      <>
+                      <div>
                         <span
                           className="text-white text-xl md:text-2xl whitespace-nowrap font-medium hover:underline cursor-pointer"
                           onClick={toggleSubMenu}
@@ -113,7 +113,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                             ))}
                           </ul>
                         )}
-                      </>
+                      </div>
                     ) : (
                       <button
                         className="text-white text-xl md:text-2xl font-medium hover:underline"
@@ -150,7 +150,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
             {navItems.map((item, index) => (
               <li key={index}>
                 {item.subItems ? (
-                  <>
+                  <div>
                     <button
                       className="text-3xl flex items-center justify-between w-full"
                       onClick={() => toggleMobileSubMenu(index)}
@@ -168,7 +168,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                         ))}
                       </ul>
                     )}
-                  </>
+                  </div>
                 ) : (
                   <button
                     className="text-3xl"
