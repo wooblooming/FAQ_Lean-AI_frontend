@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { Edit3 as EditIcon, Check as CheckIcon, X, X as CancelIcon } from 'lucide-react';
+import { Pencil as EditIcon, Check as CheckIcon, X, X as CancelIcon, Trash, ChevronDown, CircleMinus } from 'lucide-react';
 import ModalMSG from './modalMSG.js';
 import ModalErrorMSG from './modalErrorMSG';
 import ConfirmDeleteModal from '../components/confirmDeleteModal';
@@ -319,9 +317,9 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
                         setConfirmDeleteCategory(category);
                       }}
                     >
-                      <DeleteOutlineIcon />
+                      <CircleMinus />
                     </button>
-                    : <KeyboardArrowDownIcon />}
+                    : <ChevronDown />}
                 </h3>
                 {expandedCategories[category] && (
                   <ul>
@@ -392,12 +390,12 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
                                 <p className={styles.menuPrice}>{Number(menu.price).toFixed(0)}원</p>
                               </div>
                             </div>
-                            <div className="flex space-x-2 items-center mr-6">
+                            <div className="flex space-x-4 items-center mr-6">
                               <button className={styles.editButton} onClick={() => handleEditClick(menu)}>
-                                <EditIcon />
+                                <EditIcon className='w-5 h-5'/>
                               </button>
                               <button className={styles.deleteButton} onClick={() => handleDeleteClick(menu)}>
-                                <DeleteOutlineIcon />
+                                <Trash className='w-5 h-5'/>
                               </button>
                             </div>
                           </div>

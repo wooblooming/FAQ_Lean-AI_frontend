@@ -302,8 +302,8 @@ const ChangeInfo = ({ initialData }) => {
         : '';
 
   return (
-    <div className='flex flex-col h-full w-full bg-white font-sans'>
-      <main className="flex flex-col flex-grow">
+    <div className='flex flex-col h-full w-full bg-white'>
+      <main className="flex flex-col flex-grow gap-4">
         {/* 배너 이미지 */}
         <div id='banner' className="relative h-auto "
           style={{ height: '45%', maxHeight: '200px' }}
@@ -367,41 +367,41 @@ const ChangeInfo = ({ initialData }) => {
             elementId="storeInformation"
           />
 
-          <hr className="border-t-2 border-gray-300 mt-2.5 mb-px w-full" />
+
+          <hr className="border-t-2 border-gray-300 w-full py-2 " />
+        </div>
+        <div id='store-menu' className='p-4 flex-grow' >
+          <p id="menuTitle" className="font-bold text-xl mb-2 h-auto" style={{ fontFamily: "NanumSquareBold" }}>
+            {menuTitle} 정보
+          </p>
+          <div className='flex flex-col space-y-1 px-2'>
+            <div className='flex flex-row'>
+              <AddIcon className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToAddMenu} />
+              <button
+                className='textAddIcon '
+                onClick={goToAddMenu}>
+                <p className='text-indigo-400 font-semibold cursor-pointer text-lg'> {menuTitle} 추가</p>
+              </button>
+            </div>
+            <div className='flex flex-row'>
+              <SearchIcon className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToViewMenu} />
+              <button
+                className='textAddIcon '
+                onClick={goToViewMenu}>
+                <p className='text-indigo-400 font-semibold cursor-pointer text-lg' > {menuTitle} 보기</p>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div id='store-menu'
-          className=' p-4 flex-grow'
-          style={{ maxHeight: '60%' }}
-        >
-          <p id="menuTitle" className="font-bold text-xl mb-2 h-auto">
-            {menuTitle}
-          </p>
-          <div className='flex flex-row'>
-            <AddIcon className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToAddMenu} />
-            <button
-              className='textAddIcon '
-              onClick={goToAddMenu}>
-              <p className='text-indigo-400 font-semibold cursor-pointer text-lg'> {menuTitle} 추가</p>
-            </button>
-          </div>
-          <div className='flex flex-row'>
-            <SearchIcon className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToViewMenu} />
-            <button
-              className='textAddIcon '
-              onClick={goToViewMenu}>
-              <p className='text-indigo-400 font-semibold cursor-pointer text-lg'> {menuTitle} 보기</p>
-            </button>
-          </div>
-        </div>
         {/* 저장 버튼 */}
         <div className='flex bg-white items-center justify-center h-auto mt-auto'>
           <button
             onClick={saveAllChanges}
-            className="mb-3 w-48 py-2 bg-indigo-500 text-white text-center font-medium block rounded-full cursor-pointer"
-            style={{ marginBottom: '10px' }}
+            className="w-48 py-2 bg-indigo-500 text-white text-center block rounded-full cursor-pointer"
+            style={{ marginBottom: '15px' }}
           >
-            모든 변경사항 저장
+            <p className='font-semibold text-lg '>모든 변경사항 저장</p>
           </button>
         </div>
       </main>
@@ -420,7 +420,7 @@ const ChangeInfo = ({ initialData }) => {
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-10"
               aria-label="Close"
             >
-              <X className="bg-indigo-500 rounded-full text-white p-1"/>
+              <X className="bg-indigo-500 rounded-full text-white p-1" />
             </button>
             <h2 className="text-2xl font-bold mb-4">배너 사진 설정</h2>
             <button
@@ -459,7 +459,7 @@ const ChangeInfo = ({ initialData }) => {
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-10"
               aria-label="Close"
             >
-              <X className="bg-indigo-500 rounded-full text-white p-1"/>
+              <X className="bg-indigo-500 rounded-full text-white p-1" />
             </button>
             <h2 className="text-2xl font-bold mb-4">내용 수정</h2>
             {currentEditElement === 'storeCategory' ? (

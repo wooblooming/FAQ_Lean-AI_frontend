@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit3 as EditIcon, Check, X, X as CancelIcon, Image as ImageIcon } from 'lucide-react';
+import { Plus, PencilLine  as EditIcon, Check, X, X as CancelIcon, Image as ImageIcon } from 'lucide-react';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
@@ -400,7 +400,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                                                             onClick={() => handleEdit(item)}
                                                             className="flex items-center"
                                                         >
-                                                            <EditIcon className="w-5 h-5" />
+                                                            <EditIcon className="w-5 h-5 text-indigo-500" />
                                                         </button>
                                                     </div>
                                                 )}
