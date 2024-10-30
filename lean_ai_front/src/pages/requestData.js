@@ -76,9 +76,9 @@ export default function DataEditPage() {
     };
 
     return (
-        <div className="flex flex-col w-full max-w-md p-8 bg-white rounded-lg items-center justify-center">
+        <div className="flex flex-col space-y-10 w-full max-w-md p-8 bg-white rounded-lg items-center justify-center">
             {/* 페이지 제목 */}
-            <h1 className="text-3xl font-bold text-indigo-600 text-center mb-6" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+            <h1 className="text-3xl font-bold text-indigo-600 text-center mt-7" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                 서비스 요청하기
             </h1>
 
@@ -111,7 +111,7 @@ export default function DataEditPage() {
                 </div>
 
                 {/* 파일 입력 필드 */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-4">
                     <input
                         ref={fileInputRef} // 파일 입력 참조
                         id="fileInput"
@@ -131,7 +131,7 @@ export default function DataEditPage() {
                 <div className="text-center">
                     <button
                         onClick={handleSubmit}
-                        className="bg-indigo-500 text-white font-medium py-3 px-6 rounded-lg w-full"
+                        className="bg-indigo-500 text-white font-medium py-3 px-6  rounded-lg w-full"
                     >
                         요청하기
                     </button>

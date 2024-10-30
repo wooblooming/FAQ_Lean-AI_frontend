@@ -303,7 +303,7 @@ const ChangeInfo = ({ initialData }) => {
 
   return (
     <div className='flex flex-col h-full w-full bg-white'>
-      <main className="flex flex-col flex-grow gap-4">
+      <main className="flex flex-col flex-grow gap-3">
         {/* 배너 이미지 */}
         <div id='banner' className="relative h-auto "
           style={{ height: '45%', maxHeight: '200px' }}
@@ -323,7 +323,7 @@ const ChangeInfo = ({ initialData }) => {
           </div>
         </div>
 
-        <div id='store-info' className='bg-white p-4'>
+        <div id='store-info' className='bg-white px-4 py-2'>
           <StoreInfoEdit
             label="매장 이름"
             value={storeName}
@@ -366,12 +366,11 @@ const ChangeInfo = ({ initialData }) => {
             onEdit={openEditModal}
             elementId="storeInformation"
           />
-
-
-          <hr className="border-t-2 border-gray-300 w-full py-2 " />
+          <hr className="border-t-2 border-gray-300 w-full mt-4 " />
         </div>
-        <div id='store-menu' className='p-4 flex-grow' >
-          <p id="menuTitle" className="font-bold text-xl mb-2 h-auto" style={{ fontFamily: "NanumSquareBold" }}>
+
+        <div id='store-menu' className='flex flex-col space-y-2 px-4 flex-grow' >
+          <p id="menuTitle" className="font-bold text-xl" style={{ fontFamily: "NanumSquareBold" }}>
             {menuTitle} 정보
           </p>
           <div className='flex flex-col space-y-1 px-2'>
@@ -380,7 +379,7 @@ const ChangeInfo = ({ initialData }) => {
               <button
                 className='textAddIcon '
                 onClick={goToAddMenu}>
-                <p className='text-indigo-400 font-semibold cursor-pointer text-lg'> {menuTitle} 추가</p>
+                <p className='text-indigo-400 font-medium cursor-pointer text-lg'> {menuTitle} 추가</p>
               </button>
             </div>
             <div className='flex flex-row'>
@@ -388,7 +387,7 @@ const ChangeInfo = ({ initialData }) => {
               <button
                 className='textAddIcon '
                 onClick={goToViewMenu}>
-                <p className='text-indigo-400 font-semibold cursor-pointer text-lg' > {menuTitle} 보기</p>
+                <p className='text-indigo-400 font-medium cursor-pointer text-lg' > {menuTitle} 보기</p>
               </button>
             </div>
           </div>
@@ -399,7 +398,7 @@ const ChangeInfo = ({ initialData }) => {
           <button
             onClick={saveAllChanges}
             className="w-48 py-2 bg-indigo-500 text-white text-center block rounded-full cursor-pointer"
-            style={{ marginBottom: '15px' }}
+            style={{ marginBottom: '10px' }}
           >
             <p className='font-semibold text-lg '>모든 변경사항 저장</p>
           </button>

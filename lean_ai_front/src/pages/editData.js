@@ -88,15 +88,15 @@ export default function DataEditPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-md px-2 py-8 bg-white rounded-lg items-center justify-center space-y-5">
+    <div className="flex flex-col space-y-10 w-full max-w-md p-8 bg-white rounded-lg items-center justify-center space-y-5">
       {/* 페이지 제목 */}
-      <h1 className="text-3xl font-bold text-indigo-600 text-center " style={{ fontFamily: 'NanumSquareExtraBold' }}>
+      <h1 className="text-3xl font-bold text-indigo-600 text-center mt-7" style={{ fontFamily: 'NanumSquareExtraBold' }}>
         데이터 등록하기
       </h1>
 
-      <main className="p-4 space-y-16">
+      <main className=" space-y-6">
         {/* 양식 다운로드 섹션 */}
-        <div className="space-y-2 mt-4">
+        <div className="space-y-3 py-8">
           <h2 className="text-xl font-semibold">데이터 등록 양식 다운로드</h2>
           <p className="text-sm text-gray-500">
             데이터 등록에 필요한 양식을 <br /> 다운로드하려면 아래 버튼을 클릭하세요.
@@ -109,10 +109,10 @@ export default function DataEditPage() {
           </button>
         </div>
 
-        <div className="border-t border-gray-300 "></div>
+        <hr className="border-t-2 border-gray-300 w-full " />
 
         {/* 파일 업로드 섹션 */}
-        <div className="space-y-3 ">
+        <div className="space-y-3 py-8 ">
           <h2 className="text-xl font-semibold">파일 업로드</h2>
           <p className="text-sm text-gray-500">
             작성한 양식을 업로드하려면 <br /> 파일을 선택하고 업로드 버튼을 클릭하세요.
