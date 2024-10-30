@@ -31,9 +31,17 @@
     background-color: white;
     padding: 30px;
     border-radius: 12px;
+    overflow-y: auto; /* 세로 스크롤 허용 */
+    max-height: 90vh; /* 화면의 90% 높이까지만 사용 */
     width: 700px;
+    max-width: 90%; /* 화면 크기에 맞게 조정 */
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     font-family: 'Arial', sans-serif;
+  }
+
+  .modalBody {
+    max-height: 75vh; /* 필요한 경우 높이 제한 */
+    padding: 20px; /* 추가적인 여백 */
   }
 
   .menuItem {

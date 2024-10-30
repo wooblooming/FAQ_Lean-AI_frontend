@@ -10,11 +10,11 @@ const AllergyModal = ({ show, onClose, menuDetails }) => {
         <h2 className="text-xl font-bold mb-4">알레르기 정보</h2>
         <button
           onClick={onClose}
-          className=" "
+          className="absolute top-4 right-4 z-20"
           style={{ cursor: 'pointer' }}
           aria-label="Close"
         >
-          <X className="absolute top-4 right-4 bg-indigo-500 rounded-full text-white z-20 p-1"/>
+          <X className="bg-indigo-500 rounded-full text-white p-1"/>
         </button>
         <div className="overflow-y-auto max-h-96">
           {menuDetails && menuDetails.length > 0 ? (

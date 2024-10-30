@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSwipeable } from 'react-swipeable'; 
+import { useSwipeable } from 'react-swipeable';
 import { motion } from "framer-motion";
-import { ChevronLeft, TriangleAlert } from 'lucide-react';
+import { ChevronLeft, TriangleAlert, CircleAlert } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
-import Loading from '../../components/loading'; 
-import AllergyModal from '../../components/allergyModal'; 
-import Chatbot from '../chatBotMSG'; 
+import Loading from '../../components/loading';
+import AllergyModal from '../../components/allergyModal';
+import Chatbot from '../chatBotMSG';
 import config from '../../../config';
 
 const StoreIntroduceOwner = () => {
@@ -119,7 +119,7 @@ const StoreIntroduceOwner = () => {
             body: JSON.stringify({
               action: 'view',
               slug: slug,
-              type:'owner'
+              type: 'owner'
             }),
           });
 
@@ -245,41 +245,49 @@ const StoreIntroduceOwner = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
+              className='flex flex-col space-y-8 p-2'
             >
-              <h3 className="font-bold text-2xl ml-2 mb-4" style={{ fontFamily: 'NanumSquareExtraBold' }}>매장 정보</h3>
-              <div id='location' className='flex flex-col ml-6 text-lg'>
-                {storeData.store_address && (
-                  <div className='flex items-center mb-3'>
-                    <FontAwesomeIcon icon={faLocationDot} />
-                    <p className='whitespace-pre-line ml-2'>
-                      {storeData.store_address}
-                    </p>
-                  </div>
-                )}
-                {storeData.store_hours && (
-                  <div id='clock' className='flex items-center mb-3'>
-                    <FontAwesomeIcon icon={faClock} />
-                    <p className='whitespace-pre-line ml-2'>
-                      {storeData.store_hours}
-                    </p>
-                  </div>
-                )}
-                {storeData.store_tel && (
-                  <div id='phone' className='flex items-center mb-3'>
-                    <FontAwesomeIcon icon={faPhone} />
-                    <p className='whitespace-pre-line ml-2'>
-                      {storeData.store_tel}
-                    </p>
-                  </div>
-                )}
-                {storeData.store_information && (
-                  <div id='information' className='flex items-center mb-3'>
-                    <FontAwesomeIcon icon={faStore} />
-                    <p className='whitespace-pre-line ml-2'>
-                      {storeData.store_information}
-                    </p>
-                  </div>
-                )}
+              <div id='information' className='flex flex-col space-y-4 text-lg '>
+                <h3 className="font-bold text-2xl " style={{ fontFamily: 'NanumSquareExtraBold' }}>매장 정보</h3>
+                <div id='information_data' className='flex flex-col space-y-4 text-lg px-3'>
+                  {storeData.store_address && (
+                    <div className='flex space-x-2 items-center '>
+                      <FontAwesomeIcon icon={faLocationDot} />
+                      <p className='whitespace-pre-line '>
+                        {storeData.store_address}
+                      </p>
+                    </div>
+                  )}
+                  {storeData.store_hours && (
+                    <div id='clock' className='flex space-x-2 items-center'>
+                      <FontAwesomeIcon icon={faClock} />
+                      <p className='whitespace-pre-line'>
+                        {storeData.store_hours}
+                      </p>
+                    </div>
+                  )}
+                  {storeData.store_tel && (
+                    <div id='phone' className='flex space-x-2 items-center'>
+                      <FontAwesomeIcon icon={faPhone} />
+                      <p className='whitespace-pre-line'>
+                        {storeData.store_tel}
+                      </p>
+                    </div>
+                  )}
+                  {storeData.store_information && (
+                    <div id='information' className='flex space-x-2 items-center'>
+                      <FontAwesomeIcon icon={faStore} />
+                      <p className='whitespace-pre-line'>
+                        {storeData.store_information}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div id="alert" className='flex flex-row space-x-2'>
+                <CircleAlert className='text-indigo-500' />
+                <p className='text-gray-600' >챗봇이 실행되지 않는다면 새로고침을 해주세요</p>
               </div>
             </motion.div>
           )}
@@ -295,7 +303,7 @@ const StoreIntroduceOwner = () => {
                   style={{ fontFamily: 'NanumSquareExtraBold' }}
                 >
                   {menuTitle}
-                </motion.h2> 
+                </motion.h2>
                 {/* 매장이 음식점일 때만 알레르기 모달 표시 */}
                 {storeCategory === 'FOOD' && (
                   <div className='flex flex-row text-indigo-600 space-x-1 cursor-pointer' onClick={toggleAllergyModal}>

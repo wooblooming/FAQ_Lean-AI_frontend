@@ -6,7 +6,7 @@ const ConfirmDeleteModal = ({ show, onClose, onConfirm, itemName }) => {
   
     return (
       <div className="modalOverlay">
-        <div className="modalContent relative mx-2 p-2">
+        <div className="modalContent relative mx-2 p-2" >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 z-20"
@@ -39,7 +39,7 @@ const ConfirmDeleteModal = ({ show, onClose, onConfirm, itemName }) => {
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            width: 400px;
+            width: 450px;
             text-align: center;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
           }

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { Edit3 as EditIcon, Check as CheckIcon, X as CancelIcon } from 'lucide-react';
+import { Edit3 as EditIcon, Check as CheckIcon, X, X as CancelIcon } from 'lucide-react';
 import ModalMSG from './modalMSG.js';
 import ModalErrorMSG from './modalErrorMSG';
 import ConfirmDeleteModal from '../components/confirmDeleteModal';
@@ -17,6 +16,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
   const [editingItem, setEditingItem] = useState(null); // 수정 중인 아이템
   const [updatedMenuItems, setUpdatedMenuItems] = useState([]); // 수정된 아이템을 저장
   const [confirmDeleteItem, setConfirmDeleteItem] = useState(null); // 삭제할 항목
+  const [confirmDeleteCategory, setConfirmDeleteCategory] = useState(null);
   const [previewImage, setPreviewImage] = useState(null); // 미리보기 이미지
 
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
@@ -42,7 +42,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
             body: JSON.stringify({
               action: 'view', // API 요청을 위한 action 값
               slug: slug // 메뉴를 조회할 슬러그 정보
-            }), 
+            }),
           });
 
           const data = await response.json();
@@ -65,7 +65,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     }
   }, [isOpen, slug]);
 
- // 카테고리 확장/축소 상태 토글
+  // 카테고리 확장/축소 상태 토글
   const toggleCategory = (category) => {
     setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] })); // expandedCategories 상태를 업데이트
   };
@@ -113,7 +113,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
           image: updatedImage,
         };
 
-// 수정된 데이터 상태 반영
+        // 수정된 데이터 상태 반영
         setUpdatedMenuItems((prevItems) =>
           prevItems.map((item) =>
             item.menu_number === menuItem.menu_number ? updatedMenuItem : item
@@ -147,7 +147,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     setPreviewImage(null);
   };
 
-   // 입력 값 변경 시 업데이트 상태 반영
+  // 입력 값 변경 시 업데이트 상태 반영
   const handleInputChange = (e, menuItem, field) => {
     const updatedItems = updatedMenuItems.map((item) =>
       item.menu_number === menuItem.menu_number ? { ...item, [field]: e.target.value } : item
@@ -155,7 +155,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     setUpdatedMenuItems(updatedItems); // 변경된 입력 상태 업데이트
   };
 
- // 이미지 변경 시 미리보기 생성 및 상태 업데이트
+  // 이미지 변경 시 미리보기 생성 및 상태 업데이트
   const handleImageChange = (e, menuItem) => {
     const file = e.target.files[0];
     if (file) {
@@ -172,12 +172,12 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     }
   };
 
-    // 삭제 확인 모달 표시
+  // 삭제 확인 모달 표시
   const handleDeleteClick = (menuItem) => {
     setConfirmDeleteItem(menuItem);
   };
 
-   // 삭제 항목 확인 후 서버에 삭제 요청
+  // 삭제 항목 확인 후 서버에 삭제 요청
   const confirmDelete = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -228,7 +228,54 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     }
   };
 
- // 카테고리별로 메뉴 항목 그룹화
+  const confirmDeleteCategoryHandler = async () => {
+    if (!confirmDeleteCategory) return;
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const itemsToDelete = updatedMenuItems.filter(item => item.category === confirmDeleteCategory);
+      const requestBody = JSON.stringify({
+        action: 'delete',
+        menus: itemsToDelete.map(item => ({
+          slug: storeSlug,
+          menu_number: item.menu_number,
+        })),
+      });
+
+      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      });
+
+      if (response.status === 200) {
+        const updatedItems = updatedMenuItems.filter(
+          (item) => item.category !== confirmDeleteCategory
+        );
+        setUpdatedMenuItems(updatedItems);
+        setMenuItems(updatedItems);
+
+        setMessage(`"${confirmDeleteCategory}" 카테고리가 성공적으로 삭제되었습니다.`);
+        setShowMessageModal(true);
+      } else {
+        const errorText = await response.text();
+        console.error('서버에서 카테고리 삭제 실패:', errorText);
+        setErrorMessage(`카테고리 삭제 실패: ${errorText}`);
+        throw new Error(`카테고리 삭제 실패: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('카테고리 삭제 중 오류 발생:', error);
+      setErrorMessage('카테고리 삭제에 실패했습니다.');
+      setShowErrorMessageModal(true);
+    } finally {
+      setConfirmDeleteCategory(null);
+    }
+  };
+
+  // 카테고리별로 메뉴 항목 그룹화
   const groupedMenuItems = updatedMenuItems.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
@@ -241,17 +288,17 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
 
   return (
     <div className={`${styles.modalOverlay} z-30`} >
-      <div className={`${styles.modalContent} relative mx-2`}>
+      <div className={`${styles.modalContent} relative mx-2 overflow-y-auto`}>
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 z-50"
+          className="absolute top-2 right-2 "
           style={{ padding: '10px', cursor: 'pointer' }}
           aria-label="Close"
         >
-          X
+          <X className="bg-indigo-500 rounded-full text-white p-1"/>
         </button>
         <div className={styles.modalHeader}>{menuTitle} 목록</div>
-        <div className={styles.modalBody}> 
+        <div className={`${styles.modalBody}`}>
           {/* 로딩 중 일때 */}
           {loading ? (
             <p>{menuTitle} 데이터를 불러오는 중...</p>
@@ -261,10 +308,20 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
             <p>등록된 {menuTitle}이/가 없습니다.</p>
           ) : (
             Object.entries(groupedMenuItems).map(([category, items]) => (
-              <div key={category} className={styles.categoryGroup}>
-                <h3 onClick={() => toggleCategory(category)} className={styles.categoryHeader}>
+              <div key={category} className={`${styles.categoryGroup} `}>
+                <h3 onClick={() => toggleCategory(category)} className={`${styles.categoryHeader} flex items-center justify-between`}>
                   {category}{' '}
-                  {expandedCategories[category] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                  {expandedCategories[category] ?
+                    <button
+                      className={`${styles.deleteCategoryButton} ml-auto`}
+                      onClick={(e) => {
+                        e.stopPropagation(); // 부모 요소 클릭 이벤트 방지
+                        setConfirmDeleteCategory(category);
+                      }}
+                    >
+                      <DeleteOutlineIcon />
+                    </button>
+                    : <KeyboardArrowDownIcon />}
                 </h3>
                 {expandedCategories[category] && (
                   <ul>
@@ -355,12 +412,20 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         </div>
       </div>
 
-      {/* 삭제 확인 모달 */}
+      {/* item 삭제 확인 모달 */}
       <ConfirmDeleteModal
         show={!!confirmDeleteItem}
         onClose={() => setConfirmDeleteItem(null)}
         onConfirm={confirmDelete}
         itemName={confirmDeleteItem?.name}
+      />
+
+      {/* 카테고리 삭제 확인 모달 */}
+      <ConfirmDeleteModal
+        show={!!confirmDeleteCategory}
+        onClose={() => setConfirmDeleteCategory(null)}
+        onConfirm={confirmDeleteCategoryHandler}
+        itemName={confirmDeleteCategory}
       />
 
       {/* 성공 메시지 모달 */}

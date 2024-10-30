@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit3 as EditIcon, Check, X as CancelIcon, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit3 as EditIcon, Check, X, X as CancelIcon, Image as ImageIcon } from 'lucide-react';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
 import ModalMSG from './modalMSG.js'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from './modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../config';
+import styles from '../styles/viewMenu.module.css';
 
 export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle }) {
     const [errorMessage, setErrorMessage] = useState('');
@@ -243,17 +244,17 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
     };
 
     return (
-        <div className="modalOverlay z-50">
-            <div className="modalContent relative m-4 overflow-y-auto scroll-auto">
+        <div className={`${styles.modalOverlay} z-30`} >
+             <div className={`${styles.modalContent} relative m-4 overflow-y-auto`}>
                 <p className="text-2xl font-bold text-gray-800 text-center w-full mt-4">{menuTitle} 추가</p>
 
                 <button
                     onClick={handleClose}
-                    className="absolute top-4 right-4 text-gray-600 z-50"
+                    className="absolute top-2 right-2 z-50"
                     style={{ padding: '10px', cursor: 'pointer' }}
                     aria-label="Close"
                 >
-                    X
+                   <X className="bg-indigo-500 rounded-full text-white p-1"/>
                 </button>
 
                 <div className="grid md:grid-cols-2 gap-6 mt-8 h-4/5">
@@ -327,7 +328,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                         </button>
                     </div>
 
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col space-y-2 h-full">
                         {isMobile ? (
                             <div className="bg-gray-100 p-3 rounded-lg block md:hidden">
                                 <h3 className="text-lg font-semibold mb-2 text-gray-700">현재 {menuTitle} 목록</h3>
@@ -456,27 +457,24 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div>
-                                                    <img
-                                                        src={getImagePreview(item.image)}
-                                                        alt={item.name}
-                                                        className="w-16 h-16 object-cover rounded"
-                                                    />
-
-                                                    <div className="flex-grow ml-4">
-                                                        <p className="font-semibold text-gray-800 whitespace-nowrap">
-                                                            {item.name}
-                                                        </p>
-                                                        <p className="text-gray-600">{item.price}원</p>
-                                                        <p className="text-gray-600 text-sm">{item.category}</p>
+                                                <div className="flex flex-row items-center justify-between">
+                                                    <div className="flex items-center space-x-6">
+                                                        <img
+                                                            src={getImagePreview(item.image)}
+                                                            alt={item.name}
+                                                            className="w-12 h-12 object-cover rounded"
+                                                        />
+                                                        <div className="flex-grow">
+                                                            <p className="font-semibold text-gray-800 whitespace-nowrap">
+                                                                {item.name}
+                                                            </p>
+                                                            <p className="text-gray-600">{item.price}원</p>
+                                                            <p className="text-gray-600 text-sm">{item.category}</p>
+                                                        </div>
                                                     </div>
-                                                    <button
-                                                        onClick={() => handleEdit(item)}
-                                                        className="px-4 py-2 ml-auto rounded"
-                                                    >
-                                                        <EditIcon />
-                                                    </button>
+                                                    <EditIcon className="cursor-pointer ml-10" onClick={() => handleEdit(item)} />
                                                 </div>
+
                                             )}
                                         </div>
                                     ))
@@ -512,47 +510,6 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                 </ModalErrorMSG>
             </div>
 
-            <style jsx>{`
-                .modalOverlay {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-color: rgba(0, 0, 0, 0.5);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-
-                .modalContent {
-                    background-color: white;
-                    padding: 30px;
-                    border-radius: 12px;
-                    width: 700px;
-                    height: 90%;
-                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-                }
-
-                input {
-                    padding: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 6px;
-                    width: 100%;
-                    box-sizing: border-box;
-                }
-
-                button {
-                    padding: 12px;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-top: 10px;
-                }
-            `}</style>
         </div>
     );
 }

@@ -11,7 +11,7 @@ const Modal = ({ children, onClose }) => {
       >
         <button
           onClick={onClose}
-          className='absolute top-4 right-4 z-20'
+          className='absolute top-4 right-6 z-20'
           style={{ cursor: 'pointer' }}
           aria-label="Close"
         >
