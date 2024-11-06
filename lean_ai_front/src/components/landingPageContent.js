@@ -201,7 +201,7 @@ const LandingPageContent = () => {
         ref={companyRef}
         id="company"
         name="company"
-        className="flex-grow px-0 md:px-2 py-12 "
+        className="flex-grow px-0 md:px-2 py-32 md:py-12 "
         initial="hidden"
         animate={companyInView ? 'visible' : 'hidden'}
         variants={fadeInUp}

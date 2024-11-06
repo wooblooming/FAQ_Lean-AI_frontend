@@ -15,14 +15,14 @@ const UserProfileForm = ({
   errorMessage // 에러 메시지 (부모 컴포넌트에서 전달됨)
 }) => (
   <div className="flex flex-col items-start py-4 font-sans space-y-2">
-    <div className='font-semibold'>사용자 정보</div>
+    <div className='font-semibold text-lg' style={{ fontFamily: "NanumSquareExtraBold" }}>사용자 정보</div>
     
     {/* 사용자 정보 입력 필드 */}
     <div className='flex flex-col px-2 '>
       
       {/* 이름 입력 필드 */}
       <div className='flex flex-col '>
-        <div className='text-sm text-gray-400 mr-1.5 whitespace-nowrap text-left'>이름</div>
+        <div className='text-sm text-gray-400 mr-1.5 whitespace-nowrap text-left' style={{ fontFamily: "NanumSquare" }}>이름</div>
         <input
           type="text"
           value={name}
@@ -40,7 +40,7 @@ const UserProfileForm = ({
 
       {/* ID 표시 필드 */}
       <div className='flex flex-col '>
-        <div className='text-sm text-gray-400 mr-1.5 text-left'>아이디</div>
+        <div className='text-sm text-gray-400 mr-1.5 text-left'style={{ fontFamily: "NanumSquare" }}> 아이디</div>
         <div
           type="id"
           style={{
@@ -58,7 +58,7 @@ const UserProfileForm = ({
 
       {/* 이메일 입력 필드 */}
       <div className='flex flex-col'>
-        <div className='text-sm text-gray-400 text-left'>이메일</div>
+        <div className='text-sm text-gray-400 text-left' style={{ fontFamily: "NanumSquare" }}>이메일</div>
         <input
           type="email"
           value={email}
@@ -75,9 +75,9 @@ const UserProfileForm = ({
       </div>
 
       {/* 전화번호 입력 필드 및 인증번호 받기 버튼 */}
-      <div className='flex flex-col '>
-        <div className='text-sm text-gray-400 mr-1.5 text-left'>전화번호</div>
-        <div className='flex flex-row justify-between'>
+      <div className='flex flex-col'>
+        <div className='text-sm text-gray-400 mr-1.5 text-left' style={{ fontFamily: "NanumSquare" }}>전화번호</div>
+        <div className='flex flex-row justify-between space-x-4'>
           <input
             type="text"
             value={phoneNumber}
@@ -91,8 +91,9 @@ const UserProfileForm = ({
             }}
           />
           {/* 인증번호 받기 버튼 */}
-          <button className="text-center text-indigo-500 hover:font-semibold px-2 font-medium whitespace-nowrap"
+          <button className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap"
             onClick={handleSendCode}
+            style={{ fontFamily: "NanumSquareBold" }}
           >
             인증번호 받기
           </button>

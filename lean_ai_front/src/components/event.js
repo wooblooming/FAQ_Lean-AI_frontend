@@ -4,8 +4,8 @@ const EventSwitch = ({ isEventOn, toggleEventOn }) => {
     <div className="flex flex-col items-start mb-4">
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col mr-11">
-          <div className="flex items-start w-full font-semibold">이벤트, 혜택 정보</div>
-          <div className="text-sm text-gray-500 ml-2">이벤트, 프로모션 등 혜택 정보 알림</div>
+          <div className="flex items-start w-full font-semibold text-lg" style={{ fontFamily: "NanumSquareExtraBold" }}>이벤트, 혜택 정보</div>
+          <div className="text-sm text-gray-500 ml-2" style={{ fontFamily: "NanumSquare" }}> 이벤트, 프로모션 등 혜택 정보 알림</div>
         </div>
         <div>
           <label className="switch">

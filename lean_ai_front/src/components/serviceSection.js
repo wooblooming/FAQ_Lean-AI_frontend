@@ -107,7 +107,7 @@ function FlipCard({ step, index }) {
         className="w-full h-full relative  flex justify-center items-center"
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6 }}
-        style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
+        style={{ transformStyle: "preserve-3d", perspective: "500px" }}
       >
         {/* 카드 앞면 */}
         <div className="absolute backface-hidden bg-violet-300 rounded-lg shadow-lg px-4 flex flex-col flex justify-center items-center text-center" style={{ width:"360px", height:"550px", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>

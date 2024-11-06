@@ -269,11 +269,6 @@ const StoreIntroduce = () => {
                   )}
                 </div>
               </div>
-
-              <div id="alert" className='flex flex-row space-x-2'>
-                <CircleAlert className='text-indigo-500' />
-                <p className='text-gray-600' >챗봇이 실행되지 않는다면 새로고침을 해주세요</p>
-              </div>
             </motion.div>
           )}
 

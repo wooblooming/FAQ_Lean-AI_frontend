@@ -59,50 +59,49 @@ const StoreIntroduceOwner = () => {
 
   // 매장 데이터를 가져오는 비동기 함수, 컴포넌트가 처음 마운트될 때 실행됨
   useEffect(() => {
-    if (token && slug) { // 토큰과 slug가 모두 있을 때만 실행
-      const fetchStoreData = async () => {
-        try {
-          const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-          const response = await fetch(`${config.apiDomain}/api/storesinfo/`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              slug: decodedSlug,
-              type: 'owner',
-            }),
-          });
+    // 토큰과 slug가 모두 있을 때만 실행
+    const fetchStoreData = async () => {
+      try {
+        const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
+        const response = await fetch(`${config.apiDomain}/api/storesinfo/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            slug: decodedSlug,
+            type: 'owner',
+          }),
+        });
 
-          const data = await response.json();
+        const data = await response.json();
 
-          // 응답 데이터가 비어 있는지 확인
-          if (data && data.menu_prices) {
-            // JSON.parse()를 안전하게 사용
-            try {
-              const menuPrices = JSON.parse(data.menu_prices);
-              setMenuPrice(menuPrices); // 메뉴 데이터를 파싱해서 저장
+        // 응답 데이터가 비어 있는지 확인
+        if (data && data.menu_prices) {
+          // JSON.parse()를 안전하게 사용
+          try {
+            const menuPrices = JSON.parse(data.menu_prices);
+            setMenuPrice(menuPrices); // 메뉴 데이터를 파싱해서 저장
 
-              // 콘솔에 menuPrice 데이터를 출력
-              //console.log("Parsed menuPrices:", menuPrices)
-            } catch (parseError) {
-              console.error("Error parsing menu prices:", parseError);
-            }
-          } else {
-            console.error("No menu_prices found in response data.");
+            // 콘솔에 menuPrice 데이터를 출력
+            //console.log("Parsed menuPrices:", menuPrices)
+          } catch (parseError) {
+            console.error("Error parsing menu prices:", parseError);
           }
-
-          setStoreData(data); // 받아온 데이터를 storeData 상태에 저장
-        } catch (error) {
-          console.error("Error fetching store data:", error);
-        } finally {
-          setIsLoading(false);  // 로딩 상태 변경 확인
+        } else {
+          console.error("No menu_prices found in response data.");
         }
-      };
 
-      fetchStoreData(); // 매장 데이터를 가져오는 함수 호출
-    }
+        setStoreData(data); // 받아온 데이터를 storeData 상태에 저장
+      } catch (error) {
+        console.error("Error fetching store data:", error);
+      } finally {
+        setIsLoading(false);  // 로딩 상태 변경 확인
+      }
+    };
+
+    fetchStoreData(); // 매장 데이터를 가져오는 함수 호출
   }, [token, slug]); // token과 slug가 변경될 때마다 데이터를 다시 가져옴
 
   // storeCategory가 'FOOD'일 때 menu-details API를 호출하여 메뉴 세부 정보를 가져옴
@@ -223,19 +222,28 @@ const StoreIntroduceOwner = () => {
         {/* 탭 메뉴 */}
         <div className="tabs flex justify-around border-b-2 font-medium border-gray-300">
           <button
-            className={`p-2 w-1/3 ${activeTab === 'home' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
+            className={`p-2 w-1/4 ${activeTab === 'home' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
             style={{ fontFamily: activeTab === 'home' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
             onClick={() => handleTabClick('home')}
           >
             홈
           </button>
           <button
-            className={`p-2 w-1/3 ${activeTab === 'menu' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
+            className={`p-2 w-1/4 ${activeTab === 'menu' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
             style={{ fontFamily: activeTab === 'menu' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
             onClick={() => handleTabClick('menu')}
           >
             {menuTitle}
           </button>
+          {storeCategory === 'PUBLIC' &&
+            <button
+              className={`p-2 w-1/4 ${activeTab === 'complaint' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500 text-center' : ''}`}
+              style={{ fontFamily: activeTab === 'complaint' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
+              onClick={() => handleTabClick('complaint')}
+            >
+              <p className='whitespace-nowrap'>민원</p>
+            </button>
+          }
         </div>
 
         {/* 탭 내용 */}
@@ -283,11 +291,6 @@ const StoreIntroduceOwner = () => {
                     </div>
                   )}
                 </div>
-              </div>
-
-              <div id="alert" className='flex flex-row space-x-2'>
-                <CircleAlert className='text-indigo-500' />
-                <p className='text-gray-600' >챗봇이 실행되지 않는다면 새로고침을 해주세요</p>
               </div>
             </motion.div>
           )}
@@ -364,6 +367,28 @@ const StoreIntroduceOwner = () => {
               )}
             </div>
           )}
+
+          {activeTab === 'complaint' && (
+            <div className="flex flex-col items-right space-y-4 ">
+              <div className=''>
+                <motion.h2
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-2xl font-bold "
+                  style={{ fontFamily: 'NanumSquareExtraBold' }}
+                >
+                  민원 접수하기
+                </motion.h2>
+                <div className='flex flex-col space-y-2'>
+                  <button className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'>민원 접수</button>
+                  <button className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'>민원 현황</button>
+
+                </div>
+            </div>
+            </div>
+          )
+          }
         </div>
 
         {/* Chatbot */}

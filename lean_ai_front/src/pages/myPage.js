@@ -108,11 +108,17 @@ const MyPage = () => {
 
         if (response.ok) {
           const data = await response.json();
+
           setID(data.user_id || '');
           setName(data.name || '');
           setEmail(data.email || '');
           setPhoneNumber(data.phone_number || '');
-          setIsEventOn(data.marketing === 'N'); // 마케팅 동의 상태 초기화
+          if (data.marketing === 'Y') {
+            setIsEventOn(true); // ON 상태로 설정
+          } else {
+            setIsEventOn(false); // OFF 상태로 설정
+          }
+
           // QR 코드 처리
           if (data.qr_code_url) {
             const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
@@ -201,11 +207,11 @@ const MyPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('마케팅 상태 업데이트에 실패하였습니다.');
+        throw new Error('알림 설정 변경에 실패하였습니다.');
       }
 
       const data = await response.json();
-      setMessage("마케팅 상태가 업데이트되었습니다.");
+      setMessage("알림 설정이 변경되었습니다.");
       setShowMessageModal(true);
     } catch (error) {
       setErrorMessage(error.message);
@@ -298,15 +304,15 @@ const MyPage = () => {
       });
 
       if (response.ok) {
-        setMessage("프로필 업데이트를 성공하였습니다");
+        setMessage("프로필 변경에 성공하였습니다");
         setShowMessageModal(true);
         setIsChanged(false); // 변경 사항이 저장되면 상태 초기화
       } else {
-        setMessage("프로필 업데이트를 성공하였습니다");
-        setShowMessageModal(true);
+        setErrorMessage("프로필 변경에 실패하였습니다.");
+        setShowErrorMessageModal(true);
       }
     } catch (error) {
-      setErrorMessage("프로필 업데이트에 실패하였습니다.");
+      setErrorMessage("프로필 변경에 실패하였습니다.");
       setShowErrorMessageModal(true);
     }
   };
@@ -502,7 +508,7 @@ const MyPage = () => {
   };
 
   return (
-    <div className="bg-indigo-100 flex items-center justify-center relative font-sans min-h-screen">
+    <div className="bg-indigo-100 flex flex-col items-center justify-center relative font-sans min-h-screen">
       <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
         <div className='flex justify-between items-center'>
           <ChevronLeft
@@ -515,7 +521,7 @@ const MyPage = () => {
             onClick={handleSaveChanges}
             disabled={!isChanged}
           >
-            완료
+            <p  style={{ fontFamily: "NanumSquareExtraBold" }}>완료</p>
           </button>
         </div>
 

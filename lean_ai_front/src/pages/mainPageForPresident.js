@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
 import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send } from 'lucide-react';
@@ -54,6 +54,10 @@ const MainPageWithMenu = () => {
   const latestAnnouncements = getLatestAnnouncements(); // 최신 공지사항 가져오기
   const latestFaqs = faqs.slice(0, 3); // FAQ 상위 3개만 선택
 
+  // 통계 관련 상태
+  const [statisticsData, setStatisticsData] = useState([]);  // 통계 데이터 상태
+  const [isLoadingStatistics, setIsLoadingStatistics] = useState(true);  // 로딩 상태
+
   // 화면 크기에 따라 모바일 여부를 설정하는 함수
   const handleResize = () => {
     const isMobileDevice = window.innerWidth <= 768;
@@ -67,11 +71,13 @@ const MainPageWithMenu = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 컴포넌트 마운트 시 상점 정보 불러오기
+  // 컴포넌트 마운트 시 상점, 통계 정보 불러오기
   useEffect(() => {
     setIsMounted(true);
     fetchStoreInfo();
+    fetchStatistics();
   }, []);
+
 
   // 상점 정보 API 호출
   const fetchStoreInfo = async () => {
@@ -111,6 +117,34 @@ const MainPageWithMenu = () => {
     }
   };
 
+
+  // 통계 데이터 API 호출
+  const fetchStatistics = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await fetch(`${config.apiDomain}/api/statistics/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      console.log("data.data : ", data.data);
+      if (response.ok && data.status === "success") {
+        setStatisticsData(data.data);  // 통계 데이터를 상태에 저장
+      } else {
+        setStatisticsData(null);  // 데이터가 없으면 null로 설정
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setStatisticsData(null);  // 오류 발생 시 데이터 없음으로 설정
+    } finally {
+      setIsLoadingStatistics(false);  // 로딩 상태를 완료로 설정
+    }
+  };
+
+
   // 상점 정보를 아직 불러오지 않았다면 null 반환
   if (!isMounted) {
     return null;
@@ -140,19 +174,19 @@ const MainPageWithMenu = () => {
         <main className="container md:mx-auto px-2 md:px-4 py-10 mt-12 flex-grow flex justify-center items-center">
           <div className="flex flex-col justify-center items-center text-center space-y-10">
             <h2 className="text-2xl md:text-3xl mt-5 md:mt-10" style={{ fontFamily: 'NanumSquareBold' }}>
-              안녕하세요! <span className='hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer' onClick={()=> router.push('/myPage')}>{storeName}님</span>
+              안녕하세요! <span className='hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer' onClick={() => router.push('/myPage')}>{storeName}님</span>
             </h2>
 
             {/* 버튼 카드 영역 */}
             <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center text-center">
               <div className="grid md:grid-cols-4 gap-2 md:gap-4">
-                
+
                 {/* 매장 정보 변경 카드 */}
                 <Card>
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     매장 정보 변경
                   </h3>
-                  <p>사업장 정보를 수정하여 <br/> 최신 상태로 유지해보세요</p>
+                  <p>사업장 정보를 수정하여 <br /> 최신 상태로 유지해보세요</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={Edit3} onClick={() => setIsChangeInfoModalOpen(true)}> 정보 수정</Button>
                   </div>
@@ -163,7 +197,7 @@ const MainPageWithMenu = () => {
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }} >
                     챗봇 미리보기
                   </h3>
-                  <p>고객에게 보여지는 <br/> 챗봇 화면을 미리 확인해보세요</p>
+                  <p>고객에게 보여지는 <br /> 챗봇 화면을 미리 확인해보세요</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={Eye} onClick={goToChatbot}>미리보기</Button>
                   </div>
@@ -174,7 +208,7 @@ const MainPageWithMenu = () => {
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     데이터 등록
                   </h3>
-                  <p>FAQ 데이터 등록을 통해 <br/> 서비스 맞춤 설정을 시작하세요.</p>
+                  <p>FAQ 데이터 등록을 통해 <br /> 서비스 맞춤 설정을 시작하세요.</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={ClipboardList} onClick={() => setIsEditDataModalOpen(true)}> 데이터 등록</Button>
                   </div>
@@ -194,7 +228,7 @@ const MainPageWithMenu = () => {
 
               {/* 공지사항, FAQ, 통계 및 분석 섹션 */}
               <div className="grid md:grid-cols-3 gap-2 md:gap-4 mt-10">
-                
+
                 {/* 공지사항 섹션 */}
                 <div className="bg-white rounded-lg p-6 space-y-4 ">
                   <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>공지사항</h2>
@@ -245,11 +279,32 @@ const MainPageWithMenu = () => {
                 {/* 통계 및 분석 섹션 */}
                 <div className="bg-white rounded-lg p-6 space-y-4 text-center">
                   <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>통계 및 분석</h2>
-                  <p className="text-gray-700 px-0 md:px-4">데이터가 준비 중입니다.</p>
+                  {isLoadingStatistics ? (
+                    <p className="text-gray-700 px-0 md:px-4">데이터 로딩 중...</p>
+                  ) : statisticsData ? (
+                    <>
+                      <ul className="text-gray-700 px-0 md:px-4 space-y-2">
+                        {statisticsData.map((stat, index) => (
+                          <li key={index} className="text-gray-800 font-semibold">
+                            {index+1}. {stat.utterance} - {stat.count}회
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex justify-end mt-5">
+                        <button className="text-indigo-500 font-semibold text-sm" onClick={() => router.push('/statistics')}>
+                          더 보기
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-gray-700 px-0 md:px-4">데이터가 준비 중입니다.</p>
+                  )}
                 </div>
+
               </div>
             </main>
           </div>
+
         </main>
       </div>
 

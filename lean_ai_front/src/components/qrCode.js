@@ -51,15 +51,16 @@ const QRCodeSection = ({
   };
 
   return (
-    <div className='flex flex-col items-start mb-4'>
-      <div className='font-semibold mb-2'>QR코드</div>
+    <div className='flex flex-col items-start mb-5'>
+      <div className='font-semibold mb-2 text-lg' style={{ fontFamily: "NanumSquareExtraBold" }}>QR코드</div>
 
       {/* 스토어 선택 드롭다운 */}
-      <div className='flex flex-col items-start ml-2'>
-        <label htmlFor="store-select" className="text-sm text-gray-400">스토어 선택</label>
+      <div className='flex flex-col items-start space-y-1 px-2'>
+        <label htmlFor="store-select" className="text-sm text-gray-400" style={{ fontFamily: "NanumSquare" }}> 스토어 선택</label>
         <select
           id="store-select"
           className="border-none border-b-2 border-blue-500 outline-none p-1"
+          style={{ fontFamily: "NanumSquare" }}
           value={selectedStoreId || ''}
           onChange={(e) => {
             const selectedId = parseInt(e.target.value, 10);
@@ -80,25 +81,29 @@ const QRCodeSection = ({
       {/* QR 코드 생성 버튼: QR 코드가 없는 경우에만 표시 */}
       {!qrUrl ? (
         <button
-          className='border-none text-blue-400 underline text-sm font-semibold mb-2 ml-2 mt-2'
+          className='border-none text-blue-400 underline '
           onClick={handleGenerateAndDisplayQrCode} // QR 코드 생성 및 표시
+          style={{ fontFamily: "NanumSquareBold" }}
         >
           QR 코드 생성하기
         </button>
       ) : (
-        <div>
+        <div className='flex flex-col items-start justify-center'>
           {/* QR 코드 보기/접기 버튼 */}
-          <button onClick={toggleQrCode} className="text-blue-400 underline text-sm font-semibold mb-2 ml-2 mt-2">
+          <div className='px-2 py-1'>
+          <button onClick={toggleQrCode} className="text-blue-400 underline " style={{ fontFamily: "NanumSquareExtraBold" }}>
             {showQrCode ? 'QR 코드 접기' : 'QR 코드 보기'}
           </button>
+          </div>
 
           {/* QR 코드 이미지와 다운로드 버튼 */}
           {showQrCode && (
-            <div>
-              <img src={qrUrl} alt="QR 코드" className="mx-auto" style={{ maxWidth: '85%' }} />
+            <div className='flex flex-col items-center px-2'>
+              <img src={qrUrl} alt="QR 코드" style={{ maxWidth: '85%' }} />
               <button
-                className="text-sm text-gray-400 underline hover:text-blue-300"
+                className="text-gray-400 underline hover:text-blue-300"
                 onClick={handleDownloadQrCode} // QR 코드 다운로드 함수 실행
+                style={{ fontFamily: "NanumSquareExtraBold" }}
               >
                 QR 코드 다운로드
               </button>

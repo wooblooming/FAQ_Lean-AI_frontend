@@ -10,6 +10,7 @@ export default function Chatbot({ agentId }) {
 
             const dfMessenger = document.querySelector('df-messenger');
             sessionStorage.removeItem('greeted'); // 세션 새로 고침 시 greeted 초기화
+
             if (dfMessenger) {
                 dfMessenger.setAttribute('session-id', newSessionId);
                 if (typeof dfMessenger.startNewSession === 'function') {
@@ -22,13 +23,13 @@ export default function Chatbot({ agentId }) {
 
         const handlePageRefresh = () => {
             createNewSession();
-            sessionStorage.removeItem('greeted');
+            sessionStorage.removeItem('greeted'); // 새로 고침 시 greeted 초기화
         };
 
         const handleChatOpenChanged = (event) => {
             const dfMessenger = document.querySelector('df-messenger');
             if (event.detail.isOpen && dfMessenger) {
-                createNewSession();  // 챗봇 창이 열릴 때 세션을 새로고침
+                createNewSession();  // 챗봇 창이 열릴 때 세션 새로 고침
                 const sendGreetingMessage = () => {
                     if (!sessionStorage.getItem('greeted')) {
                         try {
@@ -67,7 +68,7 @@ export default function Chatbot({ agentId }) {
 
     useEffect(() => {
         const applyCustomStyle = () => {
-          const chatBubble = document.querySelector("#__next > div > div > div:nth-child(5) > df-messenger > df-messenger-chat-bubble");
+          const chatBubble = document.querySelector("#__next > div:nth-child(2) > df-messenger > df-messenger-chat-bubble");
           
           if (chatBubble && chatBubble.shadowRoot) {
             const titleBar = chatBubble.shadowRoot.querySelector("#df-chat-wrapper > df-messenger-titlebar");
@@ -143,6 +144,7 @@ export default function Chatbot({ agentId }) {
                     }}
                 >
                     <df-messenger-chat-bubble
+                        chat-icon="/mumul2.png"
                         chat-title-icon="/mumul.png"
                         chat-title="MUMUL BOT"
                         placeholder-text="자유롭게 질문해주세요"
