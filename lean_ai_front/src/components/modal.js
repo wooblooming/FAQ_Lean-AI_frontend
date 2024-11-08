@@ -7,7 +7,7 @@ const Modal = ({ children, onClose }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20"> 
       <div
         className="bg-white rounded-lg relative"
-        style={{ width: '95%', maxWidth: '400px', height: '95%', maxHeight: '690px' }} // 모달의 크기 조정
+        style={{ width: '95%', maxWidth: '450px', height: '95%', maxHeight: '690px' }} // 모달의 크기 조정
       >
         <button
           onClick={onClose}

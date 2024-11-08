@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
-import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send } from 'lucide-react';
+import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
+import { useAuth } from '../contexts/authContext';
 import { announcements } from './notice';
 import { faqs } from './faq';
 import ChangeInfo from './changeInfo';
@@ -15,7 +16,7 @@ import Footer from '../components/footer';
 // 버튼 컴포넌트 정의: 아이콘과 텍스트를 포함한 버튼 스타일 지정
 const Button = ({ children, icon: Icon, className, ...props }) => (
   <button
-    className={`flex items-center justify-center space-x-2 mt-4 px-4 py-3 w-full bg-indigo-500 text-white rounded-lg font-semibold ${className}`}
+    className={`flex items-center justify-center space-x-2 mt-4 px-4 py-3 w-full bg-indigo-500 text-white rounded-lg font-semibold font-sans ${className}`}
     {...props}
   >
     {Icon && <Icon className="h-5 w-5" />}
@@ -25,7 +26,7 @@ const Button = ({ children, icon: Icon, className, ...props }) => (
 
 // 카드 컴포넌트 정의: 배경, 그림자, 여백 등을 스타일링하여 카드 UI로 사용
 const Card = ({ children, className, ...props }) => (
-  <div className={`bg-white shadow rounded-lg p-6 space-y-3 ${className}`} {...props}>
+  <div className={`bg-white shadow rounded-lg p-6 space-y-3 font-sans ${className}`} {...props}>
     {children}
   </div>
 );
@@ -45,12 +46,14 @@ const MainPageWithMenu = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 상태
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [category, setCategory] = useState('');
   const [storeName, setStoreName] = useState(''); // 상점 이름 상태
+  const [storeID, setStoreID] = useState(''); 
   const [slug, setStoreSlug] = useState(''); // 상점 슬러그 상태
-  const [isMounted, setIsMounted] = useState(false); // 컴포넌트 마운트 상태
   const [expandedId, setExpandedId] = useState(null); // FAQ 확장 상태 관리
 
   const router = useRouter();
+  const { token, removeToken } = useAuth();
   const latestAnnouncements = getLatestAnnouncements(); // 최신 공지사항 가져오기
   const latestFaqs = faqs.slice(0, 3); // FAQ 상위 3개만 선택
 
@@ -73,16 +76,16 @@ const MainPageWithMenu = () => {
 
   // 컴포넌트 마운트 시 상점, 통계 정보 불러오기
   useEffect(() => {
-    setIsMounted(true);
-    fetchStoreInfo();
-    fetchStatistics();
-  }, []);
+    if (token) {  // token이 존재할 때만 API 호출
+      fetchStoreInfo();
+      fetchStatistics();
+    }
+  }, [token]);
 
 
   // 상점 정보 API 호출
   const fetchStoreInfo = async () => {
     try {
-      const token = sessionStorage.getItem('token');
       const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
         method: 'POST',
         headers: {
@@ -94,7 +97,7 @@ const MainPageWithMenu = () => {
       if (response.status === 401) { // 인증 실패 시 에러 처리
         setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
         setShowErrorMessageModal(true);
-        sessionStorage.removeItem('token');
+        removeToken();
         router.push('/login');
         return;
       }
@@ -104,9 +107,13 @@ const MainPageWithMenu = () => {
       }
 
       const storeData = await response.json();
+      //console.log(storeData[0]);
       if (storeData && storeData.length > 0) {
+        setCategory(storeData[0].store_category);
         setStoreName(storeData[0].store_name);
         setStoreSlug(storeData[0].slug);
+        setStoreID(storeData[0].store_id);
+        
       } else {
         setStoreName('');
       }
@@ -121,7 +128,6 @@ const MainPageWithMenu = () => {
   // 통계 데이터 API 호출
   const fetchStatistics = async () => {
     try {
-      const token = sessionStorage.getItem('token');
       const response = await fetch(`${config.apiDomain}/api/statistics/`, {
         method: 'POST',
         headers: {
@@ -130,7 +136,7 @@ const MainPageWithMenu = () => {
       });
 
       const data = await response.json();
-      console.log("data.data : ", data.data);
+      //console.log("data.data : ", data.data);
       if (response.ok && data.status === "success") {
         setStatisticsData(data.data);  // 통계 데이터를 상태에 저장
       } else {
@@ -143,12 +149,6 @@ const MainPageWithMenu = () => {
       setIsLoadingStatistics(false);  // 로딩 상태를 완료로 설정
     }
   };
-
-
-  // 상점 정보를 아직 불러오지 않았다면 null 반환
-  if (!isMounted) {
-    return null;
-  }
 
   // 챗봇 페이지로 이동하는 함수
   const goToChatbot = () => {
@@ -178,15 +178,15 @@ const MainPageWithMenu = () => {
             </h2>
 
             {/* 버튼 카드 영역 */}
-            <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center text-center">
-              <div className="grid md:grid-cols-4 gap-2 md:gap-4">
+            <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center text-center font-sans">
+              <div className="grid md:grid-cols-3 gap-2 md:gap-4">
 
                 {/* 매장 정보 변경 카드 */}
                 <Card>
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-                    매장 정보 변경
+                    정보 변경
                   </h3>
-                  <p>사업장 정보를 수정하여 <br /> 최신 상태로 유지해보세요</p>
+                  <p className='h-16'>사업장 정보를 수정하여 <br /> 최신 상태로 유지해보세요</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={Edit3} onClick={() => setIsChangeInfoModalOpen(true)}> 정보 수정</Button>
                   </div>
@@ -197,18 +197,35 @@ const MainPageWithMenu = () => {
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }} >
                     챗봇 미리보기
                   </h3>
-                  <p>고객에게 보여지는 <br /> 챗봇 화면을 미리 확인해보세요</p>
+                  <p className='h-16'>고객에게 보여지는 <br /> 챗봇 화면을 미리 확인해보세요</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={Eye} onClick={goToChatbot}>미리보기</Button>
                   </div>
                 </Card>
+
+                {/* 민원 확인 카드 */}
+                {category === 'PUBLIC' &&
+                  <Card>
+                    <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                      민원 확인
+                    </h3>
+                    <p className='h-16'>고객들의 민원 내용을 <br /> 편하게 확인하세요.</p>
+                    <div className='flex justify-center items-center'>
+                      <Button
+                        icon={SquareCheckBig}
+                        onClick={() => router.push('/complaintsDashboard')}
+                      >
+                        확인하기
+                      </Button>
+                    </div>
+                  </Card>}
 
                 {/* 데이터 등록 카드 */}
                 <Card>
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     데이터 등록
                   </h3>
-                  <p>FAQ 데이터 등록을 통해 <br /> 서비스 맞춤 설정을 시작하세요.</p>
+                  <p className='h-16'>FAQ 데이터 등록을 통해 <br /> 서비스 맞춤 설정을 시작하세요.</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={ClipboardList} onClick={() => setIsEditDataModalOpen(true)}> 데이터 등록</Button>
                   </div>
@@ -219,7 +236,7 @@ const MainPageWithMenu = () => {
                   <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                     서비스 요청
                   </h3>
-                  <p>FAQ 수정이나 서비스 관련 요청을 <br /> 편하게 문의하세요.</p>
+                  <p className='h-16'>FAQ 수정이나 서비스 관련 요청을 <br /> 편하게 문의하세요.</p>
                   <div className='flex justify-center items-center'>
                     <Button icon={Send} onClick={() => setIsReqestDataModalOpen(true)}> 문의하기</Button>
                   </div>
@@ -232,7 +249,7 @@ const MainPageWithMenu = () => {
                 {/* 공지사항 섹션 */}
                 <div className="bg-white rounded-lg p-6 space-y-4 ">
                   <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>공지사항</h2>
-                  <ul className="space-y-4 px-0 md:px-4">
+                  <ul className="space-y-4 px-0 md:px-4 h-36">
                     {latestAnnouncements.map((announcement) => (
                       <li key={announcement.id} className="flex justify-between items-center border-b pb-2">
                         <h3
@@ -255,7 +272,7 @@ const MainPageWithMenu = () => {
                 {/* FAQ 섹션 */}
                 <div className="bg-white rounded-lg p-6 space-y-4">
                   <h2 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>자주 묻는 질문</h2>
-                  <ul className="space-y-2 md:space-y-4  ">
+                  <ul className="space-y-2 md:space-y-4 h-36">
                     {latestFaqs.map((faq) => (
                       <li key={faq.id} className="overflow-hidden">
                         <button
@@ -283,10 +300,10 @@ const MainPageWithMenu = () => {
                     <p className="text-gray-700 px-0 md:px-4">데이터 로딩 중...</p>
                   ) : statisticsData ? (
                     <>
-                      <ul className="text-gray-700 px-0 md:px-4 space-y-2">
+                      <ul className="text-gray-700 px-0 md:px-4 space-y-2 h-36">
                         {statisticsData.map((stat, index) => (
-                          <li key={index} className="text-gray-800 font-semibold">
-                            {index+1}. {stat.utterance} - {stat.count}회
+                          <li key={index} className="text-gray-800 text-base font-semibold truncate"  >
+                            <p> {index + 1}. {stat.utterance} - {stat.count}회 </p>
                           </li>
                         ))}
                       </ul>
@@ -300,11 +317,9 @@ const MainPageWithMenu = () => {
                     <p className="text-gray-700 px-0 md:px-4">데이터가 준비 중입니다.</p>
                   )}
                 </div>
-
               </div>
             </main>
           </div>
-
         </main>
       </div>
 

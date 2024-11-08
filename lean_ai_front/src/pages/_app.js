@@ -1,12 +1,12 @@
 import { StoreProvider } from '../contexts/storeContext';
+import { AuthProvider } from '../contexts/authContext';
 import '../styles/globals.css';
-import '../../public/font/font.css'
+import '../../public/font/font.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import Head from 'next/head';  // Next.js의 Head 컴포넌트 임포트
-import '../styles/App.css'  // App.css가 필요한 경우에만 포함
+import Head from 'next/head';
+import '../styles/App.css';
 import config from '../../config';
 import Chatbot from './mumulChatBotMSG';
-
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -16,9 +16,11 @@ function MyApp({ Component, pageProps }) {
         <title>MUMUL</title>
       </Head>
 
-      <StoreProvider>
-        <Component {...pageProps} />
-      </StoreProvider>
+      <AuthProvider>
+        <StoreProvider>
+          <Component {...pageProps} />
+        </StoreProvider>
+      </AuthProvider>
 
       <Chatbot agentId={config.agentID}/>
     </>

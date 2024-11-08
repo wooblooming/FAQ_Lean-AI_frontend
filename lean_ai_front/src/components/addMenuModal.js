@@ -1,89 +1,73 @@
 import { useState, useEffect } from 'react';
-import { Plus, PencilLine  as EditIcon, Check, X, X as CancelIcon, Image as ImageIcon } from 'lucide-react';
+import { useAuth } from '../contexts/authContext';
+import { Plus, PencilLine as EditIcon, Check, X as CancelIcon, Image as ImageIcon } from 'lucide-react';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
-import ModalMSG from './modalMSG.js'; // 메시지 모달 컴포넌트
+import ModalMSG from './modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from './modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../config';
 import styles from '../styles/viewMenu.module.css';
 
 export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle }) {
-    const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 표시 여부
-    const [showMessageModal, setShowMessageModal] = useState(false); // 성공 메시지 모달 표시 여부
-    const [message, setMessage] = useState(''); // 성공 메시지 내용
-    const [menuItems, setMenuItems] = useState([]); // 모달에 추가된 메뉴 항목
+    const { token } = useAuth();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [message, setMessage] = useState('');
+    const [menuItems, setMenuItems] = useState([]);
     const [newItem, setNewItem] = useState({
         image: '',
         name: '',
         price: '',
         category: '',
         store: '',
-    }); // 새로운 메뉴 항목 추가 폼 데이터 초기값
-    const [categoryOptions, setCategoryOptions] = useState([]); // 메뉴 카테고리 옵션들
-    const [editItemId, setEditItemId] = useState(null); // 수정할 항목의 ID
-    const [editItem, setEditItem] = useState(null); // 수정할 메뉴 항목 데이터
+    });
+    const [categoryOptions, setCategoryOptions] = useState([]);
+    const [editItemId, setEditItemId] = useState(null);
+    const [editItem, setEditItem] = useState(null);
+    const [isMobile, setIsMobile] = useState(false);
 
-    const [isMobile, setIsMobile] = useState(false); // 모바일 화면 크기 여부 상태
-
-    // 화면 크기에 따라 모바일 여부를 설정
+    // 모바일 화면 크기 여부 상태
     useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768); // 768px 이하일 때 모바일로 설정
-        };
-
-        handleResize(); // 컴포넌트가 마운트될 때 크기 체크
-        window.addEventListener('resize', handleResize); // 리사이즈 이벤트 추가
-
-        return () => {
-            window.removeEventListener('resize', handleResize); // 언마운트 시 이벤트 제거
-        };
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // 모달이 열렸을 때만 메뉴 데이터 조회
+    // 메뉴 데이터 조회
     useEffect(() => {
         if (isOpen && slug) {
             fetchMenuData();
         }
     }, [isOpen, slug]);
 
-    // 서버에서 카테고리 데이터 가져오기
+    // 서버에서 메뉴 카테고리 데이터 가져오기
     const fetchMenuData = async () => {
         try {
-            const token = sessionStorage.getItem('token');
             const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    action: 'view_category',
-                    slug: slug,
-                }),
+                body: JSON.stringify({ action: 'view_category', slug }),
             });
-
             if (!response.ok) {
                 throw new Error('Failed to fetch menu data');
             }
-
             const data = await response.json();
-            //console.log('Parsed Data:', data);
-
-            // 카테고리 데이터를 설정
             setCategoryOptions(data || []);
-
-
         } catch (error) {
-            console.error('Error fetching menu data:', error);
+            setErrorMessage('카테고리를 가져오는 중 오류가 발생했습니다.');
+            setShowErrorMessageModal(true);
         }
     };
 
     // 모달이 닫혀있으면 컴포넌트를 렌더링하지 않음
     if (!isOpen) return null;
 
-    // 상태값 초기화 및 모달 닫기
     const handleClose = () => {
         setNewItem({
             image: '',
@@ -100,53 +84,43 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
         onClose();
     };
 
-    // 이미지 변경 핸들러
     const handleImageChange = (e, isEditing = false) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
+        const file = e.target.files[0];
+        if (file) {
             if (isEditing) {
-                setEditItem(prev => ({ ...prev, image: file }));
+                setEditItem((prev) => ({ ...prev, image: file }));
             } else {
-                setNewItem(prev => ({ ...prev, image: file }));
+                setNewItem((prev) => ({ ...prev, image: file }));
             }
         }
     };
 
-    // 입력 폼 변경 핸들러
     const handleInputChange = (e, isEditing = false) => {
         const { name, value } = e.target;
-        let updatedValue = value;
-
-        if (name === 'price') {
-            updatedValue = value ? parseInt(value, 10) : ''; // 입력된 값을 정수로 변환
-        }
-
+        const updatedValue = name === 'price' ? parseInt(value, 10) || '' : value;
         if (isEditing) {
-            setEditItem(prev => ({ ...prev, [name]: updatedValue }));
+            setEditItem((prev) => ({ ...prev, [name]: updatedValue }));
         } else {
-            setNewItem(prev => ({ ...prev, [name]: updatedValue }));
+            setNewItem((prev) => ({ ...prev, [name]: updatedValue }));
         }
     };
 
-    // 카테고리 선택 시 카테고리 상태 업데이트
     const handleCategoryChange = (selectedOption) => {
-        setNewItem(prev => ({
+        setNewItem((prev) => ({
             ...prev,
             category: selectedOption ? selectedOption.value : '',
         }));
     };
 
-    // 새로운 카테고리 생성 시 처리
     const handleCreateNewCategory = (newValue) => {
         const newCategoryOption = { value: newValue, label: newValue };
-        setCategoryOptions(prev => [...prev, newCategoryOption]);
-        setNewItem(prev => ({ ...prev, category: newValue }));
+        setCategoryOptions((prev) => [...prev, newCategoryOption]);
+        setNewItem((prev) => ({ ...prev, category: newValue }));
     };
 
-    // 새로운 메뉴 항목 추가 처리
     const handleAddItem = () => {
         if (newItem.name && newItem.price && newItem.category) {
-            setMenuItems(prev => [...prev, { ...newItem, menu_number: Date.now() }]);
+            setMenuItems((prev) => [...prev, { ...newItem, menu_number: Date.now() }]);
             setNewItem({ image: '', name: '', price: '', category: '', store: '' });
         } else {
             setErrorMessage("이름, 가격 및 카테고리를 모두 입력해주세요.");
@@ -154,56 +128,42 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
         }
     };
 
-    // 수정할 항목 선택
     const handleEdit = (item) => {
         setEditItemId(item.menu_number);
         setEditItem(item);
     };
 
-    // 수정 사항 저장
     const handleSaveEdit = () => {
-        setMenuItems(prev =>
-            prev.map(item => (item.menu_number === editItemId ? editItem : item))
+        setMenuItems((prev) =>
+            prev.map((item) => (item.menu_number === editItemId ? editItem : item))
         );
         setEditItemId(null);
         setEditItem(null);
     };
 
-    // 수정 취소
     const handleCancelEdit = () => {
         setEditItemId(null);
         setEditItem(null);
     };
 
-    // 메뉴 항목을 카테고리별로 그룹화
     const groupedMenuItems = menuItems.reduce((acc, item) => {
-        if (!acc[item.category]) {
-            acc[item.category] = [];
-        }
+        if (!acc[item.category]) acc[item.category] = [];
         acc[item.category].push(item);
         return acc;
     }, {});
 
-    // 이미지 미리보기
     const getImagePreview = (image) => {
-        if (image instanceof File) {
-            return URL.createObjectURL(image);
-        }
+        if (image instanceof File) return URL.createObjectURL(image);
         return '/menu_default_image.png'; // 기본 이미지 경로
     };
 
-    // 모든 메뉴 항목을 서버에 전송
     const handleComplete = async () => {
         try {
-            const token = sessionStorage.getItem('token');
             const formData = new FormData();
-            const storeSlug = (slug);
+            const storeSlug = slug;
 
-            if (menuItems.length === 0) {
-                throw new Error("메뉴 데이터가 없습니다."); // 메뉴 항목이 없을 경우 예외 처리
-            }
+            if (menuItems.length === 0) throw new Error("메뉴 데이터가 없습니다.");
 
-            // 각 메뉴 항목을 FormData에 추가
             for (const [index, item] of menuItems.entries()) {
                 formData.append(`menus[${index}][slug]`, storeSlug);
                 formData.append(`menus[${index}][name]`, item.name || '');
@@ -211,54 +171,43 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                 formData.append(`menus[${index}][category]`, item.category || '');
                 formData.append(`menus[${index}][menu_number]`, item.menu_number || '');
 
-                // 이미지 파일 추가
                 if (item.image instanceof File) {
                     formData.append(`menus[${index}][image]`, item.image);
                 } else {
-                    console.log("기본 이미지 사용");
-                    const defaultImageResponse = await fetch('/menu_default_image.png');
-                    const defaultImageBlob = await defaultImageResponse.blob();
+                    const defaultImageBlob = await fetch('/menu_default_image.png').then((res) => res.blob());
                     formData.append(`menus[${index}][image]`, defaultImageBlob, 'menu_default_image.png');
                 }
             }
-
 
             formData.append('action', editItemId ? 'update' : 'create');
 
             const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
                 body: formData,
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error("서버 응답 에러 상태:", response.status, response.statusText);
-                console.error("서버 응답 데이터:", errorData);
                 throw new Error(errorData.error || '서버 전송에 실패했습니다.');
             }
 
-
             const result = await response.json();
-            onSave(result); // 저장된 결과 전달
-
+            onSave(result);
             setMessage(`${menuTitle}이(가) 성공적으로 저장되었습니다.`);
             setShowMessageModal(true);
 
-            // 폼 초기화
             setNewItem({ image: '', name: '', price: '', category: '', store: '' });
             setMenuItems([]);
             setEditItemId(null);
             setEditItem(null);
         } catch (error) {
-            console.error('전송 중 오류 발생:', error);
             setErrorMessage(error.message || '저장에 실패했습니다.');
             setShowErrorMessageModal(true);
         }
     };
 
+    
     return (
         <div className={`${styles.modalOverlay} z-30`} >
              <div className={`${styles.modalContent} relative m-4 overflow-y-auto`}>

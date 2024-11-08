@@ -4,6 +4,7 @@ import { ChevronLeft, X } from 'lucide-react';
 import kakaoIcon from '../../public/btn_kakao.svg';
 import naverIcon from '../../public/btn_naver.svg';
 import googleIcon from '../../public/btn_google.svg';
+import { useAuth } from '../contexts/authContext';
 import UserProfileForm from '../components/userProfile';
 import QrCodeSection from '../components/qrCode';
 import EventSwitch from '../components/event';
@@ -12,8 +13,8 @@ import VerificationModal from '../components/verificationModal';
 import EventAlertModal from '../components/eventModal';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
+import ConfirmDeleteAccountModal from '../components/confirmDeleteAccountModal';
 import config from '../../config';
-import ConfirmDeleteAccountModal from '../components/confirmDeleteAccountModal.js';
 
 const MyPage = () => {
   // 모달 및 UI 상태 관련 변수
@@ -58,7 +59,7 @@ const MyPage = () => {
   const [isChanged, setIsChanged] = useState(false); // 데이터 변경 여부
 
   const router = useRouter();
-  const [token, setToken] = useState(null);
+  const { token, removeToken } = useAuth();
 
   // 이미지 모달
   const toggleImageModal = () => {
@@ -81,12 +82,6 @@ const MyPage = () => {
     setShowErrorMessageModal(false);
     setErrorMessage('');
   };
-
-  // 컴포넌트가 처음 마운트될 때 토큰을 가져오는 함수
-  useEffect(() => {
-    const storedToken = sessionStorage.getItem('token');
-    setToken(storedToken);
-  }, []);
 
   // 초기 사용자 정보 및 스토어 데이터를 가져오는 함수
   useEffect(() => {
@@ -196,7 +191,6 @@ const MyPage = () => {
   // 마케팅 상태 업데이트 함수
   const updateMarketingStatus = async (status) => {
     try {
-
       const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
         method: 'PUT',
         headers: {
@@ -495,7 +489,7 @@ const MyPage = () => {
       if (response.ok) {
         setMessage("회원탈퇴가 완료되었습니다.");
         setShowMessageModal(true);
-        sessionStorage.removeItem('token');  // sessionStorage에서 토큰 삭제
+        removeToken();
         router.push('/');  // 루트 페이지로 리다이렉트
       } else {
         setErrorMessage("회원탈퇴에 실패했습니다.");

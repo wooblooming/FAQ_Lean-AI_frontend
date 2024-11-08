@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
+import { useAuth } from '../contexts/authContext';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 export default function DataEditPage() {
+    const { token } = useAuth();
     const [title, setTitle] = useState(''); // 제목 상태
     const [content, setContent] = useState(''); // 요청 내용 상태
     const [fileNames, setFileNames] = useState([]); // 파일 이름 목록 상태
@@ -51,7 +53,7 @@ export default function DataEditPage() {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 

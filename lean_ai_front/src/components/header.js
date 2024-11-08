@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useAuth } from '../contexts/authContext';
 import { Menu, X } from 'lucide-react'; // 햄버거 메뉴와 닫기 아이콘 사용
 import LogoutModal from '../components/logout'; // 로그아웃 모달 컴포넌트 가져오기
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
@@ -18,6 +19,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
   const qrCanvasRef = useRef(null); // QR 코드 이미지를 캔버스에 그리기 위한 참조 생성
   const router = useRouter();
+  const { token, removeToken } = useAuth();
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -31,7 +33,6 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const fetchQRCode = async () => {
     try {
       setIsLoading(true); // 로딩 시작
-      const token = sessionStorage.getItem('token');
       const response = await fetch(`${config.apiDomain}/api/qrCodeImage/`, {
         method: 'POST',
         headers: {
@@ -97,7 +98,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
   // 로그아웃 확인 시 동작 함수
   const handleLogoutConfirm = () => {
-    sessionStorage.removeItem('token'); // 로컬스토리지에서 토큰 제거
+    removeToken();
     setIsLoggedIn(false); // 로그인 상태 변경
     setShowLogoutModal(false); // 로그아웃 모달 닫기
     router.push('/'); // 홈으로 이동

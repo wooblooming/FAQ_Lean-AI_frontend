@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSwipeable } from 'react-swipeable';
 import { motion } from "framer-motion";
-import { ChevronLeft, TriangleAlert, CircleAlert } from 'lucide-react';
+import { ChevronLeft, TriangleAlert, Headset, User, MailCheck } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../../contexts/authContext';
 import Loading from '../../components/loading';
 import AllergyModal from '../../components/allergyModal';
 import Chatbot from '../chatBotMSG';
@@ -14,6 +15,7 @@ const StoreIntroduceOwner = () => {
   const router = useRouter();
   const { slug } = router.query; // URL에서 slug 파라미터 가져옴
   const [storeData, setStoreData] = useState(null); // 매장 데이터를 저장
+  const [storeID, setStoreID] = useState(null);
   const [storeCategory, setStoreCategory] = useState('');
   const [menuPrice, setMenuPrice] = useState(null);
   const [menuDetails, setMenuDetails] = useState(null); // 메뉴 세부 정보를 저장
@@ -21,7 +23,7 @@ const StoreIntroduceOwner = () => {
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
   const [activeTab, setActiveTab] = useState('home'); // 활성 탭 관리
   const [openCategories, setOpenCategories] = useState({}); // 아코디언 상태 관리
-  const [token, setToken] = useState(null);
+  const { token } = useAuth();
   const [showAllergyModal, setShowAllergyModal] = useState(false); // 알레르기 모달 상태 관리
 
   // 메뉴 탭 이름 설정 함수
@@ -49,60 +51,55 @@ const StoreIntroduceOwner = () => {
     },
   });
 
-  // 컴포넌트가 처음 마운트될 때 토큰을 가져오는 함수
   useEffect(() => {
-    const storedToken = sessionStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken); // 토큰을 가져와서 상태에 저장
+    // 토큰이 설정된 후에만 fetchStoreData 실행
+    if (token && slug) {
+      fetchStoreData();
     }
-  }, []);
+  }, [token, slug]);
 
-  // 매장 데이터를 가져오는 비동기 함수, 컴포넌트가 처음 마운트될 때 실행됨
-  useEffect(() => {
-    // 토큰과 slug가 모두 있을 때만 실행
-    const fetchStoreData = async () => {
-      try {
-        const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-        const response = await fetch(`${config.apiDomain}/api/storesinfo/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            slug: decodedSlug,
-            type: 'owner',
-          }),
-        });
 
-        const data = await response.json();
+  // 매장 데이터를 가져오는 함수
+  const fetchStoreData = async () => {
+    try {
+      const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
+      const response = await fetch(`${config.apiDomain}/api/storesinfo/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          slug: decodedSlug,
+          type: 'owner',
+        }),
+      });
 
-        // 응답 데이터가 비어 있는지 확인
-        if (data && data.menu_prices) {
-          // JSON.parse()를 안전하게 사용
-          try {
-            const menuPrices = JSON.parse(data.menu_prices);
-            setMenuPrice(menuPrices); // 메뉴 데이터를 파싱해서 저장
+      const data = await response.json();
 
-            // 콘솔에 menuPrice 데이터를 출력
-            //console.log("Parsed menuPrices:", menuPrices)
-          } catch (parseError) {
-            console.error("Error parsing menu prices:", parseError);
-          }
-        } else {
-          console.error("No menu_prices found in response data.");
+      // 응답 데이터가 비어 있는지 확인
+      if (data && data.menu_prices) {
+        // JSON.parse()를 안전하게 사용
+        try {
+          const menuPrices = JSON.parse(data.menu_prices);
+          setMenuPrice(menuPrices); // 메뉴 데이터를 파싱해서 저장
+
+          // 콘솔에 menuPrice 데이터를 출력
+          //console.log("Parsed menuPrices:", menuPrices)
+        } catch (parseError) {
+          console.error("Error parsing menu prices:", parseError);
         }
-
-        setStoreData(data); // 받아온 데이터를 storeData 상태에 저장
-      } catch (error) {
-        console.error("Error fetching store data:", error);
-      } finally {
-        setIsLoading(false);  // 로딩 상태 변경 확인
+      } else {
+        console.error("No menu_prices found in response data.");
       }
-    };
 
-    fetchStoreData(); // 매장 데이터를 가져오는 함수 호출
-  }, [token, slug]); // token과 slug가 변경될 때마다 데이터를 다시 가져옴
+      setStoreData(data); // 받아온 데이터를 storeData 상태에 저장
+    } catch (error) {
+      console.error("Error fetching store data:", error);
+    } finally {
+      setIsLoading(false);  // 로딩 상태 변경 확인
+    }
+  };
 
   // storeCategory가 'FOOD'일 때 menu-details API를 호출하여 메뉴 세부 정보를 가져옴
   useEffect(() => {
@@ -140,9 +137,11 @@ const StoreIntroduceOwner = () => {
 
   // storeData가 변경된 이후에 agent_id를 설정
   useEffect(() => {
+    console.log(storeData);
     if (storeData) {
       setAgentId(storeData.agent_id);
       setStoreCategory(storeData.store_category);
+      setStoreID(storeData.store_id)
     }
   }, [storeData]); // storeData가 업데이트될 때마다 실행
 
@@ -190,7 +189,7 @@ const StoreIntroduceOwner = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg relative font-sans overflow-y-auto "
-        style={{ width: '95%', maxWidth: '430px', height: '95%' }}>
+        style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
         <div className="relative">
           <img
             src={
@@ -309,9 +308,14 @@ const StoreIntroduceOwner = () => {
                 </motion.h2>
                 {/* 매장이 음식점일 때만 알레르기 모달 표시 */}
                 {storeCategory === 'FOOD' && (
-                  <div className='flex flex-row text-indigo-600 space-x-1 cursor-pointer' onClick={toggleAllergyModal}>
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='flex flex-row text-indigo-600 space-x-1 cursor-pointer' onClick={toggleAllergyModal}
+                  >
                     <TriangleAlert /> <p>알레르기 </p>
-                  </div>
+                  </motion.div>
                 )}
               </div>
               {groupedMenu ? (
@@ -319,6 +323,9 @@ const StoreIntroduceOwner = () => {
                   <div key={index}>
                     {/* 카테고리 제목 */}
                     <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
                       onClick={() => toggleCategory(category)}
                       className={`cursor-pointer bg-indigo-300 p-3 ${openCategories[category] ? 'rounded-t-md' : 'rounded-md'}`}
                       whileTap={{ scale: 0.98 }}
@@ -369,7 +376,7 @@ const StoreIntroduceOwner = () => {
           )}
 
           {activeTab === 'complaint' && (
-            <div className="flex flex-col items-right space-y-4 ">
+            <div className="flex flex-col items-right " style={{height:'350px'}}>
               <div className=''>
                 <motion.h2
                   initial={{ opacity: 0, y: -20 }}
@@ -380,12 +387,67 @@ const StoreIntroduceOwner = () => {
                 >
                   민원 접수하기
                 </motion.h2>
-                <div className='flex flex-col space-y-2'>
-                  <button className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'>민원 접수</button>
-                  <button className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'>민원 현황</button>
+
+                {/* 민원 접수 절차 */}
+                <div className='flex flex-col space-y-2 p-2 mt-4'>
+
+                  <motion.div initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='flex flex-row space-x-5 justify-center items-center'
+                  >
+                    <Headset className='w-12 h-12 rounded-full bg-indigo-400 text-white p-2.5' />
+                    <div className='flex flex-col space-y-1 w-10/12 '>
+                      <p className='font-semibold text-indigo-500'>STEP 1</p>
+                      <p>아래 민원 접수 버튼을 통해 민원을 접수 합니다.</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='flex flex-row space-x-5 justify-center items-center'
+                  >
+                    <User className='w-12 h-12 rounded-full bg-indigo-400 text-white p-2.5' />
+                    <div className='flex flex-col space-y-1 w-10/12'>
+                      <p className='font-semibold text-indigo-500'>STEP 2</p>
+                      <p>접수된 민원은 담당부서로 전달되어 담당자가 지정됩니다.</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='flex flex-row space-x-5 justify-center items-center'
+                  >
+                    <MailCheck className='w-12 h-12 rounded-full bg-indigo-400 text-white p-2.5' />
+                    <div className='flex flex-col space-y-1  w-10/12'>
+                      <p className='font-semibold text-indigo-500'>STEP 3</p>
+                      <p>민원처리가 완료 되면 그 결과를 문자메시지를 통해 고객님께 통보하여 드립니다.</p>
+                    </div>
+                  </motion.div>
 
                 </div>
-            </div>
+
+                {/* 민원 신청 & 현황 확인 버튼 */}
+                <div className='flex flex-row justify-center items-center space-x-2 mt-2'>
+                  <button
+                    className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'
+                    onClick={() => router.push({
+                      pathname: '/registerComplaint',
+                      query: { storeID: storeID }
+                    })}
+                  >
+                    민원 접수
+                  </button>
+                  <button 
+                    className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl' 
+                    onClick={() => router.push('/complaintLookup')}
+                  >
+                    민원 조회
+                  </button>
+                </div>
+              </div>
             </div>
           )
           }

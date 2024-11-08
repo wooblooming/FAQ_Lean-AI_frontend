@@ -1,10 +1,12 @@
 import { useState, useRef } from 'react';
 import { ArrowDown, Upload } from "lucide-react";
+import { useAuth } from '../contexts/authContext';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 export default function DataEditPage() {
+  const { token } = useAuth();
   const [fileNames, setFileNames] = useState([]); // 업로드된 파일 이름 목록 상태
   const [message, setMessage] = useState(''); // 성공 메시지 상태
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
@@ -64,7 +66,7 @@ export default function DataEditPage() {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // 인증 토큰 추가
+          'Authorization': `Bearer ${token}`, // 토큰을 헤더에 추가하여 인증 요청
         }
       });
 

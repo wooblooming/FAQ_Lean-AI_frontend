@@ -7,8 +7,6 @@ const TermsOfServiceModal = ({ show, onClose, onAgree }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
-    const termsOfServiceRef = useRef(null);
-
     const termsOfService = `
     **제 1조(목적)**
 

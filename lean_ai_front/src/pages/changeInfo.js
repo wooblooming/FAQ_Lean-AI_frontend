@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import AddIcon from '@mui/icons-material/Add';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SearchIcon from '@mui/icons-material/Search';
+import { useAuth } from '../contexts/authContext';
 import StoreInfoEdit from '../components/storeInfoEdit';
 import AddMenuModal from '../components/addMenuModal';
 import ViewMenuModal from '../components/viewMenuModal';
@@ -11,6 +12,7 @@ import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 const ChangeInfo = ({ initialData }) => {
+  const { token, removeToken } = useAuth();
   const [storeId, setStoreId] = useState(''); // 매장 ID 상태
   const [storeName, setStoreName] = useState(''); // 매장 이름 상태
   const [storeIntroduction, setStoreIntroduction] = useState(''); // 매장 소개 상태
@@ -50,7 +52,6 @@ const ChangeInfo = ({ initialData }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = sessionStorage.getItem('token');
         const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
           method: 'POST',
           headers: {
@@ -61,7 +62,7 @@ const ChangeInfo = ({ initialData }) => {
         if (response.status === 401) {
           setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
           setShowErrorMessageModal(true);
-          sessionStorage.removeItem('token');
+          removeToken();
           return;
         }
         const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴

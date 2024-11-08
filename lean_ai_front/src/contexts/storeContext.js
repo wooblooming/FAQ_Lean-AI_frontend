@@ -1,18 +1,29 @@
-import React, { createContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
-export const StoreContext = createContext();
+const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
-  // 필요에 따라 초기 상태를 설정하거나 원하는 값을 추가하세요.
-  const [storeData, setStoreData] = useState({
-    // 예시 데이터
-    name: 'Default Store',
-    location: 'Default Location',
-  });
+    const [storeID, setStoreID] = useState(null);
 
-  return (
-    <StoreContext.Provider value={{ storeData, setStoreData }}>
-      {children}
-    </StoreContext.Provider>
-  );
+    // sessionStorage에서 storeID를 가져와 상태를 초기화
+    useEffect(() => {
+        const savedStoreID = sessionStorage.getItem("storeID");
+        if (savedStoreID) {
+            setStoreID(savedStoreID);
+        }
+    }, []);
+
+    // storeID가 변경될 때 sessionStorage에 저장
+    const saveStoreID = (id) => {
+        setStoreID(id);
+        sessionStorage.setItem("storeID", id);
+    };
+
+    return (
+        <StoreContext.Provider value={{ storeID, setStoreID: saveStoreID }}>
+            {children}
+        </StoreContext.Provider>
+    );
 };
+
+export const useStore = () => useContext(StoreContext);

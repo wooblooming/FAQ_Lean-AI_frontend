@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft } from 'lucide-react';
+import { useAuth } from '../contexts/authContext';
 import config from '../../config';
 
 const Statistics = () => {
     const router = useRouter();
+    const { token } = useAuth();
 
     const [statisticsData, setStatisticsData] = useState([]);  // 통계 데이터 상태
     const [isLoadingStatistics, setIsLoadingStatistics] = useState(true);  // 로딩 상태
@@ -17,7 +19,6 @@ const Statistics = () => {
     // 통계 데이터 API 호출
     const fetchStatistics = async () => {
         try {
-            const token = sessionStorage.getItem('token');
             const response = await fetch(`${config.apiDomain}/api/statistics/`, {
                 method: 'POST',
                 headers: {

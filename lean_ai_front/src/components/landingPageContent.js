@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Image from "next/image";
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useAuth } from '../contexts/authContext';
 import Nav from '../components/navBar';
 import CompanySection from '../components/companySection';
 import ServiceSection from '../components/serviceSection';
@@ -12,6 +13,7 @@ const LandingPageContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
   const [isMobile, setIsMobile] = useState(false); // 모바일 여부 상태
   const router = useRouter();
+  const { token } = useAuth();
 
   // 특정 섹션으로 스크롤 이동
   useEffect(() => {
@@ -30,9 +32,8 @@ const LandingPageContent = () => {
 
   // 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
     setIsLoggedIn(!!token); // 토큰이 존재하면 로그인 상태로 설정
-  }, []);
+  }, [token]);
 
   // 버튼 클릭 시 로그인 상태에 따른 페이지 이동
   const handleClick = () => {
@@ -75,7 +76,6 @@ const LandingPageContent = () => {
         alt={alt}
         width={width}
         height={height}
-        loader={imageLoader}
         {...props}
       />
     );
