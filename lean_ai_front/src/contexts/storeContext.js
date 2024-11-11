@@ -1,3 +1,5 @@
+// StoreProvider.js
+
 import { createContext, useContext, useState, useEffect } from 'react';
 
 const StoreContext = createContext();
@@ -13,14 +15,20 @@ export const StoreProvider = ({ children }) => {
         }
     }, []);
 
-    // storeID가 변경될 때 sessionStorage에 저장
+    // storeID를 sessionStorage에 저장하는 함수
     const saveStoreID = (id) => {
         setStoreID(id);
         sessionStorage.setItem("storeID", id);
     };
 
+    // storeID를 초기화하고 sessionStorage에서 제거하는 함수
+    const removeStoreID = () => {
+        setStoreID(null);
+        sessionStorage.removeItem("storeID");
+    };
+
     return (
-        <StoreContext.Provider value={{ storeID, setStoreID: saveStoreID }}>
+        <StoreContext.Provider value={{ storeID, setStoreID: saveStoreID, removeStoreID }}>
             {children}
         </StoreContext.Provider>
     );

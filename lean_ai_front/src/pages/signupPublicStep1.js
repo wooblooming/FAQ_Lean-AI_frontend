@@ -7,7 +7,7 @@ import VerificationModal from '../components/verificationModal'; // 핸드폰 �
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
-const SignupStep1 = () => {
+const signupPublicStep1 = () => {
     const [formData, setFormData] = useState({
         username: '', password: '', confirmPassword: '', name: '', dob: '', phone: '', verificationCode: '', email: ''
     });
@@ -99,7 +99,7 @@ const SignupStep1 = () => {
         }
 
         router.push({
-            pathname: '/signupStep2',
+            pathname: '/signupPublicStep2',
             query: { ...formData },
         });
     };
@@ -123,7 +123,7 @@ const SignupStep1 = () => {
 
         // 인증 요청하여 백엔드에서 인증번호 전송 
         try {
-            const response = await fetch(`${config.apiDomain}/api/send-code/`, {
+            const response = await fetch(`${config.apiDomain}/public/send-code/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ const SignupStep1 = () => {
     // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
     const handleVerifyCode = async () => {
         try {
-            const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
+            const response = await fetch(`${config.apiDomain}/public/verify-code/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -193,7 +193,7 @@ const SignupStep1 = () => {
                     <div className="text-l text-left text-gray-600 px-5" style={{ fontFamily: 'NanumSquareBold' }}>기본 정보를 입력해주세요</div>
                 </div>
 
-                <div className='px-5 space-y-3'>
+                <div className='px-5  space-y-3'>
                 {/* 아이디 입력 및 중복 확인 */}
                 <div className="flex items-center w-full space-x-4 ">
                     <div className="flex-grow relative">
@@ -361,7 +361,7 @@ const SignupStep1 = () => {
                         }
                     }}
                     username={formData.username}
-                    isPublic = 'false'
+                    isPublic='true'
                 />
 
                 {/* 핸드폰 이용하여 본인 인증하는 모달 */}
@@ -394,4 +394,4 @@ const SignupStep1 = () => {
     );
 };
 
-export default SignupStep1;
+export default signupPublicStep1;

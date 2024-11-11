@@ -1,3 +1,4 @@
+// AuthProvider.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -7,14 +8,14 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const storedToken = sessionStorage.getItem('token');
-        //console.log("Token loaded on page load:", storedToken);
+        //console.log("Token loaded on page load:", storedToken); // 추가된 로그
         if (storedToken) {
             setToken(storedToken);
         }
     }, []);
 
     const saveToken = (newToken) => {
-        //console.log("Saving new token:", newToken);
+        //console.log("Saving new token:", newToken); // 추가된 로그
         setToken(newToken);
         if (typeof window !== 'undefined') {
             sessionStorage.setItem('token', newToken);
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const removeToken = () => {
+        //console.log("Removing token"); // 추가된 로그
         setToken(null);
         if (typeof window !== 'undefined') {
             sessionStorage.removeItem('token');

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSwipeable } from 'react-swipeable';
 import { motion } from "framer-motion";
-import { ChevronLeft, TriangleAlert, Headset, User, MailCheck } from 'lucide-react';
+import { TriangleAlert, Headset, User, MailCheck } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../contexts/authContext';
@@ -11,7 +11,7 @@ import AllergyModal from '../../components/allergyModal';
 import Chatbot from '../chatBotMSG';
 import config from '../../../config';
 
-const StoreIntroduceOwner = () => {
+const StoreIntroduce = () => {
   const router = useRouter();
   const { slug } = router.query; // URL에서 slug 파라미터 가져옴
   const [storeData, setStoreData] = useState(null); // 매장 데이터를 저장
@@ -32,6 +32,8 @@ const StoreIntroduceOwner = () => {
       ? '메뉴'
       : storeCategory === 'RETAIL' || storeCategory === 'UNMANNED'
         ? '상품'
+        : storeCategory === 'PUBLIC'
+          ? '서비스'
           : '기타'
   };
 
@@ -69,7 +71,7 @@ const StoreIntroduceOwner = () => {
         },
         body: JSON.stringify({
           slug: decodedSlug,
-          type: 'owner',
+          type: 'customer',
         }),
       });
 
@@ -113,7 +115,7 @@ const StoreIntroduceOwner = () => {
             body: JSON.stringify({
               action: 'view',
               slug: slug,
-              type: 'owner'
+              type: 'customer'
             }),
           });
 
@@ -135,7 +137,7 @@ const StoreIntroduceOwner = () => {
 
   // storeData가 변경된 이후에 agent_id를 설정
   useEffect(() => {
-    console.log(storeData);
+    //console.log(storeData);
     if (storeData) {
       setAgentId(storeData.agent_id);
       setStoreCategory(storeData.store_category);
@@ -198,10 +200,6 @@ const StoreIntroduceOwner = () => {
             alt="Store"
             className="w-full h-48 object-cover"
           />
-          <ChevronLeft
-            className="absolute top-4 left-4 items-center bg-indigo-500 rounded-full text-white p-1 cursor-pointer"
-            onClick={() => router.push('/mainPageForPresident')}
-          />
         </div>
 
         {/* 매장 정보 섹션에 애니메이션 추가 */}
@@ -232,6 +230,15 @@ const StoreIntroduceOwner = () => {
           >
             {menuTitle}
           </button>
+          {storeCategory === 'PUBLIC' &&
+            <button
+              className={`p-2 w-1/4 ${activeTab === 'complaint' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500 text-center' : ''}`}
+              style={{ fontFamily: activeTab === 'complaint' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
+              onClick={() => handleTabClick('complaint')}
+            >
+              <p className='whitespace-nowrap'>민원</p>
+            </button>
+          }
         </div>
 
         {/* 탭 내용 */}
@@ -364,6 +371,82 @@ const StoreIntroduceOwner = () => {
             </div>
           )}
 
+          {activeTab === 'complaint' && (
+            <div className="flex flex-col items-right " style={{ height: '350px' }}>
+              <div className=''>
+                <motion.h2
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-2xl font-bold "
+                  style={{ fontFamily: 'NanumSquareExtraBold' }}
+                >
+                  민원 접수하기
+                </motion.h2>
+
+                {/* 민원 접수 절차 */}
+                <div className='flex flex-col space-y-2 p-2 mt-4'>
+
+                  <motion.div initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='flex flex-row space-x-5 justify-center items-center'
+                  >
+                    <Headset className='w-12 h-12 rounded-full bg-indigo-400 text-white p-2.5' />
+                    <div className='flex flex-col space-y-1 w-10/12 '>
+                      <p className='font-semibold text-indigo-500'>STEP 1</p>
+                      <p>아래 민원 접수 버튼을 통해 민원을 접수 합니다.</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='flex flex-row space-x-5 justify-center items-center'
+                  >
+                    <User className='w-12 h-12 rounded-full bg-indigo-400 text-white p-2.5' />
+                    <div className='flex flex-col space-y-1 w-10/12'>
+                      <p className='font-semibold text-indigo-500'>STEP 2</p>
+                      <p>접수된 민원은 담당부서로 전달되어 담당자가 지정됩니다.</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='flex flex-row space-x-5 justify-center items-center'
+                  >
+                    <MailCheck className='w-12 h-12 rounded-full bg-indigo-400 text-white p-2.5' />
+                    <div className='flex flex-col space-y-1  w-10/12'>
+                      <p className='font-semibold text-indigo-500'>STEP 3</p>
+                      <p>민원처리가 완료 되면 그 결과를 문자메시지를 통해 고객님께 통보하여 드립니다.</p>
+                    </div>
+                  </motion.div>
+
+                </div>
+
+                {/* 민원 신청 & 현황 확인 버튼 */}
+                <div className='flex flex-row justify-center items-center space-x-2 mt-2'>
+                  <button
+                    className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'
+                    onClick={() => router.push({
+                      pathname: '/registerComplaint',
+                      query: { storeID: storeID }
+                    })}
+                  >
+                    민원 접수
+                  </button>
+                  <button 
+                    className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl' 
+                    onClick={() => router.push('/complaintLookup')}
+                  >
+                    민원 조회
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+          }
         </div>
 
         {/* Chatbot */}
@@ -380,4 +463,4 @@ const StoreIntroduceOwner = () => {
   );
 };
 
-export default StoreIntroduceOwner;
+export default StoreIntroduce;

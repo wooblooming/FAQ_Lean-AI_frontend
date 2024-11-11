@@ -94,19 +94,20 @@ const SignupStep2 = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-violet-50">
-            <div className="bg-white px-10 py-8 rounded-md shadow-lg max-w-md w-full space-y-3">
-                <div className="flex items-center mb-12">
-                    {/* 뒤로 가기 버튼 */}
-                    <ChevronLeft
-                        className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-                        onClick={() => router.back()}
-                    />
-                    <div className="flex-grow text-center">
-                        <h1 className="text-3xl font-bold text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회원가입</h1>
+        <div className="min-h-screen flex flex-col justify-center items-center bg-violet-50 px-2 md:px-0">
+            <div className="bg-white px-3 py-6 rounded-md shadow-lg max-w-md w-full space-y-3 ">
+                <div className='flex flex-col gap-1'>
+                    <div className="flex items-center">
+                        <ChevronLeft
+                            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+                            onClick={() => router.back()} // 뒤로가기 버튼
+                        />
+                        <h1 className="text-3xl font-bold text-left text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회원가입</h1>
                     </div>
+                    <div className="text-l text-left text-gray-600 px-5" style={{ fontFamily: 'NanumSquareBold' }}>사업장 정보를 입력해주세요</div>
                 </div>
 
+                <div className='px-5 space-y-3'>
                 {/* 비즈니스 종류 선택 - 드롭다운 */}
                 <div className="mb-4">
                     <select
@@ -119,7 +120,6 @@ const SignupStep2 = () => {
                         <option value="FOOD">음식점</option>
                         <option value="RETAIL">판매점</option>
                         <option value="UNMANNED">무인매장</option>
-                        <option value="PUBLIC">공공기관</option>
                         <option value="OTHER">기타</option>
                     </select>
 
@@ -157,7 +157,7 @@ const SignupStep2 = () => {
                 </div>
 
                 {/* 약관 및 마케팅 동의 체크박스 */}
-                <div className="flex items-center justify-center space-x-2 mt-4">
+                <div className="flex items-center justify-center space-x-2">
                     <input
                         type="checkbox"
                         checked={termsAccepted}
@@ -186,7 +186,7 @@ const SignupStep2 = () => {
 
                 {/* 회원가입 버튼 */}
                 <button
-                    className="bg-indigo-500 text-white py-2 px-4 rounded-md w-full mt-3 font-medium"
+                    className="w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold"
                     onClick={handleSignup}
                 >
                     회원가입
@@ -226,6 +226,7 @@ const SignupStep2 = () => {
                     <p className=''>{username}님 환영합니다!</p>
                 </ModalMSG>
             </div>
+        </div>
         </div>
     );
 };

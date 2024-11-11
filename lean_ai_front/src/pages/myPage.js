@@ -5,6 +5,7 @@ import kakaoIcon from '../../public/btn_kakao.svg';
 import naverIcon from '../../public/btn_naver.svg';
 import googleIcon from '../../public/btn_google.svg';
 import { useAuth } from '../contexts/authContext';
+import { useStore } from '../contexts/storeContext';
 import UserProfileForm from '../components/userProfile';
 import QrCodeSection from '../components/qrCode';
 import EventSwitch from '../components/event';
@@ -60,6 +61,7 @@ const MyPage = () => {
 
   const router = useRouter();
   const { token, removeToken } = useAuth();
+  const { removeStoreID } = useStore();
 
   // 이미지 모달
   const toggleImageModal = () => {
@@ -490,6 +492,7 @@ const MyPage = () => {
         setMessage("회원탈퇴가 완료되었습니다.");
         setShowMessageModal(true);
         removeToken();
+        removeStoreID();
         router.push('/');  // 루트 페이지로 리다이렉트
       } else {
         setErrorMessage("회원탈퇴에 실패했습니다.");
@@ -559,11 +562,11 @@ const MyPage = () => {
           handleSendCode={handleSendCode}
           showCodeModal={showCodeModal}
           setShowCodeModal={setShowCodeModal}
-          handleCodeModalClose={handleCodeModalClose}  // 추가
-          handleVerifyCode={handleVerifyCode}  // 추가
-          verificationCode={verificationCode}  // 추가
-          setVerificationCode={setVerificationCode}  // 추가
-          errorMessage={errorMessage}  // 추가
+          handleCodeModalClose={handleCodeModalClose}  
+          handleVerifyCode={handleVerifyCode} 
+          verificationCode={verificationCode}  
+          setVerificationCode={setVerificationCode} 
+          errorMessage={errorMessage}  
         />
 
         {/* QR 코드 섹션 */}
@@ -684,53 +687,6 @@ const MyPage = () => {
           </p>
         </ModalErrorMSG>
 
-        <style jsx>{`
-          .switch {
-            position: relative;
-            display: inline-block;
-            width: 42px;
-            height: 26px;
-          }
-
-          .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-          }
-
-          .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 34px;
-          }
-
-          .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-          }
-
-          input:checked + .slider {
-            background-color: #8b5cf6;
-          }
-
-          input:checked + .slider:before {
-            transform: translateX(16px);
-          }
-        `}
-        </style>
 
       </div>
     </div>

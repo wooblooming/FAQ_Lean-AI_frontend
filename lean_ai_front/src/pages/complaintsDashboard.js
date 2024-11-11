@@ -4,10 +4,10 @@ import axios from 'axios';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
+import ComplaintDetailModal from '../components/complaintDetailModal';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
@@ -23,18 +23,18 @@ const ComplaintsDashboard = () => {
     const [message, setMessage] = useState('');
     const [selectedComplaint, setSelectedComplaint] = useState(null);
     const [newStatus, setNewStatus] = useState('');
+    const [selectedTab, setSelectedTab] = useState('전체보기'); // 초기 탭 설정
 
-    // 메시지 모달 닫기 & 초기화
     const handleMessageModalClose = () => {
         setShowMessageModal(false);
         setMessage('');
     };
 
-    // 에러 메시지 모달 닫기 & 초기화
     const handleErrorModalClose = () => {
         setShowErrorModal(false);
         setErrorMessage('');
     };
+
     useEffect(() => {
         if (storeID && token) {
             postComplaints();
@@ -44,11 +44,11 @@ const ComplaintsDashboard = () => {
     const postComplaints = async () => {
         try {
             const response = await axios.post(
-                `${config.apiDomain}/api/complaints/`, 
+                `${config.apiDomain}/api/complaints/`,
                 { storeID },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, 
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -60,14 +60,14 @@ const ComplaintsDashboard = () => {
         }
     };
 
-    const handleStatusChange = async (complaint_number, newStatus) => {
+    const handleStatusChange = async (complaintId, newStatus) => {
         try {
             await axios.patch(
-                `${config.apiDomain}/api/complaints/${complaintId}/status/`, 
+                `${config.apiDomain}/api/complaints/${complaintId}/status/`,
                 { status: newStatus },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, 
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -85,123 +85,91 @@ const ComplaintsDashboard = () => {
         }
     };
 
-    const formatAuthorName = (fullName) => {
-        if (!fullName || fullName.length === 0) {
-            return '';
-        }
-        const firstCharacter = fullName[0];
-        const remainingCharacters = 'O'.repeat(fullName.length - 1);
-        return firstCharacter + remainingCharacters;
-    };
-
     return (
         <div className="min-h-screen p-6 font-sans bg-violet-50">
-            <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#fff' }}>
-                <div className="flex items-center">
-                    <ChevronLeft
-                        className="h-6 w-6 md:h-8 md:w-8 text-indigo-700 cursor-pointer mr-2"
-                        onClick={() => router.back()}
-                    />
-                    <h1 className="text-xl md:text-3xl font-bold text-center text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>민원 조회 및 관리</h1>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {complaints.map((complaint) => (
-                        <Card key={`card-${complaint.id}`}>
-                            <CardHeader key={`header-${complaint.id}`}>
-                                <CardTitle key={`title-${complaint.id}`} className="text-xl" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-                                    {complaint.title}
-                                </CardTitle>
-                                <p className="text-sm text-gray-600 font-medium" style={{ fontFamily: 'NanumSquare' }}>
-                                    접수 번호 : <span>{complaint.complaint_number}</span>
-                                </p>
-                            </CardHeader>
-                            <CardContent key={`content-${complaint.id}`} style={{ fontFamily: 'NanumSquareBold' }}>
-                                <div className="space-y-2 ">
-                                    <div className="flex justify-between" key={`author-${complaint.id}`}>
-                                        <span>작성자:</span>
-                                        <span>{formatAuthorName(complaint.name)}</span>
-                                    </div>
-                                    <div className="flex justify-between" key={`date-${complaint.id}`}>
-                                        <span>접수일:</span>
-                                        <span>{new Date(complaint.created_at).toISOString().replace('T', ' ').substring(0, 16)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center" key={`status-${complaint.id}`}>
-                                        <span>상태:</span>
-                                        <span className="col-span-3">
-                                            <Badge
-                                                variant={complaint.status === "완료" ? "default" : "secondary"}
-                                                onClick={() => setSelectedComplaint(complaint.id)}
-                                                className="cursor-pointer"
-                                            >
-                                                {complaint.status}
-                                            </Badge>
-                                        </span>
-                                    </div>
-                                </div>
-                                <Dialog key={`dialog-${complaint.id}`} onOpenChange={(isOpen) => !isOpen && setSelectedComplaint(null)}>
-                                    <DialogTrigger asChild>
-                                        <Button className="w-full mt-4">상세보기</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader key={`dialog-header-${complaint.id}`}>
-                                            <DialogTitle key={`dialog-title-${complaint.id}`}>{complaint.title}</DialogTitle>
-                                            <DialogDescription id={`dialog-description-${complaint.id}`} className="text-sm text-muted-foreground">
-                                                접수 번호 : <span>{complaint.complaint_number}</span>
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-3 py-2">
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <span className="font-bold">작성자:</span>
-                                                <span className="col-span-3"> {formatAuthorName(complaint.name)}</span>
-                                            </div>
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <span className="font-bold">접수일:</span>
-                                                <span className='whitespace-nowrap'>{new Date(complaint.created_at).toISOString().replace('T', ' ').substring(0, 16)}</span>
-                                            </div>
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <span className="font-bold">상태:</span>
-                                                {selectedComplaint === complaint.id ? (
-                                                    <div className="col-span-3 flex items-center space-x-4">
-                                                        <select
-                                                            value={newStatus}
-                                                            onChange={(e) => setNewStatus(e.target.value)}
-                                                            className="bg-gray-100 p-2 rounded text-center"
-                                                        >
-                                                            <option value="">변경 상태 선택</option>
-                                                            <option value="접수">접수</option>
-                                                            <option value="처리 중">처리 중</option>
-                                                            <option value="완료">완료</option>
-                                                        </select>
-                                                        <Button
-                                                            className='px-3 font-normal'
-                                                            size="sm"
-                                                            onClick={() => handleStatusChange(complaint.id, newStatus)}
-                                                        >
-                                                            변경
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    <Badge
-                                                        variant={complaint.status === "완료" ? "default" : "secondary"}
-                                                        onClick={() => setSelectedComplaint(complaint.id)}
-                                                        className="cursor-pointer"
-                                                    >
-                                                        {complaint.status}
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <span className="font-bold">내용:</span>
-                                                <span className="col-span-3">{complaint.content}</span>
-                                            </div>
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+            <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
+    <div className="flex items-center">
+        <ChevronLeft
+            className="h-6 w-6 md:h-8 md:w-8 text-indigo-700 cursor-pointer mr-2"
+            onClick={() => router.back()}
+        />
+        <h1 className="text-xl md:text-3xl font-bold text-center text-indigo-600" style={{ fontFamily: "NanumSquareExtraBold" }}>민원 조회 및 관리</h1>
+    </div>
+
+    <div className="flex flex-col space-y-2 md:flex-row">
+        {/* 사이드바 탭 */}
+        <div className="w-full md:w-1/5 md:pr-6">
+            <div className="flex flex-row md:flex-col space-x-2 md:space-x-0 space-y-0 md:space-y-2 text-base md:text-lg whitespace-nowrap" style={{ fontFamily: "NanumSquareBold" }}>
+                {['전체보기', '접수', '처리중', '완료'].map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setSelectedTab(tab)}
+                        className={`px-2 py-2 w-full text-center md:text-left rounded-lg text-indigo-700 ${selectedTab === tab
+                                ? 'bg-indigo-100 text-lg md:text-xl'
+                                : 'hover:bg-gray-100'
+                            }`}
+                        style={{ fontFamily: selectedTab === tab ? "NanumSquareExtraBold" : "" }}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
+        </div>
+
+        {/* 콘텐츠 */}
+        <div className="w-full md:w-3/4 ml-0 md:ml-8 grid gap-4 grid-cols-1 md:grid-cols-2 " style={{ fontFamily: "NanumSquareBold" }}>
+            {complaints
+                .filter((complaint) => selectedTab === '전체보기' || complaint.status === selectedTab)
+                .map((complaint) => (
+                    <Card key={`card-${complaint.id}`}>
+                        <CardHeader>
+                            <CardTitle className="text-xl" style={{ fontFamily: "NanumSquareExtraBold" }}> {complaint.title}</CardTitle>
+                            <p className="text-sm text-gray-600 font-medium px-2">
+                                접수 번호 : <span>{complaint.complaint_number}</span>
+                            </p>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                <div className="flex justify-between">
+                                    <span>작성자:</span>
+                                    <span>{complaint.name}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>접수일:</span>
+                                    <span>{new Date(complaint.created_at).toISOString().replace('T', ' ').substring(0, 16)}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span>상태:</span>
+                                    <span>
+                                        <Badge
+                                            variant={complaint.status === "완료" ? "default" : "secondary"}
+                                        >
+                                            {complaint.status}
+                                        </Badge>
+                                    </span>
+                                </div>
+                            </div>
+                            <Button className="w-full mt-4" onClick={() => setSelectedComplaint(complaint)}>
+                                상세보기
+                            </Button>
+                        </CardContent>
+                    </Card>
+                ))}
+        </div>
+    </div>
+
+            </div>
+
+            {/* Complaint Detail Modal */}
+            <ComplaintDetailModal
+                show={!!selectedComplaint}
+                onClose={() => setSelectedComplaint(null)}
+                complaint={selectedComplaint}
+                newStatus={newStatus}
+                setNewStatus={setNewStatus}
+                handleStatusChange={handleStatusChange}
+            />
+
             {/* 성공 메시지 모달 */}
             <ModalMSG
                 show={showMessageModal}
