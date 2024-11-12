@@ -9,11 +9,10 @@ import config from '../../config';
 
 const SignupStep2 = () => {
     const router = useRouter();
-    const { username, password, name, dob, phone, email } = router.query; // 첫 번째 단계에서 전달된 사용자 정보
-
     const [formData, setFormData] = useState({
+        username: '', password: '', name: '', dob: '', phone: '', email: '',
         businessType: '', businessName: '', address: ''
-    }); // 사업자 정보 저장 상태
+    });
     const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
     const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
     const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 저장
@@ -23,32 +22,34 @@ const SignupStep2 = () => {
     const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 환영 모달 상태
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
+    useEffect(() => {
+        // sessionStorage에서 사용자 정보를 불러오기
+        const storedUserData = sessionStorage.getItem('signupUserData');
+        if (storedUserData) {
+            setFormData(JSON.parse(storedUserData));
+        } else {
+            // 만약 데이터가 없으면 첫 단계로 리다이렉트
+            router.push('/signupStep1');
+        }
+    }, []);
+
     // 입력 필드 변경 처리 함수
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value }); // 입력된 값을 상태에 업데이트
-        if (name === 'businessType' && value !== '') setShowWarning(false); // 비즈니스 종류 선택 시 경고 메시지 숨김
+        setFormData({ ...formData, [name]: value });
+        if (name === 'businessType' && value !== '') setShowWarning(false);
     };
-
-    // 약관 동의 모달 열기
-    const handleTermsCheckboxChange = () => setShowTermsModal(true);
 
     // 회원가입 처리 함수
     const handleSignup = async () => {
-        const { businessType, businessName, address } = formData;
+        const { username, password, name, dob, phone, email, businessType, businessName, address } = formData;
 
-        if (!businessType) {
-            setShowWarning(true); // 비즈니스 종류 미선택 시 경고 메시지 표시
-            return;
-        }
-
-        if (!businessType || !businessName || !address) { // 필수 항목 미기입 시 에러 메시지 표시
+        if (!businessType || !businessName || !address) {
             setErrorMessage('필수 항목들을 기입해주시길 바랍니다.');
             setShowErrorMessageModal(true);
             return;
         }
 
-        // 생년월일 형식 변환
         let dobFormatted = dob;
         if (dob.length === 6) {
             const yearPrefix = parseInt(dob.substring(0, 2)) > 24 ? '19' : '20';
@@ -72,7 +73,7 @@ const SignupStep2 = () => {
             });
 
             const data = await response.json();
-            if (data.success) setShowWelcomeModal(true); // 성공 시 환영 모달 표시
+            if (data.success) setShowWelcomeModal(true);
             else {
                 setErrorMessage(data.message || '회원가입에 실패했습니다.');
                 setShowErrorMessageModal(true);
@@ -82,6 +83,10 @@ const SignupStep2 = () => {
             setShowErrorMessageModal(true);
         }
     };
+
+
+    // 약관 동의 모달 열기
+    const handleTermsCheckboxChange = () => setShowTermsModal(true);
 
     const handleErrorMessageModalClose = () => {
         setShowErrorMessageModal(false);
@@ -223,7 +228,7 @@ const SignupStep2 = () => {
 
                 {/* 회원가입 성공 모달 */}
                 <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
-                    <p className=''>{username}님 환영합니다!</p>
+                    <p className=''>{formData.username}님 환영합니다!</p>
                 </ModalMSG>
             </div>
         </div>

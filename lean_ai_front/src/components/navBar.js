@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react'; 
+import { useAuth } from '../contexts/authContext';
+import { useStore } from '../contexts/storeContext';
+import { usePublic } from '../contexts/publicContext';
 import LogoutModal from '../components/logout'; 
 
 const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
@@ -11,6 +14,9 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 상태
   const navRef = useRef(null);
   const router = useRouter();
+  const { token, removeToken } = useAuth();
+  const { removeStoreID } = useStore();
+  const { resetPublicOn } = usePublic();
 
   // 네비게이션 항목 설정
   const navItems = [
@@ -54,6 +60,17 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
     setMobileSubMenuOpenIndex(mobileSubMenuOpenIndex === index ? null : index);
   };
 
+  // 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
+useEffect(() => {
+  if (token) {
+      setIsLoggedIn(true); // 토큰이 존재하면 로그인 상태로 설정
+      
+  } else {
+      setIsLoggedIn(false); // 토큰이 없으면 비로그인 상태로 설정
+      
+  }
+}, [token]);
+
   // 로그인/로그아웃 버튼 클릭 핸들러
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
@@ -65,9 +82,12 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
 
   // 로그아웃 확정 시 실행되는 함수
   const handleLogoutConfirm = () => {
-    sessionStorage.removeItem('token');
     setIsLoggedIn(false); // 로그인 상태 갱신
     setShowLogoutModal(false); // 로그아웃 모달 닫기
+    removeToken();
+    removeStoreID();
+    resetPublicOn();
+    router.push('/'); // 홈으로 이동
   };
 
   // 로그아웃 취소 시 모달 닫기

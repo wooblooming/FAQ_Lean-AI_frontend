@@ -98,10 +98,8 @@ const signupPublicStep1 = () => {
             return;
         }
 
-        router.push({
-            pathname: '/signupPublicStep2',
-            query: { ...formData },
-        });
+        sessionStorage.setItem('signupPublicUserData', JSON.stringify(formData));
+        router.push('/signupPublicStep2');
     };
 
     // 에러 메시지 모달을 닫음

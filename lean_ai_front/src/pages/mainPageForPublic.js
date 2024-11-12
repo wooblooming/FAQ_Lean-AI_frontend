@@ -3,10 +3,10 @@ import { useRouter } from 'next/router';
 import Header from '../components/header';
 import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
+import { useStore } from '../contexts/storeContext';
+import { usePublic } from '../contexts/publicContext';
 import { announcements } from './notice';
 import { faqs } from './faq';
-import ChangeInfo from './changeInfo';
-import EditData from './editData';
 import RequestData from './requestData';
 import Modal from '../components/modal';
 import ModalErrorMSG from '../components/modalErrorMSG';
@@ -40,20 +40,18 @@ const getLatestAnnouncements = () => {
 
 const MainPageWithMenu = () => {
   const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 상태
-  const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false); // 정보 수정 모달 상태
-  const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false); // 데이터 편집 모달 상태
   const [isRequestDataModalOpen, setIsReqestDataModalOpen] = useState(false); // 데이터 요청 모달 상태
   const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 상태
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-  const [category, setCategory] = useState('');
-  const [storeName, setStoreName] = useState(''); // 상점 이름 상태
-  const [storeID, setStoreID] = useState(''); 
-  const [slug, setStoreSlug] = useState(''); // 상점 슬러그 상태
+  const [publicName, setPublicName] = useState(''); // 상점 이름 상태
+  const [slug, setPublicSlug] = useState(''); // 상점 슬러그 상태
   const [expandedId, setExpandedId] = useState(null); // FAQ 확장 상태 관리
 
   const router = useRouter();
   const { token, removeToken } = useAuth();
+  const { storeID, removeStoreID } = useStore();
+  const { resetPublicOn } = usePublic();
   const latestAnnouncements = getLatestAnnouncements(); // 최신 공지사항 가져오기
   const latestFaqs = faqs.slice(0, 3); // FAQ 상위 3개만 선택
 
@@ -77,27 +75,31 @@ const MainPageWithMenu = () => {
   // 컴포넌트 마운트 시 상점, 통계 정보 불러오기
   useEffect(() => {
     if (token) {  // token이 존재할 때만 API 호출
-      fetchStoreInfo();
+      fetchPublicInfo();
       fetchStatistics();
     }
   }, [token]);
 
 
   // 상점 정보 API 호출
-  const fetchStoreInfo = async () => {
+  const fetchPublicInfo = async () => {
+    //console.log("Current Token:", token);
     try {
-      const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
+      const response = await fetch(`${config.apiDomain}/public/user-public-info/`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // 토큰을 헤더에 추가하여 인증 요청
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
       });
 
       if (response.status === 401) { // 인증 실패 시 에러 처리
         setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
         setShowErrorMessageModal(true);
+        setIsLoggedIn(false);
         removeToken();
+        removeStoreID();
+        resetPublicOn();
         router.push('/login');
         return;
       }
@@ -106,16 +108,13 @@ const MainPageWithMenu = () => {
         throw new Error(`Failed to fetch store information: ${response.statusText}`);
       }
 
-      const storeData = await response.json();
-      //console.log(storeData[0]);
-      if (storeData && storeData.length > 0) {
-        setCategory(storeData[0].store_category);
-        setStoreName(storeData[0].store_name);
-        setStoreSlug(storeData[0].slug);
-        setStoreID(storeData[0].store_id);
-        
+      const publicData = await response.json();
+      //console.log(publicData);
+      if (publicData && publicData.user && publicData.public) {
+        setPublicName(publicData.public.public_name);
+        setPublicSlug(publicData.public.slug);
       } else {
-        setStoreName('');
+        setPublicName('');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -128,10 +127,11 @@ const MainPageWithMenu = () => {
   // 통계 데이터 API 호출
   const fetchStatistics = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/api/statistics/`, {
+      const response = await fetch(`${config.apiDomain}/public/statistics/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
       });
 
@@ -154,7 +154,7 @@ const MainPageWithMenu = () => {
   const goToChatbot = () => {
     if (slug) {
       const encodedSlug = encodeURIComponent(slug);
-      router.push(`/storeIntroductionOwner/${encodedSlug}`);
+      router.push(`/storeIntroductionOwnerPublic/${encodedSlug}`);
     }
   };
 
@@ -174,7 +174,7 @@ const MainPageWithMenu = () => {
         <main className="container md:mx-auto px-2 md:px-4 py-10 mt-12 flex-grow flex justify-center items-center">
           <div className="flex flex-col justify-center items-center text-center space-y-10">
             <h2 className="text-2xl md:text-3xl mt-5 md:mt-10" style={{ fontFamily: 'NanumSquareBold' }}>
-              안녕하세요! <span className='hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer' onClick={() => router.push('/myPage')}>{storeName}님</span>
+              안녕하세요! <span className='hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer' onClick={() => router.push('/myPage')}>{publicName}님</span>
             </h2>
 
             {/* 버튼 카드 영역 */}
@@ -193,20 +193,20 @@ const MainPageWithMenu = () => {
                 </Card>
 
                 {/* 민원 확인 카드 */}
-                  <Card>
-                    <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-                      민원 확인
-                    </h3>
-                    <p className='h-16'>고객들의 민원 내용을 <br /> 편하게 확인하세요.</p>
-                    <div className='flex justify-center items-center'>
-                      <Button
-                        icon={SquareCheckBig}
-                        onClick={() => router.push('/complaintsDashboard')}
-                      >
-                        확인하기
-                      </Button>
-                    </div>
-                  </Card>
+                <Card>
+                  <h3 className="text-2xl text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+                    민원 확인
+                  </h3>
+                  <p className='h-16'>고객들의 민원 내용을 <br /> 편하게 확인하세요.</p>
+                  <div className='flex justify-center items-center'>
+                    <Button
+                      icon={SquareCheckBig}
+                      onClick={() => router.push('/complaintsDashboard')}
+                    >
+                      확인하기
+                    </Button>
+                  </div>
+                </Card>
 
                 {/* 서비스 요청 카드 */}
                 <Card>
@@ -301,22 +301,6 @@ const MainPageWithMenu = () => {
       </div>
 
       <Footer className="w-full mt-auto hidden md:block" isMobile={isMobile} />
-
-      {/* 정보 수정 모달 */}
-      {isChangeInfoModalOpen && (
-        <Modal onClose={() => setIsChangeInfoModalOpen(false)}>
-          <ChangeInfo />
-        </Modal>
-      )}
-
-      {/* 데이터 편집 모달 */}
-      {isEditDataModalOpen && (
-        <Modal
-          onClose={() => { setIsEditDataModalOpen(false); }}
-        >
-          <EditData />
-        </Modal>
-      )}
 
       {/* 데이터 요청 모달 */}
       {isRequestDataModalOpen && (

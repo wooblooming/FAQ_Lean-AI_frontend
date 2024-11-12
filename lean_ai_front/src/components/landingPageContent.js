@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useAuth } from '../contexts/authContext';
+import { usePublic } from '../contexts/publicContext';
 import Nav from '../components/navBar';
 import CompanySection from '../components/companySection';
 import ServiceSection from '../components/serviceSection';
@@ -14,6 +15,7 @@ const LandingPageContent = () => {
   const [isMobile, setIsMobile] = useState(false); // 모바일 여부 상태
   const router = useRouter();
   const { token } = useAuth();
+  const { isPublicOn } = usePublic();
 
   // 특정 섹션으로 스크롤 이동
   useEffect(() => {
@@ -30,23 +32,27 @@ const LandingPageContent = () => {
   const [companyRef, companyInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [serviceRef, serviceInView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
-// 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
-useEffect(() => {
-  if (token) {
+  // 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
+  useEffect(() => {
+    if (token) {
       setIsLoggedIn(true); // 토큰이 존재하면 로그인 상태로 설정
-      console.log("Token exists:", token);
-  } else {
+      //console.log("Token exists:", token);
+    } else {
       setIsLoggedIn(false); // 토큰이 없으면 비로그인 상태로 설정
-      console.log("No token found, user is not logged in.");
-  }
-}, [token]);
+      //console.log("No token found, user is not logged in.");
+    }
+  }, [token]);
 
 
   // 버튼 클릭 시 로그인 상태에 따른 페이지 이동
   const handleClick = () => {
-    if (isLoggedIn) { // 로그인 상태이면 메인 페이지로 이동
-      router.push('/mainPageForPresident');
-    } else { // 로그인 상태가 아니면 로그인 페이지로 이동
+    if (isLoggedIn) { // 로그인 상태에 따라 페이지 이동
+      if (isPublicOn) {
+        router.push('/mainPageForPublic');
+      } else {
+        router.push('/mainPageForPresident');
+      }
+    } else {
       router.push('/login');
     }
   };
@@ -112,7 +118,7 @@ useEffect(() => {
                   alt='mumul'
                   layout="responsive"
                   width={500}
-                  height={300} 
+                  height={300}
                   className="rounded-lg"
                 />
               </div>
@@ -192,8 +198,8 @@ useEffect(() => {
                 <CacheBustedImage
                   src='/index_desktop.png'
                   alt='mumul'
-                  layout="fill"  
-                  style={{ objectFit : "contain"}} 
+                  layout="fill"
+                  style={{ objectFit: "contain" }}
                   className="rounded-lg"
                   priority
                 />

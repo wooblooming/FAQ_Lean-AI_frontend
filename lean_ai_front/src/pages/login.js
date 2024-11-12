@@ -4,41 +4,31 @@ import Link from 'next/link';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
-import naverIcon from '../../public/btn_naver.svg';
-import kakaoIcon from '../../public/btn_kakao.svg';
-import googleIcon from '../../public/btn_google.svg';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
+import { usePublic } from '../contexts/publicContext';
 import ConvertSwitch from '../components/convertSwitch';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
-
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [isPublicOn, setIsPublicOn] = useState(false); // 공공기관 스위치 상태
 
     const router = useRouter();
-    const { saveToken } = useAuth();
+    const { saveToken, token } = useAuth();
     const { storeID, setStoreID } = useStore();
+    const { isPublicOn, togglePublicOn } = usePublic();
 
     const handleErrorMessageModalClose = () => {
         setShowErrorMessageModal(false);
     };
 
-    // togglePublicOn 함수
-    const togglePublicOn = () => {
-        setIsPublicOn((prev) => !prev);
-    };
-
     // 로그인 요청 함수
     const handleLoginClick = async () => {
-        console.log("click");
         try {
-            // isPublicOn 상태에 따라 URL 변경
             const url = isPublicOn 
                 ? `${config.apiDomain}/public/login/`
                 : `${config.apiDomain}/api/login/`;
@@ -48,11 +38,17 @@ const Login = () => {
                 password,
             });
 
-            const { access, store_id } = response.data;
+            const { access, public_id, store_id } = response.data;
             
-            saveToken(access); // 전역 토큰 저장
-            setStoreID(store_id); // storeID 설정
-    
+            // 토큰 저장 후 확인
+            await saveToken(access);
+            console.log('Token saved:', access);
+            
+            // storeID 설정
+            const id = isPublicOn ? public_id : store_id;
+            setStoreID(id);
+            console.log('StoreID set:', id);
+            
         } catch (error) {
             console.error('로그인 요청 중 오류 발생:', error);
             const errorMsg = error.response?.data?.error || '로그인에 실패했습니다';
@@ -61,12 +57,19 @@ const Login = () => {
         }
     };
 
-    // storeID가 변경되었을 때 페이지 이동
+    // token과 storeID 변경 감지
     useEffect(() => {
-        if (storeID) {
-            router.push('/mainPageForPresident');
+        //console.log('', token);
+        //console.log('Current storeID:', storeID);
+        
+        if (token && storeID) {
+            if (isPublicOn) {
+                router.push('/mainPageForPublic');
+            } else {
+                router.push('/mainPageForPresident');
+            }
         }
-    }, [storeID]);
+    }, [token, storeID, isPublicOn]);
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {

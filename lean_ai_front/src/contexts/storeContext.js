@@ -1,30 +1,37 @@
-// StoreProvider.js
-
 import { createContext, useContext, useState, useEffect } from 'react';
+import { usePublic } from './publicContext';
 
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
     const [storeID, setStoreID] = useState(null);
+    const { isPublicOn } = usePublic();
 
-    // sessionStorage에서 storeID를 가져와 상태를 초기화
+    // sessionStorage에서 storeID 또는 publicID를 가져와 상태를 초기화
     useEffect(() => {
-        const savedStoreID = sessionStorage.getItem("storeID");
-        if (savedStoreID) {
-            setStoreID(savedStoreID);
+        const savedID = sessionStorage.getItem(isPublicOn ? "publicID" : "storeID");
+        if (savedID) {
+            setStoreID(savedID);
         }
-    }, []);
+    }, [isPublicOn]);
 
-    // storeID를 sessionStorage에 저장하는 함수
+    // storeID 또는 publicID를 sessionStorage에 저장하는 함수
     const saveStoreID = (id) => {
         setStoreID(id);
-        sessionStorage.setItem("storeID", id);
+        if (isPublicOn) {
+            sessionStorage.setItem("publicID", id);
+            sessionStorage.removeItem("storeID"); // 다른 ID 제거
+        } else {
+            sessionStorage.setItem("storeID", id);
+            sessionStorage.removeItem("publicID"); // 다른 ID 제거
+        }
     };
 
-    // storeID를 초기화하고 sessionStorage에서 제거하는 함수
+    // storeID 또는 publicID를 초기화하고 sessionStorage에서 제거하는 함수
     const removeStoreID = () => {
         setStoreID(null);
         sessionStorage.removeItem("storeID");
+        sessionStorage.removeItem("publicID");
     };
 
     return (

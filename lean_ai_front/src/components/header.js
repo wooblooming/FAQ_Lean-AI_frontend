@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
+import { usePublic } from '../contexts/publicContext';
 import { Menu, X } from 'lucide-react'; 
 import LogoutModal from '../components/logout'; // 로그아웃 모달 컴포넌트 가져오기
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
@@ -22,6 +23,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { removeStoreID } = useStore();
+  const { resetPublicOn } = usePublic();
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -104,6 +106,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     setShowLogoutModal(false); // 로그아웃 모달 닫기
     removeToken();
     removeStoreID();
+    resetPublicOn();
     router.push('/'); // 홈으로 이동
   };
 
