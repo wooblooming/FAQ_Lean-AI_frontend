@@ -5,24 +5,18 @@ import { motion } from "framer-motion";
 import { ChevronLeft, Headset, User, MailCheck } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../../contexts/authContext';
-import { useStore } from '../../contexts/storeContext';
 import Loading from '../../components/loading';0
 import ModalErrorMSG from '../../components/modalErrorMSG';
 import Chatbot from '../chatBotMSG';
 import config from '../../../config';
 
-const StoreIntroductionOwnerPublic = () => {
+const StoreIntroductionPublic = () => {
   const router = useRouter();
   const { slug } = router.query; // URL에서 slug 파라미터 가져옴
   const [publicData, setPublicData] = useState([]); // 매장 데이터를 저장
   const [agentId, setAgentId] = useState(null); // 챗봇의 agentId를 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
   const [activeTab, setActiveTab] = useState('home'); // 활성 탭 관리
-
-  const { token } = useAuth();
-  const { storeID } = useStore();
-
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
@@ -42,30 +36,29 @@ const StoreIntroductionOwnerPublic = () => {
 
   useEffect(() => {
     // 토큰이 설정된 후에만 fetchStoreData 실행
-    if (token && slug) {
+    if (slug) {
       fetchPublicData();
     }
-  }, [token, slug]);
+  }, [slug]);
 
 
   // 공공기관 데이터를 가져오는 함수
   const fetchPublicData = async () => {
     try {
       const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-      const response = await fetch(`${config.apiDomain}/public/user-public-info/`, {
+      const response = await fetch(`${config.apiDomain}/public/public-info/`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           slug: decodedSlug,
-          type: 'owner',
+          type: 'customer',
         }),
       });
 
       const result = await response.json();
-      //console.log(result);
+      console.log("result ： ", result);
       setPublicData(result.public);
       
     } catch (error) {
@@ -108,10 +101,6 @@ const StoreIntroductionOwnerPublic = () => {
             }
             alt="Public"
             className="w-full h-48 object-cover"
-          />
-          <ChevronLeft
-            className="absolute top-4 left-4 items-center bg-indigo-500 rounded-full text-white p-1 cursor-pointer"
-            onClick={() => router.push('/mainPageForPublic')}
           />
         </div>
 
@@ -242,8 +231,8 @@ const StoreIntroductionOwnerPublic = () => {
                   <button
                     className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'
                     onClick={() => router.push({
-                      pathname: '/registerComplaint',
-                      query: { storeID: storeID }
+                      pathname: '/complaintRegister',
+                      query: { slug: slug }
                     })}
                   >
                     민원 접수
@@ -283,4 +272,4 @@ const StoreIntroductionOwnerPublic = () => {
   );
 };
 
-export default StoreIntroductionOwnerPublic;
+export default StoreIntroductionPublic;

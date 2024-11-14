@@ -72,7 +72,7 @@ const MainPageWithMenu = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 컴포넌트 마운트 시 상점, 통계 정보 불러오기
+  // 컴포넌트 마운트 시 공공기관, 통계 정보 불러오기
   useEffect(() => {
     if (token) {  // token이 존재할 때만 API 호출
       fetchPublicInfo();
@@ -81,7 +81,7 @@ const MainPageWithMenu = () => {
   }, [token]);
 
 
-  // 상점 정보 API 호출
+  // 공공기관 정보 API 호출
   const fetchPublicInfo = async () => {
     //console.log("Current Token:", token);
     try {
@@ -110,7 +110,7 @@ const MainPageWithMenu = () => {
 
       const publicData = await response.json();
       //console.log(publicData);
-      if (publicData && publicData.user && publicData.public) {
+      if (publicData && publicData.public) {
         setPublicName(publicData.public.public_name);
         setPublicSlug(publicData.public.slug);
       } else {
@@ -154,7 +154,7 @@ const MainPageWithMenu = () => {
   const goToChatbot = () => {
     if (slug) {
       const encodedSlug = encodeURIComponent(slug);
-      router.push(`/storeIntroductionOwnerPublic/${encodedSlug}`);
+      router.push(`/publicIntroductionOwner/${encodedSlug}`);
     }
   };
 
@@ -174,7 +174,7 @@ const MainPageWithMenu = () => {
         <main className="container md:mx-auto px-2 md:px-4 py-10 mt-12 flex-grow flex justify-center items-center">
           <div className="flex flex-col justify-center items-center text-center space-y-10">
             <h2 className="text-2xl md:text-3xl mt-5 md:mt-10" style={{ fontFamily: 'NanumSquareBold' }}>
-              안녕하세요! <span className='hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer' onClick={() => router.push('/myPage')}>{publicName}님</span>
+              안녕하세요! <span className='hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer' onClick={() => router.push('/myPagePublic')}>{publicName}님</span>
             </h2>
 
             {/* 버튼 카드 영역 */}

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { ChevronLeft } from 'lucide-react';
+import { useStore } from '../contexts/storeContext';
 import PersonalInfoModal from '../components/personalInfoModal';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
@@ -9,14 +10,15 @@ import config from '../../config';
 
 const RegisterComplaint = () => {
     const router = useRouter();
-    const { storeID } = router.query; // ID 값 가져오기
-    const [slug, setSlug] = useState('');
+    const { slug } = router.query; // URL에서 slug 파라미터 가져옴
     const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
     const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false); // 개인정보 약관 모달 상태
     const [message, setMessage] = useState(''); // 일반 메시지 내용
     const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달의 열림/닫힘 상태
     const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 저장
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+    const [categories, setCategories] = useState([]); // 초기값을 빈 배열로 설정
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     // 입력 필드 상태
     const [name, setName] = useState('');
@@ -26,6 +28,28 @@ const RegisterComplaint = () => {
     const [title, setTitle] = useState('');
     const [part, setPart] = useState('');
     const [content, setContent] = useState('');
+
+    // 카테고리 목록을 백엔드에서 가져오기
+    useEffect(() => {
+        if (slug) {
+            fetchCategories();
+        }
+    }, [slug]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.post(`${config.apiDomain}/public/department-list/`, {
+                slug
+            });
+            console.log("Fetched categories data:", response.data);
+            const departments = Array.isArray(response.data.departments) ? response.data.departments : [];
+            setCategories(departments); // 배열로 업데이트
+        } catch (error) {
+            console.error('카테고리 목록을 불러오는 중 오류 발생:', error);
+            setErrorMessage('카테고리 목록을 불러오는 데 실패했습니다.');
+            setShowErrorMessageModal(true);
+        }
+    };
 
     // 개인정보 동의 모달 열기
     const handlePersonalInfoCheckboxChange = () => setShowPersonalInfoModal(true);
@@ -52,6 +76,18 @@ const RegisterComplaint = () => {
             return;
         }
 
+        if(!termsAccepted){
+            setErrorMessage('개인 정보 수집을 동의 해주세요.');
+            setShowErrorMessageModal(true);
+            return;
+        }
+
+        if (!selectedCategory) {
+            setErrorMessage('민원을 접수할 부서를 선택해 주세요.');
+            setShowErrorMessageModal(true);
+            return;
+        }
+
         try {
             // 백엔드로 전송할 데이터
             const requestData = {
@@ -60,23 +96,20 @@ const RegisterComplaint = () => {
                 phone,
                 email,
                 title,
-                part,
+                part: selectedCategory,
                 content,
-                storeID
+                slug
             };
 
-            //console.log(requestData);
-
             // POST 요청으로 백엔드에 데이터 전송
-            const response = await axios.post(`${config.apiDomain}/api/complaints/register/`, requestData);
+            const response = await axios.post(`${config.apiDomain}/public/complaints/register/`, requestData);
             //console.log("response : ", response);
 
             if (response.data.status === 'success') {
-                setSlug(response.data.store_slug);
                 const encodedSlug = encodeURIComponent(slug);
                 setMessage(response.data.message);
                 setShowMessageModal(true);
-                router.push(`/storeIntroduction/${encodedSlug}`);
+                router.push(`/publicIntroduction/${encodedSlug}`);
 
             } else {
                 setErrorMessage(response.data.message || '접수에 실패했습니다.');  // 백엔드에서 받은 에러 메시지 사용
@@ -114,13 +147,19 @@ const RegisterComplaint = () => {
                                 />
                             </div>
                             <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500' style={{ fontFamily: 'NanumSquare' }}>담당 부서</p>
-                                <input
-                                    placeholder='담당입력'
-                                    value={part}
-                                    onChange={(e) => setPart(e.target.value)}
+                                <p className='text-gray-500'>민원 카테고리</p>
+                                <select
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
                                     className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
-                                />
+                                >
+                                    <option value="">카테고리를 선택하세요</option>
+                                    {categories.map((category, index) => (
+                                        <option key={index} value={category}>
+                                            {category}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                         <div>
@@ -192,7 +231,7 @@ const RegisterComplaint = () => {
                                 style={{ fontFamily: 'NanumSquare' }}
                                 onClick={handlePersonalInfoCheckboxChange}
                             >
-                                개인정보 필수적 동의
+                                개인정보수집 동의 *
                             </label>
                         </div>
                     </div>

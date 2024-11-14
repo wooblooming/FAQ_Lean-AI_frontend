@@ -42,12 +42,12 @@ const Login = () => {
             
             // 토큰 저장 후 확인
             await saveToken(access);
-            console.log('Token saved:', access);
+            //console.log('Token saved:', access);
             
             // storeID 설정
             const id = isPublicOn ? public_id : store_id;
             setStoreID(id);
-            console.log('StoreID set:', id);
+            //console.log('StoreID set:', id);
             
         } catch (error) {
             console.error('로그인 요청 중 오류 발생:', error);

@@ -510,7 +510,7 @@ const MyPage = () => {
         <div className='flex justify-between items-center'>
           <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.push('/mainPageForPresident')}
+            onClick={() => router.back()} // 뒤로가기 버튼
           />
           <p className='font-semibold mt-2.5'> </p>
           <button
@@ -525,7 +525,7 @@ const MyPage = () => {
         {/* 프로필 이미지 섹션 */}
         <div className="mb-4 relative">
           <img
-            src={profileImage || '/profile_default_img.jpg'}
+            src={profileImage}
             alt="프로필 이미지"
             className="w-24 h-24 rounded-full mx-auto mb-4 border border-2 border-indigo-500"
             onClick={toggleImageModal}
@@ -559,14 +559,6 @@ const MyPage = () => {
           setEmail={setEmail}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
-          handleSendCode={handleSendCode}
-          showCodeModal={showCodeModal}
-          setShowCodeModal={setShowCodeModal}
-          handleCodeModalClose={handleCodeModalClose}  
-          handleVerifyCode={handleVerifyCode} 
-          verificationCode={verificationCode}  
-          setVerificationCode={setVerificationCode} 
-          errorMessage={errorMessage}  
         />
 
         {/* QR 코드 섹션 */}
@@ -636,16 +628,6 @@ const MyPage = () => {
             </div>
           </div>
         )}
-
-        {/* 핸드폰 이용하여 본인 인증하는 모달 */}
-        <VerificationModal
-          isOpen={showCodeModal}
-          onClose={handleCodeModalClose}  // 에러 초기화를 위해 수정된 핸들러 사용
-          onSubmit={handleVerifyCode}
-          verificationCode={verificationCode}  // 전달된 verificationCode
-          onChange={(e) => setVerificationCode(e.target.value)}  // onChange 이벤트 핸들러
-          errorMessage={errorMessage}
-        />
 
         {/* 이벤트 모달 */}
         <EventAlertModal

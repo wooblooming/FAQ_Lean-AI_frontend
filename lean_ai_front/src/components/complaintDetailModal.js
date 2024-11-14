@@ -54,7 +54,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, newStatus, setNewStatu
                 <Button
                   className='px-3 '
                   size="sm"
-                  onClick={() => handleStatusChange(complaint.id, newStatus)}
+                  onClick={() => handleStatusChange(complaint.complaint_id, newStatus)}
                   style={{ fontFamily: "NanumSquareBold" }}
                 >
                   변경

@@ -10,16 +10,14 @@ import UserProfileForm from '../components/userProfile';
 import QrCodeSection from '../components/qrCode';
 import EventSwitch from '../components/event';
 import SnsConnect from '../components/snsConnect';
-import VerificationModal from '../components/verificationModal';
 import EventAlertModal from '../components/eventModal';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import ConfirmDeleteAccountModal from '../components/confirmDeleteAccountModal';
 import config from '../../config';
 
-const MyPage = () => {
+const MyPagePublic = () => {
   // 모달 및 UI 상태 관련 변수
-  const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달의 열림/닫힘 상태
   const [showEventAlertModal, setShowEventAlertModal] = useState(false); // 이벤트 알림 모달의 열림/닫힘 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달의 열림/닫힘 상태
@@ -37,11 +35,9 @@ const MyPage = () => {
   const [name, setName] = useState(''); // 사용자 이름
   const [email, setEmail] = useState(''); // 사용자 이메일
   const [phoneNumber, setPhoneNumber] = useState(''); // 사용자 전화번호
-  const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
-  const [ID, setID] = useState(''); // 사용자 또는 사업자 ID
-  const [stores, setStores] = useState([]); // 스토어 목록
-  const [selectedStoreId, setSelectedStoreId] = useState(null); // 선택된 스토어의 ID
-  const [storeName, setStoreName] = useState(''); // 스토어 이름
+  const [ID, setID] = useState(''); // 사용자 ID
+  const [department, setDepartment] = useState('');
+  const [publicName, setPublicName] = useState(''); // 스토어 이름
 
   // 이벤트 및 스위치 관련 변수
   const [isEventOn, setIsEventOn] = useState(false); // 이벤트 스위치 상태
@@ -61,7 +57,7 @@ const MyPage = () => {
 
   const router = useRouter();
   const { token, removeToken } = useAuth();
-  const { removeStoreID } = useStore();
+  const { storeID, removeStoreID } = useStore();
 
   // 이미지 모달
   const toggleImageModal = () => {
@@ -70,7 +66,7 @@ const MyPage = () => {
 
   // 이벤트 스위치를 눌렀을 때 이벤트 모달을 표시
   const toggleEventOn = () => {
-    setShowEventAlertModal(true); 
+    setShowEventAlertModal(true);
   };
 
   // 일반 메시지 모달 닫기 & 초기화
@@ -87,95 +83,81 @@ const MyPage = () => {
 
   // 초기 사용자 정보 및 스토어 데이터를 가져오는 함수
   useEffect(() => {
-    // token이 있을 때만 fetchUserData 실행
-    if (!token) {
-      return; // token이 없으면 아무것도 하지 않음
+    if (token && storeID) {
+      fetchUserInfo();
+      //console.log("store id : ", storeID);
     }
+  }, [token, storeID]);
 
-    const fetchUserData = async () => {
-      try {
+  const fetchUserInfo = async () => {
+    //console.log("Current Token:", token);
+    try {
+      const response = await fetch(`${config.apiDomain}/public/user-public-info/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
 
-        // 사용자 프로필 정보 가져오기
-        const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          setID(data.user_id || '');
-          setName(data.name || '');
-          setEmail(data.email || '');
-          setPhoneNumber(data.phone_number || '');
-          if (data.marketing === 'Y') {
-            setIsEventOn(true); // ON 상태로 설정
-          } else {
-            setIsEventOn(false); // OFF 상태로 설정
-          }
-
-          // QR 코드 처리
-          if (data.qr_code_url) {
-            const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
-            setQrUrl(mediaUrl);
-          } else {
-            setQrUrl(null); // QR 코드가 없으면 null 설정
-          }
-
-          if (data.profile_photo && !data.profile_photo.startsWith('http')) {
-            setProfileImage(`${config.apiDomain}${data.profile_photo}`);
-          } else {
-            setProfileImage(data.profile_photo || '/profile_default_img.jpg');
-          }
-
-        } else {
-          console.error('Failed to fetch user data. Status:', response.status);
-          setErrorMessage("프로필 정보를 가져오는데 실패하였습니다.");
-          setShowErrorMessageModal(true);
-        }
-
-        // 사용자 스토어 목록 가져오기
-        const storeResponse = await fetch(`${config.apiDomain}/api/user-stores/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (storeResponse.ok) {
-          const storeData = await storeResponse.json();
-          setStores(storeData); // 스토어 목록 설정
-          if (storeData.length > 0) {
-            setSelectedStoreId(storeData[0].store_id); // 기본적으로 첫 번째 스토어 선택
-            setStoreName(storeData[0].store_name); // 첫 번째 스토어 이름 설정
-          }
-        } else {
-          console.error('Failed to fetch stores. Status:', storeResponse.status);
-          setErrorMessage("스토어 정보를 가져오는데 실패하였습니다.");
-          setShowErrorMessageModal(true);
-        }
-
-      } catch (error) {
-        console.error('Error fetching user or store data:', error);
-        setErrorMessage("정보를 가져오는데 실패하였습니다.");
+      if (response.status === 401) { // 인증 실패 시 에러 처리
+        setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
         setShowErrorMessageModal(true);
+        setIsLoggedIn(false);
+        removeToken();
+        removeStoreID();
+        resetPublicOn();
+        router.push('/login');
+        return;
       }
-    };
 
-    fetchUserData();
-  }, [token]); // 컴포넌트가 처음 마운트될 때 사용자 및 스토어 정보를 가져옴
+      if (!response.ok) {
+        throw new Error(`Failed to fetch store information: ${response.statusText}`);
+      }
+
+      const publicData = await response.json();
+      //console.log(publicData);
+      if (publicData && publicData.user && publicData.public) {
+        setName(publicData.user.name || '');
+        setID(publicData.user.username || '');
+        setEmail(publicData.user.email || '');
+        setPhoneNumber(publicData.user.phone || '');
+        setDepartment(publicData.department.department_name || '');
+        setPublicName(publicData.public.public_name || '');
+
+        const profileUrl = publicData.user.profile_photo;
+        setProfileImage(profileUrl ? `${process.env.NEXT_PUBLIC_MEDIA_URL}/${profileUrl.replace(/^\/+/, '')}` : '/profile_default_img.jpg');
+
+
+        // 초기 데이터 설정
+        setInitialData({
+          name: publicData.user.name || '',
+          email: publicData.user.email || '',
+          phoneNumber: publicData.user.phone || '',
+          department: publicData.user.department || ''
+        });
+
+      } else {
+        setPublicName('');
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      setErrorMessage('로딩 중에 에러가 발생 했습니다.');
+      setShowErrorMessageModal(true);
+    }
+  };
 
   // 데이터 변경 여부를 감지
   useEffect(() => {
     const hasChanged = (
       name !== initialData.name ||
       email !== initialData.email ||
-      phoneNumber !== initialData.phoneNumber
+      phoneNumber !== initialData.phoneNumber ||
+      department !== initialData.department
     );
     setIsChanged(hasChanged); // 변경 사항이 있으면 true 설정
-  }, [name, email, phoneNumber, initialData]);
+  }, [name, email, phoneNumber, department, initialData]);
 
 
   // 이벤트 모달 닫기 처리
@@ -193,7 +175,7 @@ const MyPage = () => {
   // 마케팅 상태 업데이트 함수
   const updateMarketingStatus = async (status) => {
     try {
-      const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
+      const response = await fetch(`${config.apiDomain}/public/user-profile/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -228,7 +210,7 @@ const MyPage = () => {
       formData.append('profile_photo', file);
 
       try {
-        const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
+        const response = await fetch(`${config.apiDomain}/public/update-profile-photo/`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -252,41 +234,39 @@ const MyPage = () => {
     toggleImageModal(); // 이미지 모달 닫기
   };
 
-  // 기본 이미지 적용 처리 함수
-  const applyDefaultImage = async () => {
-    const defaultImageUrl = `${config.apiDomain}/media/profile_photos/profile_default_img.jpg`;
-    setProfileImage(defaultImageUrl); // 기본 이미지 URL 설정
+  // 기본 이미지 적용 처리 함수 
+const applyDefaultImage = async () => {
+  try {
+    const response = await fetch(`${config.apiDomain}/public/update-profile-photo/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ profile_photo: "default" }),  // 기본 이미지 트리거로 "default" 사용
+    });
 
-    try {
-      const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ profile_photo: `profile_photos/profile_default_img.jpg` }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile image');
-      }
-
-      const data = await response.json();
-      setMessage(data.message);
-      setShowMessageModal(true);
-    } catch (error) {
-      console.error('Error updating profile image:', error);
-      setErrorMessage(error);
-      setShowErrorMessageModal(true);
+    if (!response.ok) {
+      throw new Error('Failed to update profile image');
     }
 
-    toggleImageModal();
-  };
+    const data = await response.json();
+    setMessage(data.message);
+    setShowMessageModal(true);
+  } catch (error) {
+    console.error('Error updating profile image:', error);
+    setErrorMessage(error.message);
+    setShowErrorMessageModal(true);
+  }
+
+  toggleImageModal();
+};
+
 
   // 변경 사항 저장 처리 함수
   const handleSaveChanges = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
+      const response = await fetch(`${config.apiDomain}/public/user-profile/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -296,6 +276,7 @@ const MyPage = () => {
           name,
           email,
           phone_number: phoneNumber,
+          department: department,
         }),
       });
 
@@ -313,97 +294,16 @@ const MyPage = () => {
     }
   };
 
-  // 핸드폰 번호로 인증번호 전송 요청
-  const handleSendCode = async () => {
-    const phoneRegex = /^\d{11}$/; // 핸드폰 번호 형식 검증 (11자리 숫자)
-    if (!phoneRegex.test(phoneNumber)) {
-      setErrorMessage('핸드폰 번호를 확인해 주세요');
-      setShowErrorMessageModal(true);
-      return;
-    }
-
-    try {
-      const response = await fetch(`${config.apiDomain}/api/send-code/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phoneNumber,
-          type: 'mypage',
-          user_id: ID,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setVerificationCode(''); // 모달을 열 때 인증번호 초기화
-        setShowCodeModal(true); // 인증번호 입력 모달 열기
-      } else {
-        setErrorMessage(data.message);
-        setShowErrorMessageModal(true);
-      }
-    } catch (error) {
-      setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
-      setShowErrorMessageModal(true);
-    }
-  };
-
-  // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
-  const handleVerifyCode = async () => {
-    try {
-      const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phoneNumber,
-          code: verificationCode,
-          type: 'mypage',
-          user_id: ID,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setShowCodeModal(false); // 인증 완료 후 모달 닫기
-        setMessage(data.message); // 백엔드에서 받은 메시지를 그대로 출력
-        setShowMessageModal(true); // 메시지 모달 열기
-      } else {
-        setErrorMessage(data.message); // 에러 메시지도 백엔드 응답을 그대로 출력
-        setShowErrorMessageModal(true); // 에러 메시지 모달 열기
-      }
-    } catch (error) {
-      setErrorMessage('인증 확인 중 오류가 발생했습니다.');
-      setShowErrorMessageModal(true);
-    }
-  };
-
-  // 인증번호 모달을 닫을 때 에러 메시지 초기화
-  const handleCodeModalClose = () => {
-    setShowCodeModal(false);
-    setVerificationCode(''); // 인증번호 초기화
-  };
-
   // QR 코드 생성 처리 함수
   const handleGenerateQrCode = async () => {
     try {
-      if (!selectedStoreId) {
-        setErrorMessage('스토어를 선택하세요.');
-        setShowErrorMessageModal(true);
-        return;
-      }
-
-      const response = await fetch(`${config.apiDomain}/api/generate-qr-code/`, {
+      const response = await fetch(`${config.apiDomain}/public/generate-qr-code/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ store_id: selectedStoreId }), // 선택된 스토어 ID 전송
+        body: JSON.stringify({ public_id: storeID }), // ID 전송
       });
 
       if (!response.ok) {
@@ -413,8 +313,10 @@ const MyPage = () => {
       }
 
       const data = await response.json();
-      setQrUrl(data.qr_code_url); // QR 코드 URL 설정
-      setShowQrCode(true);
+
+      // 백엔드에서 받은 QR 코드 URL을 설정합니다.
+      setQrUrl(data.qr_code_url); // QR 코드 URL을 새로운 경로로 설정
+      setShowQrCode(true); // QR 코드 표시 여부를 true로 설정
       setMessage('QR 코드가 생성되었습니다.');
       setShowMessageModal(true);
     } catch (error) {
@@ -450,7 +352,7 @@ const MyPage = () => {
       const dataUrl = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
       downloadLink.href = dataUrl;
-      downloadLink.download = `${storeName}_qr_code.png`; // 파일 이름 설정
+      downloadLink.download = `${publicName}_qr_code.png`; // 파일 이름 설정
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink); // 링크 제거
@@ -481,7 +383,7 @@ const MyPage = () => {
   const handleConfirmAccountDeletion = async () => {
     setShowDeleteModal(false); // 모달 닫기
     try {
-      const response = await fetch(`${config.apiDomain}/api/deactivate-account/`, {
+      const response = await fetch(`${config.apiDomain}/public/deactivate-account/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -510,7 +412,7 @@ const MyPage = () => {
         <div className='flex justify-between items-center'>
           <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.push('/mainPageForPresident')}
+            onClick={() => router.back()} // 뒤로가기 버튼
           />
           <p className='font-semibold mt-2.5'> </p>
           <button
@@ -518,14 +420,14 @@ const MyPage = () => {
             onClick={handleSaveChanges}
             disabled={!isChanged}
           >
-            <p  style={{ fontFamily: "NanumSquareExtraBold" }}>완료</p>
+            <p style={{ fontFamily: "NanumSquareExtraBold" }}>완료</p>
           </button>
         </div>
 
         {/* 프로필 이미지 섹션 */}
         <div className="mb-4 relative">
           <img
-            src={profileImage || '/profile_default_img.jpg'}
+            src={profileImage}
             alt="프로필 이미지"
             className="w-24 h-24 rounded-full mx-auto mb-4 border border-2 border-indigo-500"
             onClick={toggleImageModal}
@@ -559,23 +461,14 @@ const MyPage = () => {
           setEmail={setEmail}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
-          handleSendCode={handleSendCode}
-          showCodeModal={showCodeModal}
-          setShowCodeModal={setShowCodeModal}
-          handleCodeModalClose={handleCodeModalClose}  
-          handleVerifyCode={handleVerifyCode} 
-          verificationCode={verificationCode}  
-          setVerificationCode={setVerificationCode} 
-          errorMessage={errorMessage}  
+          department={department}
+          setDepartment={setDepartment}
         />
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
-          stores={stores}
-          selectedStoreId={selectedStoreId}
-          setSelectedStoreId={setSelectedStoreId}
-          storeName={storeName}
-          setStoreName={setStoreName}
+          storeID={storeID}
+          publicName={publicName}
           qrUrl={qrUrl}
           setQrUrl={setQrUrl}
           showQrCode={showQrCode}
@@ -609,12 +502,12 @@ const MyPage = () => {
         {/* 이미지 모달 */}
         {isImageModalOpen && (
           <div id="imageModal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="modal-content bg-white p-6 rounded-lg text-center"  style={{ width: '380px', position: 'relative' }}>
+            <div className="modal-content bg-white p-6 rounded-lg text-center" style={{ width: '380px', position: 'relative' }}>
               <button
                 onClick={toggleImageModal}
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               >
-                <X className="bg-indigo-500 rounded-full text-white p-1"/>
+                <X className="bg-indigo-500 rounded-full text-white p-1" />
               </button>
               <h2 className="text-2xl font-bold mb-4">프로필 사진 설정</h2>
               <input
@@ -637,16 +530,6 @@ const MyPage = () => {
           </div>
         )}
 
-        {/* 핸드폰 이용하여 본인 인증하는 모달 */}
-        <VerificationModal
-          isOpen={showCodeModal}
-          onClose={handleCodeModalClose}  // 에러 초기화를 위해 수정된 핸들러 사용
-          onSubmit={handleVerifyCode}
-          verificationCode={verificationCode}  // 전달된 verificationCode
-          onChange={(e) => setVerificationCode(e.target.value)}  // onChange 이벤트 핸들러
-          errorMessage={errorMessage}
-        />
-
         {/* 이벤트 모달 */}
         <EventAlertModal
           show={showEventAlertModal}
@@ -664,8 +547,8 @@ const MyPage = () => {
           }}
           message="정말 탈퇴를 하시겠습니까?"  // 탈퇴 확인 메시지
         />
-        
-      {/* 성공 메시지 모달 */}
+
+        {/* 성공 메시지 모달 */}
         <ModalMSG
           show={showMessageModal}
           onClose={handleMessageModalClose}
@@ -676,7 +559,7 @@ const MyPage = () => {
           </p>
         </ModalMSG>
 
-      {/* 에러 메시지 모달 */}
+        {/* 에러 메시지 모달 */}
         <ModalErrorMSG
           show={showErrorMessageModal}
           onClose={handleErrorMessageModalClose}
@@ -693,4 +576,4 @@ const MyPage = () => {
   );
 };
 
-export default MyPage;
+export default MyPagePublic;

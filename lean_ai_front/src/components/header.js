@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
-import { Menu, X } from 'lucide-react'; 
+import { Menu, X } from 'lucide-react';
 import LogoutModal from '../components/logout'; // 로그아웃 모달 컴포넌트 가져오기
 import ModalErrorMSG from '../components/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../config'; // config 파일에서 API URL 등을 가져오기
@@ -23,7 +23,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { removeStoreID } = useStore();
-  const { resetPublicOn } = usePublic();
+  const { isPublicOn, resetPublicOn } = usePublic();
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -126,6 +126,13 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     await fetchQRCode();
   };
 
+  const goToMyPage = () => {
+    if (isPublicOn)
+      router.push('/myPagePublic');
+    else
+      router.push('/myPage');
+  }
+
   return (
     <div>
       {/* 헤더 섹션 */}
@@ -174,7 +181,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
             cursor: 'pointer',
           }}
         >
-          <X size={28} className="text-black "/>
+          <X size={28} className="text-black " />
         </button>
       )}
 
@@ -193,7 +200,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
               </p>
             </li>
             <li>
-              <p className="mt-2 cursor-pointer " onClick={() => router.push('/myPage')}>
+              <p className="mt-2 cursor-pointer " onClick={() => goToMyPage()}>
                 마이 페이지
               </p>
             </li>
@@ -221,7 +228,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
               onClick={() => setShowQrModal(false)}
               className="absolute top-4 right-4 text-gray-500 font-bold"
             >
-              <X className="bg-indigo-500 rounded-full text-white p-1"/>
+              <X className="bg-indigo-500 rounded-full text-white p-1" />
             </button>
             <h2 className="text-xl font-bold mb-2">챗봇 전용 QR 코드</h2>
             {isLoading ? (

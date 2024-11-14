@@ -130,7 +130,7 @@ const SignupPublicStep2 = () => {
             marketing: marketingValue,
             department: department,
         };
-        console.log('Sending payload:', payload);
+        //console.log('Sending payload:', payload);
 
         try {
            const response = await axios.post(`${config.apiDomain}/public/signup/`, payload);

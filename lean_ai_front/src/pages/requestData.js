@@ -1,11 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/authContext';
+import { usePublic } from '../contexts/publicContext';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
 export default function DataEditPage() {
     const { token } = useAuth();
+    const { isPublicOn } = usePublic();
     const [title, setTitle] = useState(''); // 제목 상태
     const [content, setContent] = useState(''); // 요청 내용 상태
     const [fileNames, setFileNames] = useState([]); // 파일 이름 목록 상태
@@ -30,6 +32,12 @@ export default function DataEditPage() {
         if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 입력 값 초기화
     };
 
+    useEffect(() => {
+        if (token && isPublicOn) {
+          console.log("isPublicOn : ", isPublicOn);
+        }
+      }, [token, isPublicOn]);
+
     // 제출 버튼 클릭 시 호출되는 함수
     const handleSubmit = async () => {
         const files = fileInputRef.current?.files; // 파일 입력 참조
@@ -48,8 +56,12 @@ export default function DataEditPage() {
             Array.from(files).forEach((file) => formData.append('files', file)); // 파일 추가
         }
 
+        let fetchUrl; // URL 변수를 선언
+
         try {
-            const response = await fetch(`${config.apiDomain}/api/edit/`, {
+            fetchUrl = isPublicOn ? `${config.apiDomain}/public/edit/` : `${config.apiDomain}/api/edit/`;
+
+            const response = await fetch(fetchUrl, {
                 method: 'POST',
                 body: formData,
                 headers: {

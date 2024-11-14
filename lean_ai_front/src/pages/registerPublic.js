@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
-import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function RegisterPublic() {
@@ -25,7 +24,7 @@ export default function RegisterPublic() {
     const [weekendStartMinute, setWeekendStartMinute] = useState('00');
     const [weekendEndHour, setWeekendEndHour] = useState('13');
     const [weekendEndMinute, setWeekendEndMinute] = useState('00');
-    const [isWeekendEnabled, setIsWeekendEnabled] = useState(true);
+    const [isWeekendEnabled, setIsWeekendEnabled] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [showMessageModal, setShowMessageModal] = useState(false);
@@ -34,6 +33,7 @@ export default function RegisterPublic() {
     const handleMessageModalClose = () => {
         setShowMessageModal(false);
         setMessage('');
+        router.reload(); // 모달 닫을 때 페이지 새로고침
     };
 
     const handleErrorModalClose = () => {
@@ -69,7 +69,6 @@ export default function RegisterPublic() {
             }
         }  catch (error) {
             if (error.response && error.response.status === 400) {
-                // 백엔드에서 받은 에러 메시지를 상태에 저장하여 모달에 표시
                 const errorMsg = error.response.data.public_name || '기관 등록 중 오류가 발생했습니다. 다시 시도해주세요.';
                 setErrorMessage(errorMsg);
                 setShowErrorModal(true);
@@ -108,16 +107,78 @@ export default function RegisterPublic() {
                         <Label className="text-sm font-medium text-gray-700">운영 시간</Label>
                         <div className="space-y-1 p-3 bg-gray-100 rounded-lg">
                             <div>
-                                <div className="">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center space-x-2 text-gray-700">
-                                            <Calendar className="w-5 h-5" />
-                                            <span className="font-medium">평일</span>
-                                        </div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center space-x-2 text-gray-700">
+                                        <Calendar className="w-5 h-5" />
+                                        <span className="font-medium">평일</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Clock className="w-4 h-4 text-gray-500" />
+                                    <Select value={weekdayStartHour} onValueChange={setWeekdayStartHour}>
+                                        <SelectTrigger className="w-[70px]">
+                                            <SelectValue placeholder="시" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {hourOptions.map((hour) => (
+                                                <SelectItem key={hour} value={hour}>{hour}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Select value={weekdayStartMinute} onValueChange={setWeekdayStartMinute}>
+                                        <SelectTrigger className="w-[70px]">
+                                            <SelectValue placeholder="분" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {minuteOptions.map((minute) => (
+                                                <SelectItem key={minute} value={minute}>{minute}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <span className="text-gray-500">~</span>
+                                    <Select value={weekdayEndHour} onValueChange={setWeekdayEndHour}>
+                                        <SelectTrigger className="w-[70px]">
+                                            <SelectValue placeholder="시" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {hourOptions.map((hour) => (
+                                                <SelectItem key={hour} value={hour}>{hour}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Select value={weekdayEndMinute} onValueChange={setWeekdayEndMinute}>
+                                        <SelectTrigger className="w-[70px]">
+                                            <SelectValue placeholder="분" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {minuteOptions.map((minute) => (
+                                                <SelectItem key={minute} value={minute}>{minute}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="pt-2">
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center space-x-2 text-gray-700">
+                                        <Calendar className="w-5 h-5" />
+                                        <span className="font-medium">주말</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
+                                        <Switch
+                                            id="weekend-mode"
+                                            checked={isWeekendEnabled}
+                                            onCheckedChange={setIsWeekendEnabled}
+                                            className='text-indigo-500'
+                                        />
+                                        <Label htmlFor="weekend-mode">영업</Label>
+                                    </div>
+                                </div>
+                                {isWeekendEnabled && (
+                                    <div className="flex items-center space-x-2">
                                         <Clock className="w-4 h-4 text-gray-500" />
-                                        <Select value={weekdayStartHour} onValueChange={setWeekdayStartHour}>
+                                        <Select value={weekendStartHour} onValueChange={setWeekendStartHour}>
                                             <SelectTrigger className="w-[70px]">
                                                 <SelectValue placeholder="시" />
                                             </SelectTrigger>
@@ -127,7 +188,7 @@ export default function RegisterPublic() {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        <Select value={weekdayStartMinute} onValueChange={setWeekdayStartMinute}>
+                                        <Select value={weekendStartMinute} onValueChange={setWeekendStartMinute}>
                                             <SelectTrigger className="w-[70px]">
                                                 <SelectValue placeholder="분" />
                                             </SelectTrigger>
@@ -138,7 +199,7 @@ export default function RegisterPublic() {
                                             </SelectContent>
                                         </Select>
                                         <span className="text-gray-500">~</span>
-                                        <Select value={weekdayEndHour} onValueChange={setWeekdayEndHour}>
+                                        <Select value={weekendEndHour} onValueChange={setWeekendEndHour}>
                                             <SelectTrigger className="w-[70px]">
                                                 <SelectValue placeholder="시" />
                                             </SelectTrigger>
@@ -148,7 +209,7 @@ export default function RegisterPublic() {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        <Select value={weekdayEndMinute} onValueChange={setWeekdayEndMinute}>
+                                        <Select value={weekendEndMinute} onValueChange={setWeekendEndMinute}>
                                             <SelectTrigger className="w-[70px]">
                                                 <SelectValue placeholder="분" />
                                             </SelectTrigger>
@@ -159,73 +220,7 @@ export default function RegisterPublic() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="pt-2">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center space-x-2 text-gray-700">
-                                            <Calendar className="w-5 h-5" />
-                                            <span className="font-medium">주말</span>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <Switch
-                                                id="weekend-mode"
-                                                checked={isWeekendEnabled}
-                                                onCheckedChange={setIsWeekendEnabled}
-                                                className='text-indigo-500'
-                                            />
-                                            <Label htmlFor="weekend-mode">영업</Label>
-                                        </div>
-                                    </div>
-                                    {isWeekendEnabled && (
-                                        <div className="flex items-center space-x-2">
-                                            <Clock className="w-4 h-4 text-gray-500" />
-                                            <Select value={weekendStartHour} onValueChange={setWeekendStartHour}>
-                                                <SelectTrigger className="w-[70px]">
-                                                    <SelectValue placeholder="시" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {hourOptions.map((hour) => (
-                                                        <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <Select value={weekendStartMinute} onValueChange={setWeekendStartMinute}>
-                                                <SelectTrigger className="w-[70px]">
-                                                    <SelectValue placeholder="분" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {minuteOptions.map((minute) => (
-                                                        <SelectItem key={minute} value={minute}>{minute}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <span className="text-gray-500">~</span>
-                                            <Select value={weekendEndHour} onValueChange={setWeekendEndHour}>
-                                                <SelectTrigger className="w-[70px]">
-                                                    <SelectValue placeholder="시" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {hourOptions.map((hour) => (
-                                                        <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <Select value={weekendEndMinute} onValueChange={setWeekendEndMinute}>
-                                                <SelectTrigger className="w-[70px]">
-                                                    <SelectValue placeholder="분" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {minuteOptions.map((minute) => (
-                                                        <SelectItem key={minute} value={minute}>{minute}</SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    )}
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>
