@@ -66,7 +66,7 @@ const SignupPublicStep2 = () => {
 
     // 선택된 기관의 상세 정보를 가져오는 함수
     const fetchInstitutionDetails = async (institutionId) => {
-        console.log("institutionId : ", institutionId);
+        //console.log("institutionId : ", institutionId);
         try {
             const response = await axios.post(`${config.apiDomain}/public/public-details/`, {
                 id: institutionId

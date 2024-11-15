@@ -407,7 +407,7 @@ const applyDefaultImage = async () => {
   };
 
   return (
-    <div className="bg-indigo-100 flex flex-col items-center justify-center relative font-sans min-h-screen">
+    <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">
       <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
         <div className='flex justify-between items-center'>
           <ChevronLeft

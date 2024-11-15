@@ -26,41 +26,43 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
   const fileInputRef = useRef(null);
   const { token } = useAuth();
 
+
   // 메뉴 데이터를 가져오기
   useEffect(() => {
     if (isOpen) {
-      const fetchMenuItems = async () => {
-        try {
-          const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'view',
-              slug,
-            }),
-          });
-
-          const data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setMenuItems(data);
-            setUpdatedMenuItems(data);
-            const categories = [...new Set(data.map((item) => item.category))];
-            setExpandedCategories(categories.reduce((acc, category) => ({ ...acc, [category]: false }), {}));
-          } else {
-            setError('메뉴 데이터가 비어있거나 올바르지 않습니다.');
-          }
-        } catch (error) {
-          setError(`메뉴 데이터를 불러오는 데 실패했습니다: ${error.message}`);
-        } finally {
-          setLoading(false);
-        }
-      };
       fetchMenuItems();
     }
   }, [isOpen, slug, token]);
+
+  const fetchMenuItems = async () => {
+    try {
+      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'view',
+          slug,
+        }),
+      });
+
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        setMenuItems(data);
+        setUpdatedMenuItems(data);
+        const categories = [...new Set(data.map((item) => item.category))];
+        setExpandedCategories(categories.reduce((acc, category) => ({ ...acc, [category]: false }), {}));
+      } else {
+        setError('메뉴 데이터가 비어있거나 올바르지 않습니다.');
+      }
+    } catch (error) {
+      setError(`메뉴 데이터를 불러오는 데 실패했습니다: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 카테고리 확장/축소 상태 토글
   const toggleCategory = (category) => {
@@ -73,8 +75,8 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     return menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
       ? menu.image
       : menu.image
-      ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
-      : '/menu_default_image.png';
+        ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
+        : '/menu_default_image.png';
   };
 
   const handleEditClick = (menuItem) => {
@@ -265,7 +267,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
           style={{ padding: '10px', cursor: 'pointer' }}
           aria-label="Close"
         >
-          <X className="bg-indigo-500 rounded-full text-white p-1"/>
+          <CancelIcon className="bg-indigo-500 rounded-full text-white p-1" />
         </button>
         <div className={styles.modalHeader}>{menuTitle} 목록</div>
         <div className={`${styles.modalBody}`}>
@@ -301,19 +303,13 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
                           <div className={styles.editMenuItem}>
                             <div className={styles.imageWrapper}>
                               <img
-                                src={
-                                  previewImage ||
-                                  (menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
-                                    ? menu.image
-                                    : menu.image
-                                      ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
-                                      : '/menu_default_image.png')
-                                }
+                                src={previewImage || getImageSrc(menu)}
                                 alt={menu.name}
                                 className={styles.menuEditImage}
                                 onClick={() => fileInputRef.current.click()}
                                 style={{ cursor: 'pointer' }}
                               />
+
                             </div>
                             <input
                               type="file"
@@ -347,16 +343,11 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
                           <div className="displayMenuItem flex justify-between items-center w-full">
                             <div className="flex items-center">
                               <img
-                                src={
-                                  menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
-                                    ? menu.image
-                                    : menu.image
-                                      ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
-                                      : '/menu_default_image.png'
-                                }
+                                src={getImageSrc(menu)}
                                 alt={menu.name}
                                 className={styles.menuImage}
                               />
+
                               <div className={`${styles.menuDetails} ml-4`}>
                                 <p className={styles.menuName}>{menu.name}</p>
                                 <p className={styles.menuPrice}>{Number(menu.price).toFixed(0)}원</p>
@@ -364,10 +355,10 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
                             </div>
                             <div className="flex space-x-4 items-center mr-6">
                               <button className={styles.editButton} onClick={() => handleEditClick(menu)}>
-                                <EditIcon className='w-5 h-5'/>
+                                <EditIcon className='w-5 h-5' />
                               </button>
                               <button className={styles.deleteButton} onClick={() => handleDeleteClick(menu)}>
-                                <Trash className='w-5 h-5'/>
+                                <Trash className='w-5 h-5' />
                               </button>
                             </div>
                           </div>

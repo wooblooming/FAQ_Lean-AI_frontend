@@ -14,19 +14,19 @@ const AllergyModal = ({ show, onClose, menuDetails }) => {
           style={{ cursor: 'pointer' }}
           aria-label="Close"
         >
-          <X className="bg-indigo-500 rounded-full text-white p-1"/>
+          <X className="bg-indigo-500 rounded-full text-white p-1" />
         </button>
         <div className="overflow-y-auto max-h-96">
-          {menuDetails && menuDetails.length > 0 ? (
-            menuDetails.map((menu, index) => (
-              <div key={index} className="mb-4">
-                <h3 className="font-semibold">{menu.name}</h3>
-                <p>{menu.allergy ? `알레르기 정보: ${menu.allergy}` : '알레르기 정보 없음'}</p>
-              </div>
-            ))
-          ) : (
-            <p>알레르기 정보가 없습니다.</p>
-          )}
+          {menuDetails && menuDetails.length > 0 &&
+            menuDetails
+              .filter(menu => menu.allergy) // allergy가 있는 항목만 필터링
+              .map((menu, index) => (
+                <div key={index} className="mb-4">
+                  <h3 className="font-semibold">{menu.name}</h3>
+                  <p>알레르기 정보: {menu.allergy}</p>
+                </div>
+              ))
+          }
         </div>
       </div>
     </div>

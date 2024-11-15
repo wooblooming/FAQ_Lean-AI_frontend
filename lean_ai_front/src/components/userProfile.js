@@ -21,6 +21,8 @@ const UserProfileForm = ({
   const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const { isPublicOn } = usePublic();
 
+  const fetchUrl = isPublicOn ? `${config.apiDomain}/public` : `${config.apiDomain}/api`;
+
   // 일반 메시지 모달 닫기 & 초기화
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
@@ -44,7 +46,7 @@ const UserProfileForm = ({
     }
 
     try {
-      const response = await fetch(`${config.apiDomain}/public/send-code/`, {
+      const response = await fetch(`${fetchUrl}/send-code/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ const UserProfileForm = ({
   // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/public/verify-code/`, {
+      const response = await fetch(`${fetchUrl}/verify-code/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

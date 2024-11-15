@@ -26,7 +26,6 @@ const RegisterComplaint = () => {
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [title, setTitle] = useState('');
-    const [part, setPart] = useState('');
     const [content, setContent] = useState('');
 
     // 카테고리 목록을 백엔드에서 가져오기
@@ -41,7 +40,7 @@ const RegisterComplaint = () => {
             const response = await axios.post(`${config.apiDomain}/public/department-list/`, {
                 slug
             });
-            console.log("Fetched categories data:", response.data);
+            //console.log("Fetched categories data:", response.data);
             const departments = Array.isArray(response.data.departments) ? response.data.departments : [];
             setCategories(departments); // 배열로 업데이트
         } catch (error) {
@@ -70,13 +69,13 @@ const RegisterComplaint = () => {
     const handleSubmit = async () => {
 
         // 입력 필드 유효성 검사
-        if (!name || !birth_date || !phone || !email || !title || !content) {
+        if (!name || !birth_date || !phone || !email || !title || !content ) {
             setErrorMessage('모든 필드를 입력해 주세요.');
             setShowErrorMessageModal(true);
             return;
         }
 
-        if(!termsAccepted){
+        if (!termsAccepted) {
             setErrorMessage('개인 정보 수집을 동의 해주세요.');
             setShowErrorMessageModal(true);
             return;
@@ -96,10 +95,12 @@ const RegisterComplaint = () => {
                 phone,
                 email,
                 title,
-                part: selectedCategory,
+                department: selectedCategory,
                 content,
                 slug
             };
+
+            //console.log("requestData : ", requestData);
 
             // POST 요청으로 백엔드에 데이터 전송
             const response = await axios.post(`${config.apiDomain}/public/complaints/register/`, requestData);
@@ -134,52 +135,11 @@ const RegisterComplaint = () => {
                 </div>
 
                 <div className='flex flex-col space-y-6 items-left px-4'>
-                    <div className='flex flex-col'>
-                        <h3 className='text-xl font-semibold text-left mb-2' style={{ fontFamily: 'NanumSquareExtraBold' }}>접수 내용</h3>
-                        <div className='grid md:grid-cols-2 gap-x-6 gap-y-4'>
-                            <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500' style={{ fontFamily: 'NanumSquare' }}>민원 제목</p>
-                                <input
-                                    placeholder='민원제목입력'
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
-                                />
-                            </div>
-                            <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500'>민원 카테고리</p>
-                                <select
-                                    value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
-                                    className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
-                                >
-                                    <option value="">카테고리를 선택하세요</option>
-                                    {categories.map((category, index) => (
-                                        <option key={index} value={category}>
-                                            {category}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500' style={{ fontFamily: 'NanumSquare' }}>민원 내용</p>
-                                <textarea
-                                    placeholder='민원내용입력'
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full h-28"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='flex flex-col'>
+                    <div className='flex flex-col' style={{ fontFamily: 'NanumSquare' }}>
                         <h3 className='text-xl font-semibold text-left mb-2' style={{ fontFamily: 'NanumSquareExtraBold' }}>민원인 정보</h3>
                         <div className='grid md:grid-cols-2 gap-x-6 gap-y-4'>
                             <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500' style={{ fontFamily: 'NanumSquare' }}>이름</p>
+                                <p className='text-gray-700' >이름</p>
                                 <input
                                     placeholder='이름을 입력해주세요'
                                     value={name}
@@ -188,7 +148,7 @@ const RegisterComplaint = () => {
                                 />
                             </div>
                             <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500' style={{ fontFamily: 'NanumSquare' }}>생년월일</p>
+                                <p className='text-gray-700' >생년월일</p>
                                 <input
                                     placeholder='6자리 입력 (ex.241106)'
                                     value={birth_date}
@@ -197,22 +157,65 @@ const RegisterComplaint = () => {
                                 />
                             </div>
                             <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500' style={{ fontFamily: 'NanumSquare' }}>핸드폰번호</p>
+                                <p className='text-gray-700' >핸드폰번호</p>
                                 <input
-                                    placeholder='- 없이 입력'
+                                    placeholder='- 없이 입력 핸드폰번호를 입력해주세요'
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
                                 />
                             </div>
                             <div className='flex flex-col space-y-1'>
-                                <p className='text-gray-500' style={{ fontFamily: 'NanumSquare' }}>이메일</p>
+                                <p className='text-gray-700'>이메일</p>
                                 <input
                                     placeholder='이메일 주소'
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
                                 />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='flex flex-col'>
+                        <h3 className='text-xl font-semibold text-left mb-2' >접수 내용</h3>
+                        <div className='flex flex-col space-y-3'>
+                            <div className='grid md:grid-cols-2 gap-3 md:gap-6' >
+                                <div className='flex flex-col space-y-1'>
+                                    <p className='text-gray-700' >민원 제목</p>
+                                    <input
+                                        placeholder='민원제목입력'
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
+                                    />
+                                </div>
+                                <div className='flex flex-col space-y-1'>
+                                    <p className='text-gray-700'>민원 카테고리</p>
+                                    <select
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                        className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
+                                    >
+                                        <option value="">카테고리를 선택하세요</option>
+                                        {categories.map((category, index) => (
+                                            <option key={index} value={category}>
+                                                {category}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div className='flex flex-col space-y-1'>
+                                    <p className='text-gray-700' > 민원 내용</p>
+                                    <textarea
+                                        placeholder='민원내용입력'
+                                        value={content}
+                                        onChange={(e) => setContent(e.target.value)}
+                                        className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full h-28"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

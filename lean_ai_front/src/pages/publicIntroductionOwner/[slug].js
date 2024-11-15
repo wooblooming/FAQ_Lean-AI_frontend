@@ -250,7 +250,7 @@ const StoreIntroductionOwnerPublic = () => {
                   </button>
                   <button 
                     className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl' 
-                    onClick={() => router.push('/complaintLookup')}
+                    onClick={() => router.push('/complaintStausLookup')}
                   >
                     민원 조회
                   </button>

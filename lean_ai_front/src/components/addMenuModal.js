@@ -218,7 +218,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                     style={{ padding: '10px', cursor: 'pointer' }}
                     aria-label="Close"
                 >
-                   <X className="bg-indigo-500 rounded-full text-white p-1"/>
+                   <CancelIcon className="bg-indigo-500 rounded-full text-white p-1"/>
                 </button>
 
                 {/* 좌측 입력 폼 */}

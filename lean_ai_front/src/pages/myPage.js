@@ -37,7 +37,6 @@ const MyPage = () => {
   const [name, setName] = useState(''); // 사용자 이름
   const [email, setEmail] = useState(''); // 사용자 이메일
   const [phoneNumber, setPhoneNumber] = useState(''); // 사용자 전화번호
-  const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
   const [ID, setID] = useState(''); // 사용자 또는 사업자 ID
   const [stores, setStores] = useState([]); // 스토어 목록
   const [selectedStoreId, setSelectedStoreId] = useState(null); // 선택된 스토어의 ID
@@ -313,81 +312,6 @@ const MyPage = () => {
     }
   };
 
-  // 핸드폰 번호로 인증번호 전송 요청
-  const handleSendCode = async () => {
-    const phoneRegex = /^\d{11}$/; // 핸드폰 번호 형식 검증 (11자리 숫자)
-    if (!phoneRegex.test(phoneNumber)) {
-      setErrorMessage('핸드폰 번호를 확인해 주세요');
-      setShowErrorMessageModal(true);
-      return;
-    }
-
-    try {
-      const response = await fetch(`${config.apiDomain}/api/send-code/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phoneNumber,
-          type: 'mypage',
-          user_id: ID,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setVerificationCode(''); // 모달을 열 때 인증번호 초기화
-        setShowCodeModal(true); // 인증번호 입력 모달 열기
-      } else {
-        setErrorMessage(data.message);
-        setShowErrorMessageModal(true);
-      }
-    } catch (error) {
-      setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
-      setShowErrorMessageModal(true);
-    }
-  };
-
-  // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
-  const handleVerifyCode = async () => {
-    try {
-      const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phoneNumber,
-          code: verificationCode,
-          type: 'mypage',
-          user_id: ID,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setShowCodeModal(false); // 인증 완료 후 모달 닫기
-        setMessage(data.message); // 백엔드에서 받은 메시지를 그대로 출력
-        setShowMessageModal(true); // 메시지 모달 열기
-      } else {
-        setErrorMessage(data.message); // 에러 메시지도 백엔드 응답을 그대로 출력
-        setShowErrorMessageModal(true); // 에러 메시지 모달 열기
-      }
-    } catch (error) {
-      setErrorMessage('인증 확인 중 오류가 발생했습니다.');
-      setShowErrorMessageModal(true);
-    }
-  };
-
-  // 인증번호 모달을 닫을 때 에러 메시지 초기화
-  const handleCodeModalClose = () => {
-    setShowCodeModal(false);
-    setVerificationCode(''); // 인증번호 초기화
-  };
-
   // QR 코드 생성 처리 함수
   const handleGenerateQrCode = async () => {
     try {
@@ -505,7 +429,7 @@ const MyPage = () => {
   };
 
   return (
-    <div className="bg-indigo-100 flex flex-col items-center justify-center relative font-sans min-h-screen">
+    <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">
       <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
         <div className='flex justify-between items-center'>
           <ChevronLeft
@@ -559,6 +483,8 @@ const MyPage = () => {
           setEmail={setEmail}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
+          department={department}
+          setDepartment={setDepartment}
         />
 
         {/* QR 코드 섹션 */}

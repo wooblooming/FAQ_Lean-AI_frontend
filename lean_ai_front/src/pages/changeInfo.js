@@ -5,6 +5,7 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import { useAuth } from '../contexts/authContext';
 import StoreInfoEdit from '../components/storeInfoEdit';
+import StoreHourEdit from '../components/storeHourEdit';
 import AddMenuModal from '../components/addMenuModal';
 import ViewMenuModal from '../components/viewMenuModal';
 import ModalMSG from '../components/modalMSG';
@@ -24,6 +25,7 @@ const ChangeInfo = ({ initialData }) => {
   const [storeInformation, setStoreInformation] = useState(''); // 매장 소개 상태
   const [slug, setSlug] = useState('');
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+  const [isStoreHourEditModalOpen, setIsStoreHourEditModalOpen] = useState(false);
 
   const [storeImage, setStoreImage] = useState(null); // 이미지 파일 상태
   const [previewImage, setPreviewImage] = useState(''); // 미리보기 URL 상태
@@ -44,66 +46,66 @@ const ChangeInfo = ({ initialData }) => {
     'FOOD': '음식점',
     'RETAIL': '판매점',
     'UNMANNED': '무인매장',
-    'PUBLIC': '공공기관',
     'OTHER': '기타'
   };
 
   // 매장 정보 가져오기
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.status === 401) {
-          setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
-          setShowErrorMessageModal(true);
-          removeToken();
-          return;
-        }
-        const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
-        //console.log(data);
-
-        if (data.length > 0) {
-          setStoreName(data[0].store_name || '');
-          setStoreIntroduction(data[0].store_introduction || '');
-          setStoreCategory(data[0].store_category || '');
-          setStoreHours(data[0].opening_hours || '');
-          setStoreAddress(data[0].store_address || '');
-          setStoreTel(data[0].store_tel || '');
-          setStoreInformation(data[0].store_information || '');
-          setSlug(data[0].slug || '');
-
-          // 이미지 URL 설정
-          const bannerPath = data[0].banner || '';
-          const storeImageUrl = bannerPath
-            ? bannerPath.startsWith('/media/')
-              ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
-              : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
-            : '/chatbot.png'; // 기본 이미지 경로 설정            
-
-          //console.log('storeImageUrl : ', storeImageUrl);
-          setPreviewImage(storeImageUrl); // 배너 이미지 미리보기 설정
-          setStoreId(data[0].store_id); // 매장 ID 설정
-        } else {
-          setErrorMessage('매장 정보를 찾을 수 없습니다.');
-          setShowErrorMessageModal(true);
-        }
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-        setErrorMessage('매장 정보를 불러오는 데 실패했습니다.');
-        setShowErrorMessageModal(true);
-      } finally {
-        setIsLoading(false);  // 로딩 완료
-      }
-    };
-
     fetchData(); // 초기 데이터 가져오기
   }, [initialData]);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.status === 401) {
+        setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
+        setShowErrorMessageModal(true);
+        removeToken();
+        return;
+      }
+      const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
+      //console.log(data);
+
+      if (data.length > 0) {
+        setStoreName(data[0].store_name || '');
+        setStoreIntroduction(data[0].store_introduction || '');
+        setStoreCategory(data[0].store_category || '');
+        setStoreHours(data[0].opening_hours || '');
+        setStoreAddress(data[0].store_address || '');
+        setStoreTel(data[0].store_tel || '');
+        setStoreInformation(data[0].store_information || '');
+        setSlug(data[0].slug || '');
+
+        // 이미지 URL 설정
+        const bannerPath = data[0].banner || '';
+        const storeImageUrl = bannerPath
+          ? bannerPath.startsWith('/media/')
+            ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
+            : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
+          : '/chatbot.png'; // 기본 이미지 경로 설정            
+
+        //console.log('storeImageUrl : ', storeImageUrl);
+        setPreviewImage(storeImageUrl); // 배너 이미지 미리보기 설정
+        setStoreId(data[0].store_id); // 매장 ID 설정
+      } else {
+        setErrorMessage('매장 정보를 찾을 수 없습니다.');
+        setShowErrorMessageModal(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      setErrorMessage('매장 정보를 불러오는 데 실패했습니다.');
+      setShowErrorMessageModal(true);
+    } finally {
+      setIsLoading(false);  // 로딩 완료
+    }
+  };
+
 
   // 로딩 중일 때 보여줄 UI
   if (isLoading) {
@@ -113,6 +115,21 @@ const ChangeInfo = ({ initialData }) => {
       </div>
     );
   }
+
+  const openStoreHourEditModal = () => {
+    setIsStoreHourEditModalOpen(true);
+  };
+
+  const closeStoreHourEditModal = () => {
+    setIsStoreHourEditModalOpen(false);
+  };
+
+  const handleStoreHoursSave = (updatedHours) => {
+    setStoreHours(updatedHours); // 영업 시간 업데이트
+  };
+  const handleStoreHoursDelete = () => {
+    setStoreHours(''); // storeHours 초기화
+  };
 
   // 이미지 모달 열기 함수
   const openImageModal = () => {
@@ -180,8 +197,6 @@ const ChangeInfo = ({ initialData }) => {
         setStoreIntroduction(editText);
       } else if (currentEditElement === 'storeCategory') {
         setStoreCategory(editText);
-      } else if (currentEditElement === 'storeHours') {
-        setStoreHours(editText);
       } else if (currentEditElement === 'storeAddress') {
         setStoreAddress(editText);
       } else if (currentEditElement === 'storeTel') {
@@ -207,8 +222,6 @@ const ChangeInfo = ({ initialData }) => {
       setStoreIntroduction('');
     } else if (currentEditElement === 'storeCategory') {
       setStoreCategory('');
-    } else if (currentEditElement === 'storeHours') {
-      setStoreHours('');
     } else if (currentEditElement === 'storeAddress') {
       setStoreAddress('');
     } else if (currentEditElement === 'storeTel') {
@@ -298,9 +311,7 @@ const ChangeInfo = ({ initialData }) => {
     ? '메뉴'
     : storeCategory === 'RETAIL' || storeCategory === 'UNMANNED' || storeCategory === 'OTHER'
       ? '상품'
-      : storeCategory === 'PUBLIC'
-        ? '서비스'
-        : '';
+      : '';
 
   return (
     <div className='flex flex-col h-full w-full bg-white'>
@@ -346,7 +357,7 @@ const ChangeInfo = ({ initialData }) => {
           <StoreInfoEdit
             label="영업 시간"
             value={storeHours}
-            onEdit={openEditModal}
+            onEdit={openStoreHourEditModal}
             elementId="storeHours"
           />
           <StoreInfoEdit
@@ -472,7 +483,6 @@ const ChangeInfo = ({ initialData }) => {
                 <option value="FOOD">음식점</option>
                 <option value="RETAIL">판매점</option>
                 <option value="UNMANNED">무인매장</option>
-                <option value="PUBLIC">공공기관</option>
                 <option value="OTHER">기타</option>
               </select>
             ) : (
@@ -502,6 +512,14 @@ const ChangeInfo = ({ initialData }) => {
         </div>
       )}
 
+      {/* StoreHourEdit 모달 */}
+      <StoreHourEdit
+          isOpen={isStoreHourEditModalOpen}
+          onClose={closeStoreHourEditModal}
+          onSave={handleStoreHoursSave} 
+          onDelete={handleStoreHoursDelete}
+      />
+
       {/* AddMenuModal 모달 */}
       <AddMenuModal
         isOpen={isAddMenuModalOpen}
@@ -520,6 +538,7 @@ const ChangeInfo = ({ initialData }) => {
         slug={slug}
         menuTitle={menuTitle}
       />
+
 
       {/* 성공 메시지 모달 */}
       <ModalMSG

@@ -6,8 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
-import config from '../../config';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import config from '../../config';
 
 export default function RegisterPublic() {
     const router = useRouter();
@@ -47,10 +47,17 @@ export default function RegisterPublic() {
     };
 
     const handleRegisterPublic = async () => {
+
         try {
-            const formattedHours = `평일: ${weekdayStartHour}:${weekdayStartMinute}-${weekdayEndHour}:${weekdayEndMinute}, ${
-                isWeekendEnabled ? `주말: ${weekendStartHour}:${weekendStartMinute}-${weekendEndHour}:${weekendEndMinute}` : '주말: 휴무'
-            }`;
+            const formattedHours = `평일: ${weekdayStartHour}:${weekdayStartMinute}-${weekdayEndHour}:${weekdayEndMinute}, ${isWeekendEnabled ? 
+                `주말: ${weekendStartHour}:${weekendStartMinute}-${weekendEndHour}:${weekendEndMinute}` : '주말: 휴무'
+                }`;
+
+            if (!formData.publicName || !formattedHours || !formData.publicLocation || !formData.publicTel) {
+                setErrorMessage('필수 항목들을 기입해주시길 바랍니다');
+                setShowErrorModal(true);
+                return;
+            }
 
             const response = await axios.post(`${config.apiDomain}/public/public-register/`, {
                 public_name: formData.publicName,
@@ -67,7 +74,7 @@ export default function RegisterPublic() {
             } else {
                 throw new Error('등록 중 오류가 발생했습니다.');
             }
-        }  catch (error) {
+        } catch (error) {
             if (error.response && error.response.status === 400) {
                 const errorMsg = error.response.data.public_name || '기관 등록 중 오류가 발생했습니다. 다시 시도해주세요.';
                 setErrorMessage(errorMsg);
@@ -78,7 +85,7 @@ export default function RegisterPublic() {
             }
         }
     };
-    
+
     const hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
     const minuteOptions = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
 
