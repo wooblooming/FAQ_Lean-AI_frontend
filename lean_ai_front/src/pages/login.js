@@ -7,7 +7,7 @@ import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
-import ConvertSwitch from '../components/convertSwitch';
+import ConvertSwitch from '../components/convertSwitch1';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
@@ -39,6 +39,7 @@ const Login = () => {
             });
 
             const { access, public_id, store_id } = response.data;
+            //console.log("response.data : ",  response.data);
             
             // 토큰 저장 후 확인
             await saveToken(access);

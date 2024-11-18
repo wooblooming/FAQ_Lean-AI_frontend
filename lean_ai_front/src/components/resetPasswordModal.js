@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { usePublic } from "../contexts/publicContext";
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
@@ -13,6 +14,10 @@ function ModalResetPassword({ show, onClose, phone }) {
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
     const router = useRouter();
+    const { isPublicOn, togglePublicOn } = usePublic(); // ConvertSwitch의 상태와 토글 함수
+    const apiEndpoint = isPublicOn
+    ? `${config.apiDomain}/public`
+    : `${config.apiDomain}/api`; // ConvertSwitch 상태에 따라 API 엔드포인트 설정
 
     // 모달이 열릴 때 비밀번호 입력 필드를 초기화
     useEffect(() => {
@@ -46,7 +51,7 @@ function ModalResetPassword({ show, onClose, phone }) {
         }
 
         try {
-            const response = await fetch(`${config.apiDomain}/api/reset-password/`, {
+            const response = await  fetch(`${apiEndpoint}/reset-password/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

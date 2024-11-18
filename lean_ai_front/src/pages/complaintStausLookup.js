@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, Check } from 'lucide-react';
 import axios from 'axios';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
@@ -21,7 +21,7 @@ const ComplaintLookup = () => {
     const [complaintDetails, setComplaintDetails] = useState(null);
     const [status, setStatus] = useState('접수')
 
-    const stages = ['접수', '처리중', '완료']
+    const stages = ['접수', '처리 중', '완료']
 
 
     // 일반 메시지 모달 닫기 & 초기화
@@ -34,6 +34,11 @@ const ComplaintLookup = () => {
     const handleErrorMessageModalClose = () => {
         setShowErrorMessageModal(false);
         setErrorMessage('');
+    };
+
+    const handleCodeModalClose = () => {
+        setShowCodeModal(false);
+        setVerificationCode('');
     };
 
     // 핸드폰 번호로 인증번호 전송 요청
@@ -98,6 +103,7 @@ const ComplaintLookup = () => {
 
             if (response.status === 200 && response.data.success) {
                 setComplaintDetails(response.data.complaint); // 성공적으로 민원 데이터 가져옴
+                console.log(complaintDetails);
             } else {
                 setErrorMessage(response.data.message || '민원 조회에 실패했습니다.');
                 setShowErrorMessageModal(true);
@@ -108,10 +114,12 @@ const ComplaintLookup = () => {
         }
     };
 
-    const handleCodeModalClose = () => {
-        setShowCodeModal(false);
-        setVerificationCode('');
-    };
+    useEffect(() => {
+        if (complaintDetails) {
+            //console.log(complaintDetails);
+            setStatus(complaintDetails.status);
+        }
+    }, [complaintDetails]);
 
     return (
         <div className="bg-violet-50 flex flex-col gap-3 items-center justify-center relative font-sans min-h-screen">
@@ -160,52 +168,55 @@ const ComplaintLookup = () => {
             {/* 민원 상세 정보 */}
             {complaintDetails && (
                 <div className="bg-white px-4 py-6 space-y-4 rounded-lg shadow-lg text-center relative" style={{ width: '430px' }}>
-                    <div className='flex flex-col space-y-2 items-start' style={{ fontFamily: 'NanumSquare' }}>
+                    <div className='flex flex-col space-y-2 items-start w-full ' style={{ fontFamily: 'NanumSquare' }}>
                         <div name='header' className="flex flex-col items-start space-y-1 ">
                             <h2 className="text-2xl" style={{ fontFamily: "NanumSquareExtraBold" }}>{complaintDetails.title}</h2>
-                            <p className="text-gray-600 font-medium px-2" style={{ fontFamily: "NanumSquareBold" }}>
-                                접수 번호: <span >{complaintDetails.complaint_number}</span>
-                            </p>
                         </div>
-                        <div name='content' className="space-y-4 text-lg ">
+                        <div name='content' className="space-y-4 text-lg w-full ">
                             <div name='personal-info' className='flex flex-col space-y-2 px-2'>
+                            <div className="flex space-x-5 justify-even">
+                                    <span className="text-left w-20 whitespace-nowrap">접수 번호:</span>
+                                    <span >{complaintDetails.complaint_number}</span>
+                                </div>
                                 <div className="flex space-x-5 justify-even">
-                                    <span className="text-left w-16">작성자:</span>
+                                    <span className="text-left w-20">작성자:</span>
                                     <span >{complaintDetails.name}</span>
                                 </div>
                                 <div className="flex space-x-5 justify-even">
-                                    <span className="text-left w-16">접수일:</span>
+                                    <span className="text-left w-20">접수일:</span>
                                     <span >{complaintDetails.created_at}</span>
                                 </div>
                             </div>
-                            <div name='status' className='flex flex-col justify-start text-start space-y-2 '>
+                            <div name="status" className="flex flex-col justify-center text-start space-y-2 w-full ">
                                 <h2 className="text-2xl" style={{ fontFamily: "NanumSquareExtraBold" }}>접수 현황</h2>
-                                <div className='flex flex-col justify-center'>
-                                <div className="flex justify-between">
-                                    {stages.map((stage, index) => (
-                                        <div key={stage} className="flex flex-col items-center">
-                                            <div
-                                                className={`w-8 h-8 rounded-full flex items-center justify-center ${stages.indexOf(status) >= index ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
-                                                    }`}
-                                            >
-                                                {stages.indexOf(status) > index ? (
-                                                    <CheckCircle2 className="w-5 h-5" />
-                                                ) : (
-                                                    index + 1
-                                                )}
+                                <div name="status-process" className="flex flex-col items-center space-y px-3 py-2 w-full">
+                                    <div className="flex justify-between w-full max-w-md">
+                                        {stages.map((stage, index) => (
+                                            <div key={stage} className="flex flex-col items-center">
+                                                <div
+                                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${stages.indexOf(status) >= index ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
+                                                        }`}
+                                                >
+                                                    {stages.indexOf(status) >= index ? (
+                                                        <Check className="w-5 h-5" />
+                                                    ) : (
+                                                        index + 1
+                                                    )}
+                                                </div>
+                                                <span className="mt-2 text-sm">{stage}</span>
                                             </div>
-                                            <span className="mt-2 text-sm">{stage}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="mt-4 h-2 bg-gray-200 rounded-full">
-                                    <div
-                                        className="h-full bg-indigo-600 rounded-full transition-all duration-300 ease-out"
-                                        style={{ width: `${((stages.indexOf(status) + 1) / stages.length) * 100}%` }}
-                                    ></div>
-                                </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-4 w-full h-2 bg-gray-200 rounded-full max-w-md">
+                                        <div
+                                            className="h-full bg-indigo-600 rounded-full transition-all duration-300 ease-out"
+                                            style={{ width: `${((stages.indexOf(status) + 1) / stages.length) * 100}%` }}
+                                        ></div>
+                                    </div>
+
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
