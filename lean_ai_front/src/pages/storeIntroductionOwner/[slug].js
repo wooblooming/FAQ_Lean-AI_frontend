@@ -6,7 +6,9 @@ import Loading from '../../components/loading';
 import StoreBanner from '../../components/storeBanner';
 import StoreInfo from '../../components/storeInfo';
 import MenuList from '../../components/menuList';
+import ImageList from '../../components/imageList'
 import { fetchStoreData } from '../../fetch/fetchStoreData';
+import { fetchImages } from '../../fetch/fetchStoreImage';
 import Chatbot from '../chatBotMSG';
 
 const StoreIntroduceOwner = () => {
@@ -14,32 +16,41 @@ const StoreIntroduceOwner = () => {
   const { slug } = router.query;
   const { token } = useAuth();
   const [storeData, setStoreData] = useState(null);
+  const [images, setImgaes] = useState([]);
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
   const [menuPrice, setMenuPrice] = useState(null);
+  const [isOwner, setIsOwner] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
+  const tabOrder = ['home', 'menu', 'image']; // 탭 순서 배열
 
   useEffect(() => {
     if (token && slug) {
-      fetchStoreData(slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading);
+      setIsOwner(true);
+      fetchStoreData(slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading, isOwner);
+      fetchImages(slug, setImgaes);
+      
     }
   }, [token, slug]);
 
   // Swipeable hook 설정: 좌우 스와이프로 탭 전환
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      if (activeTab === 'home') {
-        setActiveTab('menu'); // 왼쪽으로 스와이프하면 menu 탭으로 전환
+      const currentIndex = tabOrder.indexOf(activeTab);
+      if (currentIndex < tabOrder.length - 1) {
+        setActiveTab(tabOrder[currentIndex + 1]); // 다음 탭으로 이동
       }
     },
     onSwipedRight: () => {
-      if (activeTab === 'menu') {
-        setActiveTab('home'); // 오른쪽으로 스와이프하면 home 탭으로 전환
+      const currentIndex = tabOrder.indexOf(activeTab);
+      if (currentIndex > 0) {
+        setActiveTab(tabOrder[currentIndex - 1]); // 이전 탭으로 이동
       }
     },
-    trackTouch: true, // 터치 이벤트를 추적
+    trackTouch: true, // 터치 이벤트 추적
   });
+  
 
   if (isLoading) return <Loading />;
   if (!storeData) return <div>Store not found.</div>;
@@ -86,10 +97,18 @@ const StoreIntroduceOwner = () => {
           >
             {menuTitle}
           </button>
+          <button
+            className={`p-2 w-1/4 ${activeTab === 'image' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
+            style={{ fontFamily: activeTab === 'image' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
+            onClick={() => setActiveTab('image')}
+          >
+            피드
+          </button>
         </div>
         <div className="p-4 font-sans mt-3">
           {activeTab === 'home' && <StoreInfo storeData={storeData.store} />}
           {activeTab === 'menu' && <MenuList menuPrice={menuPrice} storeCategory={storeCategory} menuTitle={menuTitle} />}
+          {activeTab === 'image' && <ImageList images={images} />}
         </div>
       </div>
       {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}

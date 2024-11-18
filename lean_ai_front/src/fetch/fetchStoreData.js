@@ -1,7 +1,9 @@
 // fetchStoreData.js
 import config from '../../config';
 
-export const fetchStoreData = async (slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading) => {
+export const fetchStoreData = async (slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading, isOwner) => {
+  const type = isOwner ? 'owner' : 'customer';
+
   try {
     const decodedSlug = decodeURIComponent(slug);
     const response = await fetch(`${config.apiDomain}/api/storesinfo/`, {
@@ -12,27 +14,29 @@ export const fetchStoreData = async (slug, token, setStoreData, setMenuPrice, se
       },
       body: JSON.stringify({
         slug: decodedSlug,
-        type: 'owner',
+        type: type,
       }),
     });
 
     const data = await response.json();
-    //console.log("store data : ", data);
+    const result = data.store;
 
-    if (data && data.store) {
+    if (result) {
       try {
-        const menuPrice = JSON.parse(data.store.menu_price);
-        setMenuPrice(menuPrice);
+        const menuPrice = JSON.parse(result.menu_price);
         //console.log("Parsed menuPrice:", menuPrice);
-        setStoreCategory(data.store.store_category)
-        setAgentId(data.store.agent_id);
+        setMenuPrice(menuPrice);
+        setStoreCategory(result.store_category);
+        //console.log("Fetched store category:", result.store_category); // 디버깅 로그
+        setAgentId(result.agent_id);
       } catch (parseError) {
-        //console.error("Error parsing menu_price:", parseError);
+        console.error("Error parsing menu_price:", parseError);
       }
     } else {
-      console.error("No menu_price found in response data.");
+      console.error("No result found in response data.");
     }
-    setStoreData(data); // 가져온 데이터를 상태로 설정
+
+    setStoreData(data);
   } catch (error) {
     console.error("Error fetching store data:", error);
   } finally {

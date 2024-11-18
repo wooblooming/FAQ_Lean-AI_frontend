@@ -51,7 +51,7 @@ const MenuList = ({ menuPrice, storeCategory, menuTitle }) => {
                 )}
             </div>
             {/* groupedMenu가 있을 경우, 각 카테고리를 렌더링, 없으면 '메뉴 정보 없음' 메시지 출력 */}
-            {groupedMenu ? (
+            {groupedMenu && Object.keys(groupedMenu).length > 0 ? (
                 Object.entries(groupedMenu).map(([category, menus]) => (
                     <Category
                         key={category}
@@ -79,7 +79,7 @@ const MenuList = ({ menuPrice, storeCategory, menuTitle }) => {
 };
 
 // Category 컴포넌트: 개별 카테고리를 렌더링하고 클릭 시 카테고리 항목을 열거나 닫을 수 있도록 함
-const Category = ({ category, menus, open, onClick, menuTitle, storeCategory, toggleAllergyModal }) => (
+const Category = ({ category, menus, open, onClick}) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -107,6 +107,9 @@ const MenuItem = ({ menu }) => (
 
 // groupMenuByCategory 함수: 메뉴를 카테고리별로 그룹화하여 반환
 const groupMenuByCategory = (menuList) => {
+    if (!menuList || !Array.isArray(menuList)) {
+        return null; // menuList가 유효하지 않으면 null 반환
+    }
     return menuList.reduce((acc, menu) => {
         if (!acc[menu.category]) acc[menu.category] = [];
         acc[menu.category].push(menu);

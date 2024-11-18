@@ -72,14 +72,14 @@ export default function DataEditPage() {
 
       // 성공 시 성공 메시지 표시 및 폼 초기화
       if (response.ok) {
-        setMessage('데이터가 등록되었습니다!');
+        setMessage('파일 업로드 되었습니다!');
         setShowMessageModal(true);
         resetForm();
       } else {
         // 실패 시 에러 데이터 로깅 및 에러 메시지 표시
         const errorData = await response.json();
         console.error('요청 전송 실패:', errorData);
-        setErrorMessage('데이터 등록에 실패했습니다.');
+        setErrorMessage('파일 업로드에 실패했습니다.');
         setShowErrorMessageModal(true);
       }
     } catch (error) {

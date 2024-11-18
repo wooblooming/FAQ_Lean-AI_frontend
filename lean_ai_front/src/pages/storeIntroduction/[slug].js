@@ -22,9 +22,11 @@ const StoreIntroduce = () => {
 
   useEffect(() => {
     if (token && slug) {
-      fetchStoreData(slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading);
+      setIsOwner(false);
+      fetchStoreData(slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading, isOwner);
     }
   }, [token, slug]);
+
 
   // Swipeable hook 설정: 좌우 스와이프로 탭 전환
   const handlers = useSwipeable({

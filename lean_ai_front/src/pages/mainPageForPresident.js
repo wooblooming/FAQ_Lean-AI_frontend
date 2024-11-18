@@ -48,7 +48,6 @@ const MainPageWithMenu = () => {
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
   const [category, setCategory] = useState('');
   const [storeName, setStoreName] = useState(''); // 상점 이름 상태
-  const [storeID, setStoreID] = useState(''); 
   const [slug, setStoreSlug] = useState(''); // 상점 슬러그 상태
   const [expandedId, setExpandedId] = useState(null); // FAQ 확장 상태 관리
 
@@ -112,7 +111,6 @@ const MainPageWithMenu = () => {
         setCategory(storeData[0].store_category);
         setStoreName(storeData[0].store_name);
         setStoreSlug(storeData[0].slug);
-        setStoreID(storeData[0].store_id);
         
       } else {
         setStoreName('');

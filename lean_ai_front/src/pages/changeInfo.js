@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Image} from 'lucide-react';
 import AddIcon from '@mui/icons-material/Add';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SearchIcon from '@mui/icons-material/Search';
@@ -306,6 +306,14 @@ const ChangeInfo = ({ initialData }) => {
     setIsViewMenuModalOpen(false);
   };
 
+  const goToAddFeed = () => {
+    setIsAddFeedModalOpen(true);
+  };
+
+  const closeAddFeedModal = () => {
+    setIsAddFeedModalOpen(false);
+  };
+  
   // storeCategory에 따라 메뉴 타이틀 설정
   const menuTitle = storeCategory === 'FOOD'
     ? '메뉴'
@@ -400,6 +408,14 @@ const ChangeInfo = ({ initialData }) => {
                 className='textAddIcon '
                 onClick={goToViewMenu}>
                 <p className='text-indigo-400 font-medium cursor-pointer text-lg' > {menuTitle} 보기</p>
+              </button>
+            </div>
+            <div className='flex flex-row'>
+              <Image className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToAddFeed} />
+              <button
+                className='textAddIcon '
+                onClick={goToAddFeed}>
+                <p className='text-indigo-400 font-medium cursor-pointer text-lg' > 피드 추가</p>
               </button>
             </div>
           </div>
