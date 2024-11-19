@@ -410,6 +410,7 @@ const ChangeInfo = ({ initialData }) => {
                 <p className='text-indigo-400 font-medium cursor-pointer text-lg' > {menuTitle} 보기</p>
               </button>
             </div>
+            {/* 
             <div className='flex flex-row'>
               <Image className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToAddFeed} />
               <button
@@ -418,6 +419,7 @@ const ChangeInfo = ({ initialData }) => {
                 <p className='text-indigo-400 font-medium cursor-pointer text-lg' > 피드 추가</p>
               </button>
             </div>
+            */}
           </div>
         </div>
 

@@ -97,18 +97,19 @@ const StoreIntroduceOwner = () => {
           >
             {menuTitle}
           </button>
+          {/*
           <button
             className={`p-2 w-1/4 ${activeTab === 'image' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
             style={{ fontFamily: activeTab === 'image' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
             onClick={() => setActiveTab('image')}
           >
             피드
-          </button>
+          </button> */}
         </div>
         <div className="p-4 font-sans mt-3">
           {activeTab === 'home' && <StoreInfo storeData={storeData.store} />}
           {activeTab === 'menu' && <MenuList menuPrice={menuPrice} storeCategory={storeCategory} menuTitle={menuTitle} />}
-          {activeTab === 'image' && <ImageList images={images} />}
+          {/*{activeTab === 'image' && <ImageList images={images} />}*/}
         </div>
       </div>
       {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}

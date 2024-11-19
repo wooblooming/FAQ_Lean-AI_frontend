@@ -41,6 +41,7 @@ const MyPage = () => {
   const [stores, setStores] = useState([]); // 스토어 목록
   const [selectedStoreId, setSelectedStoreId] = useState(null); // 선택된 스토어의 ID
   const [storeName, setStoreName] = useState(''); // 스토어 이름
+  const [department, setDepartment] = useState('');
 
   // 이벤트 및 스위치 관련 변수
   const [isEventOn, setIsEventOn] = useState(false); // 이벤트 스위치 상태
