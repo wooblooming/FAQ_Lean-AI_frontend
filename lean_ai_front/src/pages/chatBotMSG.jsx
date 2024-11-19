@@ -84,6 +84,27 @@ export default function Chatbot({ agentId }) {
         setTimeout(applyCustomStyle, 1000);  // 로드 후 1초 지연
     }, []);
 
+    useEffect(() => {
+        const dfMessenger = document.querySelector('df-messenger');
+
+        // 에이전트가 응답을 생성 중일 때 로딩 메시지를 전송
+        const handleRequestSent = () => {
+            if (dfMessenger) {
+                dfMessenger.sendQuery('응답을 생성중입니다 잠시만 기다려주세요!');
+            }
+        };
+
+        if (dfMessenger) {
+            dfMessenger.addEventListener('df-request-sent', handleRequestSent);
+        }
+
+        return () => {
+            if (dfMessenger) {
+                dfMessenger.removeEventListener('df-request-sent', handleRequestSent);
+            }
+        };
+    }, []);
+
     return (
         <div>
             {sessionId && (

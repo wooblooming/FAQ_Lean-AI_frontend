@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
 import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
@@ -132,7 +132,6 @@ const MainPageWithMenu = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-
       const data = await response.json();
       //console.log("data.data : ", data.data);
       if (response.ok && data.status === "success") {
@@ -149,9 +148,39 @@ const MainPageWithMenu = () => {
   };
 
   // 챗봇 페이지로 이동하는 함수
-  const goToChatbot = () => {
+  const goToChatbot = async () => {
     if (slug) {
       const encodedSlug = encodeURIComponent(slug);
+  
+      // 웹앱에서 실행 중인지 확인하고 푸시 알림 전송
+      if (window.sendPushNotification) {
+        window.sendPushNotification('챗봇 미리보기가 시작되었습니다.');
+      } else {
+        // 일반 웹에서 실행 중일 때는 서버에 직접 푸시 알림 요청
+        try {
+  
+          // 현재 페이지의 도메인을 사용
+          const currentDomain = window.location.origin;
+          const response = await fetch(`${config.apiDomain}/send-push-notification/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              message: '챗봇 미리보기가 시작되었습니다.',
+            }),
+          });
+  
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        } catch (error) {
+          console.error('푸시 알림 전송 실패:', error);
+        }
+      }
+  
       router.push(`/storeIntroductionOwner/${encodedSlug}`);
     }
   };
