@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { X, Image} from 'lucide-react';
 import AddIcon from '@mui/icons-material/Add';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
@@ -40,6 +41,7 @@ const ChangeInfo = ({ initialData }) => {
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 모달 열림/닫힘 상태
   const [showMessageModal, setShowMessageModal] = useState(false); // 메시지 모달 열림/닫힘 상태
   const [message, setMessage] = useState(''); // 일반 메시지 상태
+  const router = useRouter();
 
   // 비즈니스 종류 매핑
   const businessTypeMap = {
@@ -306,13 +308,10 @@ const ChangeInfo = ({ initialData }) => {
     setIsViewMenuModalOpen(false);
   };
 
-  const goToAddFeed = () => {
-    setIsAddFeedModalOpen(true);
+  const goToModifyFeed = () => {
+    router.push('/modifyFeed');
   };
 
-  const closeAddFeedModal = () => {
-    setIsAddFeedModalOpen(false);
-  };
   
   // storeCategory에 따라 메뉴 타이틀 설정
   const menuTitle = storeCategory === 'FOOD'
@@ -410,16 +409,16 @@ const ChangeInfo = ({ initialData }) => {
                 <p className='text-indigo-400 font-medium cursor-pointer text-lg' > {menuTitle} 보기</p>
               </button>
             </div>
-            {/* 
+            
             <div className='flex flex-row'>
-              <Image className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToAddFeed} />
+              <Image className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToModifyFeed} />
               <button
                 className='textAddIcon '
-                onClick={goToAddFeed}>
+                onClick={goToModifyFeed}>
                 <p className='text-indigo-400 font-medium cursor-pointer text-lg' > 피드 추가</p>
               </button>
             </div>
-            */}
+            
           </div>
         </div>
 
@@ -556,7 +555,6 @@ const ChangeInfo = ({ initialData }) => {
         slug={slug}
         menuTitle={menuTitle}
       />
-
 
       {/* 성공 메시지 모달 */}
       <ModalMSG

@@ -8,7 +8,7 @@ import StoreInfo from '../../components/storeInfo';
 import MenuList from '../../components/menuList';
 import ImageList from '../../components/imageList'
 import { fetchStoreData } from '../../fetch/fetchStoreData';
-import { fetchImages } from '../../fetch/fetchStoreImage';
+import { fetchFeedImage } from '../../fetch/fetchStoreFeed';
 import Chatbot from '../chatBotMSG';
 
 const StoreIntroduceOwner = () => {
@@ -16,7 +16,7 @@ const StoreIntroduceOwner = () => {
   const { slug } = router.query;
   const { token } = useAuth();
   const [storeData, setStoreData] = useState(null);
-  const [images, setImgaes] = useState([]);
+  const [images, setImages] = useState([]);;
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
   const [menuPrice, setMenuPrice] = useState(null);
@@ -29,11 +29,11 @@ const StoreIntroduceOwner = () => {
     if (token && slug) {
       setIsOwner(true);
       fetchStoreData(slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading, isOwner);
-      fetchImages(slug, setImgaes);
+      fetchFeedImage({ slug }, token, setImages); // 피드 가져오기
       
     }
   }, [token, slug]);
-
+  
   // Swipeable hook 설정: 좌우 스와이프로 탭 전환
   const handlers = useSwipeable({
     onSwipedLeft: () => {
@@ -97,19 +97,19 @@ const StoreIntroduceOwner = () => {
           >
             {menuTitle}
           </button>
-          {/*
+          
           <button
             className={`p-2 w-1/4 ${activeTab === 'image' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
             style={{ fontFamily: activeTab === 'image' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
             onClick={() => setActiveTab('image')}
           >
             피드
-          </button> */}
+          </button> 
         </div>
         <div className="p-4 font-sans mt-3">
           {activeTab === 'home' && <StoreInfo storeData={storeData.store} />}
           {activeTab === 'menu' && <MenuList menuPrice={menuPrice} storeCategory={storeCategory} menuTitle={menuTitle} />}
-          {/*{activeTab === 'image' && <ImageList images={images} />}*/}
+          {activeTab === 'image' && <ImageList images={images} />}
         </div>
       </div>
       {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}

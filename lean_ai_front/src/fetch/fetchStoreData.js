@@ -6,12 +6,15 @@ export const fetchStoreData = async (slug, token, setStoreData, setMenuPrice, se
 
   try {
     const decodedSlug = decodeURIComponent(slug);
+    // 동적으로 헤더 설정
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }), // token이 있을 경우에만 Authorization 헤더 추가
+    };
+
     const response = await fetch(`${config.apiDomain}/api/storesinfo/`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         slug: decodedSlug,
         type: type,
