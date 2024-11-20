@@ -10,8 +10,8 @@ const ImageList = ({ images }) => {
   return (
     <div className="grid grid-cols-3 gap-1 p-2">
       {images.map((image, index) => {
-        const fullImageUrl = `${mediaUrl}/media/${image}`; // 전체 이미지 URL 생성
-        const fileName = image.split('/').pop(); // 이미지 경로에서 파일 이름 추출
+        const fullImageUrl = `${mediaUrl}/media/${image.path}`; // 전체 이미지 URL 생성
+        const fileName = image.name; // 이미지 경로에서 파일 이름 추출
 
         return (
           <div key={index} className="relative group">
