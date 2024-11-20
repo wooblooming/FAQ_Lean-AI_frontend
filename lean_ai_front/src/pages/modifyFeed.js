@@ -140,7 +140,7 @@ const ModifyFeed = () => {
                         onClick={() => router.back()}
                     />
                     <h1 className="text-xl md:text-3xl font-bold text-center text-indigo-600">
-                        민원 조회 및 관리
+                        피드 이미지 관리
                     </h1>
                 </div>
 
