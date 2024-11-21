@@ -22,7 +22,7 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
             setErrorMessage("부서와 이관 사유를 모두 입력해야 합니다.");
             return;
         }
-
+    
         setLoading(true);
         try {
             const response = await axios.post(
@@ -39,16 +39,30 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
                     },
                 }
             );
-
+    
             console.log('Transfer response:', response.data);
             onTransfer(complaintId, selectedDepartment, reason); // 성공적으로 전송 후 콜백 호출
-            onClose();
+            handleClose(); // 모달 닫기
         } catch (error) {
             console.error('Error transferring complaint:', error);
-            setErrorMessage('민원 이관 중 오류가 발생했습니다.');
+    
+            // 백엔드의 에러 메시지 설정
+            if (error.response && error.response.data) {
+                setErrorMessage(error.response.data.error || '민원 이관 중 오류가 발생했습니다.');
+            } else {
+                setErrorMessage('민원 이관 중 알 수 없는 오류가 발생했습니다.');
+            }
         } finally {
             setLoading(false);
         }
+    };
+    
+
+    const handleClose = () => {
+        setReason(''); // reason 초기화
+        setErrorMessage('');
+        setSelectedDepartment(''); // selectedDepartment 초기화
+        onClose(); // 부모 컴포넌트에서 전달된 닫기 핸들러 호출
     };
 
     return (
@@ -56,13 +70,12 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
             <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-md">
                 <div className="flex justify-between items-center p-4 bg-indigo-600 text-white rounded-t-lg">
                     <h2 className="text-2xl font-bold" style={{ fontFamily: "NanumSquareExtraBold" }}>민원 이관</h2>
-                    <button variant="ghost" onClick={onClose}>
+                    <button variant="ghost" onClick={handleClose}>
                         <X className="h-4 w-4" />
                     </button>
                 </div>
 
                 <div className="p-6 space-y-4" style={{ fontFamily: "NanumSquareBold" }}>
-                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                     <div className="space-y-2">
                         <Label htmlFor="department">이관할 부서</Label>
                         <select
@@ -90,10 +103,12 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
                             className="w-full p-2 border rounded"
                         />
                     </div>
+
+                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                 </div>
 
                 <div className="bg-gray-100 p-4 flex justify-end space-x-2 rounded-b-lg">
-                    <Button variant="outline" onClick={onClose}>취소</Button>
+                    <Button variant="outline" onClick={handleClose}>취소</Button>
                     <Button
                         onClick={handleTransfer}
                         disabled={loading || !selectedDepartment || !reason}

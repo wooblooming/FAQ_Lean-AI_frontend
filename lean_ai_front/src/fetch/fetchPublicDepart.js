@@ -17,7 +17,7 @@ export const fetchPublicDepartment = async ({slug, storeID}, token, setDepartmen
             headers,
         });
 
-        console.log("Fetched department data:", response.data);
+        //console.log("Fetched department data:", response.data);
         setDepartment(response.data); // 배열로 업데이트
     } catch (error) {
         console.error('부서 목록을 불러오는 중 오류 발생:', error);

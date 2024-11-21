@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { X, AlertCircle } from 'lucide-react';
@@ -6,41 +7,72 @@ import { Button } from "@/components/ui/button";
 import { fetchPublicDepartment } from '../fetch/fetchPublicDepart';
 import TransferDepartmentModal from './transferDepartModal';
 import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import config from '../../config';
 
 
-const ComplaintDetailModal = ({ show, onClose, complaint, newStatus, setNewStatus, handleStatusChange }) => {
+const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange  }) => {
   const { token } = useAuth();
   const { storeID } = useStore();
   const [department, setDepartment] = useState('');
+  const [newStatus, setNewStatus] = useState('');
   const [transferDepartModal, setTransferDepartModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (storeID && token) {
-      fetchPublicDepartment({storeID}, token, setDepartment); // 피드 가져오기
+      fetchPublicDepartment({ storeID }, token, setDepartment); // 피드 가져오기
     }
   }, [storeID, token]);
 
-  useEffect(() => {
-    if (department) {
-      console.log("department : ",department)
+  const handleStatusChange = async () => {
+    if (!complaint) return;
+  
+    if (complaint.status === newStatus) {
+      setErrorMessage("현재 상태와 동일한 상태로 변경할 수 없습니다.");
+      return;
     }
-  }, [department]);
+  
+    try {
+      await axios.patch(
+        `${config.apiDomain}/public/complaints/${complaint.complaint_id}/status/`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setMessage("상태가 성공적으로 업데이트되었습니다.");
+      setShowMessageModal(true);
 
-
+       // 상태 변경 성공 시 부모 컴포넌트로 콜백 호출
+       if (onStatusChange) {
+        onStatusChange();
+      }
+      
+    } catch (error) {
+      console.error("Error during status update:", error);
+  
+      // 서버에서 반환된 오류 메시지가 있는 경우 이를 표시
+      const serverMessage = error.response?.data?.message || error.response?.data?.error;
+      setErrorMessage(serverMessage || "상태 업데이트 중 오류가 발생했습니다.");
+    }
+  };
+  
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
     setMessage('');
   };
 
-  const handleErrorModalClose = () => {
-    setShowErrorModal(false);
-    setErrorMessage('');
+  const handleClose = () => {
+    setNewStatus(complaint.status);
+    setErrorMessage(''); // 에러 메시지 초기화
+    onClose(); // 부모 컴포넌트로부터 전달된 닫기 함수 호출
   };
+  
 
   const handleTransferModal = () => {
     setTransferDepartModal(true);
@@ -51,8 +83,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, newStatus, setNewStatu
   };
 
   const handleTransfer = () => {
-    console.log(`Transferring complaint ID: ${complaint.complaint_id}`);
-    // 전달 로직 추가 필요
+    //console.log(`Transferring complaint ID: ${complaint.complaint_id}`);
     setTransferDepartModal(false); // 성공 시 모달 닫기
   };
 
@@ -79,7 +110,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, newStatus, setNewStatu
           </div>
           <X
             className="absolute top-4 right-4 h-6 w-6 bg-indigo-500 rounded-full text-white p-1 cursor-pointer"
-            onClick={onClose}
+            onClick={handleClose}
           />
         </div>
         <div className="space-y-4" style={{ fontFamily: "NanumSquareBold" }}>
@@ -110,7 +141,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, newStatus, setNewStatu
                 <Button
                   className="px-3"
                   size="sm"
-                  onClick={() => handleStatusChange(complaint.complaint_id, newStatus)}
+                  onClick={handleStatusChange}
                   style={{ fontFamily: "NanumSquareBold" }}
                 >
                   변경
@@ -122,8 +153,12 @@ const ComplaintDetailModal = ({ show, onClose, complaint, newStatus, setNewStatu
               <span className="col-span-3" style={{ fontFamily: "NanumSquare" }}>{complaint.content}</span>
             </div>
 
-            {/* 새로운 부서 이동 디자인 */}
-            <div className="mt-6 relative">
+            <div className='flex mt-3'>
+              {errorMessage && <p className="text-red-500 ">{errorMessage}</p>}
+            </div>
+
+            {/* 새로운 부서 이동 */}
+            <div className="mt-3 relative">
               <div className="absolute -left-6 top-0 bottom-0 w-2 bg-indigo-400"></div>
               <div className="bg-indigo-50 p-4 rounded-r-lg border-y border-r border-indigo-200">
                 <div className="flex items-center justify-start">
@@ -163,12 +198,6 @@ const ComplaintDetailModal = ({ show, onClose, complaint, newStatus, setNewStatu
           {message}
         </p>
       </ModalMSG>
-
-      <ModalErrorMSG show={showErrorModal} onClose={handleErrorModalClose} title="Error">
-        <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-      </ModalErrorMSG>
-
-
     </div>
   );
 };
