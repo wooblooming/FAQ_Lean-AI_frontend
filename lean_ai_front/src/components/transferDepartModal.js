@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useAuth } from '../contexts/authContext';
 import axios from 'axios';
+import ModalMSG from './modalMSG';
 import config from '../../config';
 
 export default function TransferDepartmentModal({ show, onClose, depart, onTransfer, complaintId }) {
@@ -12,6 +13,8 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
     const [reason, setReason] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [message, setMessage] = useState('');
 
     if (!show) return null;
 
@@ -22,7 +25,7 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
             setErrorMessage("부서와 이관 사유를 모두 입력해야 합니다.");
             return;
         }
-    
+
         setLoading(true);
         try {
             const response = await axios.post(
@@ -39,13 +42,14 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
                     },
                 }
             );
-    
-            console.log('Transfer response:', response.data);
+
+            //console.log('Transfer response:', response.data);
             onTransfer(complaintId, selectedDepartment, reason); // 성공적으로 전송 후 콜백 호출
-            handleClose(); // 모달 닫기
+            setMessage('민원이 성공적으로 이관되었습니다.');
+            setShowMessageModal(true);
         } catch (error) {
             console.error('Error transferring complaint:', error);
-    
+
             // 백엔드의 에러 메시지 설정
             if (error.response && error.response.data) {
                 setErrorMessage(error.response.data.error || '민원 이관 중 오류가 발생했습니다.');
@@ -56,7 +60,11 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
             setLoading(false);
         }
     };
-    
+
+    const handleMessageModalClose = () => {
+        setShowMessageModal(false);
+        setMessage('');
+    };
 
     const handleClose = () => {
         setReason(''); // reason 초기화
@@ -117,6 +125,16 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
                     </Button>
                 </div>
             </div>
+
+            <ModalMSG
+                show={showMessageModal}
+                onClose={handleMessageModalClose}
+                title="Success"
+            >
+                <p style={{ whiteSpace: 'pre-line' }}>
+                    {message}
+                </p>
+            </ModalMSG>
         </div>
     );
 }

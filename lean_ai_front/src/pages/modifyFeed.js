@@ -33,10 +33,20 @@ const ModifyFeed = () => {
         setErrorMessage('');
     };
 
+    const fetchImages = async () => {
+        setLoading(true);
+        try {
+            await fetchFeedImage({ storeID }, token, setImages);
+        } catch (error) {
+            console.error('이미지를 다시 불러오는 중 오류 발생:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (storeID) {
-            //console.log("modify feed store id:", storeID);
-            fetchFeedImage({ storeID }, token, setImages); // 피드 가져오기
+            fetchImages();
         }
     }, [storeID]);
 
@@ -52,19 +62,11 @@ const ModifyFeed = () => {
                 },
             });
 
-           //console.log('업로드 성공:', response.data);
-
-            setImages((prev) => [
-                ...prev,
-                {
-                    id: response.data.id, // 백엔드에서 생성된 고유 ID
-                    name: formData.get('original_name'), // 업로드 전에 저장한 원본 파일 이름 사용
-                    path: response.data.file_path, // 상대 경로
-                },
-            ]);
-
             setMessage('이미지 업로드 성공');
             setShowMessageModal(true);
+
+            // 데이터 새로 고침
+            await fetchImages();
         } catch (error) {
             setErrorMessage('이미지 업로드에 실패했습니다.');
             setShowErrorModal(true);
@@ -74,10 +76,8 @@ const ModifyFeed = () => {
     };
 
     const handleDelete = async (id, name, ext) => {
-        // name과 id를 "_"로 결합
         const full_id = `${name}_${id}${ext}`;
-        //console.log("full_id: ", full_id);
-        
+
         setLoading(true);
         try {
             await axios.delete(`${config.apiDomain}/api/feed-delete/`, {
@@ -85,12 +85,14 @@ const ModifyFeed = () => {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                data: { id: full_id, store_id: storeID }, // 삭제할 이미지 ID와 store_id 전달
+                data: { id: full_id, store_id: storeID },
             });
 
-            setImages((prev) => prev.filter((img) => img.id !== id)); // 삭제된 이미지 제거
             setMessage('이미지 삭제 성공');
             setShowMessageModal(true);
+
+            // 데이터 새로 고침
+            await fetchImages();
         } catch (error) {
             setErrorMessage('이미지 삭제에 실패했습니다.');
             setShowErrorModal(true);
@@ -100,15 +102,13 @@ const ModifyFeed = () => {
     };
 
     const handleRename = async (id, oldName, newName, ext) => {
-        // name과 id를 "_"로 결합
         const full_id = `${oldName}_${id}${ext}`;
-        //console.log("full_id: ", full_id);
 
         setLoading(true);
         try {
             await axios.put(
                 `${config.apiDomain}/api/feed-rename/`,
-                { id:full_id, name: newName, store_id: storeID },
+                { id: full_id, name: newName, store_id: storeID },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -116,13 +116,12 @@ const ModifyFeed = () => {
                     },
                 }
             );
-            setImages((prev) =>
-                prev.map((img) =>
-                    img.id === id ? { ...img, name: newName } : img
-                )
-            );
+
             setMessage('이미지 이름 변경 성공');
             setShowMessageModal(true);
+
+            // 데이터 새로 고침
+            await fetchImages();
         } catch (error) {
             setErrorMessage('이미지 이름 변경에 실패했습니다.');
             setShowErrorModal(true);
