@@ -150,6 +150,7 @@ export default function Chatbot({ agentId }) {
                         placeholder-text="자유롭게 질문해주세요"
                         bot-actor-image="/chatbot.png"
                         allow-fullscreen="always"
+                        bot-writing-text="응답을 생성중입니다. 잠시만 기다려주세요😊"
                     ></df-messenger-chat-bubble>
                 </df-messenger>
             )}
