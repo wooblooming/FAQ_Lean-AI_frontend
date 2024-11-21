@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ModalErrorMSG from '../components/modalErrorMSG';
 
 const FeedEdit = ({ images, onDelete, onRename }) => {
-    const [newName, setNewName] = useState('');
+    const [newNames, setNewNames] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
 
@@ -14,7 +14,13 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
         setErrorMessage('');
     };
 
+    const handleInputChange = (id, value) => {
+        setNewNames((prev) => ({ ...prev, [id]: value })); // id별로 입력값 저장
+    };
+
     const handleRename = (id) => {
+        const newName = newNames[id];
+
         if (!newName) {
             setErrorMessage('새 이름을 입력하세요.');
             setShowErrorModal(true);
@@ -37,8 +43,8 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
             return;
         }
 
-        onRename(id, oldName, newName, ext); // 이전 이름과 새 이름, 확장자 전달
-        setNewName('');
+        onRename(id, oldName, newName, ext);
+        setNewNames((prev) => ({ ...prev, [id]: '' })); // 입력값 초기화
     };
 
     const handleDelete = (id) => {
@@ -53,7 +59,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
         const ext = image.ext; // 확장자
 
         onDelete(id, name, ext); // 이미지 파일 이름과 확장자 전달
-        setNewName('');
+        setNewNames('');
     };
 
     return (
@@ -76,8 +82,8 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
                         <div className="flex space-x-4">
                             <input
                                 type="text"
-                                value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
+                                value={newNames[image.id] || ''} // id별로 상태 관리
+                                onChange={(e) => handleInputChange(image.id, e.target.value)}
                                 placeholder="새 파일 이름 입력"
                                 className="p-2 border rounded-md"
                             />
