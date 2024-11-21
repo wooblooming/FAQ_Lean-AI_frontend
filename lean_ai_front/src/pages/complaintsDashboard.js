@@ -22,7 +22,6 @@ const ComplaintsDashboard = () => {
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [message, setMessage] = useState('');
     const [selectedComplaint, setSelectedComplaint] = useState(null);
-    const [newStatus, setNewStatus] = useState('');
     const [selectedTab, setSelectedTab] = useState('전체보기'); // 초기 탭 설정
 
     const handleMessageModalClose = () => {

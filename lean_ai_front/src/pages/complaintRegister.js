@@ -44,8 +44,8 @@ const RegisterComplaint = () => {
             const departments = Array.isArray(response.data.departments) ? response.data.departments : [];
             setCategories(departments); // 배열로 업데이트
         } catch (error) {
-            console.error('카테고리 목록을 불러오는 중 오류 발생:', error);
-            setErrorMessage('카테고리 목록을 불러오는 데 실패했습니다.');
+            console.error('부서 목록을 불러오는 중 오류 발생:', error);
+            setErrorMessage('부서 목록을 불러오는 데 실패했습니다.');
             setShowErrorMessageModal(true);
         }
     };
@@ -57,6 +57,8 @@ const RegisterComplaint = () => {
     const handleMessageModalClose = () => {
         setShowMessageModal(false);
         setMessage('');
+        const encodedSlug = encodeURIComponent(slug);
+        router.push(`/publicIntroduction/${encodedSlug}`);
     };
 
     // 에러 메시지 모달 닫기 & 초기화
@@ -69,7 +71,7 @@ const RegisterComplaint = () => {
     const handleSubmit = async () => {
 
         // 입력 필드 유효성 검사
-        if (!name || !birth_date || !phone || !email || !title || !content ) {
+        if (!name || !birth_date || !phone || !email || !title || !content) {
             setErrorMessage('모든 필드를 입력해 주세요.');
             setShowErrorMessageModal(true);
             return;
@@ -107,18 +109,15 @@ const RegisterComplaint = () => {
             //console.log("response : ", response);
 
             if (response.data.status === 'success') {
-                const encodedSlug = encodeURIComponent(slug);
                 setMessage(response.data.message);
                 setShowMessageModal(true);
-                router.push(`/publicIntroduction/${encodedSlug}`);
-
             } else {
-                setErrorMessage(response.data.message || '접수에 실패했습니다.');  // 백엔드에서 받은 에러 메시지 사용
+                setErrorMessage('접수에 실패했습니다.');  // 백엔드에서 받은 에러 메시지 사용
                 setShowErrorMessageModal(true);
             }
         } catch (error) {
             console.error(error);
-            setErrorMessage('서버 오류가 발생했습니다.');
+            setErrorMessage(error.response.data.errors || '서버 오류가 발생했습니다.');
             setShowErrorMessageModal(true);
         }
     };
