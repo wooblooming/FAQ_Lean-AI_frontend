@@ -41,12 +41,6 @@ const ComplaintsDashboard = () => {
         }
     }, [storeID, token]);
 
-    useEffect(() => {
-        if (complaints) {
-            console.log(complaints);
-        }
-    }, [complaints]);
-
     const postComplaints = async () => {
         try {
             const response = await axios.post(
@@ -65,31 +59,7 @@ const ComplaintsDashboard = () => {
             setShowErrorModal(true);
         }
     };
-
-    const handleStatusChange = async (complaintId, newStatus) => {
-        try {
-            await axios.patch(
-                `${config.apiDomain}/public/complaints/${complaintId}/status/`,
-                { status: newStatus },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setComplaints((prevComplaints) =>
-                prevComplaints.map((complaint) =>
-                    complaint.id === complaintId ? { ...complaint, status: newStatus } : complaint
-                )
-            );
-            setMessage("상태가 성공적으로 업데이트되었습니다.");
-            setShowMessageModal(true);
-        } catch (error) {
-            console.error("상태 업데이트 중 오류가 발생했습니다:", error);
-            setErrorMessage("상태 업데이트 중 오류가 발생했습니다.");
-            setShowErrorModal(true);
-        }
-    };
+    
 
     return (
         <div className="min-h-screen p-6 font-sans bg-violet-50">
@@ -175,9 +145,7 @@ const ComplaintsDashboard = () => {
                 show={!!selectedComplaint}
                 onClose={() => setSelectedComplaint(null)}
                 complaint={selectedComplaint}
-                newStatus={newStatus}
-                setNewStatus={setNewStatus}
-                handleStatusChange={handleStatusChange}
+                onStatusChange={postComplaints} // 상태 변경 후 데이터 새로 고침
             />
 
             {/* 성공 메시지 모달 */}
