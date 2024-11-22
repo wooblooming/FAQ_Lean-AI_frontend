@@ -44,6 +44,14 @@ const Login = () => {
             // 토큰 저장 후 확인
             await saveToken(access);
             //console.log('Token saved:', access);
+
+            // 웹뷰에 메시지 전송
+            if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'LOGIN',
+                    token: access
+                }));
+            }
             
             // storeID 설정
             const id = isPublicOn ? public_id : store_id;
