@@ -41,10 +41,11 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
                 }
             );
     
-            setMessage('민원이 성공적으로 이관되었습니다.');
-            setShowMessageModal(true);
+            //setMessage('민원이 성공적으로 이관되었습니다.');
+            //setShowMessageModal(true);
     
             onTransfer(); // 부모 컴포넌트에서 전달받은 콜백 호출 (ComplaintDetailModal 닫기 포함)
+            handleClose();
         } catch (error) {
             console.error('Error transferring complaint:', error);
     

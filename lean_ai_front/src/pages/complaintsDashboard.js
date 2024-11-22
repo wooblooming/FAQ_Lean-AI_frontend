@@ -58,7 +58,7 @@ const ComplaintsDashboard = () => {
             setShowErrorModal(true);
         }
     };
-    
+
 
     return (
         <div className="min-h-screen p-6 font-sans bg-violet-50">
@@ -142,7 +142,10 @@ const ComplaintsDashboard = () => {
             {/* 민원 상세 모달 */}
             <ComplaintDetailModal
                 show={!!selectedComplaint}
-                onClose={() => setSelectedComplaint(null)}
+                onClose={() => {
+                    setSelectedComplaint(null); // ComplaintDetailModal 닫기
+                    postComplaints(); // 데이터를 다시 로드
+                }}
                 complaint={selectedComplaint}
                 onStatusChange={postComplaints} // 상태 변경 후 데이터 새로 고침
             />

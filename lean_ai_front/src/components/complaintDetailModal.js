@@ -2,53 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
-import { X, AlertCircle, CornerDownRight } from 'lucide-react';
+import { X } from 'lucide-react';
 import { fetchPublicDepartment } from '../fetch/fetchPublicDepart';
-import TransferDepartmentModal from './transferDepartModal';
+import ComplaintDetailTabs from './complaintDetailTabs';
+import ComplaintDetailContent from './complaintDetailContent';
 import ModalMSG from '../components/modalMSG';
 import config from '../../config';
 
+
 const TabButton = ({ active, onClick, children }) => (
   <button
-    className={`px-4 py-2 font-semibold ${active ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+    className={`px-4 py-2 text-lg ${active ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'
       }`}
     onClick={onClick}
-  >
-    {children}
-  </button>
-);
-
-const Input = ({ label, value, readOnly = false }) => (
-  <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-    <input
-      type="text"
-      value={value}
-      readOnly={readOnly}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-    />
-  </div>
-);
-
-const Textarea = ({ label, value, placeholder, readOnly = false }) => (
-  <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-    <textarea
-      value={value}
-      placeholder={placeholder}
-      readOnly={readOnly}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
-    />
-  </div>
-);
-
-const Button = ({ onClick, variant = 'primary', children }) => (
-  <button
-    onClick={onClick}
-    className={`px-4 py-2 rounded-md font-semibold ${variant === 'primary'
-        ? 'bg-blue-600 text-white hover:bg-blue-700'
-        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-      }`}
+    style={{ fontFamily: "NanumSquareExtraBold" }}
   >
     {children}
   </button>
@@ -57,14 +24,17 @@ const Button = ({ onClick, variant = 'primary', children }) => (
 const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
   const { token } = useAuth();
   const { storeID } = useStore();
+  const [activeTab, setActiveTab] = useState('details');
   const [department, setDepartment] = useState('');
   const [newStatus, setNewStatus] = useState();
   const [transferDepartModal, setTransferDepartModal] = useState(false);
-  const [activeTab, setActiveTab] = useState('details');
-  const [showAnswer, setShowAnswer] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    console.log("complaint : ", complaint);
+  })
 
   useEffect(() => {
     if (storeID && token) {
@@ -115,206 +85,104 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
     }
   };
 
+  const handleAnswer = async () => {
+    if (!complaint) return;
+
+    try {
+      // 백엔드로 답변 내용 및 전화번호 전송
+      await axios.post(
+        `${config.apiDomain}/public/complaints-answer/`,
+        {
+          complaint_id: complaint.complaint_id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // 성공 메시지
+      setMessage("답변이 성공적으로 전송되었습니다.");
+      setShowMessageModal(true);
+    } catch (error) {
+      console.error("답변 전송 중 오류:", error);
+      const serverMessage = error.response?.data?.message || error.response?.data?.error;
+      setErrorMessage(serverMessage || "답변 전송 중 오류가 발생했습니다.");
+    }
+  };
+
+
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
     setMessage('');
+    handleClose();
   };
 
   const handleClose = () => {
-    setNewStatus(complaint.status);
+    setNewStatus(complaint?.status || ''); // 상태 초기화
     setErrorMessage(''); // 에러 메시지 초기화
-    onClose(); // 부모 컴포넌트로부터 전달된 닫기 함수 호출
+    onClose(); // 부모 컴포넌트의 onClose 호출 (데이터 다시 로드 포함)
   };
 
-
-  const handleTransferModal = () => {
-    setTransferDepartModal(true);
-  };
-
-  const handleTransferClose = () => {
-    setTransferDepartModal(false); const handleStatusChange = async () => {
-      if (!complaint) return;
-
-      if (complaint.status === newStatus) {
-        setErrorMessage("현재 상태와 동일한 상태로 변경할 수 없습니다.");
-        return;
-      }
-
-      try {
-        await axios.patch(
-          `${config.apiDomain}/public/complaints/${complaint.complaint_id}/status/`,
-          { status: newStatus },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setMessage("상태가 성공적으로 업데이트되었습니다.");
-        setShowMessageModal(true);
-
-        // 상태 변경 성공 시 부모 컴포넌트로 콜백 호출
-        if (onStatusChange) {
-          onStatusChange();
-        }
-
-      } catch (error) {
-        console.error("Error during status update:", error);
-
-        // 서버에서 반환된 오류 메시지가 있는 경우 이를 표시
-        const serverMessage = error.response?.data?.message || error.response?.data?.error;
-        setErrorMessage(serverMessage || "상태 업데이트 중 오류가 발생했습니다.");
-      }
-    };
-
-    const handleMessageModalClose = () => {
-      setShowMessageModal(false);
-      setMessage('');
-    };
-
-    const handleClose = () => {
-      setNewStatus(complaint.status);
-      setErrorMessage(''); // 에러 메시지 초기화
-      onClose(); // 부모 컴포넌트로부터 전달된 닫기 함수 호출
-    };
-
-
-    const handleTransferModal = () => {
-      setTransferDepartModal(true);
-    };
-
-    const handleTransferClose = () => {
-      setTransferDepartModal(false);
-    };
-
-    const handleTransfer = () => {
-      //console.log(`Transferring complaint ID: ${complaint.complaint_id}`);
-      setTransferDepartModal(false); // 성공 시 모달 닫기
-    };
-
-    if (!show || !complaint) return null;
-
-    const formatAuthorName = (fullName) => {
-      if (!fullName || fullName.length === 0) {
-        return '';
-      }
-      const firstCharacter = fullName[0];
-      const remainingCharacters = 'O'.repeat(fullName.length - 1);
-      return firstCharacter + remainingCharacters;
-    };
-  };
 
   const handleTransfer = () => {
     //console.log(`Transferring complaint ID: ${complaint.complaint_id}`);
-    setTransferDepartModal(false); // 성공 시 모달 닫기
+    setMessage('민원이 성공적으로 이관되었습니다.');
+    setShowMessageModal(true);
+    setTransferDepartModal(false); // TransferDepartmentModal 닫기
   };
 
   if (!show || !complaint) return null;
 
-  const formatAuthorName = (fullName) => {
-    if (!fullName || fullName.length === 0) {
-      return '';
-    }
-    const firstCharacter = fullName[0];
-    const remainingCharacters = 'O'.repeat(fullName.length - 1);
-    return firstCharacter + remainingCharacters;
-  };
-
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'details':
-        return (
-          <div className="space-y-4" style={{ fontFamily: "NanumSquare" }}>
-            <h2 className="text-2xl font-bold" style={{ fontFamily: "NanumSquareExtraBold" }}>{complaint.title}</h2>
-            <div className="grid grid-cols-2 gap-2 ">
-              <div className="">
-                <label className="block text-lg font-medium text-gray-700 " style={{ fontFamily: "NanumSquareBold" }}>접수 번호</label>
-                <div className="px-3 py-2 ">{complaint.complaint_number}</div>
-              </div>
-              <div className="">
-                <label className="block text-lg font-medium text-gray-700 " style={{ fontFamily: "NanumSquareBold" }}>작성자</label>
-                <div className="px-3 py-2   ">{formatAuthorName(complaint.name)}</div>
-              </div>
-              <div className="">
-                <label className="block text-lg font-medium text-gray-700 " style={{ fontFamily: "NanumSquareBold" }}>접수일</label>
-                <div className="px-3 py-2   ">
-                  {new Date(complaint.created_at).toISOString().replace('T', ' ').substring(0, 16)}
-                </div>
-              </div>
-            </div>
-            <div className="">
-              <label className="block text-lg font-medium text-gray-700 " style={{ fontFamily: "NanumSquareBold" }}>내용</label>
-              <div className="px-3 py-2 min-h-[50px]">{complaint.content}</div>
-            </div>
-          </div>
-        );
-        
-      case 'response':
-        return (
-          <div className="space-y-4">
-            <Textarea label="답변" placeholder="답변을 입력해주세요" />
-            <div className="flex justify-between">
-              <Button variant="secondary" onClick={() => setStatus('처리중')}>
-                임시 저장
-              </Button>
-              <Button onClick={() => setStatus('완료')}>답변 완료</Button>
-            </div>
-          </div>
-        );
-      case 'transfer':
-        return (
-          <div className="space-y-4">
-            <Input label="이관 부서" placeholder="이관할 부서를 입력하세요" />
-            <Textarea label="이관 사유" placeholder="이관 사유를 입력하세요" />
-            <Button onClick={() => alert('민원이 이관되었습니다.')}>민원 이관하기</Button>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
-    <div className="max-w-3xl mx-auto mt-10 bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">민원 상세</h2>
-          <span className={`px-2 py-1 rounded-full text-sm font-semibold ${status === '접수' ? 'bg-yellow-100 text-yellow-800' :
-              status === '처리중' ? 'bg-blue-100 text-blue-800' :
-                'bg-green-100 text-green-800'
-            }`}>
-            {status}
-          </span>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center px-2 z-50">
+      <div className="relative bg-white rounded-lg shadow-lg w-full md:w-1/2 p-6">
+        <div className="flex flex-col space-y-4 justify-start items-start mt-5 md:mt-0 mb-4">
+          <div className="flex flex-col space-y-1">
+            <h2 className="text-xl md:text-2xl font-bold" style={{ fontFamily: "NanumSquareExtraBold" }}>{complaint.title}</h2>
+            <p className="text-sm text-gray-600 px-2" style={{ fontFamily: "NanumSquareBold" }}>
+              접수 번호 : {complaint.complaint_number}
+            </p>
+          </div>
+          <X
+            className="absolute top-4 right-4 h-6 w-6 bg-indigo-500 rounded-full text-white p-1 cursor-pointer"
+            onClick={handleClose}
+          />
+
+          <ComplaintDetailTabs activeTab={activeTab} setActiveTab={setActiveTab}>
+            <TabButton tabKey="details">상세 정보</TabButton>
+            <TabButton tabKey="response">답변</TabButton>
+            <TabButton tabKey="transfer">이관</TabButton>
+          </ComplaintDetailTabs>
+
+          <ComplaintDetailContent
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            complaint={complaint}
+            department={department}
+            newStatus={newStatus}
+            setNewStatus={setNewStatus}
+            handleStatusChange={handleStatusChange}
+            handleAnswer={handleAnswer}
+            handleTransfer={handleTransfer}
+            errorMessage={errorMessage}
+          />
+
         </div>
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex">
-            <TabButton
-              active={activeTab === 'details'}
-              onClick={() => setActiveTab('details')}
-            >
-              상세 정보
-            </TabButton>
-            <TabButton
-              active={activeTab === 'response'}
-              onClick={() => setActiveTab('response')}
-            >
-              답변
-            </TabButton>
-            <TabButton
-              active={activeTab === 'transfer'}
-              onClick={() => setActiveTab('transfer')}
-            >
-              이관
-            </TabButton>
-          </nav>
-        </div>
-        {renderTabContent()}
       </div>
+
+      <ModalMSG
+        show={showMessageModal}
+        onClose={handleMessageModalClose}
+        title="Success"
+      >
+        <p style={{ whiteSpace: 'pre-line' }}>
+          {message}
+        </p>
+      </ModalMSG>
     </div>
   );
-}
-
+};
 
 export default ComplaintDetailModal;
