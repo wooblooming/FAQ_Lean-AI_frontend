@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import CreatableSelect from 'react-select/creatable';
+import makeAnimated from 'react-select/animated';
+import { useAuth } from '../contexts/authContext';
+import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import VerificationModal from '../components/verificationModal';
+import { fetchPublicDepartment } from '../fetch/fetchPublicDepart';
+import styles from '../styles/selectStyles.module.css';
 import config from '../../config';
 
 const UserProfileForm = ({
@@ -12,6 +19,10 @@ const UserProfileForm = ({
   phoneNumber, setPhoneNumber, // 전화번호와 전화번호 변경 함수
   department, setDepartment,
 }) => {
+  const { isPublicOn } = usePublic();
+  const { token } = useAuth();
+  const { storeID } = useStore();
+
   // State 관리
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
   const [message, setMessage] = useState(''); // 일반 메시지 내용
@@ -19,9 +30,87 @@ const UserProfileForm = ({
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달의 열림/닫힘 상태
   const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
   const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
-  const { isPublicOn } = usePublic();
+  const [editing, setEditing] = useState(false); // 수정 상태
+  const [departOptions, setDepartOptions] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
 
   const fetchUrl = isPublicOn ? `${config.apiDomain}/public` : `${config.apiDomain}/api`;
+
+  useEffect(() => {
+    if (editing && storeID && token) {
+      fetchPublicDepartment({ storeID }, token, (response) => {
+        const departmentList = response?.departments || [];
+        const formattedOptions = departmentList.map((dept) => ({
+          label: dept,
+          value: dept,
+        }));
+        setDepartOptions(formattedOptions);
+      });
+    }
+  }, [editing, storeID, token]);
+
+  const handleEditToggle = async () => {
+    if (editing && selectedDepartment) {
+      try {
+        const response = await axios.put(
+          `${config.apiDomain}/public/department-update/`,
+          {
+            department_name: selectedDepartment.value,
+            public_id: storeID,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        // 요청 성공 시 처리
+        setDepartment(selectedDepartment.value); // department 상태 업데이트
+        setMessage(response.data.message || "부서가 성공적으로 변경되었습니다.");
+        setShowMessageModal(true);
+      } catch (error) {
+        // 요청 실패 시 에러 처리
+        const errorMsg =
+          error.response?.data?.message || error.message || "부서 변경 중 문제가 발생했습니다.";
+        setErrorMessage(errorMsg);
+        setShowErrorMessageModal(true);
+      }
+    }
+  
+    setEditing((prev) => !prev); // Toggle editing mode
+  };
+  
+  
+
+  const handleDepartmentChange = (selectedOption) => {
+    setSelectedDepartment(selectedOption);
+  };
+
+  const handleCreateDepartment = async (newDepartment) => {
+    try {
+      const response = await axios.post(
+        `${config.apiDomain}/public/department-create/`,
+        { department_name: newDepartment, public_id: storeID },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const newOption = {
+        label: response.data.department_name,
+        value: response.data.department_name,
+      };
+      setDepartOptions((prev) => [...prev, newOption]);
+      setSelectedDepartment(newOption);
+    } catch (error) {
+      console.error('부서 추가 중 오류 발생:', error);
+    }
+  };
 
   // 일반 메시지 모달 닫기 & 초기화
   const handleMessageModalClose = () => {
@@ -113,6 +202,47 @@ const UserProfileForm = ({
     setVerificationCode(''); // 인증번호 초기화
   };
 
+  // CreatableSelect 디자인
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      borderBottom: '1.5px solid #6366f1',
+      borderTop: 'none',
+      borderLeft: 'none',
+      borderRight: 'none',
+      borderRadius: 0,
+      boxShadow: 'none',
+      className: styles.selectControl, // CSS 모듈 클래스 추가
+    }),
+    valueContainer: (provided) => ({
+      ...provided,
+      className: styles.valueContainer,
+    }),
+    input: (provided) => ({
+      ...provided,
+      className: styles.input,
+    }),
+    indicatorSeparator: () => ({
+      display: 'none',
+      className: styles.indicatorSeparator,
+    }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      className: styles.dropdownIndicator,
+    }),
+    menu: (provided) => ({
+      ...provided,
+      className: styles.menu,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      className: `
+        ${state.isSelected ? styles.optionSelected : ''} 
+        ${state.isFocused ? styles.optionFocused : styles.option}
+      `,
+    }),
+  };
+  
   return (
     <div className="flex flex-col items-start py-4 font-sans space-y-2">
       <div className='font-semibold text-lg' style={{ fontFamily: "NanumSquareExtraBold" }}>사용자 정보</div>
@@ -198,21 +328,38 @@ const UserProfileForm = ({
 
         {/* 소속부서 입력 필드 */}
         {isPublicOn &&
-          <div className='flex flex-col'>
-            <div className='text-sm text-gray-400 text-left' style={{ fontFamily: "NanumSquare" }}>소속 부서</div>
-            <input
-              type="text"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              style={{
-                border: 'none',
-                borderBottom: '1.5px solid #6366f1',
-                outline: 'none',
-                padding: '2px 0',
-                width: '100%',
-              }}
-            />
+          <div className="flex flex-col">
+            <div className='text-sm text-gray-400 mr-1.5 text-left' style={{ fontFamily: "NanumSquare" }}>소속 부서</div>
+            <div className="flex items-center space-x-2"> {/* 부서 정보와 버튼을 같은 줄에 배치 */}
+              {editing ? (
+                <CreatableSelect
+                  components={makeAnimated()}
+                  value={selectedDepartment}
+                  onChange={handleDepartmentChange}
+                  options={departOptions}
+                  isClearable
+                  placeholder="부서를 선택해주세요"
+                  onCreateOption={handleCreateDepartment}
+                  formatCreateLabel={(inputValue) => `"${inputValue}" 부서 추가`}
+                  className="flex-grow"
+                  styles={customStyles}
+                />
+              ) : (
+                <div className='text-left flex-grow' style={{ fontFamily: "NanumSquare" }}>
+                  {department || "부서 정보 없음"}
+                </div>
+              )}
+              {/* 수정 버튼 */}
+              <button
+                className="text-center bg-indigo-500 text-white rounded-lg px-4 py-1.5"
+                onClick={handleEditToggle}
+                style={{ fontFamily: "NanumSquareBold" }}
+              >
+                {editing ? "완료" : "부서 수정"}
+              </button>
+            </div>
           </div>
+
         }
       </div>
 
