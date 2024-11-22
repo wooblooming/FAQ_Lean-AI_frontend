@@ -26,15 +26,12 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
   const { storeID } = useStore();
   const [activeTab, setActiveTab] = useState('details');
   const [department, setDepartment] = useState('');
-  const [newStatus, setNewStatus] = useState();
+  const [newStatus, setNewStatus] = useState('');
+  const [answer, setAnswer] = useState('');
   const [transferDepartModal, setTransferDepartModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    console.log("complaint : ", complaint);
-  })
 
   useEffect(() => {
     if (storeID && token) {
@@ -94,6 +91,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
         `${config.apiDomain}/public/complaints-answer/`,
         {
           complaint_id: complaint.complaint_id,
+          answer
         },
         {
           headers: {
@@ -105,6 +103,8 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
       // 성공 메시지
       setMessage("답변이 성공적으로 전송되었습니다.");
       setShowMessageModal(true);
+      setAnswer('');
+      setActiveTab('details');
     } catch (error) {
       console.error("답변 전송 중 오류:", error);
       const serverMessage = error.response?.data?.message || error.response?.data?.error;
@@ -165,6 +165,8 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
             setNewStatus={setNewStatus}
             handleStatusChange={handleStatusChange}
             handleAnswer={handleAnswer}
+            answer={answer} // 답변 내용 상태 전달
+            setAnswer={setAnswer} // 답변 내용 상태 업데이트 함수 전달
             handleTransfer={handleTransfer}
             errorMessage={errorMessage}
           />
