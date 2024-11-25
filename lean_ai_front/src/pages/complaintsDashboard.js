@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
+import { fetchPublicComplaint } from '../fetch/fetchPublicComplaint';
 import ComplaintDetailModal from '../components/complaintDetailModal';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
@@ -34,31 +35,23 @@ const ComplaintsDashboard = () => {
         setErrorMessage('');
     };
 
-    useEffect(() => {
+    // 민원 데이터 로드
+    const loadComplaints = () => {
         if (storeID && token) {
-            postComplaints();
-        }
-    }, [storeID, token]);
-
-    const postComplaints = async () => {
-        try {
-            const response = await axios.post(
-                `${config.apiDomain}/public/complaints/`,
-                { publicID: storeID },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            fetchPublicComplaint(
+                storeID,
+                token,
+                setComplaints,
+                setErrorMessage,
+                setShowErrorModal
             );
-            setComplaints(response.data);
-        } catch (error) {
-            console.error("민원 데이터를 가져오는 중 오류가 발생했습니다:", error);
-            setErrorMessage("민원 데이터를 불러오는 중 오류가 발생했습니다.");
-            setShowErrorModal(true);
         }
     };
 
+    // 페이지 로드 시 민원 데이터 가져오기
+    useEffect(() => {
+        loadComplaints();
+    }, [storeID, token]);
 
     return (
         <div className="min-h-screen p-6 font-sans bg-violet-50">
@@ -144,10 +137,10 @@ const ComplaintsDashboard = () => {
                 show={!!selectedComplaint}
                 onClose={() => {
                     setSelectedComplaint(null); // ComplaintDetailModal 닫기
-                    postComplaints(); // 데이터를 다시 로드
+                    loadComplaints();; // 데이터를 다시 로드
                 }}
                 complaint={selectedComplaint}
-                onStatusChange={postComplaints} // 상태 변경 후 데이터 새로 고침
+                onStatusChange={loadComplaints} // 상태 변경 후 데이터 새로 고침
             />
 
             {/* 성공 메시지 모달 */}

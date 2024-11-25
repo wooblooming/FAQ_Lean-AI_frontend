@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import TransferDepartmentModal from './transferDepartModal';
 import { Button } from "@/components/ui/button";
 
 
-const Textarea = ({ value, placeholder, readOnly = false }) => (
+const Textarea = ({ value, placeholder, readOnly = false, onChange }) => (
     <div className="mb-4 w-full">
       <textarea
         value={value}
         placeholder={placeholder}
         readOnly={readOnly}
         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 min-h-[100px]"
+        onChange={onChange}
       />
     </div>
   );
@@ -17,8 +18,8 @@ const Textarea = ({ value, placeholder, readOnly = false }) => (
 const ComplaintDetailContent = ({ 
       activeTab, setActiveTab, 
       complaint, department,
-      newStatus, setNewStatus, 
-      handleStatusChange, handleAnswer, 
+      newStatus, setNewStatus, handleStatusChange, 
+      handleAnswer, answer, setAnswer, 
       handleTransfer, errorMessage
   }) => {
     const formatAuthorName = (fullName) => {
@@ -84,7 +85,13 @@ const ComplaintDetailContent = ({
       case 'response':
         return (
           <div className="space-y-4 w-full">
-            <Textarea label="답변" placeholder="답변을 입력해주세요" style={{ fontFamily: "NanumSquare" }} />
+            <Textarea 
+              value={answer} // 부모로부터 받은 상태
+              onChange={(e) => setAnswer(e.target.value)} // 부모 상태 업데이트
+              placeholder="답변을 입력해주세요"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 min-h-[100px]"
+              style={{ fontFamily: "NanumSquare" }}
+            />
             <div className="flex justify-end ">
               <Button onClick={handleAnswer} >답변 전송</Button>
             </div>

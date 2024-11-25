@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft, Check } from 'lucide-react';
 import axios from 'axios';
+import { fetchPublicComplaintCustomer } from '../fetch/fetchPublicComplaintCustomer';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import VerificationModal from '../components/verificationModal';
@@ -16,10 +17,11 @@ const ComplaintLookup = () => {
     const [successVerification, setSuccessVerification] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [message, setMessage] = useState('');
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [complaintDetails, setComplaintDetails] = useState(null);
     const [status, setStatus] = useState('접수')
+    const [answer, setAnswer] = useState('');
 
     const stages = ['접수', '처리 중', '완료']
 
@@ -32,7 +34,7 @@ const ComplaintLookup = () => {
 
     // 에러 메시지 모달 닫기 & 초기화
     const handleErrorMessageModalClose = () => {
-        setShowErrorMessageModal(false);
+        setShowErrorModal(false);
         setErrorMessage('');
     };
 
@@ -46,7 +48,7 @@ const ComplaintLookup = () => {
         const phoneRegex = /^\d{11}$/;
         if (!phoneRegex.test(phone)) {
             setErrorMessage('핸드폰 번호를 확인해 주세요');
-            setShowErrorMessageModal(true);
+            setShowErrorModal(true);
             return;
         }
 
@@ -61,11 +63,11 @@ const ComplaintLookup = () => {
                 setShowCodeModal(true);
             } else {
                 setErrorMessage(response.data.message);
-                setShowErrorMessageModal(true);
+                setShowErrorModal(true);
             }
         } catch (error) {
             setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
-            setShowErrorMessageModal(true);
+            setShowErrorModal(true);
         }
     };
 
@@ -84,46 +86,37 @@ const ComplaintLookup = () => {
                 fetchComplaintDetails(); // 인증 성공 후 민원 상세 조회
             } else {
                 setErrorMessage(response.data.message || '알 수 없는 오류가 발생했습니다.');
-                setShowErrorMessageModal(true);
+                setShowErrorModal(true);
             }
         } catch (error) {
             setErrorMessage('인증 확인 중 네트워크 오류가 발생했습니다.');
-            setShowErrorMessageModal(true);
+            setShowErrorModal(true);
             setShowCodeModal(false);
         }
     };
 
     // 민원 상세 조회 요청
     const fetchComplaintDetails = async () => {
-        try {
-            const response = await axios.post(`${config.apiDomain}/public/complaint-customer/`, {
-                complaint_number: complaintNum,
-                phone,
-            });
-
-            if (response.status === 200 && response.data.success) {
-                setComplaintDetails(response.data.complaint); // 성공적으로 민원 데이터 가져옴
-                console.log(complaintDetails);
-            } else {
-                setErrorMessage(response.data.message || '민원 조회에 실패했습니다.');
-                setShowErrorMessageModal(true);
-            }
-        } catch (error) {
-            setErrorMessage('민원 조회 중 네트워크 오류가 발생했습니다.');
-            setShowErrorMessageModal(true);
-        }
+        await fetchPublicComplaintCustomer(
+            complaintNum,
+            phone,
+            setComplaintDetails,
+            setErrorMessage,
+            setShowErrorModal
+        );
     };
 
     useEffect(() => {
         if (complaintDetails) {
-            //console.log(complaintDetails);
+            console.log(complaintDetails);
             setStatus(complaintDetails.status);
+            setAnswer(complaintDetails.answer);
         }
     }, [complaintDetails]);
 
     return (
-        <div className="bg-violet-50 flex flex-col gap-3 items-center justify-center relative font-sans min-h-screen">
-            <div className="bg-white px-4 py-6 space-y-4 rounded-lg shadow-lg max-w-full text-center relative" style={{ width: '430px' }}>
+        <div className="min-h-screen p-6 font-sans bg-violet-50 space-y-3">
+            <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
                 <div className="flex items-center">
                     <ChevronLeft
                         className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
@@ -146,12 +139,12 @@ const ComplaintLookup = () => {
 
                     <div className='flex flex-col space-y-1'>
                         <p className='text-gray-700' style={{ fontFamily: 'NanumSquareBold' }}>핸드폰번호</p>
-                        <div className='flex flex-row space-x-3'>
+                        <div className='flex flex-col space-y-1 md:flex-row md:space-x-3 px-2 md:px-0'>
                             <input
                                 placeholder='- 없이 핸드폰번호를 입력해주세요'
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
-                                className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
+                                className="border md:mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
                             />
                             <button
                                 className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap"
@@ -167,14 +160,14 @@ const ComplaintLookup = () => {
 
             {/* 민원 상세 정보 */}
             {complaintDetails && (
-                <div className="bg-white px-4 py-6 space-y-4 rounded-lg shadow-lg text-center relative" style={{ width: '430px' }}>
+                <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
                     <div className='flex flex-col space-y-2 items-start w-full ' style={{ fontFamily: 'NanumSquare' }}>
                         <div name='header' className="flex flex-col items-start space-y-1 ">
                             <h2 className="text-2xl" style={{ fontFamily: "NanumSquareExtraBold" }}>{complaintDetails.title}</h2>
                         </div>
                         <div name='content' className="space-y-4 text-lg w-full ">
                             <div name='personal-info' className='flex flex-col space-y-2 px-2'>
-                            <div className="flex space-x-5 justify-even">
+                                <div className="flex space-x-5 justify-even">
                                     <span className="text-left w-20 whitespace-nowrap">접수 번호:</span>
                                     <span >{complaintDetails.complaint_number}</span>
                                 </div>
@@ -186,6 +179,15 @@ const ComplaintLookup = () => {
                                     <span className="text-left w-20">접수일:</span>
                                     <span >{complaintDetails.created_at}</span>
                                 </div>
+                                <div className="flex space-x-5 justify-even">
+                                    <span className="text-left w-20 whitespace-nowrap">민원 내용:</span>
+                                    <span className="text-left" style={{ width: '70%' }}>{complaintDetails.content}</span>
+                                </div>
+                                <div className="flex space-x-5 justify-even">
+                                    <span className="text-left w-20">민원 답변:</span>
+                                    <span >{complaintDetails.answer}</span>
+                                </div>
+
                             </div>
                             <div name="status" className="flex flex-col justify-center text-start space-y-2 w-full ">
                                 <h2 className="text-2xl" style={{ fontFamily: "NanumSquareExtraBold" }}>접수 현황</h2>
@@ -213,10 +215,8 @@ const ComplaintLookup = () => {
                                             style={{ width: `${((stages.indexOf(status) + 1) / stages.length) * 100}%` }}
                                         ></div>
                                     </div>
-
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -245,7 +245,7 @@ const ComplaintLookup = () => {
 
             {/* 에러 메시지 모달 */}
             <ModalErrorMSG
-                show={showErrorMessageModal}
+                show={showErrorModal}
                 onClose={handleErrorMessageModalClose}
                 title="Error"
             >
