@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { X, Image} from 'lucide-react';
+import { X, Image } from 'lucide-react';
 import AddIcon from '@mui/icons-material/Add';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import { useAuth } from '../contexts/authContext';
+import { fetchStoreData } from '../fetch/fetchStoreData';
 import StoreInfoEdit from '../components/storeInfoEdit';
 import StoreHourEdit from '../components/storeHourEdit';
 import AddMenuModal from '../components/addMenuModal';
@@ -12,10 +13,14 @@ import ViewMenuModal from '../components/viewMenuModal';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
+import { useStore } from '../contexts/storeContext';
 
 const ChangeInfo = ({ initialData }) => {
-  const { token, removeToken } = useAuth();
-  const [storeId, setStoreId] = useState(''); // 매장 ID 상태
+  const { token } = useAuth();
+  const { storeID } = useStore();
+  const [storeData, setStoreData] = useState('');
+  const [isOwner, setIsOwner] = useState('');
+  const [slug, setStoreSlug] = useState('');
   const [storeName, setStoreName] = useState(''); // 매장 이름 상태
   const [storeIntroduction, setStoreIntroduction] = useState(''); // 매장 소개 상태
   const [storeCategory, setStoreCategory] = useState(''); // 매장 종류 상태
@@ -24,7 +29,6 @@ const ChangeInfo = ({ initialData }) => {
   const [storeAddress, setStoreAddress] = useState(''); // 매장 주소 상태
   const [storeTel, setStoreTel] = useState(''); // 매장 전화번호 상태
   const [storeInformation, setStoreInformation] = useState(''); // 매장 소개 상태
-  const [slug, setSlug] = useState('');
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
   const [isStoreHourEditModalOpen, setIsStoreHourEditModalOpen] = useState(false);
 
@@ -51,63 +55,72 @@ const ChangeInfo = ({ initialData }) => {
     'OTHER': '기타'
   };
 
-  // 매장 정보 가져오기
   useEffect(() => {
-    fetchData(); // 초기 데이터 가져오기
-  }, [initialData]);
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.status === 401) {
-        setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
-        setShowErrorMessageModal(true);
-        removeToken();
-        return;
+    if (storeData && typeof storeData === 'object') {
+      const store = storeData.store;
+  
+      setStoreCategory(store.store_category || '');
+      setStoreName(store.store_name || '');
+      setStoreSlug(store.slug || '');
+      setStoreIntroduction(store.store_introduction || '');
+      setStoreHours(store.opening_hours || '');
+      setStoreAddress(store.store_address || '');
+      setStoreTel(store.store_tel || '');
+      setStoreInformation(store.store_information || '');
+  
+      try {
+        const parsedMenuPrice = JSON.parse(store.menu_price || '[]');
+        setMenuPrices(parsedMenuPrice);
+      } catch (error) {
+        console.error("Error parsing menu_price:", error);
       }
-      const data = await response.json(); // 서버에서 매장 정보 데이터 가져옴
-      //console.log(data);
-
-      if (data.length > 0) {
-        setStoreName(data[0].store_name || '');
-        setStoreIntroduction(data[0].store_introduction || '');
-        setStoreCategory(data[0].store_category || '');
-        setStoreHours(data[0].opening_hours || '');
-        setStoreAddress(data[0].store_address || '');
-        setStoreTel(data[0].store_tel || '');
-        setStoreInformation(data[0].store_information || '');
-        setSlug(data[0].slug || '');
-
-        // 이미지 URL 설정
-        const bannerPath = data[0].banner || '';
-        const storeImageUrl = bannerPath
-          ? bannerPath.startsWith('/media/')
-            ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
-            : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
-          : '/chatbot.png'; // 기본 이미지 경로 설정            
-
-        //console.log('storeImageUrl : ', storeImageUrl);
-        setPreviewImage(storeImageUrl); // 배너 이미지 미리보기 설정
-        setStoreId(data[0].store_id); // 매장 ID 설정
-      } else {
-        setErrorMessage('매장 정보를 찾을 수 없습니다.');
-        setShowErrorMessageModal(true);
-      }
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-      setErrorMessage('매장 정보를 불러오는 데 실패했습니다.');
-      setShowErrorMessageModal(true);
-    } finally {
-      setIsLoading(false);  // 로딩 완료
     }
-  };
+    // 의존성 배열에 빈 배열을 사용하여 컴포넌트 마운트 시 한 번만 실행
+  }, []);
+  
 
+  // 매장 정보 가져오기
+useEffect(() => {
+  if (storeID && token) {
+    setIsOwner(true);
+    fetchStoreData(
+      { storeID },
+      token,
+      (data) => {
+        const store = data.store;
+        setStoreData(data);
+        setStoreCategory(store.store_category || '');
+        setStoreName(store.store_name || '');
+        setStoreSlug(store.slug || '');
+        setStoreIntroduction(store.store_introduction || '');
+        setStoreHours(store.opening_hours || '');
+        setStoreAddress(store.store_address || '');
+        setStoreTel(store.store_tel || '');
+        setStoreInformation(store.store_information || '');
+
+        const bannerPath = store.banner || '';
+      const storeImageUrl = bannerPath
+        ? bannerPath.startsWith('/media/')
+          ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
+          : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
+        : '/chatbot.png'; // 기본 이미지 경로 설정            
+
+      //console.log('storeImageUrl : ', storeImageUrl);
+      setPreviewImage(storeImageUrl); // 배너 이미지 미리보기 설정
+
+        try {
+          const parsedMenuPrice = JSON.parse(store.menu_price || '[]');
+          setMenuPrices(parsedMenuPrice);
+        } catch (error) {
+          console.error("Error parsing menu_price:", error);
+        }
+      },
+      setErrorMessage,
+      setShowErrorMessageModal,
+      isOwner
+    ).finally(() => setIsLoading(false));
+  }
+}, [storeID, token, isOwner]);
 
   // 로딩 중일 때 보여줄 UI
   if (isLoading) {
@@ -312,7 +325,7 @@ const ChangeInfo = ({ initialData }) => {
     router.push('/modifyFeed');
   };
 
-  
+
   // storeCategory에 따라 메뉴 타이틀 설정
   const menuTitle = storeCategory === 'FOOD'
     ? '메뉴'
@@ -409,7 +422,7 @@ const ChangeInfo = ({ initialData }) => {
                 <p className='text-indigo-400 font-medium cursor-pointer text-lg' > {menuTitle} 보기</p>
               </button>
             </div>
-            
+
             <div className='flex flex-row'>
               <Image className='text-indigo-400 cursor-pointer mr-1 text-lg' onClick={goToModifyFeed} />
               <button
@@ -418,7 +431,7 @@ const ChangeInfo = ({ initialData }) => {
                 <p className='text-indigo-400 font-medium cursor-pointer text-lg' > 피드 추가</p>
               </button>
             </div>
-            
+
           </div>
         </div>
 
@@ -531,10 +544,10 @@ const ChangeInfo = ({ initialData }) => {
 
       {/* StoreHourEdit 모달 */}
       <StoreHourEdit
-          isOpen={isStoreHourEditModalOpen}
-          onClose={closeStoreHourEditModal}
-          onSave={handleStoreHoursSave} 
-          onDelete={handleStoreHoursDelete}
+        isOpen={isStoreHourEditModalOpen}
+        onClose={closeStoreHourEditModal}
+        onSave={handleStoreHoursSave}
+        onDelete={handleStoreHoursDelete}
       />
 
       {/* AddMenuModal 모달 */}

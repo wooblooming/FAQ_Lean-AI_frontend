@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { ChevronLeft } from 'lucide-react';
-import { useStore } from '../contexts/storeContext';
+import { fetchPublicDepartment } from '../fetch/fetchPublicDepart';
 import PersonalInfoModal from '../components/personalInfoModal';
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
@@ -17,8 +17,8 @@ const RegisterComplaint = () => {
     const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달의 열림/닫힘 상태
     const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 저장
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-    const [categories, setCategories] = useState([]); // 초기값을 빈 배열로 설정
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [departments, setDepartments] = useState([]); // 초기값을 빈 배열로 설정
+    const [selectedDepartment, setSelectedDepartment] = useState('');
 
     // 입력 필드 상태
     const [name, setName] = useState('');
@@ -31,24 +31,9 @@ const RegisterComplaint = () => {
     // 카테고리 목록을 백엔드에서 가져오기
     useEffect(() => {
         if (slug) {
-            fetchCategories();
+            fetchPublicDepartment({slug}, null, setDepartments);
         }
     }, [slug]);
-
-    const fetchCategories = async () => {
-        try {
-            const response = await axios.post(`${config.apiDomain}/public/department-list/`, {
-                slug
-            });
-            //console.log("Fetched categories data:", response.data);
-            const departments = Array.isArray(response.data.departments) ? response.data.departments : [];
-            setCategories(departments); // 배열로 업데이트
-        } catch (error) {
-            console.error('부서 목록을 불러오는 중 오류 발생:', error);
-            setErrorMessage('부서 목록을 불러오는 데 실패했습니다.');
-            setShowErrorMessageModal(true);
-        }
-    };
 
     // 개인정보 동의 모달 열기
     const handlePersonalInfoCheckboxChange = () => setShowPersonalInfoModal(true);
@@ -83,7 +68,7 @@ const RegisterComplaint = () => {
             return;
         }
 
-        if (!selectedCategory) {
+        if (!selectedDepartment) {
             setErrorMessage('민원을 접수할 부서를 선택해 주세요.');
             setShowErrorMessageModal(true);
             return;
@@ -97,7 +82,7 @@ const RegisterComplaint = () => {
                 phone,
                 email,
                 title,
-                department: selectedCategory,
+                department: selectedDepartment,
                 content,
                 slug
             };
@@ -192,14 +177,14 @@ const RegisterComplaint = () => {
                                 <div className='flex flex-col space-y-1'>
                                     <p className='text-gray-700'>민원 카테고리</p>
                                     <select
-                                        value={selectedCategory}
-                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                        value={selectedDepartment}
+                                        onChange={(e) => setSelectedDepartment(e.target.value)}
                                         className="border mx-2 px-4 py-2 border-gray-300 rounded-md w-full"
                                     >
                                         <option value="">카테고리를 선택하세요</option>
-                                        {categories.map((category, index) => (
-                                            <option key={index} value={category}>
-                                                {category}
+                                        {departments.map((department, index) => (
+                                            <option key={index} value={department}>
+                                                {department}
                                             </option>
                                         ))}
                                     </select>

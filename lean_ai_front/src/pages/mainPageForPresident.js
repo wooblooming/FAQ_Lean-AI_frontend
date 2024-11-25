@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import Header from '../components/header';
 import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
+import { useStore } from '../contexts/storeContext';
+import { fetchStoreData } from '../fetch/fetchStoreData';
 import { announcements } from './notice';
 import { faqs } from './faq';
 import ChangeInfo from './changeInfo';
@@ -39,6 +41,9 @@ const getLatestAnnouncements = () => {
 };
 
 const MainPageWithMenu = () => {
+  const { storeID } = useStore();
+  const [storeData, setStoreData] = useState('');
+  const [isOwner, setIsOwner] = useState('');
   const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 상태
   const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false); // 정보 수정 모달 상태
   const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false); // 데이터 편집 모달 상태
@@ -52,7 +57,7 @@ const MainPageWithMenu = () => {
   const [expandedId, setExpandedId] = useState(null); // FAQ 확장 상태 관리
 
   const router = useRouter();
-  const { token, removeToken } = useAuth();
+  const { token } = useAuth();
   const latestAnnouncements = getLatestAnnouncements(); // 최신 공지사항 가져오기
   const latestFaqs = faqs.slice(0, 3); // FAQ 상위 3개만 선택
 
@@ -76,51 +81,35 @@ const MainPageWithMenu = () => {
   // 컴포넌트 마운트 시 상점, 통계 정보 불러오기
   useEffect(() => {
     if (token) {  // token이 존재할 때만 API 호출
-      fetchStoreInfo();
       fetchStatistics();
     }
   }, [token]);
 
 
   // 상점 정보 API 호출
-  const fetchStoreInfo = async () => {
-    try {
-      const response = await fetch(`${config.apiDomain}/api/user-stores/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // 토큰을 헤더에 추가하여 인증 요청
-        },
-      });
-
-      if (response.status === 401) { // 인증 실패 시 에러 처리
-        setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
-        setShowErrorMessageModal(true);
-        removeToken();
-        router.push('/login');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch store information: ${response.statusText}`);
-      }
-
-      const storeData = await response.json();
-      //console.log(storeData[0]);
-      if (storeData && storeData.length > 0) {
-        setCategory(storeData[0].store_category);
-        setStoreName(storeData[0].store_name);
-        setStoreSlug(storeData[0].slug);
-        
-      } else {
-        setStoreName('');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('로딩 중에 에러가 발생 했습니다.');
-      setShowErrorMessageModal(true);
+  useEffect(() => {
+    if (storeID && token) {
+      setIsOwner(true);
+      fetchStoreData(
+        {storeID},
+        token,
+        setStoreData,
+        setErrorMessage,
+        setShowErrorMessageModal,
+        isOwner
+      )
     }
-  };
+  }, [storeID, token, isOwner]);
+
+  useEffect(() => {
+    if (storeData) {
+      const store = storeData.store;
+      //console.log('store data : ', storeData ,'store : ', store);
+      setCategory(store.store_category)
+      setStoreName(store.store_name);
+      setStoreSlug(store.slug);
+    }
+  }),[storeData];
 
 
   // 통계 데이터 API 호출

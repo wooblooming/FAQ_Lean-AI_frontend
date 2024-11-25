@@ -62,11 +62,11 @@ const ComplaintLookup = () => {
                 setVerificationCode('');
                 setShowCodeModal(true);
             } else {
-                setErrorMessage(response.data.message);
+                setErrorMessage(response.data.message || '알 수 없는 오류가 발생했습니다.');
                 setShowErrorModal(true);
             }
         } catch (error) {
-            setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+            setErrorMessage(error.response?.data?.message || '인증 번호 요청 중 오류가 발생했습니다.');
             setShowErrorModal(true);
         }
     };
@@ -115,8 +115,8 @@ const ComplaintLookup = () => {
     }, [complaintDetails]);
 
     return (
-        <div className="min-h-screen p-6 font-sans bg-violet-50 space-y-3">
-            <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
+        <div className="min-h-screen p-6 font-sans bg-violet-50 space-y-3 flex flex-col items-center justify-center ">
+            <div className="flex flex-col space-y-6 w-full md:w-1/2 items-start py-12 px-6 shadow-md rounded-lg bg-white">
                 <div className="flex items-center">
                     <ChevronLeft
                         className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
@@ -160,7 +160,7 @@ const ComplaintLookup = () => {
 
             {/* 민원 상세 정보 */}
             {complaintDetails && (
-                <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
+                <div className="flex flex-col space-y-6 w-full md:w-1/2 items-start py-12 px-6 shadow-md rounded-lg bg-white">
                     <div className='flex flex-col space-y-2 items-start w-full ' style={{ fontFamily: 'NanumSquare' }}>
                         <div name='header' className="flex flex-col items-start space-y-1 ">
                             <h2 className="text-2xl" style={{ fontFamily: "NanumSquareExtraBold" }}>{complaintDetails.title}</h2>

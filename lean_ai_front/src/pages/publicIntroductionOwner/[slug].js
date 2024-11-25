@@ -4,10 +4,10 @@ import { useSwipeable } from 'react-swipeable';
 import { motion } from "framer-motion";
 import { ChevronLeft, Headset, User, MailCheck } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faClock, faPhone} from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../contexts/authContext';
-import { useStore } from '../../contexts/storeContext';
-import Loading from '../../components/loading';0
+import { fetchPublicData } from '../../fetch/fetchPublicData'; 
+import Loading from '../../components/loading';
 import ModalErrorMSG from '../../components/modalErrorMSG';
 import Chatbot from '../chatBotMSG';
 import config from '../../../config';
@@ -15,13 +15,13 @@ import config from '../../../config';
 const StoreIntroductionOwnerPublic = () => {
   const router = useRouter();
   const { slug } = router.query; // URL에서 slug 파라미터 가져옴
+  const [isOwner, setIsOwner] = useState('');
   const [publicData, setPublicData] = useState([]); // 매장 데이터를 저장
   const [agentId, setAgentId] = useState(null); // 챗봇의 agentId를 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
   const [activeTab, setActiveTab] = useState('home'); // 활성 탭 관리
 
   const { token } = useAuth();
-  const { storeID } = useStore();
 
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
@@ -41,39 +41,11 @@ const StoreIntroductionOwnerPublic = () => {
   });
 
   useEffect(() => {
-    // 토큰이 설정된 후에만 fetchStoreData 실행
     if (token && slug) {
-      fetchPublicData();
+      setIsOwner(true);
+      fetchPublicData(slug, token, setPublicData, setErrorMessage, setShowErrorMessageModal, isOwner);
     }
   }, [token, slug]);
-
-
-  // 공공기관 데이터를 가져오는 함수
-  const fetchPublicData = async () => {
-    try {
-      const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-      const response = await fetch(`${config.apiDomain}/public/public-info/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          slug: decodedSlug,
-          type: 'owner',
-        }),
-      });
-
-      const result = await response.json();
-      console.log(result);
-      setPublicData(result.public);
-      
-    } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('로딩 중에 에러가 발생 했습니다.');
-      setShowErrorMessageModal(true);
-    }
-  };
 
   useEffect(() => {
     if(publicData){
@@ -81,7 +53,6 @@ const StoreIntroductionOwnerPublic = () => {
       setIsLoading(false);
     }
   }, [publicData]);
-
 
 
   // 로딩 중일 때 로딩 컴포넌트를 표시

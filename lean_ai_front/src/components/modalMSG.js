@@ -17,7 +17,7 @@ const ModalMSG = ({ show, onClose, title, children }) => {
                             aria-label="Close"
                         />
                     </div>
-                    <h2 className="text-2xl font-bold mb-4">{title}</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-start">{title}</h2>
                     <div className="text-base text-center">
                         {children}
                     </div>

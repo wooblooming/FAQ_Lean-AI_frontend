@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import axios from 'axios';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
@@ -22,7 +23,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const qrCanvasRef = useRef(null); // QR 코드 이미지를 캔버스에 그리기 위한 참조 생성
   const router = useRouter();
   const { token, removeToken } = useAuth();
-  const { removeStoreID } = useStore();
+  const { storeID, removeStoreID } = useStore();
   const { isPublicOn, resetPublicOn } = usePublic();
 
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -35,25 +36,26 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
   // QR 코드를 서버에서 가져오는 함수
   const fetchQRCode = async () => {
+    const url = isPublicOn
+      ? `${config.apiDomain}/public/qrCodeImage/`
+      : `${config.apiDomain}/api/qrCodeImage/`;
+
     try {
       setIsLoading(true); // 로딩 시작
-      const response = await fetch(`${config.apiDomain}/api/qrCodeImage/`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        url,
+        { public_id: storeID }, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch QR code: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.qr_code_image_url) {
-        const mediaUrl = decodeURIComponent(data.qr_code_image_url);
+      if (response.data.qr_code_image_url) {
+        const mediaUrl = decodeURIComponent(response.data.qr_code_image_url);
         setQrCodeImageUrl(mediaUrl);
-        setStoreName(data.store_name || '');
+        setStoreName(response.data.store_name || '');
       } else {
         setQrCodeImageUrl(null);
         console.warn("QR Code URL is null.");
@@ -67,6 +69,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       setIsLoading(false); // 로딩 종료
     }
   };
+
 
   // QR 코드 이미지를 저장하는 함수
   const handleSaveQRCode = () => {

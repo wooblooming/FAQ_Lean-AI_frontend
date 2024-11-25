@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../components/header';
-import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
+import {  Eye, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';

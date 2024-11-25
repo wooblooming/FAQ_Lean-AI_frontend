@@ -31,6 +31,7 @@ const UserProfileForm = ({
   const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
   const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const [editing, setEditing] = useState(false); // 수정 상태
+  const [departments, setDepartments] = useState([]); // 초기값을 빈 배열로 설정
   const [departOptions, setDepartOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
 
@@ -38,16 +39,19 @@ const UserProfileForm = ({
 
   useEffect(() => {
     if (editing && storeID && token) {
-      fetchPublicDepartment({ storeID }, token, (response) => {
-        const departmentList = response?.departments || [];
-        const formattedOptions = departmentList.map((dept) => ({
-          label: dept,
-          value: dept,
-        }));
-        setDepartOptions(formattedOptions);
-      });
+      fetchPublicDepartment({ storeID }, null, setDepartments);
     }
   }, [editing, storeID, token]);
+
+  useEffect(() => {
+    if (departments.length > 0) {
+      const formattedOptions = departments.map((dept) => ({
+        label: dept,
+        value: dept,
+      }));
+      setDepartOptions(formattedOptions);
+    }
+  }, [departments]);
 
   const handleEditToggle = async () => {
     if (editing && selectedDepartment) {
@@ -72,16 +76,19 @@ const UserProfileForm = ({
         setShowMessageModal(true);
       } catch (error) {
         // 요청 실패 시 에러 처리
-        const errorMsg =
-          error.response?.data?.message || error.message || "부서 변경 중 문제가 발생했습니다.";
-        setErrorMessage(errorMsg);
+        if (error.response && error.response.data && error.response.data.error) {
+          // 백엔드에서 전달한 에러 메시지를 사용
+          setErrorMessage(error.response.data.error);
+        } else {
+          // 기타 에러 처리
+          setErrorMessage(error.message || "부서 변경 중 문제가 발생했습니다.");
+        }
         setShowErrorMessageModal(true);
       }
     }
   
     setEditing((prev) => !prev); // Toggle editing mode
   };
-  
   
 
   const handleDepartmentChange = (selectedOption) => {
@@ -242,7 +249,7 @@ const UserProfileForm = ({
       `,
     }),
   };
-  
+
   return (
     <div className="flex flex-col items-start py-4 font-sans space-y-2">
       <div className='font-semibold text-lg' style={{ fontFamily: "NanumSquareExtraBold" }}>사용자 정보</div>

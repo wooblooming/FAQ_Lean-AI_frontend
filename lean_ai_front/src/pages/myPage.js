@@ -70,7 +70,7 @@ const MyPage = () => {
 
   // 이벤트 스위치를 눌렀을 때 이벤트 모달을 표시
   const toggleEventOn = () => {
-    setShowEventAlertModal(true); 
+    setShowEventAlertModal(true);
   };
 
   // 일반 메시지 모달 닫기 & 초기화
@@ -88,84 +88,61 @@ const MyPage = () => {
   // 초기 사용자 정보 및 스토어 데이터를 가져오는 함수
   useEffect(() => {
     // token이 있을 때만 fetchUserData 실행
-    if (!token) {
-      return; // token이 없으면 아무것도 하지 않음
+    if (token) {
+      fetchUserData();
     }
+  }, [token]); // 컴포넌트가 처음 마운트될 때 사용자 및 스토어 정보를 가져옴
 
-    const fetchUserData = async () => {
-      try {
+  const fetchUserData = async () => {
+    try {
 
-        // 사용자 프로필 정보 가져오기
-        const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+      // 사용자 프로필 정보 가져오기
+      const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-        if (response.ok) {
-          const data = await response.json();
+      if (response.ok) {
+        const data = await response.json();
 
-          setID(data.user_id || '');
-          setName(data.name || '');
-          setEmail(data.email || '');
-          setPhoneNumber(data.phone_number || '');
-          if (data.marketing === 'Y') {
-            setIsEventOn(true); // ON 상태로 설정
-          } else {
-            setIsEventOn(false); // OFF 상태로 설정
-          }
-
-          // QR 코드 처리
-          if (data.qr_code_url) {
-            const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
-            setQrUrl(mediaUrl);
-          } else {
-            setQrUrl(null); // QR 코드가 없으면 null 설정
-          }
-
-          if (data.profile_photo && !data.profile_photo.startsWith('http')) {
-            setProfileImage(`${config.apiDomain}${data.profile_photo}`);
-          } else {
-            setProfileImage(data.profile_photo || '/profile_default_img.jpg');
-          }
-
+        setID(data.user_id || '');
+        setName(data.name || '');
+        setEmail(data.email || '');
+        setPhoneNumber(data.phone_number || '');
+        if (data.marketing === 'Y') {
+          setIsEventOn(true); // ON 상태로 설정
         } else {
-          console.error('Failed to fetch user data. Status:', response.status);
-          setErrorMessage("프로필 정보를 가져오는데 실패하였습니다.");
-          setShowErrorMessageModal(true);
+          setIsEventOn(false); // OFF 상태로 설정
         }
 
-        // 사용자 스토어 목록 가져오기
-        const storeResponse = await fetch(`${config.apiDomain}/api/user-stores/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (storeResponse.ok) {
-          const storeData = await storeResponse.json();
-          setStores(storeData); // 스토어 목록 설정
-          if (storeData.length > 0) {
-            setSelectedStoreId(storeData[0].store_id); // 기본적으로 첫 번째 스토어 선택
-            setStoreName(storeData[0].store_name); // 첫 번째 스토어 이름 설정
-          }
+        // QR 코드 처리
+        if (data.qr_code_url) {
+          const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
+          setQrUrl(mediaUrl);
         } else {
-          console.error('Failed to fetch stores. Status:', storeResponse.status);
-          setErrorMessage("스토어 정보를 가져오는데 실패하였습니다.");
-          setShowErrorMessageModal(true);
+          setQrUrl(null); // QR 코드가 없으면 null 설정
         }
 
-      } catch (error) {
-        console.error('Error fetching user or store data:', error);
-        setErrorMessage("정보를 가져오는데 실패하였습니다.");
+        if (data.profile_photo && !data.profile_photo.startsWith('http')) {
+          setProfileImage(`${config.apiDomain}${data.profile_photo}`);
+        } else {
+          setProfileImage(data.profile_photo || '/profile_default_img.jpg');
+        }
+
+      } else {
+        console.error('Failed to fetch user data. Status:', response.status);
+        setErrorMessage("프로필 정보를 가져오는데 실패하였습니다.");
         setShowErrorMessageModal(true);
       }
-    };
 
-    fetchUserData();
-  }, [token]); // 컴포넌트가 처음 마운트될 때 사용자 및 스토어 정보를 가져옴
+    } catch (error) {
+      console.error('Error fetching user or store data:', error);
+      setErrorMessage("정보를 가져오는데 실패하였습니다.");
+      setShowErrorMessageModal(true);
+    }
+  };
 
   // 데이터 변경 여부를 감지
   useEffect(() => {
@@ -443,7 +420,7 @@ const MyPage = () => {
             onClick={handleSaveChanges}
             disabled={!isChanged}
           >
-            <p  style={{ fontFamily: "NanumSquareExtraBold" }}>완료</p>
+            <p style={{ fontFamily: "NanumSquareExtraBold" }}>완료</p>
           </button>
         </div>
 
@@ -528,12 +505,12 @@ const MyPage = () => {
         {/* 이미지 모달 */}
         {isImageModalOpen && (
           <div id="imageModal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="modal-content bg-white p-6 rounded-lg text-center"  style={{ width: '380px', position: 'relative' }}>
+            <div className="modal-content bg-white p-6 rounded-lg text-center" style={{ width: '380px', position: 'relative' }}>
               <button
                 onClick={toggleImageModal}
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               >
-                <X className="bg-indigo-500 rounded-full text-white p-1"/>
+                <X className="bg-indigo-500 rounded-full text-white p-1" />
               </button>
               <h2 className="text-2xl font-bold mb-4">프로필 사진 설정</h2>
               <input
@@ -573,8 +550,8 @@ const MyPage = () => {
           }}
           message="정말 탈퇴를 하시겠습니까?"  // 탈퇴 확인 메시지
         />
-        
-      {/* 성공 메시지 모달 */}
+
+        {/* 성공 메시지 모달 */}
         <ModalMSG
           show={showMessageModal}
           onClose={handleMessageModalClose}
@@ -585,7 +562,7 @@ const MyPage = () => {
           </p>
         </ModalMSG>
 
-      {/* 에러 메시지 모달 */}
+        {/* 에러 메시지 모달 */}
         <ModalErrorMSG
           show={showErrorMessageModal}
           onClose={handleErrorMessageModalClose}

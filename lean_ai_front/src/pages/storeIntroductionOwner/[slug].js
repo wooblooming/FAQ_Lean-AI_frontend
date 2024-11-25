@@ -9,6 +9,7 @@ import MenuList from '../../components/menuList';
 import ImageList from '../../components/imageList'
 import { fetchStoreData } from '../../fetch/fetchStoreData';
 import { fetchFeedImage } from '../../fetch/fetchStoreFeed';
+import ModalErrorMSG from '../../components/modalErrorMSG';
 import Chatbot from '../chatBotMSG';
 
 const StoreIntroduceOwner = () => {
@@ -19,20 +20,39 @@ const StoreIntroduceOwner = () => {
   const [images, setImages] = useState([]);;
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
-  const [menuPrice, setMenuPrice] = useState(null);
+  const [menuPrice, setMenuPrice] = useState([]);
   const [isOwner, setIsOwner] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const tabOrder = ['home', 'menu', 'image']; // 탭 순서 배열
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
   useEffect(() => {
     if (token && slug) {
       setIsOwner(true);
-      fetchStoreData(slug, token, setStoreData, setMenuPrice, setStoreCategory, setAgentId, setIsLoading, isOwner);
+      fetchStoreData({ slug }, token, setStoreData, setErrorMessage, setShowErrorMessageModal, isOwner);
       fetchFeedImage({ slug }, token, setImages); // 피드 가져오기
-      
+      setIsLoading(false);
     }
   }, [token, slug]);
+
+
+  useEffect(() => {
+    if (storeData?.store) {
+      //console.log("store data : ", storeData.store);
+      setStoreCategory(storeData.store.store_category);
+      setAgentId(storeData.store.agent_id);
+  
+      // menu_price가 JSON 문자열인 경우 파싱
+      try {
+        const parsedMenuPrice = JSON.parse(storeData.store.menu_price);
+        setMenuPrice(parsedMenuPrice);
+      } catch (error) {
+        console.error("Error parsing menu_price:", error);
+      }
+    }
+  }, [storeData]);
   
   // Swipeable hook 설정: 좌우 스와이프로 탭 전환
   const handlers = useSwipeable({
@@ -66,6 +86,7 @@ const StoreIntroduceOwner = () => {
   const menuTitle = getMenuTitle(storeCategory);
 
   return (
+    <div>
     <div {...handlers} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg relative font-sans overflow-y-auto" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
         <StoreBanner banner={storeData.store.banner} onBack={() => router.push('/mainPageForPresident')} isOwner={true} />
@@ -113,7 +134,22 @@ const StoreIntroduceOwner = () => {
         </div>
       </div>
       {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}
+      
     </div>
+    <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)}>
+    <p style={{ whiteSpace: 'pre-line' }}>
+      {typeof errorMessage === 'object' ? (
+        Object.entries(errorMessage).map(([key, value]) => (
+          <span key={key}>
+            {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+          </span>
+        ))
+      ) : (
+        errorMessage
+      )}
+    </p>
+  </ModalErrorMSG>
+  </div>
   );
 };
 

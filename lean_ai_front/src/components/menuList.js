@@ -79,7 +79,7 @@ const MenuList = ({ menuPrice, storeCategory, menuTitle }) => {
 };
 
 // Category 컴포넌트: 개별 카테고리를 렌더링하고 클릭 시 카테고리 항목을 열거나 닫을 수 있도록 함
-const Category = ({ category, menus, open, onClick}) => (
+const Category = ({ category, menus, open, onClick }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -88,9 +88,13 @@ const Category = ({ category, menus, open, onClick}) => (
         className={`cursor-pointer bg-indigo-300 p-3 ${open ? 'rounded-md' : 'rounded-md'}`}
         whileTap={{ scale: 0.98 }}
     >
+
         {/* 카테고리 제목과 메뉴 항목 목록 */}
         <h3 className="text-lg font-semibold text-white">{category}</h3>
-        {open && menus.map(menu => <MenuItem key={menu.name} menu={menu} />)}
+        {open && menus.map((menu, index) => {
+            return <MenuItem key={`${menu.name}-${index}`} menu={menu} />;
+        })}
+
     </motion.div>
 );
 

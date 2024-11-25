@@ -2,7 +2,7 @@
 import axios from 'axios';
 import config from '../../config';
 
-export const fetchPublicDepartment = async ({slug, storeID}, token, setDepartment) => {
+export const fetchPublicDepartment = async ({slug, storeID}, token, setDepartments) => {
     try {
         const payload = slug
             ? { slug: decodeURIComponent(slug) }
@@ -17,8 +17,8 @@ export const fetchPublicDepartment = async ({slug, storeID}, token, setDepartmen
             headers,
         });
 
-        //console.log("Fetched department data:", response.data);
-        setDepartment(response.data); // 배열로 업데이트
+        console.log("Fetched department data:", response.data);
+        setDepartments(response.data.departments); 
     } catch (error) {
         console.error('부서 목록을 불러오는 중 오류 발생:', error);
 

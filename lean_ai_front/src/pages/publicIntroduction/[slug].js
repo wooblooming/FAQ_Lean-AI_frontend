@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSwipeable } from 'react-swipeable';
 import { motion } from "framer-motion";
-import { ChevronLeft, Headset, User, MailCheck } from 'lucide-react';
+import { Headset, User, MailCheck } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
-import Loading from '../../components/loading';0
+import { faLocationDot, faClock, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../../contexts/authContext';
+import { fetchPublicData } from '../../fetch/fetchPublicData';
+import Loading from '../../components/loading';
 import ModalErrorMSG from '../../components/modalErrorMSG';
 import Chatbot from '../chatBotMSG';
 import config from '../../../config';
@@ -13,10 +15,14 @@ import config from '../../../config';
 const StoreIntroductionPublic = () => {
   const router = useRouter();
   const { slug } = router.query; // URL에서 slug 파라미터 가져옴
+  const [isOwner, setIsOwner] = useState('');
   const [publicData, setPublicData] = useState([]); // 매장 데이터를 저장
   const [agentId, setAgentId] = useState(null); // 챗봇의 agentId를 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
   const [activeTab, setActiveTab] = useState('home'); // 활성 탭 관리
+
+  const { token } = useAuth();
+
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
@@ -35,46 +41,18 @@ const StoreIntroductionPublic = () => {
   });
 
   useEffect(() => {
-    // 토큰이 설정된 후에만 fetchStoreData 실행
-    if (slug) {
-      fetchPublicData();
+    if (token && slug) {
+      setIsOwner(false);
+      fetchPublicData(slug, token, setPublicData, setErrorMessage, setShowErrorMessageModal, isOwner);
     }
-  }, [slug]);
-
-
-  // 공공기관 데이터를 가져오는 함수
-  const fetchPublicData = async () => {
-    try {
-      const decodedSlug = decodeURIComponent(slug);  // 인코딩된 슬러그 디코딩
-      const response = await fetch(`${config.apiDomain}/public/public-info/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          slug: decodedSlug,
-          type: 'customer',
-        }),
-      });
-
-      const result = await response.json();
-      console.log("result ： ", result);
-      setPublicData(result.public);
-      
-    } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('로딩 중에 에러가 발생 했습니다.');
-      setShowErrorMessageModal(true);
-    }
-  };
+  }, [token, slug]);
 
   useEffect(() => {
-    if(publicData){
+    if (publicData) {
       setAgentId(publicData.agentId);
       setIsLoading(false);
     }
   }, [publicData]);
-
 
 
   // 로딩 중일 때 로딩 컴포넌트를 표시
@@ -121,13 +99,13 @@ const StoreIntroductionPublic = () => {
             홈
           </button>
 
-            <button
-              className={`p-2 w-1/3 ${activeTab === 'complaint' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500 text-center' : ''}`}
-              style={{ fontFamily: activeTab === 'complaint' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
-              onClick={() => handleTabClick('complaint')}
-            >
-              <p className='whitespace-nowrap'>민원</p>
-            </button>
+          <button
+            className={`p-2 w-1/3 ${activeTab === 'complaint' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500 text-center' : ''}`}
+            style={{ fontFamily: activeTab === 'complaint' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
+            onClick={() => handleTabClick('complaint')}
+          >
+            <p className='whitespace-nowrap'>민원</p>
+          </button>
 
         </div>
 
@@ -173,7 +151,7 @@ const StoreIntroductionPublic = () => {
           )}
 
           {activeTab === 'complaint' && (
-            <div className="flex flex-col items-right " style={{height:'350px'}}>
+            <div className="flex flex-col items-right " style={{ height: '350px' }}>
               <div className=''>
                 <motion.h2
                   initial={{ opacity: 0, y: -20 }}
@@ -237,8 +215,8 @@ const StoreIntroductionPublic = () => {
                   >
                     민원 접수
                   </button>
-                  <button 
-                    className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl' 
+                  <button
+                    className='px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold text-xl'
                     onClick={() => router.push('/complaintStausLookup')}
                   >
                     민원 조회
@@ -254,8 +232,8 @@ const StoreIntroductionPublic = () => {
         {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}
       </div>
 
-       {/* 에러 메시지 모달 */}
-       <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)}>
+      {/* 에러 메시지 모달 */}
+      <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)}>
         <p style={{ whiteSpace: 'pre-line' }}>
           {typeof errorMessage === 'object' ? (
             Object.entries(errorMessage).map(([key, value]) => (
