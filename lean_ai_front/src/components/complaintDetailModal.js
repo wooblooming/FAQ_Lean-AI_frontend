@@ -43,6 +43,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
   useEffect(() => {
     if (complaint) {
       setNewStatus(complaint.status || ''); // complaint가 null이 아닐 때만 상태 초기화
+      setAnswer(complaint.answer || ''); // complaint가 null이 아닐 때만 상태 초기화
     }
   }, [complaint]);
 

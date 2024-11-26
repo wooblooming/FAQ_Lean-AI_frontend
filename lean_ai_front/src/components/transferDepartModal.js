@@ -16,7 +16,7 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [message, setMessage] = useState('');
 
-    const departmentList = depart && Array.isArray(depart.departments) ? depart.departments : [];
+    const departmentList = depart && Array.isArray(depart) ? depart : [];
 
     const handleTransfer = async () => {
         if (!selectedDepartment || !reason) {
