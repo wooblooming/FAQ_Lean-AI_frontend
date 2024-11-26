@@ -8,8 +8,8 @@ import { fetchStoreData } from '../fetch/fetchStoreData';
 import { announcements } from './notice';
 import { faqs } from './faq';
 import ChangeInfo from './changeInfo';
-import EditData from './editData';
-import RequestData from './requestData';
+import RegisterStoreData from './registerStoreData';
+import RequestService from './requestService';
 import Modal from '../components/modal';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
@@ -323,7 +323,7 @@ const MainPageWithMenu = () => {
         <Modal
           onClose={() => { setIsEditDataModalOpen(false); }}
         >
-          <EditData />
+          <RegisterStoreData />
         </Modal>
       )}
 
@@ -332,7 +332,7 @@ const MainPageWithMenu = () => {
         <Modal
           onClose={() => { setIsReqestDataModalOpen(false); }}
         >
-          <RequestData />
+          <RequestService />
         </Modal>
       )}
 

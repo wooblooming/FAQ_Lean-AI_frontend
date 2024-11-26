@@ -5,7 +5,7 @@ import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
-export default function DataEditPage() {
+export default function RequestService() {
     const { token } = useAuth();
     const { isPublicOn } = usePublic();
     const [title, setTitle] = useState(''); // 제목 상태
@@ -59,7 +59,7 @@ export default function DataEditPage() {
         let fetchUrl; // URL 변수를 선언
 
         try {
-            fetchUrl = isPublicOn ? `${config.apiDomain}/public/edit/` : `${config.apiDomain}/api/edit/`;
+            fetchUrl = isPublicOn ? `${config.apiDomain}/public/request-service/` : `${config.apiDomain}/api/request-service/`;
 
             const response = await fetch(fetchUrl, {
                 method: 'POST',

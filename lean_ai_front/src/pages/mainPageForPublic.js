@@ -7,7 +7,7 @@ import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
 import { announcements } from './notice';
 import { faqs } from './faq';
-import RequestData from './requestData';
+import RequestData from './requestService';
 import Modal from '../components/modal';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';

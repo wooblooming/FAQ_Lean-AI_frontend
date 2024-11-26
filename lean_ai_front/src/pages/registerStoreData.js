@@ -5,7 +5,7 @@ import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
 import config from '../../config';
 
-export default function DataEditPage() {
+export default function RegisterStoreData() {
   const { token } = useAuth();
   const [fileNames, setFileNames] = useState([]); // 업로드된 파일 이름 목록 상태
   const [message, setMessage] = useState(''); // 성공 메시지 상태
@@ -43,43 +43,55 @@ export default function DataEditPage() {
   
   // 업로드된 파일을 서버로 제출하는 함수
   const handleSubmit = async () => {
-    const files = fileInputRef.current?.files; // 파일 참조
-
-    // 파일이 없는 경우 에러 메시지 표시
+    const files = fileInputRef.current?.files;
+  
     if (!files || files.length === 0) {
       setErrorMessage('파일을 업로드 해주세요.');
       setShowErrorMessageModal(true);
       return;
     }
-
-    const formData = new FormData(); // FormData 객체 생성
-    Array.from(files).forEach((file) => formData.append('files', file)); // 파일 추가
-
-    // FormData에 포함된 데이터 확인용
-    /*
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }*/
-
+  
+    const formData = new FormData();
+    Array.from(files).forEach((file) => formData.append('files', file));
+  
     try {
-      const response = await fetch(`${config.apiDomain}/api/edit/`, {
+      const response = await fetch(`${config.apiDomain}/api/register-data/`, {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${token}`, // 토큰을 헤더에 추가하여 인증 요청
+          'Authorization': `Bearer ${token}`,
         }
       });
-
-      // 성공 시 성공 메시지 표시 및 폼 초기화
+  
       if (response.ok) {
-        setMessage('파일 업로드 되었습니다!');
-        setShowMessageModal(true);
+        const result = await response.json();
+  
+        const successMessages = result.results
+          .filter((r) => r.status === "success")
+          .map((r) => `✅ ${r.file}: \n ${r.message}`)
+          .join('\n');
+  
+        const errorMessages = result.results
+          .filter((r) => r.status === "error")
+          .map((r) => `❌ ${r.file}: \n ${r.message}`)
+          .join('\n');
+  
+        if (errorMessages) {
+          setErrorMessage(`다음 파일 처리 중 오류가 발생했습니다:\n${errorMessages}`);
+          setShowErrorMessageModal(true);
+        }
+  
+        if (successMessages) {
+          setMessage(`다음 파일이 성공적으로 업로드되었습니다:\n${successMessages}`);
+          setShowMessageModal(true);
+        }
+  
         resetForm();
       } else {
-        // 실패 시 에러 데이터 로깅 및 에러 메시지 표시
         const errorData = await response.json();
-        console.error('요청 전송 실패:', errorData);
-        setErrorMessage('파일 업로드에 실패했습니다.');
+        setErrorMessage(
+          errorData.error || '파일 업로드에 실패했습니다.'
+        );
         setShowErrorMessageModal(true);
       }
     } catch (error) {
@@ -88,6 +100,10 @@ export default function DataEditPage() {
       setShowErrorMessageModal(true);
     }
   };
+  
+  
+
+
 
   return (
     <div className="flex flex-col space-y-10 w-full max-w-md p-8 bg-white rounded-lg items-center justify-center space-y-5">
