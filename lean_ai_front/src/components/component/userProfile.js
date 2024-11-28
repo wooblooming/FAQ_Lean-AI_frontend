@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
-import { useAuth } from '../contexts/authContext';
-import { useStore } from '../contexts/storeContext';
-import { usePublic } from '../contexts/publicContext';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
-import VerificationModal from '../components/verificationModal';
-import { fetchPublicDepartment } from '../fetch/fetchPublicDepart';
-import styles from '../styles/selectStyles.module.css';
-import config from '../../config';
+import { useAuth } from '../../contexts/authContext';
+import { useStore } from '../../contexts/storeContext';
+import { usePublic } from '../../contexts/publicContext';
+import ModalMSG from '../modal/modalMSG';
+import ModalErrorMSG from '../modal/modalErrorMSG';
+import VerificationModal from '../modal/verificationModal';
+import { fetchPublicDepartment } from '../../fetch/fetchPublicDepart';
+import styles from '../../styles/selectStyles.module.css';
+import config from '../../../config';
 
 const UserProfileForm = ({
   name, setName, // 사용자 이름과 이름 변경 함수

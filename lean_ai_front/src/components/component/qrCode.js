@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useAuth } from '../contexts/authContext';
-import config from '../../config';
+import { useAuth } from '../../contexts/authContext';
+import config from '../../../config';
 
 const QRCodeSection = ({
   storeID,

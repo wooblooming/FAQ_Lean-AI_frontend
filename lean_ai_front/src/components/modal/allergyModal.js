@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 
 const AllergyModal = ({ show, onClose, menuDetails }) => {
   if (!show) return null;
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -19,7 +20,12 @@ const AllergyModal = ({ show, onClose, menuDetails }) => {
         <div className="overflow-y-auto max-h-96">
           {menuDetails && menuDetails.length > 0 &&
             menuDetails
-              .filter(menu => menu.allergy) // allergy가 있는 항목만 필터링
+            .filter(
+              (menu) =>
+                menu.allergy && // allergy가 존재하며
+                menu.allergy !== '' && // 빈 문자열이 아니며
+                menu.allergy.toLowerCase() !== 'nan' // 'nan' 문자열이 아니어야 함
+            )
               .map((menu, index) => (
                 <div key={index} className="mb-4">
                   <h3 className="font-semibold">{menu.name}</h3>

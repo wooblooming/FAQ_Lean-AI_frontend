@@ -7,8 +7,8 @@ import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
-import ConvertSwitch from '../components/convertSwitch1';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import ConvertSwitch from '../components/component/convertSwitch1';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import config from '../../config';
 
 const Login = () => {

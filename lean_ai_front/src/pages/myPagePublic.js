@@ -6,14 +6,14 @@ import naverIcon from '../../public/btn_naver.svg';
 import googleIcon from '../../public/btn_google.svg';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
-import UserProfileForm from '../components/userProfile';
-import QrCodeSection from '../components/qrCode';
-import EventSwitch from '../components/event';
-import SnsConnect from '../components/snsConnect';
-import EventAlertModal from '../components/eventModal';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
-import ConfirmDeleteAccountModal from '../components/confirmDeleteAccountModal';
+import UserProfileForm from '../components/component/userProfile';
+import QrCodeSection from '../components/component/qrCode';
+import EventSwitch from '../components/component/event';
+import SnsConnect from '../components/component/snsConnect';
+import EventAlertModal from '../components/modal/eventModal';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
+import ConfirmDeleteAccountModal from '../components/modal/confirmDeleteAccountModal';
 import config from '../../config';
 
 const MyPagePublic = () => {

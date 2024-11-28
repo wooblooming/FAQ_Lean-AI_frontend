@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../../contexts/authContext';
 import { Plus, PencilLine as EditIcon, Check, X as CancelIcon, Image as ImageIcon } from 'lucide-react';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
 import ModalMSG from './modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from './modalErrorMSG'; // 에러 메시지 모달 컴포넌트
-import config from '../../config';
-import styles from '../styles/viewMenu.module.css';
+import config from '../../../config';
+import styles from '../../styles/viewMenu.module.css';
 
 export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle }) {
     const { token } = useAuth();

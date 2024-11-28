@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import Header from '../components/header';
+import Header from '../components/component/header';
 import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
@@ -10,10 +10,10 @@ import { faqs } from './faq';
 import ChangeInfo from './changeInfo';
 import RegisterStoreData from './registerStoreData';
 import RequestService from './requestService';
-import Modal from '../components/modal';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import Modal from '../components/modal/modal';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import config from '../../config';
-import Footer from '../components/footer';
+import Footer from '../components/component/footer';
 
 // 버튼 컴포넌트 정의: 아이콘과 텍스트를 포함한 버튼 스타일 지정
 const Button = ({ children, icon: Icon, className, ...props }) => (

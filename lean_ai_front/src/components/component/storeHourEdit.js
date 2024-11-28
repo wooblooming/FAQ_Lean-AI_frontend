@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Calendar, Clock, X } from 'lucide-react'; // X 아이콘 추가
+import React, { useState, useEffect } from 'react';
+import { Calendar, Clock, X } from 'lucide-react';
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const StoreHourEdit = ({ isOpen, onClose, onSave, onDelete }) => {
-    if (!isOpen) return null; // isOpen이 false면 모달을 렌더링하지 않음
+const StoreHourEdit = ({ isOpen, onClose, onSave, hours }) => {
+    if (!isOpen) return null;
 
     const [weekdayStartHour, setWeekdayStartHour] = useState('09');
     const [weekdayStartMinute, setWeekdayStartMinute] = useState('00');
@@ -20,6 +20,31 @@ const StoreHourEdit = ({ isOpen, onClose, onSave, onDelete }) => {
     const hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
     const minuteOptions = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
 
+    useEffect(() => {
+        // 초기 값 설정
+        if (hours) {
+            const weekdayMatch = hours.match(/평일: (\d{2}):(\d{2}) ~ (\d{2}):(\d{2})/);
+            const weekendMatch = hours.match(/주말: (\d{2}):(\d{2}) ~ (\d{2}):(\d{2})/);
+
+            if (weekdayMatch) {
+                setWeekdayStartHour(weekdayMatch[1]);
+                setWeekdayStartMinute(weekdayMatch[2]);
+                setWeekdayEndHour(weekdayMatch[3]);
+                setWeekdayEndMinute(weekdayMatch[4]);
+            }
+
+            if (weekendMatch) {
+                setIsWeekendEnabled(true);
+                setWeekendStartHour(weekendMatch[1]);
+                setWeekendStartMinute(weekendMatch[2]);
+                setWeekendEndHour(weekendMatch[3]);
+                setWeekendEndMinute(weekendMatch[4]);
+            } else {
+                setIsWeekendEnabled(false);
+            }
+        }
+    }, [hours]);
+
     const handleSave = () => {
         const updatedHours = `평일: ${weekdayStartHour}:${weekdayStartMinute} ~ ${weekdayEndHour}:${weekdayEndMinute}, ` +
             (isWeekendEnabled ? `주말: ${weekendStartHour}:${weekendStartMinute} ~ ${weekendEndHour}:${weekendEndMinute}` : '주말 영업 안 함');
@@ -28,9 +53,17 @@ const StoreHourEdit = ({ isOpen, onClose, onSave, onDelete }) => {
     };
 
     const handleDelete = () => {
-        onDelete(); // 영업 시간 초기화
-        onClose(); // 모달 닫기
+        // 평일 초기화
+        setWeekdayStartHour('09');
+        setWeekdayStartMinute('00');
+        setWeekdayEndHour('18');
+        setWeekdayEndMinute('00');
+    
+        // 주말 비활성화
+        setIsWeekendEnabled(false);
+    
     };
+    
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -165,16 +198,16 @@ const StoreHourEdit = ({ isOpen, onClose, onSave, onDelete }) => {
                 </div>
                 <div className='flex flex-row'>
                     <button
-                        onClick={handleSave} // 확인 버튼 클릭 시 handleSave 호출
+                        onClick={handleSave}
                         className="block w-full py-2 mt-4 text-blue-400 rounded"
                     >
                         확인
                     </button>
                     <button
-                        onClick={handleDelete} // 확인 버튼 클릭 시 handleSave 호출
+                        onClick={handleDelete}
                         className="block w-full py-2 mt-4 text-red-400 rounded"
                     >
-                        삭제
+                        초기화
                     </button>
                 </div>
             </div>

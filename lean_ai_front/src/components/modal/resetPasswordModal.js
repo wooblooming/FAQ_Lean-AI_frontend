@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { usePublic } from "../contexts/publicContext";
+import { usePublic } from "../../contexts/publicContext";
 import ModalMSG from '../components/modalMSG';
 import ModalErrorMSG from '../components/modalErrorMSG';
-import config from '../../config';
+import config from '../../../config';
 
 function ModalResetPassword({ show, onClose, phone }) {
     const [newPassword, setNewPassword] = useState(''); // 새로운 비밀번호 입력값

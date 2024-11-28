@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import { ChevronLeft, Check } from 'lucide-react';
 import axios from 'axios';
 import { fetchPublicComplaintCustomer } from '../fetch/fetchPublicComplaintCustomer';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
-import VerificationModal from '../components/verificationModal';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
+import VerificationModal from '../components/modal/verificationModal';
 import config from '../../config';
 
 const ComplaintLookup = () => {

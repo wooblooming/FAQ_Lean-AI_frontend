@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { ChevronLeft } from 'lucide-react';
 import { fetchPublicDepartment } from '../fetch/fetchPublicDepart';
-import PersonalInfoModal from '../components/personalInfoModal';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import PersonalInfoModal from '../components/modal/personalInfoModal';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import config from '../../config';
 
 const RegisterComplaint = () => {

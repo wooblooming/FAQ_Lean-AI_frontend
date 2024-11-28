@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { HistoryContext, HistoryProvider } from '../contexts/historyContext';
-import { AwardsContext, AwardsProvider } from '../contexts/awardsContext';
-import { BussinessContext, BussinessProvider } from '../contexts/bussinessContext';
-import { news } from '../pages/news';
+import { HistoryContext, HistoryProvider } from '../../contexts/historyContext';
+import { AwardsContext, AwardsProvider } from '../../contexts/awardsContext';
+import { BussinessContext, BussinessProvider } from '../../contexts/bussinessContext';
+import { news } from '../../pages/news';
 
 // SectionItem 컴포넌트: 각 섹션의 반복적인 렌더링을 처리
 const SectionItem = ({ title, content, index, activeSections, toggleSection, isMobile }) => (

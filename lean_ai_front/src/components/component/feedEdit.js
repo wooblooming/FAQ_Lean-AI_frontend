@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import ModalErrorMSG from '../modal/modalErrorMSG';
 
 const FeedEdit = ({ images, onDelete, onRename }) => {
     const [newNames, setNewNames] = useState({});
@@ -63,7 +63,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
     };
 
     return (
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col space-y-4">
             {images && images.length > 0 ? (
                 images.map((image) => (
                     <div
@@ -77,7 +77,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
                                 alt={image.name}
                                 className="w-16 h-16 object-cover rounded-md border"
                             />
-                            <p className="font-semibold text-gray-700">{image.name}</p>
+                            <p className="font-semibold text-gray-700 w-36 whitespace-pre-line" >{image.name}</p>
                         </div>
                         <div className="flex space-x-4">
                             <input
@@ -89,14 +89,14 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
                             />
                             <button
                                 onClick={() => handleRename(image.id)}
-                                className="px-3 py-1 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600"
+                                className="px-3 py-1 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 whitespace-nowrap"
                                 style={{ fontFamily: 'NanumSquareBold' }}
                             >
                                 이름 변경
                             </button>
                             <button
                                 onClick={() => handleDelete(image.id)} // id로 삭제
-                                className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 whitespace-nowrap"
                                 style={{ fontFamily: 'NanumSquareBold' }}
                             >
                                 삭제

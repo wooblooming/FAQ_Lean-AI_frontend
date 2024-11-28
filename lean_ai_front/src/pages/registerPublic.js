@@ -4,8 +4,8 @@ import axios from 'axios';
 import { Calendar, Clock } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import config from '../../config';
 

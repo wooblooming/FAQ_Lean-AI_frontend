@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { ChevronLeft } from "lucide-react";
 import { usePublic } from "../contexts/publicContext";
-import ConvertSwitch from "../components/convertSwitch2";
-import ModalMSG from "../components/modalMSG";
-import ModalErrorMSG from "../components/modalErrorMSG";
-import ModalResetPassword from "../components/resetPasswordModal";
+import ConvertSwitch from "../components/component/convertSwitch2";
+import ModalMSG from "../components/modal/modalMSG";
+import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import ModalResetPassword from "../components/modal/resetPasswordModal";
 import config from "../../config";
 
 function FindAccountResult() {

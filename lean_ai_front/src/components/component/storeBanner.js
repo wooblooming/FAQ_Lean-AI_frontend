@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
-import config from '../../config';
+import config from '../../../config';
 
 const StoreBanner = ({ banner, onBack, isOwner }) => (
     <div className="relative">

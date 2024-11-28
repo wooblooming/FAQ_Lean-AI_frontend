@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../contexts/authContext';
 import { useSwipeable } from 'react-swipeable';
-import Loading from '../../components/loading';
-import StoreBanner from '../../components/storeBanner';
-import StoreInfo from '../../components/storeInfo';
-import MenuList from '../../components/menuList';
-import ImageList from '../../components/imageList'
+import Loading from '../../components/component/loading';
+import StoreBanner from '../../components/component/storeBanner';
+import StoreInfo from '../../components/component/storeInfo';
+import MenuList from '../../components/component/menuList';
+import ImageList from '../../components/component/imageList'
 import { fetchStoreData } from '../../fetch/fetchStoreData';
+import { fetchStoreMenu } from '../../fetch/fetchStoreMenu';
 import { fetchFeedImage } from '../../fetch/fetchStoreFeed';
-import ModalErrorMSG from '../../components/modalErrorMSG';
+import ModalErrorMSG from '../../components/modal/modalErrorMSG';
 import Chatbot from '../chatBotMSG';
 
 const StoreIntroduce = () => {
@@ -19,7 +19,7 @@ const StoreIntroduce = () => {
   const [images, setImages] = useState([]);;
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
-  const [menuPrice, setMenuPrice] = useState(null);
+  const [menu, setMenu] = useState(null);
   const [isOwner, setIsOwner] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
@@ -31,6 +31,7 @@ const StoreIntroduce = () => {
     if (slug) {
       setIsOwner(false);
       fetchStoreData({ slug }, null, setStoreData, setErrorMessage, setShowErrorMessageModal, isOwner);
+      fetchStoreMenu({slug}, null, setMenu, setErrorMessage, setShowErrorMessageModal, isOwner);
       fetchFeedImage({ slug }, null, setImages); // 피드 가져오기
       setIsLoading(false);
     }
@@ -42,16 +43,9 @@ const StoreIntroduce = () => {
       //console.log("store data : ", storeData.store);
       setStoreCategory(storeData.store.store_category);
       setAgentId(storeData.store.agent_id);
-
-      // menu_price가 JSON 문자열인 경우 파싱
-      try {
-        const parsedMenuPrice = JSON.parse(storeData.store.menu_price);
-        setMenuPrice(parsedMenuPrice);
-      } catch (error) {
-        console.error("Error parsing menu_price:", error);
-      }
     }
   }, [storeData]);
+
 
   // Swipeable hook 설정: 좌우 스와이프로 탭 전환
   const handlers = useSwipeable({
@@ -128,7 +122,7 @@ const StoreIntroduce = () => {
           </div>
           <div className="p-4 font-sans mt-3">
             {activeTab === 'home' && <StoreInfo storeData={storeData.store} />}
-            {activeTab === 'menu' && <MenuList menuPrice={menuPrice} storeCategory={storeCategory} menuTitle={menuTitle} />}
+            {activeTab === 'menu' && <MenuList menu={menu} storeCategory={storeCategory} menuTitle={menuTitle} />}
             {activeTab === 'image' && <ImageList images={images} />}
           </div>
         </div>

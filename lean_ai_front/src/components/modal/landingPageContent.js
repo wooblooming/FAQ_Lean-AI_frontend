@@ -3,12 +3,12 @@ import { useRouter } from 'next/router';
 import Image from "next/image";
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { useAuth } from '../contexts/authContext';
-import { usePublic } from '../contexts/publicContext';
-import Nav from '../components/navBar';
-import CompanySection from '../components/companySection';
-import ServiceSection from '../components/serviceSection';
-import Footer from '../components/footer';
+import { useAuth } from '../../contexts/authContext';
+import { usePublic } from '../../contexts/publicContext';
+import Nav from '../component/navBar';
+import CompanySection from '../component/companySection';
+import ServiceSection from '../component/serviceSection';
+import Footer from '../component/footer';
 
 const LandingPageContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태

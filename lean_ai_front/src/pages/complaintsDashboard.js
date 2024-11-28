@@ -8,9 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { fetchPublicComplaint } from '../fetch/fetchPublicComplaint';
-import ComplaintDetailModal from '../components/complaintDetailModal';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import ComplaintDetailModal from '../components/modal/complaintDetailModal';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import config from '../../config';
 
 const ComplaintsDashboard = () => {

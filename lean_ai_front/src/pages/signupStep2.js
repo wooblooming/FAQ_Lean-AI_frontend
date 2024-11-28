@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft } from 'lucide-react';
-import TermsOfServiceModal from '../components/termsOfServiceModal';
-import MarketingModal from '../components/marketingModal';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import TermsOfServiceModal from '../components/modal/termsOfServiceModal';
+import MarketingModal from '../components/modal/marketingModal';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import config from '../../config';
 
 const SignupStep2 = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import ModalMSG from '../components/modalMSG';
+import ModalMSG from '../components/modal/modalMSG';
 
 export default function ErrorPage() {
     const [showWModal, setShowModal] = useState(true);

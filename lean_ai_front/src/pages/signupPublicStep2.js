@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft, RotateCw, Building2, Clock, Phone, MapPin, Users } from 'lucide-react';
-import TermsOfServiceModal from '../components/termsOfServiceModal';
+import TermsOfServiceModal from '../components/modal/termsOfServiceModal';
 import RegisterPublic from './registerPublic';
-import Modal from '../components/modal';
-import MarketingModal from '../components/marketingModal';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import Modal from '../components/modal/modal';
+import MarketingModal from '../components/modal/marketingModal';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import axios from 'axios';
 import config from '../../config';
 

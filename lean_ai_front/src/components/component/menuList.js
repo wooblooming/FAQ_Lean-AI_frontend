@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import { TriangleAlert } from 'lucide-react';
-import AllergyModal from './allergyModal';
-import config from '../../config';
+import AllergyModal from '../modal/allergyModal';
+import config from '../../../config';
 
 // MenuList 컴포넌트: 메뉴 항목을 카테고리별로 보여주고 알레르기 모달을 관리합니다.
-const MenuList = ({ menuPrice, storeCategory, menuTitle }) => {
+const MenuList = ({ menu, storeCategory, menuTitle }) => {
     const [openCategories, setOpenCategories] = useState({}); // 각 카테고리의 열림/닫힘 상태 관리
     const [showAllergyModal, setShowAllergyModal] = useState(false); // 알레르기 모달 상태 관리
-    const groupedMenu = groupMenuByCategory(menuPrice); // 메뉴를 카테고리별로 그룹화
+    const groupedMenu = groupMenuByCategory(menu); // 메뉴를 카테고리별로 그룹화
 
     // 카테고리의 열림/닫힘 상태를 토글하는 함수
     const toggleCategory = (category) => {
@@ -72,7 +72,7 @@ const MenuList = ({ menuPrice, storeCategory, menuTitle }) => {
             <AllergyModal
                 show={showAllergyModal} // 모달 열림 상태에 따라 렌더링
                 onClose={toggleAllergyModal} // 닫기 함수
-                menuDetails={menuPrice} // 메뉴 상세 데이터를 모달로 전달
+                menuDetails={menu} // 메뉴 상세 데이터를 모달로 전달
             />
         </div>
     );
@@ -104,7 +104,7 @@ const MenuItem = ({ menu }) => (
         <img src={menu.image ? `${config.apiDomain}${menu.image}` : '/menu_default_image.png'} alt={menu.name} className="w-16 h-16 object-cover" />
         <div className="flex-1 ml-3">
             <p className="font-semibold">{menu.name}</p>
-            <p>{menu.price.toLocaleString()} 원</p>
+            <p>{Math.floor(menu.price).toLocaleString()} 원</p>
         </div>
     </div>
 );

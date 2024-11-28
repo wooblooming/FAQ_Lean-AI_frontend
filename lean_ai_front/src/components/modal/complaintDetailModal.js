@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../contexts/authContext';
-import { useStore } from '../contexts/storeContext';
+import { useAuth } from '../../contexts/authContext';
+import { useStore } from '../../contexts/storeContext';
 import { X } from 'lucide-react';
-import { fetchPublicDepartment } from '../fetch/fetchPublicDepart';
-import ComplaintDetailTabs from './complaintDetailTabs';
-import ComplaintDetailContent from './complaintDetailContent';
-import ModalMSG from '../components/modalMSG';
-import config from '../../config';
+import { fetchPublicDepartment } from '../../fetch/fetchPublicDepart';
+import ComplaintDetailTabs from '../component/complaintDetailTabs';
+import ComplaintDetailContent from '../component/complaintDetailContent';
+import ModalMSG from './modalMSG';
+import config from '../../../config';
 
 
 const TabButton = ({ active, onClick, children }) => (

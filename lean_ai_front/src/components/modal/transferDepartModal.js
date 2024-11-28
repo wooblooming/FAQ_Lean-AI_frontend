@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../../contexts/authContext';
 import axios from 'axios';
 import ModalMSG from './modalMSG';
-import config from '../../config';
+import config from '../../../config';
 
 export default function TransferDepartmentModal({ show, onClose, depart, onTransfer, complaintId }) {
     const { token } = useAuth();

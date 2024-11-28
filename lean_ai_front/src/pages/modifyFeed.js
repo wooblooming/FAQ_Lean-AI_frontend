@@ -5,10 +5,10 @@ import axios from 'axios';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { fetchFeedImage } from '../fetch/fetchStoreFeed';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
-import FeedUpload from '../components/feedUpload';
-import FeedEdit from '../components/feedEdit';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
+import FeedUpload from '../components/component/feedUpload';
+import FeedEdit from '../components/component/feedEdit';
 import config from '../../config';
 
 const ModifyFeed = () => {

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import IdCheckModal from '../components/idCheckModal'; // 아이디 중복 검사 기능이 있는 컴포넌트
-import VerificationModal from '../components/verificationModal'; // 핸드폰 인증 기능이 있는 컴포넌트
-import ModalErrorMSG from '../components/modalErrorMSG';
+import IdCheckModal from '../components/component/idCheckModal'; // 아이디 중복 검사 기능이 있는 컴포넌트
+import VerificationModal from '../components/modal/verificationModal'; // 핸드폰 인증 기능이 있는 컴포넌트
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import config from '../../config';
 
 const signupPublicStep1 = () => {

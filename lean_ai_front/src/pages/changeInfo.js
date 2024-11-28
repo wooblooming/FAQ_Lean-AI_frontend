@@ -6,29 +6,20 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import { useAuth } from '../contexts/authContext';
 import { fetchStoreData } from '../fetch/fetchStoreData';
-import StoreInfoEdit from '../components/storeInfoEdit';
-import StoreHourEdit from '../components/storeHourEdit';
-import AddMenuModal from '../components/addMenuModal';
-import ViewMenuModal from '../components/viewMenuModal';
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import { fetchStoreMenu } from '../fetch/fetchStoreMenu';
+import StoreInfoEdit from '../components/component/storeInfoEdit';
+import StoreHourEdit from '../components/component/storeHourEdit';
+import AddMenuModal from '../components/modal/addMenuModal';
+import ViewMenuModal from '../components/modal/viewMenuModal';
+import ModalMSG from '../components/modal/modalMSG';
+import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import config from '../../config';
 import { useStore } from '../contexts/storeContext';
 
-const ChangeInfo = ({ initialData }) => {
+const ChangeInfo = ({ }) => {
   const { token } = useAuth();
   const { storeID } = useStore();
-  const [storeData, setStoreData] = useState('');
   const [isOwner, setIsOwner] = useState('');
-  const [slug, setStoreSlug] = useState('');
-  const [storeName, setStoreName] = useState(''); // 매장 이름 상태
-  const [storeIntroduction, setStoreIntroduction] = useState(''); // 매장 소개 상태
-  const [storeCategory, setStoreCategory] = useState(''); // 매장 종류 상태
-  const [storeHours, setStoreHours] = useState(''); // 영업 시간 상태
-  const [menuPrices, setMenuPrices] = useState([]); // 메뉴 가격 리스트 상태
-  const [storeAddress, setStoreAddress] = useState(''); // 매장 주소 상태
-  const [storeTel, setStoreTel] = useState(''); // 매장 전화번호 상태
-  const [storeInformation, setStoreInformation] = useState(''); // 매장 소개 상태
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
   const [isStoreHourEditModalOpen, setIsStoreHourEditModalOpen] = useState(false);
 
@@ -37,10 +28,21 @@ const ChangeInfo = ({ initialData }) => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 열림/닫힘 상태
   const [isAddMenuModalOpen, setIsAddMenuModalOpen] = useState(false);
   const [isViewMenuModalOpen, setIsViewMenuModalOpen] = useState(false);
+  const [storeInfo, setStoreInfo] = useState({
+    store_name: '',
+    store_introduction: '',
+    store_category: '',
+    opening_hours: '',
+    store_address: '',
+    store_tel: '',
+    store_information: '',
+  });
+  const [menu, setMenu] = useState([]);
+  const [slug, setSlug] = useState();
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 수정 모달 열림/닫힘 상태
   const [editText, setEditText] = useState(''); // 수정 중인 텍스트
   const [currentEditElement, setCurrentEditElement] = useState(''); // 현재 수정 중인 요소
-  const [currentMenuIndex, setCurrentMenuIndex] = useState(null); // 현재 수정 중인 메뉴 항목의 인덱스
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 모달 열림/닫힘 상태
   const [showMessageModal, setShowMessageModal] = useState(false); // 메시지 모달 열림/닫힘 상태
@@ -56,71 +58,44 @@ const ChangeInfo = ({ initialData }) => {
   };
 
   useEffect(() => {
-    if (storeData && typeof storeData === 'object') {
-      const store = storeData.store;
-  
-      setStoreCategory(store.store_category || '');
-      setStoreName(store.store_name || '');
-      setStoreSlug(store.slug || '');
-      setStoreIntroduction(store.store_introduction || '');
-      setStoreHours(store.opening_hours || '');
-      setStoreAddress(store.store_address || '');
-      setStoreTel(store.store_tel || '');
-      setStoreInformation(store.store_information || '');
-  
-      try {
-        const parsedMenuPrice = JSON.parse(store.menu_price || '[]');
-        setMenuPrices(parsedMenuPrice);
-      } catch (error) {
-        console.error("Error parsing menu_price:", error);
-      }
+    if (token && storeID) {
+      setIsOwner(true);
+      fetchStoreData(
+        { storeID },
+        token,
+        (data) => {
+          const store = data.store;
+
+          // 데이터 매핑
+          setStoreInfo({
+            store_name: store.store_name || '',
+            store_introduction: store.store_introduction || '',
+            store_category: store.store_category || '',
+            opening_hours: store.opening_hours || '',
+            store_address: store.store_address || '',
+            store_tel: store.store_tel || '',
+            store_information: store.store_information || '',
+          });
+
+          setSlug(store.slug);
+
+          // 배너 이미지 설정
+          const bannerPath = store.banner || '';
+          const storeImageUrl = bannerPath.startsWith('/media/')
+            ? `${config.apiDomain}${bannerPath}`
+            : '/chatbot.png';
+          setPreviewImage(storeImageUrl);
+
+        },
+        setErrorMessage,
+        setShowErrorMessageModal,
+        isOwner
+      ).finally(() => setIsLoading(false));
+
+      fetchStoreMenu({ storeID }, token, setMenu, setErrorMessage, setShowErrorMessageModal);
+
     }
-    // 의존성 배열에 빈 배열을 사용하여 컴포넌트 마운트 시 한 번만 실행
-  }, []);
-  
-
-  // 매장 정보 가져오기
-useEffect(() => {
-  if (storeID && token) {
-    setIsOwner(true);
-    fetchStoreData(
-      { storeID },
-      token,
-      (data) => {
-        const store = data.store;
-        setStoreData(data);
-        setStoreCategory(store.store_category || '');
-        setStoreName(store.store_name || '');
-        setStoreSlug(store.slug || '');
-        setStoreIntroduction(store.store_introduction || '');
-        setStoreHours(store.opening_hours || '');
-        setStoreAddress(store.store_address || '');
-        setStoreTel(store.store_tel || '');
-        setStoreInformation(store.store_information || '');
-
-        const bannerPath = store.banner || '';
-      const storeImageUrl = bannerPath
-        ? bannerPath.startsWith('/media/')
-          ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${bannerPath}`
-          : `${process.env.NEXT_PUBLIC_MEDIA_URL}/media/${bannerPath.replace(/^\/+/, '')}`
-        : '/chatbot.png'; // 기본 이미지 경로 설정            
-
-      //console.log('storeImageUrl : ', storeImageUrl);
-      setPreviewImage(storeImageUrl); // 배너 이미지 미리보기 설정
-
-        try {
-          const parsedMenuPrice = JSON.parse(store.menu_price || '[]');
-          setMenuPrices(parsedMenuPrice);
-        } catch (error) {
-          console.error("Error parsing menu_price:", error);
-        }
-      },
-      setErrorMessage,
-      setShowErrorMessageModal,
-      isOwner
-    ).finally(() => setIsLoading(false));
-  }
-}, [storeID, token, isOwner]);
+  }, [storeID, token]);
 
   // 로딩 중일 때 보여줄 UI
   if (isLoading) {
@@ -140,10 +115,10 @@ useEffect(() => {
   };
 
   const handleStoreHoursSave = (updatedHours) => {
-    setStoreHours(updatedHours); // 영업 시간 업데이트
-  };
-  const handleStoreHoursDelete = () => {
-    setStoreHours(''); // storeHours 초기화
+    setStoreInfo({
+      ...storeInfo,
+      opening_hours: updatedHours, // storeInfo의 hours 필드 업데이트
+    });
   };
 
   // 이미지 모달 열기 함수
@@ -157,21 +132,12 @@ useEffect(() => {
   };
 
   // 수정 모달 열기 함수
-  const openEditModal = (elementId, index = null) => {
+  const openEditModal = (elementId) => {
     setCurrentEditElement(elementId);
-    setCurrentMenuIndex(index);
-    setEditText(
-      elementId === 'storeName' ? storeName :
-        elementId === 'storeIntroduction' ? storeIntroduction :
-          elementId === 'storeCategory' ? storeCategory :
-            elementId === 'storeHours' ? storeHours :
-              elementId === 'storeAddress' ? storeAddress :
-                elementId === 'storeTel' ? storeTel :
-                  elementId === 'storeInformation' ? storeInformation :
-                    index !== null ? menuPrices[index] : ''
-    );
+    setEditText(storeInfo[elementId] || ''); // storeInfo에서 값 가져오기
     setIsEditModalOpen(true);
   };
+
 
   // 수정 모달 닫기 함수
   const closeEditModal = () => {
@@ -206,71 +172,50 @@ useEffect(() => {
   // 변경 사항 저장 함수
   const saveChanges = () => {
     if (editText.trim() !== '') {
-      if (currentEditElement === 'storeName') {
-        setStoreName(editText);
-      } else if (currentEditElement === 'storeIntroduction') {
-        setStoreIntroduction(editText);
-      } else if (currentEditElement === 'storeCategory') {
-        setStoreCategory(editText);
-      } else if (currentEditElement === 'storeAddress') {
-        setStoreAddress(editText);
-      } else if (currentEditElement === 'storeTel') {
-        setStoreTel(editText);
-      } else if (currentEditElement === 'storeInformation') {
-        setStoreInformation(editText)
-      } else if (currentEditElement === 'menuPrices' && currentMenuIndex !== null) {
-        const updatedMenuPrices = [...menuPrices];
-        updatedMenuPrices[currentMenuIndex] = editText;
-        setMenuPrices(updatedMenuPrices);
-      } else if (currentEditElement === 'menuPrices') {
-        setMenuPrices([...menuPrices, editText]);
-      }
+      setStoreInfo({
+        ...storeInfo,
+        [currentEditElement]: editText, // currentEditElement를 키로 사용
+      });
     }
     closeEditModal();
   };
 
   // 삭제 함수
   const deleteElement = () => {
-    if (currentEditElement === 'storeName') {
-      setStoreName('');
-    } else if (currentEditElement === 'storeIntroduction') {
-      setStoreIntroduction('');
-    } else if (currentEditElement === 'storeCategory') {
-      setStoreCategory('');
-    } else if (currentEditElement === 'storeAddress') {
-      setStoreAddress('');
-    } else if (currentEditElement === 'storeTel') {
-      setStoreTel('');
-    } else if (currentEditElement === 'storeInformation') {
-      setStoreInformation('');
-    } else if (currentEditElement === 'menuPrices' && currentMenuIndex !== null) {
-      const updatedMenuPrices = menuPrices.filter((_, index) => index !== currentMenuIndex);
-      setMenuPrices(updatedMenuPrices);
-    }
-    closeEditModal();
+    setStoreInfo({
+      ...storeInfo,
+      [currentEditElement]: '', // 현재 수정 중인 요소를 초기화
+    });
+
+    closeEditModal(); // 수정 모달 닫기
   };
 
   // 모든 변경 사항 저장 함수
   const saveAllChanges = async () => {
     try {
       const formData = new FormData();
-      formData.append('store_category', storeCategory || '');
-      formData.append('store_introduction', storeIntroduction || '');
-      formData.append('store_name', storeName || '');
-      formData.append('opening_hours', storeHours || '');
-      formData.append('store_tel', storeTel || '');
-      formData.append('store_address', storeAddress || '');
-      formData.append('store_information', storeInformation || '');
+
+      // storeInfo 필드 추가
+      Object.keys(storeInfo).forEach((key) => {
+        formData.append(key, storeInfo[key] || '');
+      });
 
       // 이미지 파일 추가
       if (storeImage) {
-        formData.append('banner', storeImage); // storeImage는 파일 객체여야 합니다.
+        formData.append('banner', storeImage);
       }
 
-      const response = await fetch(`${config.apiDomain}/api/user-stores/${storeId}/`, {
+
+      //console.log('FormData 내용:');
+      /* 
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });*/
+
+      const response = await fetch(`${config.apiDomain}/api/storesinfo-update/${storeID}/`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -288,6 +233,7 @@ useEffect(() => {
       setShowErrorMessageModal(true);
     }
   };
+
 
   // 메시지 모달 닫기 & 초기화
   const handleMessageModalClose = () => {
@@ -327,9 +273,9 @@ useEffect(() => {
 
 
   // storeCategory에 따라 메뉴 타이틀 설정
-  const menuTitle = storeCategory === 'FOOD'
+  const menuTitle = storeInfo.store_category === 'FOOD'
     ? '메뉴'
-    : storeCategory === 'RETAIL' || storeCategory === 'UNMANNED' || storeCategory === 'OTHER'
+    : storeInfo.store_category === 'RETAIL' || storeInfo.store_category === 'UNMANNED' || storeInfo.store_category === 'OTHER'
       ? '상품'
       : '';
 
@@ -358,46 +304,47 @@ useEffect(() => {
         <div id='store-info' className='bg-white px-4 py-2'>
           <StoreInfoEdit
             label="매장 이름"
-            value={storeName}
-            onEdit={openEditModal}
-            elementId="storeName"
+            value={storeInfo.store_name}
+            onEdit={openEditModal} // 부모 컴포넌트의 `openEditModal` 함수 전달
+            elementId="store_name" // `elementId`를 고유하게 설정
           />
           <StoreInfoEdit
             label="매장 소개"
-            value={storeIntroduction}
+            value={storeInfo.store_introduction}
             onEdit={openEditModal}
-            elementId="storeIntroduction"
+            elementId="store_introduction"
           />
           <StoreInfoEdit
             label="비즈니스 종류"
-            value={businessTypeMap[storeCategory] || storeCategory}
+            value={storeInfo.store_category}
             onEdit={openEditModal}
-            elementId="storeCategory"
+            elementId="store_category"
           />
           <StoreInfoEdit
             label="영업 시간"
-            value={storeHours}
+            value={storeInfo.opening_hours}
             onEdit={openStoreHourEditModal}
-            elementId="storeHours"
+            elementId="opening_hours"
           />
           <StoreInfoEdit
             label="매장 위치"
-            value={storeAddress}
+            value={storeInfo.store_address}
             onEdit={openEditModal}
-            elementId="storeAddress"
+            elementId="store_address"
           />
           <StoreInfoEdit
             label="매장 번호"
-            value={storeTel}
+            value={storeInfo.store_tel}
             onEdit={openEditModal}
-            elementId="storeTel"
+            elementId="store_tel"
           />
           <StoreInfoEdit
             label="매장 정보"
-            value={storeInformation}
+            value={storeInfo.store_information}
             onEdit={openEditModal}
-            elementId="storeInformation"
+            elementId="store_information"
           />
+
           <hr className="border-t-2 border-gray-300 w-full mt-4 " />
         </div>
 
@@ -535,7 +482,7 @@ useEffect(() => {
                 onClick={deleteElement} // 삭제 함수 호출
                 className="block w-full py-2 mt-4 text-red-400 rounded"
               >
-                삭제
+                초기화
               </button>
             </div>
           </div>
@@ -547,7 +494,7 @@ useEffect(() => {
         isOpen={isStoreHourEditModalOpen}
         onClose={closeStoreHourEditModal}
         onSave={handleStoreHoursSave}
-        onDelete={handleStoreHoursDelete}
+        hours={storeInfo.opening_hours}
       />
 
       {/* AddMenuModal 모달 */}
@@ -555,7 +502,7 @@ useEffect(() => {
         isOpen={isAddMenuModalOpen}
         onClose={closeAddMenuModal}
         onSave={(newMenu) => {
-          setMenuPrices([...menuPrices, newMenu]);
+          setMenu([...menu, newMenu]);
         }}
         slug={slug}
         menuTitle={menuTitle}
