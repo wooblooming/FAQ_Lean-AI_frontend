@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Pencil as EditIcon, Check as CheckIcon, X as CancelIcon, Trash, ChevronDown, CircleMinus } from 'lucide-react';
 import { useAuth } from '../../contexts/authContext';
-import ModalMSG from './modalMSG.js';
-import ModalErrorMSG from './modalErrorMSG';
+import ModalMSG from '../modal/modalMSG.js';
+import ModalErrorMSG from '../modal/modalErrorMSG';
 import ConfirmDeleteModal from '../modal/confirmDeleteModal';
 import config from '../../../config';
 import styles from '../../styles/viewMenu.module.css';

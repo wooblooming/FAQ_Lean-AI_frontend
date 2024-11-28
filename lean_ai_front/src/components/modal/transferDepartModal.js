@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useAuth } from '../../contexts/authContext';
 import axios from 'axios';
-import ModalMSG from './modalMSG';
+import ModalMSG from '../modal/modalMSG';
 import config from '../../../config';
 
 export default function TransferDepartmentModal({ show, onClose, depart, onTransfer, complaintId }) {

@@ -4,8 +4,8 @@ import { Plus, PencilLine as EditIcon, Check, X as CancelIcon, Image as ImageIco
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
-import ModalMSG from './modalMSG'; // 메시지 모달 컴포넌트
-import ModalErrorMSG from './modalErrorMSG'; // 에러 메시지 모달 컴포넌트
+import ModalMSG from '../modal/modalMSG'; // 메시지 모달 컴포넌트
+import ModalErrorMSG from '../modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../../config';
 import styles from '../../styles/viewMenu.module.css';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ModalText from './modalText';
-import ModalErrorMSG from './modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import ModalText from '../modal/modalText';
+import ModalErrorMSG from '../modal/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 const personalInfoModal = ({ show, onClose, onAgree }) => {
     const [errorMessage, setErrorMessage] = useState('');

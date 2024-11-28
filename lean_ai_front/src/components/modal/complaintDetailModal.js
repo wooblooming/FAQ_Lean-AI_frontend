@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { fetchPublicDepartment } from '../../fetch/fetchPublicDepart';
 import ComplaintDetailTabs from '../component/complaintDetailTabs';
 import ComplaintDetailContent from '../component/complaintDetailContent';
-import ModalMSG from './modalMSG';
+import ModalMSG from '../modal/modalMSG';
 import config from '../../../config';
 
 

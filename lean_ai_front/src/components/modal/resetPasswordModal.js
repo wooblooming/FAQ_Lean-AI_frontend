@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { usePublic } from "../../contexts/publicContext";
-import ModalMSG from '../components/modalMSG';
-import ModalErrorMSG from '../components/modalErrorMSG';
+import ModalMSG from '../modal/modalMSG';
+import ModalErrorMSG from '../modal/modalErrorMSG';
 import config from '../../../config';
 
 function ModalResetPassword({ show, onClose, phone }) {

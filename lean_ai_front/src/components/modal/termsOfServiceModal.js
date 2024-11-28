@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import ModalText from './modalText';
-import ModalErrorMSG from '../components/modalErrorMSG'; // 에러메시지 모달 컴포넌트
+import ModalErrorMSG from '../modal/modalErrorMSG'; // 에러메시지 모달 컴포넌트
 
 
 const TermsOfServiceModal = ({ show, onClose, onAgree }) => {

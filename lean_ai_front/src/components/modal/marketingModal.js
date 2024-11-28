@@ -1,5 +1,5 @@
 import React from 'react';
-import ModalText from './modalText';
+import ModalText from '../modal/modalText';
 
 const MarketingModal = ({ show, onClose, onAgree }) => {
     const marketingOfService = `
