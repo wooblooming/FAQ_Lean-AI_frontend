@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import ModalMSG from '../modal/modalMSG';
-import ModalErrorMSG from '../modal/modalErrorMSG';
+import ModalMSG from './modalMSG';
+import ModalErrorMSG from './modalErrorMSG';
 import config from '../../../config';
 
 const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, isPublic }) => {

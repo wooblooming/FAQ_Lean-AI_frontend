@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
-import { useAuth } from '../../contexts/authContext';
-import { useStore } from '../../contexts/storeContext';
-import { usePublic } from '../../contexts/publicContext';
 import ModalMSG from '../modal/modalMSG';
 import ModalErrorMSG from '../modal/modalErrorMSG';
 import VerificationModal from '../modal/verificationModal';
@@ -13,17 +10,22 @@ import styles from '../../styles/selectStyles.module.css';
 import config from '../../../config';
 
 const UserProfileForm = ({
-  name, setName, // 사용자 이름과 이름 변경 함수
-  ID, // 사용자 ID
-  email, setEmail, // 이메일과 이메일 변경 함수
-  phoneNumber, setPhoneNumber, // 전화번호와 전화번호 변경 함수
-  department, setDepartment,
+  userData = {},
+  isPublicOn,
+  token,
+  storeID,
+  onUpdateUserData
 }) => {
-  const { isPublicOn } = usePublic();
-  const { token } = useAuth();
-  const { storeID } = useStore();
+
+  if (!userData) {
+    return <div>사용자 데이터를 불러오는 중입니다...</div>;
+  }
 
   // State 관리
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
   const [message, setMessage] = useState(''); // 일반 메시지 내용
   const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달의 열림/닫힘 상태
@@ -31,6 +33,7 @@ const UserProfileForm = ({
   const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
   const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const [editing, setEditing] = useState(false); // 수정 상태
+  const [depart, setDepart] = useState(); // 초기값을 빈 배열로 설정
   const [departments, setDepartments] = useState([]); // 초기값을 빈 배열로 설정
   const [departOptions, setDepartOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -38,20 +41,48 @@ const UserProfileForm = ({
   const fetchUrl = isPublicOn ? `${config.apiDomain}/public` : `${config.apiDomain}/api`;
 
   useEffect(() => {
-    if (editing && storeID && token) {
-      fetchPublicDepartment({ storeID }, null, setDepartments);
+    if (userData) {
+      setName(userData.name || '');
+      setEmail(userData.email || '');
+      setPhoneNumber(userData.phone_number || '');
+
+      if (userData.department) {
+        //console.log("user department: ", userData?.department?.department_name || "부서 정보 없음");
+        setDepart(userData?.department?.department_name);
+      }
     }
-  }, [editing, storeID, token]);
+  }, [userData]);
+
+  const handleChange = (field, value) => {
+    const updatedData = { ...userData, [field]: value };
+    if (field === 'name') setName(value);
+    if (field === 'email') setEmail(value);
+    if (field === 'phone_number') setPhoneNumber(value);
+
+    onUpdateUserData(updatedData); // 변경 사항 상위로 전달
+  };
+
 
   useEffect(() => {
-    if (departments.length > 0) {
+    if (editing && isPublicOn && storeID && token) {
+      fetchPublicDepartment({ storeID }, null, (data) => {
+        setDepartments(Array.isArray(data) ? data : []); // 항상 배열로 설정
+      });
+    }
+  }, [editing, isPublicOn, storeID, token]);
+
+  useEffect(() => {
+    //console.log("department list : ", departments);
+    if (Array.isArray(departments) && departments.length > 0) {
       const formattedOptions = departments.map((dept) => ({
         label: dept,
         value: dept,
       }));
       setDepartOptions(formattedOptions);
+    } else {
+      setDepartOptions([]); // departments가 배열이 아닐 경우 대비
     }
-  }, [departments]);
+  }, [departments]);  
 
   const handleEditToggle = async () => {
     if (editing && selectedDepartment) {
@@ -70,29 +101,46 @@ const UserProfileForm = ({
           }
         );
   
-        // 요청 성공 시 처리
-        setDepartment(selectedDepartment.value); // department 상태 업데이트
-        setMessage(response.data.message || "부서가 성공적으로 변경되었습니다.");
-        setShowMessageModal(true);
-      } catch (error) {
-        // 요청 실패 시 에러 처리
-        if (error.response && error.response.data && error.response.data.error) {
-          // 백엔드에서 전달한 에러 메시지를 사용
-          setErrorMessage(error.response.data.error);
+        if (response.status === 200 && response.data.message) {
+          const newDepartment = selectedDepartment.value;
+  
+          // 부서 업데이트와 상위 컴포넌트 동기화
+          const updatedUserData = {
+            ...userData,
+            department: { department_name: newDepartment },
+          };
+          onUpdateUserData(updatedUserData); // 즉시 상위 컴포넌트에 전달
+  
+          // 로컬 상태 업데이트
+          setDepart(newDepartment);
+  
+          setMessage(response.data.message || "부서가 성공적으로 변경되었습니다.");
+          setShowMessageModal(true);
         } else {
-          // 기타 에러 처리
-          setErrorMessage(error.message || "부서 변경 중 문제가 발생했습니다.");
+          throw new Error("부서 변경 중 문제가 발생했습니다."); // 성공하지 않은 응답 처리
         }
+      } catch (error) {
+        const errorMsg = error.response?.data?.error || "부서 변경 중 문제가 발생했습니다.";
+        setErrorMessage(errorMsg);
         setShowErrorMessageModal(true);
       }
     }
   
-    setEditing((prev) => !prev); // Toggle editing mode
+    setEditing((prev) => !prev); // 수정 모드 토글
   };
   
 
   const handleDepartmentChange = (selectedOption) => {
     setSelectedDepartment(selectedOption);
+
+    if (selectedOption) {
+      // 상위 컴포넌트에 변경 사항 전달
+      const updatedData = {
+        ...userData,
+        department: { department_name: selectedOption.value },
+      };
+      onUpdateUserData(updatedData);
+    }
   };
 
   const handleCreateDepartment = async (newDepartment) => {
@@ -150,7 +198,7 @@ const UserProfileForm = ({
         body: JSON.stringify({
           phone: phoneNumber,
           type: 'mypage',
-          user_id: ID,
+          user_id: userData.user_id,
         }),
       });
 
@@ -170,36 +218,50 @@ const UserProfileForm = ({
   };
 
   // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
-  const handleVerifyCode = async () => {
+  const handleChangePhoneNumber = async () => {
+    if (!verificationCode) {
+      setErrorMessage("인증번호를 입력해주세요.");
+      setShowErrorMessageModal(true);
+      return;
+    }
+
     try {
-      const response = await fetch(`${fetchUrl}/verify-code/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${fetchUrl}/verify-code/`, // 서버에서 인증번호 확인 API
+        {
           phone: phoneNumber,
-          code: verificationCode,
-          type: 'mypage',
-          user_id: ID,
-        }),
-      });
+          code: verificationCode, // 입력된 인증번호
+          type: 'mypage', // 용도 구분 (예: mypage)
+          user_id: userData.user_id, // 사용자 ID 전달
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      // 서버의 응답을 JSON 형식으로 변환
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setShowCodeModal(false); // 인증 완료 후 모달 닫기
-        setMessage(data.message || '인증에 성공하였습니다.'); // 메시지가 없을 경우 기본 메시지 제공
-        setShowMessageModal(true); // 성공 모달 열기
+      if (response.data.success) {
+        // 인증 성공 시 핸드폰 번호 업데이트
+        const updatedData = { ...userData, phone_number: phoneNumber };
+        onUpdateUserData(updatedData); // 상위 컴포넌트로 전달
+        setMessage("핸드폰 번호가 성공적으로 변경되었습니다.");
+        setShowMessageModal(true);
+        setShowCodeModal(false); // 인증번호 입력 모달 닫기
       } else {
-        setErrorMessage(data.message || '알 수 없는 오류가 발생했습니다.');
+        setErrorMessage(response.data.message || "인증 실패");
         setShowErrorMessageModal(true);
       }
     } catch (error) {
-      setErrorMessage('인증 확인 중 네트워크 오류가 발생했습니다.');
+      setErrorMessage("핸드폰 번호 인증 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
     }
+  };
+
+
+  // 핸드폰 인증번호 입력 모달에서 "확인" 버튼 클릭 시 호출
+  const handleVerifyPhoneNumber = async () => {
+    handleChangePhoneNumber(); // 핸드폰 번호 변경 처리 함수 호출
   };
 
 
@@ -261,8 +323,8 @@ const UserProfileForm = ({
           <div className='text-sm text-gray-400 mr-1.5 whitespace-nowrap text-left' style={{ fontFamily: "NanumSquare" }}>이름</div>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={name || ''}
+            onChange={(e) => handleChange('name', e.target.value)}
             style={{
               border: 'none',
               borderBottom: '1.5px solid #6366f1',
@@ -286,7 +348,7 @@ const UserProfileForm = ({
               width: '100%',
             }}
           >
-            <div className='text-left'>{ID}</div> {/* ID는 수정 불가 */}
+            <div className='text-left'>{userData.user_id}</div> {/* ID는 수정 불가 */}
           </div>
         </div>
 
@@ -295,8 +357,8 @@ const UserProfileForm = ({
           <div className='text-sm text-gray-400 text-left' style={{ fontFamily: "NanumSquare" }}>이메일</div>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={email || ''}
+            onChange={(e) => handleChange('email', e.target.value)}
             style={{
               border: 'none',
               borderBottom: '1.5px solid #6366f1',
@@ -313,8 +375,8 @@ const UserProfileForm = ({
           <div className='flex flex-row justify-between space-x-4'>
             <input
               type="text"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              value={phoneNumber || ''}
+              onChange={(e) => handleChange('phone_number', e.target.value)}
               style={{
                 border: 'none',
                 borderBottom: '1.5px solid #6366f1',
@@ -352,8 +414,8 @@ const UserProfileForm = ({
                   styles={customStyles}
                 />
               ) : (
-                <div className='text-left flex-grow' style={{ fontFamily: "NanumSquare" }}>
-                  {department || "부서 정보 없음"}
+                <div id='department' className='text-left flex-grow' style={{ fontFamily: "NanumSquare" }}>
+                  {depart || "부서 정보 없음"}
                 </div>
               )}
               {/* 수정 버튼 */}
@@ -374,7 +436,7 @@ const UserProfileForm = ({
       <VerificationModal
         isOpen={showCodeModal}
         onClose={handleCodeModalClose}
-        onSubmit={handleVerifyCode}
+        onSubmit={handleVerifyPhoneNumber}
         verificationCode={verificationCode}
         onChange={(e) => setVerificationCode(e.target.value)}
         errorMessage={errorMessage}

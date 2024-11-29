@@ -49,6 +49,13 @@ const SignupStep2 = () => {
             setShowErrorMessageModal(true);
             return;
         }
+        
+        // 약관 동의 확인
+        if (!termsAccepted) {
+            setErrorMessage('이용약관 및 개인정보 수집 동의는 필수입니다.');
+            setShowErrorMessageModal(true);
+            return;
+        }
 
         let dobFormatted = dob;
         if (dob.length === 6) {
@@ -84,9 +91,14 @@ const SignupStep2 = () => {
         }
     };
 
-
-    // 약관 동의 모달 열기
-    const handleTermsCheckboxChange = () => setShowTermsModal(true);
+    // 약관 동의 상태 변경
+    const handleTermsCheckboxChange = () => {
+        if (!termsAccepted) {
+            setShowTermsModal(true);
+        } else {
+            setTermsAccepted(!termsAccepted);
+        }
+    };
 
     const handleErrorMessageModalClose = () => {
         setShowErrorMessageModal(false);
@@ -113,125 +125,126 @@ const SignupStep2 = () => {
                 </div>
 
                 <div className='px-5 space-y-3'>
-                {/* 비즈니스 종류 선택 - 드롭다운 */}
-                <div className="mb-4">
-                    <select
-                        name="businessType"
-                        value={formData.businessType}
-                        onChange={handleInputChange}
-                        className={`w-full border rounded-md p-2 ${showWarning ? 'border-red-500' : ''}`}
-                    >
-                        <option value="">비즈니스 종류를 선택해주세요</option>
-                        <option value="FOOD">음식점</option>
-                        <option value="RETAIL">판매점</option>
-                        <option value="UNMANNED">무인매장</option>
-                        <option value="OTHER">기타</option>
-                    </select>
-
-                    {showWarning && (
-                        <p className="text-red-500 text-sm mt-1">비즈니스 종류를 선택해주세요.</p>
-                    )}
-                </div>
-
-                {/* 사업자명 입력 필드 */}
-                <div>
-                    <label className="flex text-gray-700 mb-3">
-                        <input
-                            type="text"
-                            name="businessName"
-                            placeholder="매장명"
-                            value={formData.businessName}
+                    {/* 비즈니스 종류 선택 - 드롭다운 */}
+                    <div className="mb-4">
+                        <select
+                            name="businessType"
+                            value={formData.businessType}
                             onChange={handleInputChange}
-                            className="border px-4 py-2 border-gray-300 rounded-md w-full"
-                        />
-                    </label>
-                </div>
+                            className={`w-full border rounded-md p-2 ${showWarning ? 'border-red-500' : ''}`}
+                        >
+                            <option value="">비즈니스 종류를 선택해주세요</option>
+                            <option value="FOOD">음식점</option>
+                            <option value="RETAIL">판매점</option>
+                            <option value="UNMANNED">무인매장</option>
+                            <option value="OTHER">기타</option>
+                        </select>
 
-                {/* 주소 입력 필드 */}
-                <div>
-                    <label className="flex text-gray-700 w-full">
-                        <input
-                            type="text"
-                            name="address"
-                            placeholder="주소"
-                            value={formData.address}
-                            onChange={handleInputChange}
-                            className="border px-4 py-2 border-gray-300 rounded-md w-full"
-                        />
-                    </label>
-                </div>
-
-                {/* 약관 및 마케팅 동의 체크박스 */}
-                <div className="flex items-center justify-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={termsAccepted}
-                        onChange={handleTermsCheckboxChange}
-                        className="form-checkbox h-4 w-4 text-blue-600"
-                    />
-                    <label
-                        className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
-                        onClick={handleTermsCheckboxChange}
-                    >
-                        이용약관 및 개인정보 수집 동의(필수)
-                    </label>
-                </div>
-
-                <div className="flex items-center justify-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={marketingAccepted}
-                        onChange={() => setMarketingAccepted(!marketingAccepted)}
-                        className="form-checkbox h-4 w-4 text-blue-600"
-                    />
-                    <label className="text-sm font-medium underline hover:text-blue-600" onClick={() => setShowMarketingModal(true)}>
-                        마케팅 활용 동의 및 광고 수신 동의(선택)
-                    </label>
-                </div>
-
-                {/* 회원가입 버튼 */}
-                <button
-                    className="w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold"
-                    onClick={handleSignup}
-                >
-                    회원가입
-                </button>
-
-                {/* 이용약관 모달 */}
-                <TermsOfServiceModal
-                    show={showTermsModal}
-                    onClose={() => setShowTermsModal(false)}
-                    onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
-                />
-
-                {/* 마케팅 약관 모달 */}
-                <MarketingModal
-                    show={showMarketingModal}
-                    onClose={() => setShowMarketingModal(false)}
-                    onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
-                />
-
-                {/* 에러 메시지 모달 */}
-                <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
-                    <p className='whitespace-pre-line'>
-                        {typeof errorMessage === 'object' ? (
-                            Object.entries(errorMessage).map(([key, value]) => (
-                                <span key={key}>
-                                    {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
-                                </span>
-                            ))
-                        ) : (
-                            errorMessage
+                        {showWarning && (
+                            <p className="text-red-500 text-sm mt-1">비즈니스 종류를 선택해주세요.</p>
                         )}
-                    </p>
-                </ModalErrorMSG>
+                    </div>
 
-                {/* 회원가입 성공 모달 */}
-                <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
-                    <p className=''>{formData.username}님 환영합니다!</p>
-                </ModalMSG>
+                    {/* 사업자명 입력 필드 */}
+                    <div>
+                        <label className="flex text-gray-700 mb-3">
+                            <input
+                                type="text"
+                                name="businessName"
+                                placeholder="매장명"
+                                value={formData.businessName}
+                                onChange={handleInputChange}
+                                className="border px-4 py-2 border-gray-300 rounded-md w-full"
+                            />
+                        </label>
+                    </div>
+
+                    {/* 주소 입력 필드 */}
+                    <div>
+                        <label className="flex text-gray-700 w-full">
+                            <input
+                                type="text"
+                                name="address"
+                                placeholder="주소"
+                                value={formData.address}
+                                onChange={handleInputChange}
+                                className="border px-4 py-2 border-gray-300 rounded-md w-full"
+                            />
+                        </label>
+                    </div>
+
+                    {/* 약관 및 마케팅 동의 체크박스 */}
+                    <div className="flex items-center justify-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={termsAccepted}
+                            onChange={handleTermsCheckboxChange}
+                            className="form-checkbox h-4 w-4 text-blue-600"
+                        />
+                        <label
+                            className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
+                            onClick={handleTermsCheckboxChange}
+                        >
+                            이용약관 및 개인정보 수집 동의(필수)
+                        </label>
+                    </div>
+
+
+                    <div className="flex items-center justify-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={marketingAccepted}
+                            onChange={() => setMarketingAccepted(!marketingAccepted)}
+                            className="form-checkbox h-4 w-4 text-blue-600"
+                        />
+                        <label className="text-sm font-medium underline hover:text-blue-600" onClick={() => setShowMarketingModal(true)}>
+                            마케팅 활용 동의 및 광고 수신 동의(선택)
+                        </label>
+                    </div>
+
+                    {/* 회원가입 버튼 */}
+                    <button
+                        className="w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold"
+                        onClick={handleSignup}
+                    >
+                        회원가입
+                    </button>
+
+                    {/* 이용약관 모달 */}
+                    <TermsOfServiceModal
+                        show={showTermsModal}
+                        onClose={() => setShowTermsModal(false)}
+                        onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
+                    />
+
+                    {/* 마케팅 약관 모달 */}
+                    <MarketingModal
+                        show={showMarketingModal}
+                        onClose={() => setShowMarketingModal(false)}
+                        onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
+                    />
+
+                    {/* 에러 메시지 모달 */}
+                    <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
+                        <p className='whitespace-pre-line'>
+                            {typeof errorMessage === 'object' ? (
+                                Object.entries(errorMessage).map(([key, value]) => (
+                                    <span key={key}>
+                                        {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+                                    </span>
+                                ))
+                            ) : (
+                                errorMessage
+                            )}
+                        </p>
+                    </ModalErrorMSG>
+
+                    {/* 회원가입 성공 모달 */}
+                    <ModalMSG show={showWelcomeModal} onClose={handleWelcomeModalClose} title="Welcome">
+                        <p className=''>{formData.username}님 환영합니다!</p>
+                    </ModalMSG>
+                </div>
             </div>
-        </div>
         </div>
     );
 };

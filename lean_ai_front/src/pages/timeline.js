@@ -170,22 +170,23 @@ const TimelineEvent = ({ date, title, description }) => {
 
   return (
     <div
-      className=" flex items-center space-x-16 group relative transition-all duration-1000 ease-out"
+      className=" flex items-center space-x-4 md:space-x-16 group relative transition-all duration-1000 ease-out px-2 "
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* 이벤트 날짜 표시 */}
-      <div className="flex-shrink-0 font-medium text-gray-600 px-2">{date}</div>
+      <div className="flex-shrink-0 font-medium text-sm md:text-base text-gray-600">{date}</div>
       <div className="w-full flex-grow py-2">
         {/* 이벤트 제목 및 설명 */}
-        <h3
-          className={`font-bold text-xl transition-all duration-300 ease-in-out ${
+        <h2
+          style={{ fontFamily: "NanumSquareExtraBold" }}
+          className={`font-bold text-base md:text-xl transition-all duration-300 ease-in-out ${
             isHovered ? 'text-indigo-500 scale-105' : 'text-black'
           }`}
         >
           {title}
-        </h3>
-        <p className="text-sm text-gray-500 font-medium ">{description}</p>
+        </h2>
+        <p className="text-base text-gray-500 font-medium " style={{ fontFamily: "NanumSquare" }}>{description}</p>
       </div>
     </div>
   );
@@ -198,7 +199,7 @@ const YearMarker = ({ year, onClick }) => {
       className="cursor-pointer my-3 flex items-center transition-all duration-300 ease-in-out"
     >
       {/* 연도 표시 */}
-      <div className="flex-shrink-0 w-24 font-bold text-3xl text-gray-600">{year}</div>
+      <div className="flex-shrink-0 w-12 md:w-24 font-bold text-xl md:text-3xl text-gray-600">{year}</div>
       {/* 연도별 구분선 */}
       <div className={'w-full border-b-2 flex-grow ml-4 transition-all duration-300 border-indigo-300'}></div>
     </div>
@@ -228,7 +229,7 @@ const Timeline = () => {
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
             onClick={() => router.push('/')}
           />
-          <h1 className="text-4xl font-bold text-center text-indigo-600" style={{fontFamily:'NanumSquareExtraBold'}}>린에이아이의 걸어온 길</h1>
+          <h1 className="text-2xl md:text-4xl font-bold text-center text-indigo-600" style={{fontFamily:'NanumSquareExtraBold'}}>린에이아이의 걸어온 길</h1>
         </div>
 
         {/* 타임라인 본문 */}

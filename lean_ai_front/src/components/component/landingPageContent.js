@@ -78,7 +78,7 @@ const LandingPageContent = () => {
   };
 
   // 캐시 버스팅을 위한 이미지 컴포넌트
-  const CacheBustedImage = ({ src, alt, width, height, version = 'v1', ...props }) => {
+  const CacheBustedImage = ({ src, alt, width, height, version, ...props }) => {
     const versionedSrc = `${src}?${version}`;
     return (
       <Image

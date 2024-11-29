@@ -406,8 +406,8 @@ const ServiceSection = ({ isMobile }) => {
           <span className="text-indigo-600">무물 서비스</span>는 <br />간단합니다
         </p>
         <div className="flex justify-center mb-6">
-          <button className={`px-4 py-2 rounded-l-lg ${isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(true)}>업주 가이드라인</button>
-          <button className={`px-4 py-2 rounded-r-lg ${!isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(false)}>고객 가이드라인</button>
+          <button className={`px-4 py-3 rounded-l-lg whitespace-nowrap ${isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(true)}>업주 가이드라인</button>
+          <button className={`px-4 py-3 rounded-r-lg whitespace-nowrap ${!isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(false)}>고객 가이드라인</button>
         </div>
         <div className="relative w-full h-full px-4 py-6 rounded-lg bg-white" style={{ height: '824px' }}>
           <div className="text-center mb-4">

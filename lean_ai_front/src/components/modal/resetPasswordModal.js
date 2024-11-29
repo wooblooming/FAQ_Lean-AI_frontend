@@ -106,7 +106,7 @@ function ModalResetPassword({ show, onClose, phone }) {
                     <button onClick={handleCloseModal} className="text-gray-500 px-3 py-2 font-semibold rounded-md hover:ring-2 ring-gray-400">
                         취소
                     </button>
-                    <button onClick={handleResetPassword} className="text-blue-500 px-3 py-2 font-semibold rounded-md hover:ring-2 ring-blue-400">
+                    <button onClick={handleResetPassword} className="text-indigo-500 px-3 py-2 font-semibold rounded-md hover:ring-2 ring-indigo-400">
                         비밀번호 재설정
                     </button>
                 </div>

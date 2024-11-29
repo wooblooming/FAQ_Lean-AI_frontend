@@ -1,9 +1,7 @@
-import React, { createContext } from 'react';
+import React from 'react';
 
-export const AwardsContext = createContext();
-
-export const AwardsProvider = ({ children }) => {
-  const awardsContext = [  
+const AwardsData = ({ limit }) => {
+  const awardsList = [
     { year: '2020년', content: '2020 4IR Awards AI부문 대상' },
     { year: '2019년', content: '제 4회 서울혁신챌린지 최우수상(1등)' },
     { year: '2019년', content: '안암동 캠퍼스타운 창업경진대회 금상 (1등)' },
@@ -16,13 +14,31 @@ export const AwardsProvider = ({ children }) => {
     { year: '2017년', content: '고려대 크라우드펀딩 경진대회 장려상' },
     { year: '2017년', content: 'KU Lean Innovation Challenge&Startup 경진대회 Lean Startup상 (2등)' },
     { year: '2016년', content: '제 17회 KU Campus&RnD CEO 경진대회 최우수상 (1등)' },
-    { year: '2016년', content: '제 1회 고려대 모의크라우드펀딩 경진대회 장려상 ' }
-  
+    { year: '2016년', content: '제 1회 고려대 모의크라우드펀딩 경진대회 장려상 ' },
   ];
 
   return (
-    <AwardsContext.Provider value={awardsContext}>
-      {children}
-    </AwardsContext.Provider>
+    <div>
+      <ul>
+        {awardsList.slice(0, limit).map((award, index) => (
+          <li key={index} className="flex items-center space-x-2" style={{ position: 'relative', paddingLeft: '1.5rem' }}>
+            <span className="whitespace-nowrap" style={{ fontFamily: "NanumSquareBold" }}>{award.year}</span>
+            <span className="truncate" style={{ fontFamily: "NanumSquare", width: '65%' }}>{award.content}</span>
+          </li>
+        ))}
+      </ul>
+      <style jsx>{`
+        li::before {
+          content: '•';
+          position: absolute;
+          left: 0;
+          color: black; /* 점 색상 */
+          font-size: 1.2rem; /* 점 크기 */
+        }
+      `}
+      </style>
+    </div>
   );
 };
+
+export default AwardsData;

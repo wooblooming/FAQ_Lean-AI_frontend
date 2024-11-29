@@ -2,9 +2,9 @@ import React, { useState, useContext, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { HistoryContext, HistoryProvider } from '../../contexts/historyContext';
-import { AwardsContext, AwardsProvider } from '../../contexts/awardsContext';
-import { BussinessContext, BussinessProvider } from '../../contexts/bussinessContext';
+import HistoryData from './historyData';
+import AwardsData  from './awardsData';
+import BussinessData from './bussinessData';
 import { news } from '../../pages/news';
 
 // SectionItem 컴포넌트: 각 섹션의 반복적인 렌더링을 처리
@@ -61,13 +61,7 @@ const SectionItem = ({ title, content, index, activeSections, toggleSection, isM
                 </li>
               ))
             ) : (
-              // 문자열 형태의 컨텐츠를 처리
-              content.split('\n').slice(0, 3).map((item, idx) => (
-                <li key={idx} className="flex items-center">
-                  <ChevronRight className="mr-1 flex-shrink-0 h-5 w-5 text-indigo-300" />
-                  <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>{item}</span>
-                </li>
-              ))
+              <>{content}</>
             )}
           </ul>
         </motion.div>
@@ -129,13 +123,7 @@ const getLatestNews = () => {
 
 const CompanySection = ({ isMobile }) => {
   const [activeSections, setActiveSections] = useState([false, false, false]);
-
-  // Context로부터 데이터 가져오기
-  const historyContent = useContext(HistoryContext);
-  const awardsContent = useContext(AwardsContext);
-  const bussinessContent = useContext(BussinessContext);
   const latestNews = getLatestNews(); 
-
   const router = useRouter();
 
   // 섹션 열림/닫힘 상태를 업데이트하는 함수
@@ -145,9 +133,9 @@ const CompanySection = ({ isMobile }) => {
 
   // 섹션 데이터 정의
   const sectionData = [
-    { title: '연혁', content: historyContent },
-    { title: '수상 실적', content: awardsContent },
-    { title: '사업화 및 R&D 실적', content: bussinessContent },
+    { title: '연혁', content: <HistoryData limit={5} /> },
+    { title: '수상 실적', content: <AwardsData limit={5} /> },
+    { title: '사업화 및 R&D 실적', content: <BussinessData limit={5} /> },
   ];
 
   // 모바일과 데스크탑에서 다른 텍스트를 적용
@@ -206,7 +194,7 @@ const CompanySection = ({ isMobile }) => {
           transition={{ delay: 0.5, duration: 0.8 }}
         >
           <button
-            onClick={() => router.push('/history')}
+            onClick={() => router.push('/timeline')}
             style={{ fontFamily: "NanumSquareBold" }}
             className={` transition-colors hover:text-indigo-700 py-1 ${isMobile ? 'text-lg' : 'text-xl'}`}
           >
@@ -248,17 +236,4 @@ const CompanySection = ({ isMobile }) => {
   );
 };
 
-// 전체 Context Provider로 감싸기
-const CompanySectionWithProviders = ({ isMobile }) => {
-  return (
-    <HistoryProvider>
-      <AwardsProvider>
-        <BussinessProvider>
-          <CompanySection isMobile={isMobile} />
-        </BussinessProvider>
-      </AwardsProvider>
-    </HistoryProvider>
-  );
-};
-
-export default CompanySectionWithProviders;
+export default CompanySection;

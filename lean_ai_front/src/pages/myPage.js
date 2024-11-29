@@ -6,11 +6,12 @@ import naverIcon from '../../public/btn_naver.svg';
 import googleIcon from '../../public/btn_google.svg';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
+import { usePublic } from '../contexts/publicContext';
+import { fetchStoreUser } from '../fetch/fetchStoreUser';
 import UserProfileForm from '../components/component/userProfile';
 import QrCodeSection from '../components/component/qrCode';
 import EventSwitch from '../components/component/event';
 import SnsConnect from '../components/component/snsConnect';
-import VerificationModal from '../components/modal/verificationModal';
 import EventAlertModal from '../components/modal/eventModal';
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
@@ -19,7 +20,6 @@ import config from '../../config';
 
 const MyPage = () => {
   // 모달 및 UI 상태 관련 변수
-  const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달의 열림/닫힘 상태
   const [showEventAlertModal, setShowEventAlertModal] = useState(false); // 이벤트 알림 모달의 열림/닫힘 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달의 열림/닫힘 상태
@@ -32,16 +32,9 @@ const MyPage = () => {
     { name: 'google', displayName: '구글', icon: googleIcon, isConnected: false },
   ]); // SNS 연결 상태 관리
 
-  // 사용자 및 사업자 정보 관련 변수
-  const [profileImage, setProfileImage] = useState(''); // 프로필 이미지 URL
-  const [name, setName] = useState(''); // 사용자 이름
-  const [email, setEmail] = useState(''); // 사용자 이메일
-  const [phoneNumber, setPhoneNumber] = useState(''); // 사용자 전화번호
-  const [ID, setID] = useState(''); // 사용자 또는 사업자 ID
-  const [stores, setStores] = useState([]); // 스토어 목록
-  const [selectedStoreId, setSelectedStoreId] = useState(null); // 선택된 스토어의 ID
-  const [storeName, setStoreName] = useState(''); // 스토어 이름
-  const [department, setDepartment] = useState('');
+  // 사용자 변수
+  const [userData, setUserData] = useState({});
+  const [profileImage,setProfileImage] = useState('')
 
   // 이벤트 및 스위치 관련 변수
   const [isEventOn, setIsEventOn] = useState(false); // 이벤트 스위치 상태
@@ -61,7 +54,8 @@ const MyPage = () => {
 
   const router = useRouter();
   const { token, removeToken } = useAuth();
-  const { removeStoreID } = useStore();
+  const { storeID, removeStoreID } = useStore();
+  const { isPublicOn } = usePublic();
 
   // 이미지 모달
   const toggleImageModal = () => {
@@ -85,74 +79,34 @@ const MyPage = () => {
     setErrorMessage('');
   };
 
-  // 초기 사용자 정보 및 스토어 데이터를 가져오는 함수
+  // 초기 사용자 정보 가져오는 함수
   useEffect(() => {
-    // token이 있을 때만 fetchUserData 실행
-    if (token) {
-      fetchUserData();
+    if (token && storeID) {
+      fetchStoreUser({ storeID }, token, setUserData, setErrorMessage, setShowErrorMessageModal);
     }
-  }, [token]); // 컴포넌트가 처음 마운트될 때 사용자 및 스토어 정보를 가져옴
+  }, [token, storeID]);
 
-  const fetchUserData = async () => {
-    try {
-
-      // 사용자 프로필 정보 가져오기
-      const response = await fetch(`${config.apiDomain}/api/user-profile/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        setID(data.user_id || '');
-        setName(data.name || '');
-        setEmail(data.email || '');
-        setPhoneNumber(data.phone_number || '');
-        if (data.marketing === 'Y') {
-          setIsEventOn(true); // ON 상태로 설정
-        } else {
-          setIsEventOn(false); // OFF 상태로 설정
-        }
-
-        // QR 코드 처리
-        if (data.qr_code_url) {
-          const mediaUrl = `${process.env.NEXT_PUBLIC_MEDIA_URL}${decodeURIComponent(data.qr_code_url)}`;
-          setQrUrl(mediaUrl);
-        } else {
-          setQrUrl(null); // QR 코드가 없으면 null 설정
-        }
-
-        if (data.profile_photo && !data.profile_photo.startsWith('http')) {
-          setProfileImage(`${config.apiDomain}${data.profile_photo}`);
-        } else {
-          setProfileImage(data.profile_photo || '/profile_default_img.jpg');
-        }
-
-      } else {
-        console.error('Failed to fetch user data. Status:', response.status);
-        setErrorMessage("프로필 정보를 가져오는데 실패하였습니다.");
-        setShowErrorMessageModal(true);
-      }
-
-    } catch (error) {
-      console.error('Error fetching user or store data:', error);
-      setErrorMessage("정보를 가져오는데 실패하였습니다.");
-      setShowErrorMessageModal(true);
+  useEffect(() => {
+    if (userData) {
+      //console.log("userData : ", userData);
+      const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL; // 환경 변수에서 URL 가져오기
+      setProfileImage(`${mediaUrl}${userData.profile_photo}`)
     }
-  };
+  }, [userData]);
 
   // 데이터 변경 여부를 감지
   useEffect(() => {
-    const hasChanged = (
-      name !== initialData.name ||
-      email !== initialData.email ||
-      phoneNumber !== initialData.phoneNumber
-    );
-    setIsChanged(hasChanged); // 변경 사항이 있으면 true 설정
-  }, [name, email, phoneNumber, initialData]);
+    if (userData && initialData) {
+      const hasChanged = (
+        userData.name !== initialData.name ||
+        userData.email !== initialData.email ||
+        userData.phoneNumber !== initialData.phoneNumber
+      );
+
+      setIsChanged(hasChanged); // 변경 사항이 있으면 true 설정
+
+    }
+  }, [userData, initialData]);
 
 
   // 이벤트 모달 닫기 처리
@@ -229,11 +183,8 @@ const MyPage = () => {
     toggleImageModal(); // 이미지 모달 닫기
   };
 
-  // 기본 이미지 적용 처리 함수
+  // 기본 이미지 적용 처리 함수 
   const applyDefaultImage = async () => {
-    const defaultImageUrl = `${config.apiDomain}/media/profile_photos/profile_default_img.jpg`;
-    setProfileImage(defaultImageUrl); // 기본 이미지 URL 설정
-
     try {
       const response = await fetch(`${config.apiDomain}/api/update-profile-photo/`, {
         method: 'POST',
@@ -241,7 +192,7 @@ const MyPage = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ profile_photo: `profile_photos/profile_default_img.jpg` }),
+        body: JSON.stringify({ profile_photo: "default" }),  // 기본 이미지 트리거로 "default" 사용
       });
 
       if (!response.ok) {
@@ -249,15 +200,20 @@ const MyPage = () => {
       }
 
       const data = await response.json();
+      setProfileImage(`${process.env.NEXT_PUBLIC_MEDIA_URL}${data.profile_photo_url}`);
       setMessage(data.message);
       setShowMessageModal(true);
     } catch (error) {
       console.error('Error updating profile image:', error);
-      setErrorMessage(error);
+      setErrorMessage(error.message);
       setShowErrorMessageModal(true);
     }
 
     toggleImageModal();
+  };
+
+  const handleUserDataChange = (updatedData) => {
+    setUserData(updatedData); // `UserProfileForm`에서 전달된 데이터로 업데이트
   };
 
   // 변경 사항 저장 처리 함수
@@ -269,17 +225,16 @@ const MyPage = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name,
-          email,
-          phone_number: phoneNumber,
-        }),
+       body: JSON.stringify(userData), // 수정된 데이터 전송
       });
 
       if (response.ok) {
-        setMessage("프로필 변경에 성공하였습니다");
+        const updatedData = await response.json();
+        setUserData(updatedData); // userData 상태 업데이트
+        setInitialData(updatedData);
+        setIsChanged(false); // 변경 사항 초기화
+        setMessage("프로필 변경에 성공하였습니다.");
         setShowMessageModal(true);
-        setIsChanged(false); // 변경 사항이 저장되면 상태 초기화
       } else {
         setErrorMessage("프로필 변경에 실패하였습니다.");
         setShowErrorMessageModal(true);
@@ -293,19 +248,13 @@ const MyPage = () => {
   // QR 코드 생성 처리 함수
   const handleGenerateQrCode = async () => {
     try {
-      if (!selectedStoreId) {
-        setErrorMessage('스토어를 선택하세요.');
-        setShowErrorMessageModal(true);
-        return;
-      }
-
       const response = await fetch(`${config.apiDomain}/api/generate-qr-code/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ store_id: selectedStoreId }), // 선택된 스토어 ID 전송
+        body: JSON.stringify({ store_id: storeID }), // ID 전송
       });
 
       if (!response.ok) {
@@ -315,8 +264,10 @@ const MyPage = () => {
       }
 
       const data = await response.json();
-      setQrUrl(data.qr_code_url); // QR 코드 URL 설정
-      setShowQrCode(true);
+
+      // 백엔드에서 받은 QR 코드 URL을 설정합니다.
+      setQrUrl(data.qr_code_url); // QR 코드 URL을 새로운 경로로 설정
+      setShowQrCode(true); // QR 코드 표시 여부를 true로 설정
       setMessage('QR 코드가 생성되었습니다.');
       setShowMessageModal(true);
     } catch (error) {
@@ -352,7 +303,7 @@ const MyPage = () => {
       const dataUrl = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
       downloadLink.href = dataUrl;
-      downloadLink.download = `${storeName}_qr_code.png`; // 파일 이름 설정
+      downloadLink.download = `${userData.business_name}_qr_code.png`; // 파일 이름 설정
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink); // 링크 제거
@@ -452,26 +403,25 @@ const MyPage = () => {
         </div>
 
         {/* 사용자 정보 입력 필드 */}
-        <UserProfileForm
-          name={name}
-          setName={setName}
-          ID={ID}
-          setID={setID}
-          email={email}
-          setEmail={setEmail}
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-          department={department}
-          setDepartment={setDepartment}
-        />
+        {
+          userData && (
+            <UserProfileForm
+              isPublicOn={isPublicOn}
+              token={token}
+              storeID={storeID}
+              userData={userData} // 유효한 userData만 전달
+              onUpdateUserData={handleUserDataChange}
+            />
+          )
+        }
+
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
-          stores={stores}
-          selectedStoreId={selectedStoreId}
-          setSelectedStoreId={setSelectedStoreId}
-          storeName={storeName}
-          setStoreName={setStoreName}
+          isPublicOn={isPublicOn}
+          token={token}
+          storeID={storeID}
+          userData={userData}
           qrUrl={qrUrl}
           setQrUrl={setQrUrl}
           showQrCode={showQrCode}

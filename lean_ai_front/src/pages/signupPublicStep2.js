@@ -12,7 +12,7 @@ import config from '../../config';
 
 function InfoItem({ icon, label, value }) {
     return (
-        <div className="flex items-center space-x-3"  style={{ fontFamily: 'NanumSquareBold' }}>
+        <div className="flex items-center space-x-3" style={{ fontFamily: 'NanumSquareBold' }}>
             <div className="text-gray-600">{icon}</div>
             <div>
                 <span className="text-gray-600">{label}:</span>
@@ -99,6 +99,13 @@ const SignupPublicStep2 = () => {
     const handleSignup = async () => {
         const { username, password, name, dob, phone, email } = formData;
 
+        // 약관 동의 확인
+        if (!termsAccepted) {
+            setErrorMessage('이용약관 및 개인정보 수집 동의는 필수입니다.');
+            setShowErrorMessageModal(true);
+            return;
+        }
+
         // 생년월일 형식 변환
         let dobFormatted = dob;
         if (dob.length === 6) {
@@ -133,7 +140,7 @@ const SignupPublicStep2 = () => {
         //console.log('Sending payload:', payload);
 
         try {
-           const response = await axios.post(`${config.apiDomain}/public/signup/`, payload);
+            const response = await axios.post(`${config.apiDomain}/public/signup/`, payload);
 
             if (response.data.success) {
                 setShowWelcomeModal(true); // 성공 시 환영 모달 표시
@@ -144,6 +151,15 @@ const SignupPublicStep2 = () => {
         } catch (error) {
             setErrorMessage('회원가입 요청 중 오류가 발생했습니다.');
             setShowErrorMessageModal(true);
+        }
+    };
+
+    // 약관 동의 상태 변경
+    const handleTermsCheckboxChange = () => {
+        if (!termsAccepted) {
+            setShowTermsModal(true);
+        } else {
+            setTermsAccepted(!termsAccepted);
         }
     };
 
@@ -195,7 +211,7 @@ const SignupPublicStep2 = () => {
                             </button>
                         </div>
 
-                        <div className='flex flex-row gap-3 items-center px-3'  style={{ fontFamily: 'NanumSquareBold' }}>
+                        <div className='flex flex-row gap-3 items-center px-3' style={{ fontFamily: 'NanumSquareBold' }}>
                             <p className='text-sm text-gray-600'>
                                 <span className='text-red-500 mr-1'>*</span>기관 정보가 없다면 기관을 등록해주세요!
                             </p>
@@ -209,7 +225,7 @@ const SignupPublicStep2 = () => {
                     </div>
 
                     <div name='storedData' className='space-y-2 ' >
-                        <h3 className="text-lg font-semibold text-gray-800"  style={{ fontFamily: 'NanumSquareExtraBold' }}> 기관 정보</h3>
+                        <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: 'NanumSquareExtraBold' }}> 기관 정보</h3>
                         {/* 선택된 기관 정보 출력 */}
                         <div className="space-y-3 px-2">
                             <InfoItem icon={<Building2 className="h-5 w-5" />} label="기관명" value={selectedInstitution?.public_name} />
@@ -239,16 +255,17 @@ const SignupPublicStep2 = () => {
 
                     {/* 약관 및 마케팅 동의 체크박스 */}
                     <div className="space-y-2">
+                        {/* 약관 및 마케팅 동의 체크박스 */}
                         <div className="flex items-center justify-center space-x-2">
                             <input
                                 type="checkbox"
                                 checked={termsAccepted}
-                                onChange={() => setShowTermsModal(true)}
+                                onChange={handleTermsCheckboxChange}
                                 className="form-checkbox h-4 w-4 text-blue-600"
                             />
                             <label
                                 className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
-                                onClick={() => setShowTermsModal(true)}
+                                onClick={handleTermsCheckboxChange}
                             >
                                 이용약관 및 개인정보 수집 동의(필수)
                             </label>
