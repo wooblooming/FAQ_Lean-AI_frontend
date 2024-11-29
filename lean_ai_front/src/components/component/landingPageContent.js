@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useAuth } from '../../contexts/authContext';
 import { usePublic } from '../../contexts/publicContext';
-import Nav from '../component/navBar';
-import CompanySection from '../component/companySection';
-import ServiceSection from '../component/serviceSection';
-import Footer from '../component/footer';
+import Nav from './navBar';
+import CompanySection from './companySection';
+import ServiceSection from './serviceSection';
+import Footer from './footer';
 
 const LandingPageContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
@@ -78,14 +78,11 @@ const LandingPageContent = () => {
   };
 
   // 캐시 버스팅을 위한 이미지 컴포넌트
-  const CacheBustedImage = ({ src, alt, width, height, ...props }) => {
-    const cacheBustSrc = `${src}?v=${Date.now()}`; // 타임스탬프 추가
-    const imageLoader = ({ src, width, quality }) => {
-      return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
-    };
+  const CacheBustedImage = ({ src, alt, width, height, version = 'v1', ...props }) => {
+    const versionedSrc = `${src}?${version}`;
     return (
       <Image
-        src={cacheBustSrc}
+        src={versionedSrc}
         alt={alt}
         width={width}
         height={height}
@@ -93,6 +90,10 @@ const LandingPageContent = () => {
       />
     );
   };
+  
+  // 사용 예시
+  <CacheBustedImage src="/index_mobile.png" alt="mumul" width={500} height={300} version="v2" />
+  
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-violet-50">
@@ -119,7 +120,9 @@ const LandingPageContent = () => {
                   layout="responsive"
                   width={500}
                   height={300}
+                  version="v2"
                   className="rounded-lg"
+                  priority
                 />
               </div>
 
@@ -201,6 +204,7 @@ const LandingPageContent = () => {
                   layout="fill"
                   style={{ objectFit: "contain" }}
                   className="rounded-lg"
+                  version="v2"
                   priority
                 />
               </div>
