@@ -101,10 +101,6 @@ export default function RegisterStoreData() {
     }
   };
   
-  
-
-
-
   return (
     <div className="flex flex-col space-y-10 w-full max-w-md p-8 bg-white rounded-lg items-center justify-center space-y-5">
       {/* 페이지 제목 */}

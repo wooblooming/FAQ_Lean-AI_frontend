@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Calendar, Clock } from 'lucide-react';
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import OpeningHoursSelector from '../components/component/openingHours';
+import FileInput from '../components/component/fileInput';
+import TextInput from '../components/component/textInput';
 import config from '../../config';
 
 export default function RegisterPublic() {
@@ -15,17 +14,11 @@ export default function RegisterPublic() {
         publicName: '',
         publicLocation: '',
         publicTel: '',
-        publicLogo: null, // 로고 이미지 상태 추가
+        publicLogo: null,
     });
 
-    const [weekdayStartHour, setWeekdayStartHour] = useState('09');
-    const [weekdayStartMinute, setWeekdayStartMinute] = useState('00');
-    const [weekdayEndHour, setWeekdayEndHour] = useState('18');
-    const [weekdayEndMinute, setWeekdayEndMinute] = useState('00');
-    const [weekendStartHour, setWeekendStartHour] = useState('09');
-    const [weekendStartMinute, setWeekendStartMinute] = useState('00');
-    const [weekendEndHour, setWeekendEndHour] = useState('13');
-    const [weekendEndMinute, setWeekendEndMinute] = useState('00');
+    const [weekdayHours, setWeekdayHours] = useState({ startHour: '09', startMinute: '00', endHour: '18', endMinute: '00' });
+    const [weekendHours, setWeekendHours] = useState({ startHour: '09', startMinute: '00', endHour: '13', endMinute: '00' });
     const [isWeekendEnabled, setIsWeekendEnabled] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
@@ -35,7 +28,7 @@ export default function RegisterPublic() {
     const handleMessageModalClose = () => {
         setShowMessageModal(false);
         setMessage('');
-        router.reload(); // 모달 닫을 때 페이지 새로고침
+        router.reload();
     };
 
     const handleErrorModalClose = () => {
@@ -48,40 +41,37 @@ export default function RegisterPublic() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
+    const handleFileChange = (file) => {
         setFormData({ ...formData, publicLogo: file });
     };
-    
 
     const handleRegisterPublic = async () => {
         try {
-            const formattedHours = `평일: ${weekdayStartHour}:${weekdayStartMinute}-${weekdayEndHour}:${weekdayEndMinute}, ${isWeekendEnabled ? 
-                `주말: ${weekendStartHour}:${weekendStartMinute}-${weekendEndHour}:${weekendEndMinute}` : '주말: 휴무'}`;
-    
+            const formattedHours = `평일: ${weekdayHours.startHour}:${weekdayHours.startMinute}-${weekdayHours.endHour}:${weekdayHours.endMinute}, ${isWeekendEnabled ? 
+                `주말: ${weekendHours.startHour}:${weekendHours.startMinute}-${weekendHours.endHour}:${weekendHours.endMinute}` : '주말: 휴무'}`;
+
             if (!formData.publicName || !formattedHours || !formData.publicLocation || !formData.publicTel) {
                 setErrorMessage('필수 항목들을 기입해주시길 바랍니다');
                 setShowErrorModal(true);
                 return;
             }
-    
+
             const formPayload = new FormData();
             formPayload.append('public_name', formData.publicName);
             formPayload.append('opening_hours', formattedHours);
             formPayload.append('public_address', formData.publicLocation);
             formPayload.append('public_tel', formData.publicTel);
             if (formData.publicLogo) {
-                formPayload.append('logo', formData.publicLogo); // 파일 객체 추가
+                formPayload.append('logo', formData.publicLogo);
             }
-    
+
             const response = await axios.post(`${config.apiDomain}/public/public-register/`, formPayload, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
+
             if (response.data.status === "success") {
-                console.log(response.data);
                 setMessage('입력하신 기관 정보가 등록 되었습니다');
                 setShowMessageModal(true);
             } else {
@@ -98,10 +88,6 @@ export default function RegisterPublic() {
             }
         }
     };
-    
-
-    const hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
-    const minuteOptions = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
 
     return (
         <div className="flex flex-col w-full max-w-md px-8 pt-8">
@@ -110,180 +96,45 @@ export default function RegisterPublic() {
                 <p className="text-gray-600" style={{ fontFamily: 'NanumSquareBold' }}>기관 정보를 기입해주세요</p>
             </div>
 
-            <div>
-                <div className="space-y-2">
-                    <div className="space-y-1">
-                        <Label htmlFor="publicName" className="text-sm font-medium text-gray-700">이름</Label>
-                        <input
-                            id="publicName"
-                            name="publicName"
-                            placeholder='기관명'
-                            value={formData.publicName}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-
-                    <div className="space-y-1">
-                        <Label className="text-sm font-medium text-gray-700">운영 시간</Label>
-                        <div className="space-y-0.5 p-3 bg-gray-100 rounded-lg">
-                            <div>
-                                <div className="flex items-center justify-between ">
-                                    <div className="flex items-center space-x-2 text-gray-700">
-                                        <Calendar className="w-5 h-5" />
-                                        <span className="font-medium">평일</span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Clock className="w-4 h-4 text-gray-500" />
-                                    <Select value={weekdayStartHour} onValueChange={setWeekdayStartHour}>
-                                        <SelectTrigger className="w-[70px]">
-                                            <SelectValue placeholder="시" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {hourOptions.map((hour) => (
-                                                <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Select value={weekdayStartMinute} onValueChange={setWeekdayStartMinute}>
-                                        <SelectTrigger className="w-[70px]">
-                                            <SelectValue placeholder="분" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {minuteOptions.map((minute) => (
-                                                <SelectItem key={minute} value={minute}>{minute}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <span className="text-gray-500">~</span>
-                                    <Select value={weekdayEndHour} onValueChange={setWeekdayEndHour}>
-                                        <SelectTrigger className="w-[70px]">
-                                            <SelectValue placeholder="시" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {hourOptions.map((hour) => (
-                                                <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Select value={weekdayEndMinute} onValueChange={setWeekdayEndMinute}>
-                                        <SelectTrigger className="w-[70px]">
-                                            <SelectValue placeholder="분" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {minuteOptions.map((minute) => (
-                                                <SelectItem key={minute} value={minute}>{minute}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div className="pt-2">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2 text-gray-700">
-                                        <Calendar className="w-5 h-5" />
-                                        <span className="font-medium">주말</span>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="weekend-mode"
-                                            checked={isWeekendEnabled}
-                                            onCheckedChange={setIsWeekendEnabled}
-                                            className='text-indigo-500'
-                                        />
-                                        <Label htmlFor="weekend-mode">영업</Label>
-                                    </div>
-                                </div>
-                                {isWeekendEnabled && (
-                                    <div className="flex items-center space-x-2">
-                                        <Clock className="w-4 h-4 text-gray-500" />
-                                        <Select value={weekendStartHour} onValueChange={setWeekendStartHour}>
-                                            <SelectTrigger className="w-[70px]">
-                                                <SelectValue placeholder="시" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {hourOptions.map((hour) => (
-                                                    <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <Select value={weekendStartMinute} onValueChange={setWeekendStartMinute}>
-                                            <SelectTrigger className="w-[70px]">
-                                                <SelectValue placeholder="분" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {minuteOptions.map((minute) => (
-                                                    <SelectItem key={minute} value={minute}>{minute}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <span className="text-gray-500">~</span>
-                                        <Select value={weekendEndHour} onValueChange={setWeekendEndHour}>
-                                            <SelectTrigger className="w-[70px]">
-                                                <SelectValue placeholder="시" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {hourOptions.map((hour) => (
-                                                    <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <Select value={weekendEndMinute} onValueChange={setWeekendEndMinute}>
-                                            <SelectTrigger className="w-[70px]">
-                                                <SelectValue placeholder="분" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {minuteOptions.map((minute) => (
-                                                    <SelectItem key={minute} value={minute}>{minute}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-1">
-                        <Label htmlFor="publicLocation" className="text-sm font-medium text-gray-700">위치</Label>
-                        <input
-                            id="publicLocation"
-                            name="publicLocation"
-                            placeholder='위치'
-                            value={formData.publicLocation}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-
-                    <div className='flex flex-col space-y-1'>
-                        <Label htmlFor="publicTel" className="text-sm font-medium text-gray-700">전화번호</Label>
-                        <input
-                            id="publicTel"
-                            name="publicTel"
-                            placeholder='전화번호'
-                            value={formData.publicTel}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-
-                    <div className="space-y-1">
-                        <Label htmlFor="publicLogo" className="text-sm font-medium text-gray-700">기관 로고</Label>
-                        <input
-                            id="publicLogo"
-                            name="publicLogo"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileChange(e)}
-                            className="block w-full text-sm text-gray-500 hover:file:bg-indigo-100 cursor-pointer
-                                        file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
-                                        file:text-sm file:font-semibold file:bg-indigo-50 file:text-gray-700"
-                        />
-                    </div>
-                </div>
+            <div className="space-y-2">
+                <TextInput 
+                    id="publicName"
+                    name="publicName"
+                    label="이름"
+                    placeholder="기관명"
+                    value={formData.publicName}
+                    onChange={handleInputChange}
+                />
+                <OpeningHoursSelector
+                    weekdayHours={weekdayHours}
+                    setWeekdayHours={setWeekdayHours}
+                    weekendHours={weekendHours}
+                    setWeekendHours={setWeekendHours}
+                    isWeekendEnabled={isWeekendEnabled}
+                    setIsWeekendEnabled={setIsWeekendEnabled}
+                />
+                <TextInput
+                    id="publicLocation"
+                    name="publicLocation"
+                    label="위치"
+                    placeholder="위치"
+                    value={formData.publicLocation}
+                    onChange={handleInputChange}
+                />
+                <TextInput
+                    id="publicTel"
+                    name="publicTel"
+                    label="전화번호"
+                    placeholder="전화번호"
+                    value={formData.publicTel}
+                    onChange={handleInputChange}
+                />
+                <FileInput
+                    id="publicLogo"
+                    name="publicLogo"
+                    label="기관 로고"
+                    onChange={handleFileChange}
+                />
             </div>
 
             <button
