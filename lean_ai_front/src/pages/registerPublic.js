@@ -15,7 +15,9 @@ export default function RegisterPublic() {
         publicName: '',
         publicLocation: '',
         publicTel: '',
+        publicLogo: null, // 로고 이미지 상태 추가
     });
+
     const [weekdayStartHour, setWeekdayStartHour] = useState('09');
     const [weekdayStartMinute, setWeekdayStartMinute] = useState('00');
     const [weekdayEndHour, setWeekdayEndHour] = useState('18');
@@ -46,29 +48,40 @@ export default function RegisterPublic() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleRegisterPublic = async () => {
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setFormData({ ...formData, publicLogo: file });
+    };
+    
 
+    const handleRegisterPublic = async () => {
         try {
             const formattedHours = `평일: ${weekdayStartHour}:${weekdayStartMinute}-${weekdayEndHour}:${weekdayEndMinute}, ${isWeekendEnabled ? 
-                `주말: ${weekendStartHour}:${weekendStartMinute}-${weekendEndHour}:${weekendEndMinute}` : '주말: 휴무'
-                }`;
-
+                `주말: ${weekendStartHour}:${weekendStartMinute}-${weekendEndHour}:${weekendEndMinute}` : '주말: 휴무'}`;
+    
             if (!formData.publicName || !formattedHours || !formData.publicLocation || !formData.publicTel) {
                 setErrorMessage('필수 항목들을 기입해주시길 바랍니다');
                 setShowErrorModal(true);
                 return;
             }
-
-            const response = await axios.post(`${config.apiDomain}/public/public-register/`, {
-                public_name: formData.publicName,
-                opening_hours: formattedHours,
-                public_address: formData.publicLocation,
-                public_tel: formData.publicTel,
+    
+            const formPayload = new FormData();
+            formPayload.append('public_name', formData.publicName);
+            formPayload.append('opening_hours', formattedHours);
+            formPayload.append('public_address', formData.publicLocation);
+            formPayload.append('public_tel', formData.publicTel);
+            if (formData.publicLogo) {
+                formPayload.append('logo', formData.publicLogo); // 파일 객체 추가
+            }
+    
+            const response = await axios.post(`${config.apiDomain}/public/public-register/`, formPayload, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
-
-            console.log('response data : ', response.data);
-
+    
             if (response.data.status === "success") {
+                console.log(response.data);
                 setMessage('입력하신 기관 정보가 등록 되었습니다');
                 setShowMessageModal(true);
             } else {
@@ -85,19 +98,20 @@ export default function RegisterPublic() {
             }
         }
     };
+    
 
     const hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
     const minuteOptions = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
 
     return (
-        <div className="flex flex-col space-y-5 w-full max-w-md px-8 pt-6 ">
-            <div className='text-center'>
+        <div className="flex flex-col w-full max-w-md px-8 pt-8">
+            <div className='text-center mb-2'>
                 <h1 className="text-3xl font-bold text-indigo-600 mb-2" style={{ fontFamily: 'NanumSquareExtraBold' }}>기관 등록</h1>
                 <p className="text-gray-600" style={{ fontFamily: 'NanumSquareBold' }}>기관 정보를 기입해주세요</p>
             </div>
 
             <div>
-                <div className="space-y-4">
+                <div className="space-y-2">
                     <div className="space-y-1">
                         <Label htmlFor="publicName" className="text-sm font-medium text-gray-700">이름</Label>
                         <input
@@ -112,9 +126,9 @@ export default function RegisterPublic() {
 
                     <div className="space-y-1">
                         <Label className="text-sm font-medium text-gray-700">운영 시간</Label>
-                        <div className="space-y-1 p-3 bg-gray-100 rounded-lg">
+                        <div className="space-y-0.5 p-3 bg-gray-100 rounded-lg">
                             <div>
-                                <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center justify-between ">
                                     <div className="flex items-center space-x-2 text-gray-700">
                                         <Calendar className="w-5 h-5" />
                                         <span className="font-medium">평일</span>
@@ -167,7 +181,7 @@ export default function RegisterPublic() {
                             </div>
 
                             <div className="pt-2">
-                                <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-2 text-gray-700">
                                         <Calendar className="w-5 h-5" />
                                         <span className="font-medium">주말</span>
@@ -244,7 +258,7 @@ export default function RegisterPublic() {
                         />
                     </div>
 
-                    <div className="space-y-1">
+                    <div className='flex flex-col space-y-1'>
                         <Label htmlFor="publicTel" className="text-sm font-medium text-gray-700">전화번호</Label>
                         <input
                             id="publicTel"
@@ -255,11 +269,25 @@ export default function RegisterPublic() {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         />
                     </div>
+
+                    <div className="space-y-1">
+                        <Label htmlFor="publicLogo" className="text-sm font-medium text-gray-700">기관 로고</Label>
+                        <input
+                            id="publicLogo"
+                            name="publicLogo"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e)}
+                            className="block w-full text-sm text-gray-500 hover:file:bg-indigo-100 cursor-pointer
+                                        file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
+                                        file:text-sm file:font-semibold file:bg-indigo-50 file:text-gray-700"
+                        />
+                    </div>
                 </div>
             </div>
 
             <button
-                className="w-full bg-indigo-600 text-white font-medium py-3 px-6 rounded-lg"
+                className="w-full bg-indigo-600 text-white font-medium py-3 px-6 rounded-lg mt-5"
                 onClick={handleRegisterPublic}
             >
                 등록하기

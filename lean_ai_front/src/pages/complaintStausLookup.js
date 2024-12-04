@@ -111,7 +111,7 @@ const ComplaintLookup = () => {
 
     useEffect(() => {
         if (complaintDetails) {
-            console.log(complaintDetails);
+            //console.log(complaintDetails);
             setStatus(complaintDetails.status);
             setAnswer(complaintDetails.answer);
         }

@@ -34,7 +34,7 @@ const MyPage = () => {
 
   // 사용자 변수
   const [userData, setUserData] = useState({});
-  const [profileImage,setProfileImage] = useState('')
+  const [profileImage, setProfileImage] = useState('')
 
   // 이벤트 및 스위치 관련 변수
   const [isEventOn, setIsEventOn] = useState(false); // 이벤트 스위치 상태
@@ -225,7 +225,7 @@ const MyPage = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-       body: JSON.stringify(userData), // 수정된 데이터 전송
+        body: JSON.stringify(userData), // 수정된 데이터 전송
       });
 
       if (response.ok) {
@@ -403,8 +403,7 @@ const MyPage = () => {
         </div>
 
         {/* 사용자 정보 입력 필드 */}
-        {
-          userData && (
+        {userData && (
             <UserProfileForm
               isPublicOn={isPublicOn}
               token={token}

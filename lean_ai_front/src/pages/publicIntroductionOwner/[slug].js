@@ -49,6 +49,7 @@ const StoreIntroductionOwnerPublic = () => {
   useEffect(() => {
     // publicData가 업데이트되면 agentId 설정 및 로딩 상태 해제
     if (publicData) {
+      // console.log("publicData : ",publicData);
       setAgentId(publicData.agentId); // agentId 설정
       setIsLoading(false); // 로딩 상태 해제
     }
@@ -72,7 +73,7 @@ const StoreIntroductionOwnerPublic = () => {
         {/* 배너 이미지 */}
         <div className="relative">
           <img
-            src={publicData.banner ? `${config.apiDomain}${publicData.banner}` : '/mumullogo.jpg'}
+            src={publicData.logo ? `${config.apiDomain}${publicData.logo}` : '/mumullogo.jpg'}
             alt="Public"
             className="w-full h-48 object-cover"
           />
