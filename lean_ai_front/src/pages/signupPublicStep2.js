@@ -54,7 +54,7 @@ const SignupPublicStep2 = () => {
     // 기관 목록을 가져오는 함수
     const fetchPublicInstitutions = async () => {
         try {
-            const response = await axios.get(`${config.apiDomain}/public/public-institutions/`);
+            const response = await axios.get(`${config.apiDomain}/public/publics/`);
             setPublicInstitutions(response.data);
 
         } catch (error) {
@@ -68,9 +68,8 @@ const SignupPublicStep2 = () => {
     const fetchInstitutionDetails = async (institutionId) => {
         //console.log("institutionId : ", institutionId);
         try {
-            const response = await axios.post(`${config.apiDomain}/public/public-details/`, {
-                id: institutionId
-            });
+            const response = await axios.get(`${config.apiDomain}/public/publics/${institutionId}/`);
+            
             setSelectedInstitution(response.data); // 선택된 기관의 상세 정보를 상태에 저장
         } catch (error) {
             console.error("Error fetching institution details:", error);

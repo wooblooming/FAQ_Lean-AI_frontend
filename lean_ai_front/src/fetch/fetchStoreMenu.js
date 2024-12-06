@@ -5,8 +5,8 @@ export const fetchStoreMenu = async ({ slug, storeID }, token, setMenu, setError
     const type = isOwner ? 'owner' : 'customer';
 
     try {
-        // slug 또는 store_id를 기준으로 payload 설정
-        const payload = slug
+        // slug 또는 store_id를 기준으로 params 설정
+        const params = slug
             ? { slug: decodeURIComponent(slug), action: 'view', type : type }
             : { store_id: storeID, action: 'view', type : type };
 
@@ -17,12 +17,12 @@ export const fetchStoreMenu = async ({ slug, storeID }, token, setMenu, setError
         };
 
         // axios POST 요청
-        const response = await axios.post(`${config.apiDomain}/api/menu-details/`, payload, { headers });
+        const response = await axios.get(`${config.apiDomain}/api/menus/`, { headers, params });
 
         // 응답 데이터 처리
         if (response.status === 200 && response.data) {
             setMenu(response.data); // 데이터 설정
-            //console.log('fetchStoreMenu - menu data:', response.data);
+            console.log('fetchStoreMenu - menu data:', response.data);
         } else {
             setErrorMessage("해당 매장 정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
             setShowErrorMessageModal(true);

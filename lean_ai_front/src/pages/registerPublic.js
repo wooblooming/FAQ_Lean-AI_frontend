@@ -65,7 +65,7 @@ export default function RegisterPublic() {
                 formPayload.append('logo', formData.publicLogo);
             }
 
-            const response = await axios.post(`${config.apiDomain}/public/public-register/`, formPayload, {
+            const response = await axios.post(`${config.apiDomain}/public/publics/`, formPayload, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -256,7 +256,7 @@ const MyPagePublic = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ store_id: storeID }), // ID 전송
+        body: JSON.stringify({ public_id: storeID }), // ID 전송
       });
 
       if (!response.ok) {

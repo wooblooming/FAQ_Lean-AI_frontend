@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 import Header from '../components/component/header';
 import {  Eye, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
@@ -85,13 +86,14 @@ const MainPageWithMenu = () => {
   const fetchPublicInfo = async () => {
     //console.log("Current Token:", token);
     try {
-      const response = await fetch(`${config.apiDomain}/public/user-public-info/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
+      const response = await axios.post(
+        `${config.apiDomain}/public/publics/user_info/`, { },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 인증 토큰
+          },
+        }
+      );
 
       if (response.status === 401) { // 인증 실패 시 에러 처리
         setErrorMessage('세션이 만료되었거나 인증에 실패했습니다. 다시 로그인해 주세요.');
@@ -104,12 +106,9 @@ const MainPageWithMenu = () => {
         return;
       }
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch store information: ${response.statusText}`);
-      }
-
-      const publicData = await response.json();
+      const publicData = response.data;
       //console.log(publicData);
+
       if (publicData && publicData.public) {
         setPublicName(publicData.public.public_name);
         setPublicSlug(publicData.public.slug);

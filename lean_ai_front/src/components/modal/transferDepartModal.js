@@ -27,7 +27,7 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
         setLoading(true);
         try {
             await axios.post(
-                `${config.apiDomain}/public/complaint-transfer/`,
+                `${config.apiDomain}/public/complaints/${complaintId}/transfer/`,
                 {
                     complaint_id: complaintId,
                     department: selectedDepartment,

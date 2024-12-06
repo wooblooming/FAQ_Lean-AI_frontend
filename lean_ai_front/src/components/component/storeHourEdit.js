@@ -21,6 +21,19 @@ const StoreHourEdit = ({ isOpen, onClose, onSave, hours }) => {
     const minuteOptions = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
 
     useEffect(() => {
+        // 초기화 로직
+        if (!weekdayStartHour) setWeekdayStartHour('09');
+        if (!weekdayStartMinute) setWeekdayStartMinute('00');
+        if (!weekdayEndHour) setWeekdayEndHour('18');
+        if (!weekdayEndMinute) setWeekdayEndMinute('00');
+        if (!weekendStartHour) setWeekendStartHour('09');
+        if (!weekendStartMinute) setWeekendStartMinute('00');
+        if (!weekendEndHour) setWeekendEndHour('13');
+        if (!weekendEndMinute) setWeekendEndMinute('00');
+    }, []);
+    
+
+    useEffect(() => {
         // 초기 값 설정
         if (hours) {
             const weekdayMatch = hours.match(/평일: (\d{2}):(\d{2}) ~ (\d{2}):(\d{2})/);

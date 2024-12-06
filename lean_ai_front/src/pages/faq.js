@@ -5,9 +5,9 @@ import { Search, ChevronDown, ChevronUp, ChevronLeft, CreditCard, Settings, Help
 
 // FAQ 데이터
 export const faqs = [
-  { id: 1, category: '계정', question: 'AI 챗봇 서비스를 어떻게 시작하나요?', answer: 'AI 챗봇 서비스는 회원가입 후 대시보드에서 간단한 설정으로 시작할 수 있습니다.' },
-  { id: 2, category: '계정', question: '계정 설정을 변경하고 싶어요.', answer: '프로필 아이콘을 클릭하여 계정 설정을 변경할 수 있습니다.' },
-  { id: 3, category: '서비스', question: '데이터 백업은 어떻게 하나요?', answer: '백업 및 복원 메뉴에서 수동 또는 자동으로 가능합니다.' },
+  { id: 1, category: '서비스', question: 'AI 챗봇 서비스를 어떻게 시작하나요?', answer: 'AI 챗봇 서비스는 회원가입 후 데이터 등록을 하시면 챗봇 생성 후 바로 시작할 수 있습니다.' },
+  { id: 2, category: '계정', question: '계정 정보를 변경하고 싶어요.', answer: '마이페이지에서 계정 정보를 변경할 수 있습니다.' },
+  { id: 3, category: '서비스', question: '고객이 어떤 질문을 하는지 알고 싶어요.', answer: '서비스 요청 창을 통해 요청해 주시면 FAQ에 대한 파일을 전송해드리겠습니다.' },
 ];
 
 const FAQPage = () => {

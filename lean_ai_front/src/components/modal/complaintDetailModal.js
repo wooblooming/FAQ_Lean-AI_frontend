@@ -57,7 +57,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
 
     try {
       await axios.patch(
-        `${config.apiDomain}/public/complaints/${complaint.complaint_id}/status/`,
+        `${config.apiDomain}/public/complaints/${complaint.complaint_id}/update_status/`,
         { status: newStatus },
         {
           headers: {
@@ -89,7 +89,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
     try {
       // 백엔드로 답변 내용 및 전화번호 전송
       await axios.post(
-        `${config.apiDomain}/public/complaints-answer/`,
+        `${config.apiDomain}/public/complaints/${complaint.complaint_id}/answer/`,
         {
           complaint_id: complaint.complaint_id,
           answer

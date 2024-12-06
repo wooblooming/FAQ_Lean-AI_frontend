@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Headset, User, MailCheck } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faLocationDot, faClock, faPhone } from '@fortawesome/free-solid-svg-icons'; 
-import { fetchPublicData } from '../../fetch/fetchPublicData'; // 매장 데이터를 가져오는 함수
+import { fetchPublicDetailData } from '../../fetch/fetchPublicDetailData'; // 특정 공공기관 데이터를 가져오는 함수
 import Loading from '../../components/component/loading'; // 로딩 컴포넌트
 import ModalErrorMSG from '../../components/modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import Chatbot from '../chatBotMSG'; // 챗봇 컴포넌트
@@ -39,14 +39,15 @@ const StoreIntroductionPublic = () => {
   useEffect(() => {
     // 토큰과 slug가 존재할 경우 매장 데이터 요청
     if (slug) {
-      setIsOwner(false); // 소유자 여부를 false로 설정
-      fetchPublicData(slug, null, setPublicData, setErrorMessage, setShowErrorMessageModal, isOwner); // 데이터 가져오기
+      setIsOwner(false); // 소유자 여부를 true로 설정
+      fetchPublicDetailData(slug, null, setPublicData, setErrorMessage, setShowErrorMessageModal, isOwner); // 데이터 가져오기
     }
-  }, [slug]);
+  }, [ slug]);
 
   useEffect(() => {
     // publicData가 업데이트되면 agentId 설정 및 로딩 상태 해제
     if (publicData) {
+      //console.log("publicData : ",publicData);
       setAgentId(publicData.agentId); // agentId 설정
       setIsLoading(false); // 로딩 상태 해제
     }
@@ -70,7 +71,7 @@ const StoreIntroductionPublic = () => {
         {/* 배너 이미지 */}
         <div className="relative">
           <img
-            src={publicData.banner ? `${config.apiDomain}${publicData.banner}` : '/mumullogo.jpg'}
+            src={publicData.logo ? `${config.apiDomain}${publicData.logo}` : '/mumullogo.jpg'}
             alt="Public"
             className="w-full h-48 object-cover"
           />

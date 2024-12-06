@@ -4,15 +4,16 @@ import config from '../../config';
 
 export const fetchPublicComplaint = async (storeID, token, setComplaints , setErrorMessage, setShowErrorModal) => {
     try {
-        const response = await axios.post(
+        const response = await axios.get(
             `${config.apiDomain}/public/complaints/`,
-            { publicID: storeID },
             {
+                params: { publicID: storeID }, // GET 요청에 적합한 방식
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             }
         );
+        
         setComplaints(response.data);
         //console.log("response.data : ", response.data);
     } catch (error) {

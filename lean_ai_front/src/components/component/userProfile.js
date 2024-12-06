@@ -88,7 +88,7 @@ const UserProfileForm = ({
     if (editing && selectedDepartment) {
       try {
         const response = await axios.put(
-          `${config.apiDomain}/public/department-update/`,
+          `${config.apiDomain}/public/departments/update/`,
           {
             department_name: selectedDepartment.value,
             public_id: storeID,
@@ -146,7 +146,7 @@ const UserProfileForm = ({
   const handleCreateDepartment = async (newDepartment) => {
     try {
       const response = await axios.post(
-        `${config.apiDomain}/public/department-create/`,
+        `${config.apiDomain}/public/departments/`,
         { department_name: newDepartment, public_id: storeID },
         {
           headers: {

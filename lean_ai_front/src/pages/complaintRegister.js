@@ -20,14 +20,15 @@ const RegisterComplaint = () => {
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
     const [departments, setDepartments] = useState([]); // 초기값을 빈 배열로 설정
     const [selectedDepartment, setSelectedDepartment] = useState('');
-
-    // 입력 필드 상태
-    const [name, setName] = useState('');
-    const [birth_date, setBirthDate] = useState('');
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const [formState, setFormState] = useState({
+        name: '',
+        birth_date: '',
+        phone: '',
+        email: '',
+        title: '',
+        content: '',
+        selectedDepartment: '',
+    });
 
     // 카테고리 목록을 백엔드에서 가져오기
     useEffect(() => {
@@ -55,6 +56,8 @@ const RegisterComplaint = () => {
 
     // 접수하기 버튼 클릭 시 호출되는 함수
     const handleSubmit = async () => {
+        const { name, birth_date, phone, email, title, content, selectedDepartment } = formState;
+
         // 입력 필드 유효성 검사
         if (!name || !birth_date || !phone || !email || !title || !content) {
             setErrorMessage('모든 필드를 입력해 주세요.');
@@ -77,17 +80,12 @@ const RegisterComplaint = () => {
         try {
             // 백엔드로 전송할 데이터
             const requestData = {
-                name,
-                birth_date,
-                phone,
-                email,
-                title,
+                ...formState,
                 department: selectedDepartment,
-                content,
-                slug
+                slug,
             };
 
-            const response = await axios.post(`${config.apiDomain}/public/complaints/register/`, requestData);
+            const response = await axios.post(`${config.apiDomain}/public/complaints/`, requestData);
 
             if (response.data.status === 'success') {
                 setMessage(response.data.message);
@@ -126,33 +124,34 @@ const RegisterComplaint = () => {
                                 name="name"
                                 label="이름"
                                 placeholder="이름을 입력해주세요"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={formState.name} // 수정: formState를 참조
+                                onChange={(e) => setFormState({ ...formState, name: e.target.value })} // 수정: formState 업데이트
                             />
                             <TextInput
                                 id="birth_date"
                                 name="birth_date"
                                 label="생년월일"
                                 placeholder="6자리 입력 (ex.241106)"
-                                value={birth_date}
-                                onChange={(e) => setBirthDate(e.target.value)}
+                                value={formState.birth_date} // 수정: formState를 참조
+                                onChange={(e) => setFormState({ ...formState, birth_date: e.target.value })} // 수정: formState 업데이트
                             />
                             <TextInput
                                 id="phone"
                                 name="phone"
                                 label="핸드폰번호"
                                 placeholder="- 없이 입력 핸드폰번호를 입력해주세요"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                value={formState.phone} // 수정: formState를 참조
+                                onChange={(e) => setFormState({ ...formState, phone: e.target.value })} // 수정: formState 업데이트
                             />
                             <TextInput
                                 id="email"
                                 name="email"
                                 label="이메일"
                                 placeholder="이메일 주소"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formState.email} // 수정: formState를 참조
+                                onChange={(e) => setFormState({ ...formState, email: e.target.value })} // 수정: formState 업데이트
                             />
+
                         </div>
                     </div>
 
@@ -168,14 +167,16 @@ const RegisterComplaint = () => {
                                     name="title"
                                     label="민원 제목"
                                     placeholder="민원제목입력"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
+                                    value={formState.title}
+                                    onChange={(e) => setFormState({ ...formState, title: e.target.value })} // 수정: formState 업데이트
                                 />
                                 <div className='flex flex-col space-y-1 mt-1'>
                                     <label className='text-sm font-medium text-gray-700'>민원 부서</label>
                                     <select
-                                        value={selectedDepartment}
-                                        onChange={(e) => setSelectedDepartment(e.target.value)}
+                                        value={formState.selectedDepartment} // 수정: formState.selectedDepartment 참조
+                                        onChange={(e) =>
+                                            setFormState({ ...formState, selectedDepartment: e.target.value }) // 수정: formState 업데이트
+                                        }
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     >
                                         <option value="">관련부서를 선택하세요</option>
@@ -185,6 +186,7 @@ const RegisterComplaint = () => {
                                             </option>
                                         ))}
                                     </select>
+
                                 </div>
                             </div>
                             <div>
@@ -193,8 +195,8 @@ const RegisterComplaint = () => {
                                     name="content"
                                     label="민원 내용"
                                     placeholder="민원내용입력"
-                                    value={content}
-                                    onChange={(e) => handleChange('content', e.target.value)}
+                                    value={formState.content} // 수정: formState를 참조
+                                    onChange={(e) => setFormState({ ...formState, content: e.target.value })} // 수정: formState 업데이트
                                     isTextarea={true}
                                     style={{ height: '200px' }}
                                 />

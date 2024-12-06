@@ -4,7 +4,7 @@ import config from '../../config';
 
 export const fetchPublicComplaintCustomer = async (complaintNum, phone, setComplaintDetails, setErrorMessage, setShowErrorModal) => {
     try {
-        const response = await axios.post(`${config.apiDomain}/public/complaint-customer/`, {
+        const response = await axios.post(`${config.apiDomain}/public/complaints/customer_view/`, {
             complaint_number: complaintNum,
             phone,
         });

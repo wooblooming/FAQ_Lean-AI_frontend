@@ -81,8 +81,9 @@ const ChangeInfo = ({ }) => {
 
           // 배너 이미지 설정
           const bannerPath = store.banner || '';
+          const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL || ''; // .env.local에서 URL 가져오기
           const storeImageUrl = bannerPath.startsWith('/media/')
-            ? `${config.apiDomain}${bannerPath}`
+            ? `${mediaUrl}${bannerPath}`
             : '/chatbot.png';
           setPreviewImage(storeImageUrl);
 
@@ -212,7 +213,7 @@ const ChangeInfo = ({ }) => {
         console.log(`${key}:`, value);
       });*/
 
-      const response = await fetch(`${config.apiDomain}/api/storesinfo-update/${storeID}/`, {
+      const response = await fetch(`${config.apiDomain}/api/stores/${storeID}/`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -165,7 +165,7 @@ const MainPageWithMenu = () => {
 
             {/* 버튼 카드 영역 */}
             <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center text-center font-sans">
-              <div className="grid md:grid-cols-3 gap-2 md:gap-4">
+              <div className="grid md:grid-cols-4 gap-2 md:gap-4">
 
                 {/* 매장 정보 변경 카드 */}
                 <Card>
