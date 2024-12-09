@@ -4,6 +4,7 @@ import { Plus, PencilLine as EditIcon, Check, X as CancelIcon, Image as ImageIco
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
+import { fetchMenuCategoryData } from '../../fetch/fetchStoreMenuCategory';
 import ModalMSG from '../modal/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import config from '../../../config';
@@ -23,7 +24,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
         category: '',
         store: '',
     });
-    const [categoryOptions, setCategoryOptions] = useState([]);
+    const [category, setCategory] = useState([]);
     const [editItemId, setEditItemId] = useState(null);
     const [editItem, setEditItem] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
@@ -38,32 +39,10 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
 
     // 메뉴 데이터 조회
     useEffect(() => {
-        if (isOpen && slug) {
-            fetchMenuData();
+        if (isOpen && slug && token) {
+            fetchMenuCategoryData( { slug }, token, setCategory, setErrorMessage, setShowErrorMessageModal);
         }
-    }, [isOpen, slug]);
-
-    // 서버에서 메뉴 카테고리 데이터 가져오기
-    const fetchMenuData = async () => {
-        try {
-            const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: 'view_category', slug }),
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch menu data');
-            }
-            const data = await response.json();
-            setCategoryOptions(data || []);
-        } catch (error) {
-            setErrorMessage('카테고리를 가져오는 중 오류가 발생했습니다.');
-            setShowErrorMessageModal(true);
-        }
-    };
+    }, [isOpen, slug, token]);
 
     // 모달이 닫혀있으면 컴포넌트를 렌더링하지 않음
     if (!isOpen) return null;
@@ -161,16 +140,16 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
         try {
             const formData = new FormData();
             const storeSlug = slug;
-
+    
             if (menuItems.length === 0) throw new Error("메뉴 데이터가 없습니다.");
-
+    
             for (const [index, item] of menuItems.entries()) {
                 formData.append(`menus[${index}][slug]`, storeSlug);
                 formData.append(`menus[${index}][name]`, item.name || '');
                 formData.append(`menus[${index}][price]`, item.price || 0);
                 formData.append(`menus[${index}][category]`, item.category || '');
                 formData.append(`menus[${index}][menu_number]`, item.menu_number || '');
-
+    
                 if (item.image instanceof File) {
                     formData.append(`menus[${index}][image]`, item.image);
                 } else {
@@ -178,25 +157,31 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                     formData.append(`menus[${index}][image]`, defaultImageBlob, 'menu_default_image.png');
                 }
             }
-
-            formData.append('action', editItemId ? 'update' : 'create');
-
-            const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
-                method: 'POST',
+    
+            // editItemId에 따라 URL과 메서드 결정
+            const url = editItemId
+                ? `${config.apiDomain}/api/menus/${editItemId}/` // Update API
+                : `${config.apiDomain}/api/menus/`;             // Create API
+    
+            const method = editItemId ? 'PUT' : 'POST';
+    
+            const response = await fetch(url, {
+                method: method,
                 headers: { Authorization: `Bearer ${token}` },
                 body: formData,
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || '서버 전송에 실패했습니다.');
             }
-
+    
             const result = await response.json();
             onSave(result);
             setMessage(`${menuTitle}이(가) 성공적으로 저장되었습니다.`);
             setShowMessageModal(true);
-
+    
+            // 상태 초기화
             setNewItem({ image: '', name: '', price: '', category: '', store: '' });
             setMenuItems([]);
             setEditItemId(null);
@@ -206,6 +191,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
             setShowErrorMessageModal(true);
         }
     };
+    
 
     
     return (
@@ -280,9 +266,9 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                         {/* 카테고리 선택 */}
                         <CreatableSelect
                             components={makeAnimated()}
-                            value={categoryOptions.find(option => option.value === newItem.category)}
+                            value={category.find(option => option.value === newItem.category)}
                             onChange={handleCategoryChange}
-                            options={categoryOptions}
+                            options={category}
                             isClearable
                             placeholder="분류를 선택하세요"
                             onCreateOption={handleCreateNewCategory}

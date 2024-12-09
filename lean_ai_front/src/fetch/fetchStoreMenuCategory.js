@@ -1,41 +1,27 @@
 import axios from 'axios';
 import config from '../../config';
 
-export const fetchStoreMenu = async ({ slug, storeID }, token, setMenu, setErrorMessage, setShowErrorMessageModal) => {
-    try {
+export const fetchMenuCategoryData = async ({ slug, storeID }, token, setCategory, setErrorMessage, setShowErrorMessageModal) => {
 
+    try {
+        // slug 또는 store_id를 기준으로 params 설정
+        const params = slug
+            ? { slug: decodeURIComponent(slug), action: 'view_category' }
+            : { store_id: storeID, action: 'view_category' };
+
+        // 헤더 설정
         const headers = {
             'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
+            ...(token && { Authorization: `Bearer ${token}` }), // token이 있을 경우 Authorization 추가
         };
 
-        let response;
+        // axios GET 요청
+        const response = await axios.get(`${config.apiDomain}/api/menus/view_category/`, { headers, params });
 
-        // slug 또는 storeID에 따라 URL 및 메서드 분기
-        if (slug) {
-            // slug 기반 요청
-            response = await axios.get(
-                `${config.apiDomain}/api/menus/list_menus_by_slug/`,
-                {
-                    headers,
-                    params : {slug: decodeURIComponent(slug)},
-                }
-            );
-        } else if (storeID) {
-            // storeID 기반 요청
-            response = await axios.get(
-                `${config.apiDomain}/api/menus/${storeID}/`,
-                {
-                    headers,
-                }
-            );
-        } else {
-            throw new Error('slug 또는 storeID가 필요합니다.');
-        }
-
+        // 응답 데이터 처리
         if (response.status === 200 && response.data) {
-            setMenu(response.data); // 데이터 설정
-            //console.log('fetchStoreMenu - menu data:', response.data);
+            setCategory(response.data); // 데이터 설정
+            //console.log('fetchStoreMenuCategoru - menu category data:', response.data);
         } else {
             setErrorMessage("해당 매장 정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
             setShowErrorMessageModal(true);

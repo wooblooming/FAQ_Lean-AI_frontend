@@ -2,36 +2,41 @@ import axios from 'axios';
 import config from '../../config';
 
 export const fetchFeedImage = async ({ slug, storeID }, token, setImages) => {
-    try {
-        const payload = slug
-            ? { slug: decodeURIComponent(slug) }
-            : { store_id: storeID };
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
 
-        // 동적으로 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }), // token이 있을 경우에만 Authorization 헤더 추가
-        };
+    let response;
 
-        const response = await axios.post(`${config.apiDomain}/api/feed/`, payload, {
-            headers,
-        });
-
-        //console.log("response data : ", response.data);
-
-        if (response.data.success && response.data.data?.images) {
-            const formattedImages = response.data.data.images.map((img) => ({
-                id: img.id,
-                name: img.name,
-                path: img.path,
-                ext: img.ext
-            }));
-            setImages(formattedImages);
-        } else {
-            setImages([]);
+    if (slug) {
+      // slug 기반 요청
+      response = await axios.get(
+        `${config.apiDomain}/api/feeds/list_images_by_slug/`,
+        {
+          headers,
+          params : {slug: decodeURIComponent(slug)},
         }
-    } catch (error) {
-        console.error('Error fetching images:', error);
-        setImages([]);
+      );
+    } else if (storeID) {
+      // storeID 기반 요청
+      response = await axios.get(
+        `${config.apiDomain}/api/feeds/list_images/`,
+        {
+          headers,
+          params: { store_id: storeID }, // 쿼리 파라미터로 storeID 전달
+        }
+      );
+    } else {
+      throw new Error('slug 또는 storeID가 필요합니다.');
     }
+
+    // 응답 데이터 처리
+    const images = response.data?.images || [];
+    setImages(images);
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    setImages([]);
+  }
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { Pencil as EditIcon, Check as CheckIcon, X as CancelIcon, Trash, ChevronDown, CircleMinus } from 'lucide-react';
 import { useAuth } from '../../contexts/authContext';
 import ModalMSG from '../modal/modalMSG.js';
@@ -29,26 +30,25 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
 
   // 메뉴 데이터를 가져오기
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && slug && token) {
       fetchMenuItems();
     }
   }, [isOpen, slug, token]);
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
-        method: 'POST',
+      const response = await axios.get(`${config.apiDomain}/api/menus/`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
+        params: {
           action: 'view',
-          slug,
-        }),
+          slug: slug, // 슬러그를 URL 파라미터로 전달
+        },
       });
 
-      const data = await response.json();
+      const data = response.data;
       if (Array.isArray(data) && data.length > 0) {
         setMenuItems(data);
         setUpdatedMenuItems(data);
@@ -58,7 +58,11 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         setError('메뉴 데이터가 비어있거나 올바르지 않습니다.');
       }
     } catch (error) {
-      setError(`메뉴 데이터를 불러오는 데 실패했습니다: ${error.message}`);
+      if (error.response) {
+        setError(`서버에서 에러 발생: ${error.response.data?.message || '알 수 없는 오류'}`);
+      } else {
+        setError(`메뉴 데이터를 불러오는 데 실패했습니다: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -71,13 +75,18 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
 
   // 이미지 URL 가져오기 함수 (미리보기 또는 기본 이미지)
   const getImageSrc = (menu) => {
-    if (previewImage) return previewImage;
+    // 파일 객체인지 확인하여 URL 생성
+    if (menu.image instanceof File) {
+        return URL.createObjectURL(menu.image);
+    }
+    // 기본 이미지 로직 유지
     return menu.image && typeof menu.image === 'string' && menu.image.startsWith('http')
-      ? menu.image
-      : menu.image
+        ? menu.image
+        : menu.image
         ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
         : '/menu_default_image.png';
-  };
+};
+
 
   const handleEditClick = (menuItem) => {
     setEditingItem(menuItem.menu_number);
@@ -86,57 +95,62 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
 
   const handleSaveEdit = async (menuItem) => {
     try {
-      const formData = new FormData();
-      formData.append('action', 'update');
-      formData.append('slug', storeSlug);
-      formData.append('menu_number', menuItem.menu_number);
-      formData.append('name', menuItem.name);
-      formData.append('price', Math.round(menuItem.price));
-      formData.append('category', menuItem.category);
+        const formData = new FormData();
+        formData.append('menu_number', menuItem.menu_number);
+        formData.append('name', menuItem.name);
+        formData.append('price', Math.round(menuItem.price));
+        formData.append('category', menuItem.category);
 
-      if (menuItem.image instanceof File) {
-        formData.append('image', menuItem.image);
-      }
+        if (menuItem.image instanceof File) {
+            formData.append('image', menuItem.image);
+        }
 
-      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        const updatedImage = menuItem.image instanceof File
-          ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${result.updated_menus[0]?.image}`
-          : menuItem.image;
-
-        const updatedMenuItem = { ...menuItem, image: updatedImage };
-        setUpdatedMenuItems((prev) =>
-          prev.map((item) =>
-            item.menu_number === menuItem.menu_number ? updatedMenuItem : item
-          )
-        );
-        setMenuItems((prev) =>
-          prev.map((item) =>
-            item.menu_number === menuItem.menu_number ? updatedMenuItem : item
-          )
+        const response = await axios.put(
+            `${config.apiDomain}/api/menus/${menuItem.menu_number}/`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
         );
 
-        setMessage(`"${menuItem.name}" 항목이 성공적으로 수정되었습니다.`);
-        setShowMessageModal(true);
-      } else {
-        const errorText = await response.text();
-        throw new Error(`서버에서 수정 실패: ${errorText}`);
-      }
+        // Axios에서는 status로 성공 여부 확인
+        if (response.status === 200 && response.data.updated_menu) {
+            const updatedMenu = response.data.updated_menu;
+
+            // 이미지 처리
+            const updatedImage = menuItem.image instanceof File
+                ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${updatedMenu.image}`
+                : menuItem.image;
+
+            const updatedMenuItem = { ...menuItem, image: updatedImage };
+            setUpdatedMenuItems((prev) =>
+                prev.map((item) =>
+                    item.menu_number === menuItem.menu_number ? updatedMenuItem : item
+                )
+            );
+            setMenuItems((prev) =>
+                prev.map((item) =>
+                    item.menu_number === menuItem.menu_number ? updatedMenuItem : item
+                )
+            );
+
+            setMessage(`"${menuItem.name}" 항목이 성공적으로 수정되었습니다.`);
+            setShowMessageModal(true);
+        } else {
+            throw new Error('서버에서 수정 실패');
+        }
     } catch (error) {
-      setErrorMessage('항목 수정에 실패했습니다.');
-      setShowErrorMessageModal(true);
+        console.error('Error updating menu item:', error);
+        setErrorMessage('항목 수정에 실패했습니다.');
+        setShowErrorMessageModal(true);
     } finally {
-      setEditingItem(null);
+        setEditingItem(null);
     }
-  };
+};
+
 
   const handleCancelEdit = () => {
     setEditingItem(null);
@@ -153,52 +167,35 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
   const handleImageChange = (e, menuItem) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-
-      const updatedItems = updatedMenuItems.map((item) =>
-        item.menu_number === menuItem.menu_number ? { ...item, image: file } : item
-      );
-      setUpdatedMenuItems(updatedItems);
+        const updatedItems = updatedMenuItems.map((item) =>
+            item.menu_number === menuItem.menu_number ? { ...item, image: file } : item
+        );
+        setUpdatedMenuItems(updatedItems);
     }
-  };
+};
+
 
   const handleDeleteClick = (menuItem) => {
     setConfirmDeleteItem(menuItem);
   };
 
+  // 개별 아이템 삭제 
   const confirmDelete = async () => {
     try {
-      const requestBody = JSON.stringify({
-        action: 'delete',
-        menus: [{ slug: storeSlug, menu_number: confirmDeleteItem.menu_number }],
-      });
-
-      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
-        method: 'POST',
+      await axios.delete(`${config.apiDomain}/api/menus/${confirmDeleteItem.menu_number}/`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
         },
-        body: requestBody,
       });
-
-      if (response.status === 200) {
-        const updatedItems = updatedMenuItems.filter(
-          (item) => item.menu_number !== confirmDeleteItem.menu_number
-        );
-        setUpdatedMenuItems(updatedItems);
-        setMenuItems(updatedItems);
-
-        setMessage(`"${confirmDeleteItem.name}" 항목이 성공적으로 삭제되었습니다.`);
-        setShowMessageModal(true);
-      } else {
-        const errorText = await response.text();
-        throw new Error(`서버에서 삭제 실패: ${errorText}`);
-      }
+  
+      const updatedItems = updatedMenuItems.filter(
+        (item) => item.menu_number !== confirmDeleteItem.menu_number
+      );
+      setUpdatedMenuItems(updatedItems);
+      setMenuItems(updatedItems);
+  
+      setMessage(`"${confirmDeleteItem.name}" 항목이 성공적으로 삭제되었습니다.`);
+      setShowMessageModal(true);
     } catch (error) {
       setErrorMessage('항목 삭제에 실패했습니다.');
       setShowErrorMessageModal(true);
@@ -206,42 +203,32 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
       setConfirmDeleteItem(null);
     }
   };
+  
 
+  // 카테고리별 삭제
   const confirmDeleteCategoryHandler = async () => {
     if (!confirmDeleteCategory) return;
-
+  
     try {
-      const itemsToDelete = updatedMenuItems.filter(item => item.category === confirmDeleteCategory);
-      const requestBody = JSON.stringify({
-        action: 'delete',
-        menus: itemsToDelete.map(item => ({
-          slug: storeSlug,
-          menu_number: item.menu_number,
-        })),
-      });
-
-      const response = await fetch(`${config.apiDomain}/api/menu-details/`, {
-        method: 'POST',
+      await axios.delete(`${config.apiDomain}/api/menus/delete_category/`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: requestBody,
+        data: {
+          slug: slug, // 삭제할 스토어의 slug
+          category: confirmDeleteCategory, // 삭제할 카테고리 이름
+        },
       });
-
-      if (response.status === 200) {
-        const updatedItems = updatedMenuItems.filter(
-          (item) => item.category !== confirmDeleteCategory
-        );
-        setUpdatedMenuItems(updatedItems);
-        setMenuItems(updatedItems);
-
-        setMessage(`"${confirmDeleteCategory}" 카테고리가 성공적으로 삭제되었습니다.`);
-        setShowMessageModal(true);
-      } else {
-        const errorText = await response.text();
-        throw new Error(`카테고리 삭제 실패: ${errorText}`);
-      }
+  
+      const updatedItems = updatedMenuItems.filter(
+        (item) => item.category !== confirmDeleteCategory
+      );
+      setUpdatedMenuItems(updatedItems);
+      setMenuItems(updatedItems);
+  
+      setMessage(`"${confirmDeleteCategory}" 카테고리가 성공적으로 삭제되었습니다.`);
+      setShowMessageModal(true);
     } catch (error) {
       setErrorMessage('카테고리 삭제에 실패했습니다.');
       setShowErrorMessageModal(true);
@@ -249,7 +236,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
       setConfirmDeleteCategory(null);
     }
   };
-
+  
   const groupedMenuItems = updatedMenuItems.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
     acc[item.category].push(item);

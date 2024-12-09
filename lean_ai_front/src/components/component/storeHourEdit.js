@@ -5,7 +5,6 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const StoreHourEdit = ({ isOpen, onClose, onSave, hours }) => {
-    if (!isOpen) return null;
 
     const [weekdayStartHour, setWeekdayStartHour] = useState('09');
     const [weekdayStartMinute, setWeekdayStartMinute] = useState('00');
@@ -19,19 +18,6 @@ const StoreHourEdit = ({ isOpen, onClose, onSave, hours }) => {
 
     const hourOptions = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
     const minuteOptions = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
-
-    useEffect(() => {
-        // 초기화 로직
-        if (!weekdayStartHour) setWeekdayStartHour('09');
-        if (!weekdayStartMinute) setWeekdayStartMinute('00');
-        if (!weekdayEndHour) setWeekdayEndHour('18');
-        if (!weekdayEndMinute) setWeekdayEndMinute('00');
-        if (!weekendStartHour) setWeekendStartHour('09');
-        if (!weekendStartMinute) setWeekendStartMinute('00');
-        if (!weekendEndHour) setWeekendEndHour('13');
-        if (!weekendEndMinute) setWeekendEndMinute('00');
-    }, []);
-    
 
     useEffect(() => {
         // 초기 값 설정
@@ -78,7 +64,7 @@ const StoreHourEdit = ({ isOpen, onClose, onSave, hours }) => {
     };
     
 
-    return (
+    return isOpen ? (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="modal-content bg-white p-6 rounded-lg shadow-lg text-center relative"
                 style={{ width: '400px', position: 'relative' }}
@@ -225,7 +211,7 @@ const StoreHourEdit = ({ isOpen, onClose, onSave, hours }) => {
                 </div>
             </div>
         </div>
-    );
+    ): null;
 };
 
 export default StoreHourEdit;

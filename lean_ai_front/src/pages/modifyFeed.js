@@ -45,17 +45,18 @@ const ModifyFeed = () => {
     };
 
     useEffect(() => {
-        if (storeID) {
+        if (storeID && selectedTab === '피드수정') {
             fetchImages();
         }
-    }, [storeID]);
+    }, [storeID, selectedTab]);
+
 
     const handleUpload = async (formData) => {
         setLoading(true);
         try {
             formData.append('store_id', storeID);
 
-            const response = await axios.post(`${config.apiDomain}/api/feed-upload/`, formData, {
+            const response = await axios.post(`${config.apiDomain}/api/feeds/upload_image/`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -80,7 +81,7 @@ const ModifyFeed = () => {
 
         setLoading(true);
         try {
-            await axios.delete(`${config.apiDomain}/api/feed-delete/`, {
+            await axios.delete(`${config.apiDomain}/api/feeds/delete_image/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -103,11 +104,10 @@ const ModifyFeed = () => {
 
     const handleRename = async (id, oldName, newName, ext) => {
         const full_id = `${oldName}_${id}${ext}`;
-
         setLoading(true);
         try {
             await axios.put(
-                `${config.apiDomain}/api/feed-rename/`,
+                `${config.apiDomain}/api/feeds/rename_image/`,
                 { id: full_id, name: newName, store_id: storeID },
                 {
                     headers: {

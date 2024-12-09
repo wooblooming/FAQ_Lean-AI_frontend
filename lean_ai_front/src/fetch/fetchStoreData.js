@@ -1,39 +1,41 @@
 import axios from 'axios';
 import config from '../../config';
 
-export const fetchStoreData = async ({ slug, storeID }, token, setStoreData, setErrorMessage, setShowErrorMessageModal, isOwner) => {
-  const type = isOwner ? 'owner' : 'customer';
-
+export const fetchStoreData = async ({ slug, storeID }, token, setStoreData, setErrorMessage, setShowErrorMessageModal) => {
   try {
+
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+  };
+
     let response;
 
     // slug 또는 storeID에 따라 URL 및 메서드 분기
     if (slug) {
-      response = await axios.post(
-        `${config.apiDomain}/api/stores/detail_by_slug/`,
-        { slug: decodeURIComponent(slug), type },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
+            // slug 기반 요청
+            response = await axios.get(
+                `${config.apiDomain}/api/stores/detail_by_slug/`,
+                {
+                    headers,
+                    params : {slug: decodeURIComponent(slug)},
+                }
+            );
+        } else if (storeID) {
+            // storeID 기반 요청
+            response = await axios.get(
+                `${config.apiDomain}/api/stores/${storeID}/`,
+                {
+                    headers,
+                }
+            );
+        } else {
+            throw new Error('slug 또는 storeID가 필요합니다.');
         }
-      );
-    } else if (storeID) {
-      response = await axios.get(
-        `${config.apiDomain}/api/stores/${storeID}/`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-        }
-      );
-    }
 
     // 성공 응답 처리
     if (response?.status === 200 && response.data) {
-      console.log('fetchStoreData - store data:', response.data);
+      //console.log('fetchStoreData - store data:', response.data);
       setStoreData(response.data);
     } else {
       throw new Error('매장 정보를 찾을 수 없습니다.');

@@ -225,7 +225,7 @@ const ChangeInfo = ({ }) => {
         throw new Error('정보 저장에 실패했습니다.');
       }
 
-      const result = await response.json();
+      await response.json();
       setMessage('정보가 성공적으로 저장되었습니다.');
       setShowMessageModal(true);
     } catch (error) {
@@ -317,7 +317,7 @@ const ChangeInfo = ({ }) => {
           />
           <StoreInfoEdit
             label="비즈니스 종류"
-            value={storeInfo.store_category}
+            value={businessTypeMap[storeInfo.store_category] || ' '}
             onEdit={openEditModal}
             elementId="store_category"
           />
@@ -451,7 +451,7 @@ const ChangeInfo = ({ }) => {
               <X className="bg-indigo-500 rounded-full text-white p-1" />
             </button>
             <h2 className="text-2xl font-bold mb-4">내용 수정</h2>
-            {currentEditElement === 'storeCategory' ? (
+            {currentEditElement === 'store_category' ? (
               <select
                 className="w-full h-12 p-2 border border-gray-300 rounded"
                 value={editText}

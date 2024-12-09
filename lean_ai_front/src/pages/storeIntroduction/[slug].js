@@ -20,7 +20,6 @@ const StoreIntroduce = () => {
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
   const [menu, setMenu] = useState(null);
-  const [isOwner, setIsOwner] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const tabOrder = ['home', 'menu', 'image']; // 탭 순서 배열
@@ -29,9 +28,8 @@ const StoreIntroduce = () => {
 
   useEffect(() => {
     if (slug) {
-      setIsOwner(false);
-      fetchStoreData({ slug }, null, setStoreData, setErrorMessage, setShowErrorMessageModal, isOwner);
-      fetchStoreMenu({slug}, null, setMenu, setErrorMessage, setShowErrorMessageModal, isOwner);
+      fetchStoreData({ slug }, null, setStoreData, setErrorMessage, setShowErrorMessageModal);
+      fetchStoreMenu({slug}, null, setMenu, setErrorMessage, setShowErrorMessageModal);
       fetchFeedImage({ slug }, null, setImages); // 피드 가져오기
       setIsLoading(false);
     }
@@ -82,16 +80,16 @@ const StoreIntroduce = () => {
     <div>
       <div {...handlers} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div className="bg-white rounded-lg shadow-lg relative font-sans overflow-y-auto" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
-          <StoreBanner banner={storeData.store.banner} onBack={() => router.push('/mainPageForPresident')} isOwner={false} />
+          <StoreBanner banner={storeData.banner} onBack={() => router.push('/mainPageForPresident')} isOwner={false} />
           <div className='flex flex-col my-3 pl-4 ' >
-            {storeData?.store?.store_name && (
+            {storeData?.store_name && (
               <p id="storeName" className="font-bold text-3xl" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-                {storeData.store.store_name}
+                {storeData.store_name}
               </p>
             )}
             {storeData?.store?.store_introduction &&
               <p className='whitespace-pre-line text-lg mt-1' style={{ fontFamily: 'NanumSquare' }}>
-                {storeData.store.store_introduction}
+                {storeData.store_introduction}
               </p>
             }
           </div>
@@ -121,7 +119,7 @@ const StoreIntroduce = () => {
             </button>
           </div>
           <div className="p-4 font-sans mt-3">
-            {activeTab === 'home' && <StoreInfo storeData={storeData.store} />}
+            {activeTab === 'home' && <StoreInfo storeData={storeData} />}
             {activeTab === 'menu' && <MenuList menu={menu} storeCategory={storeCategory} menuTitle={menuTitle} />}
             {activeTab === 'image' && <ImageList images={images} />}
           </div>

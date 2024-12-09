@@ -22,7 +22,6 @@ const StoreIntroduceOwner = () => {
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
   const [menu, setMenu] = useState([]);
-  const [isOwner, setIsOwner] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const tabOrder = ['home', 'menu', 'image']; // 탭 순서 배열
@@ -31,8 +30,7 @@ const StoreIntroduceOwner = () => {
 
   useEffect(() => {
     if (token && slug) {
-      setIsOwner(true);
-      fetchStoreData({ slug }, token, setStoreData, setErrorMessage, setShowErrorMessageModal, isOwner);
+      fetchStoreData({ slug }, token, setStoreData, setErrorMessage, setShowErrorMessageModal);
       fetchStoreMenu({slug}, token, setMenu, setErrorMessage, setShowErrorMessageModal);
       fetchFeedImage({ slug }, token, setImages); // 피드 가져오기
       setIsLoading(false);
@@ -84,16 +82,16 @@ const StoreIntroduceOwner = () => {
     <div>
     <div {...handlers} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg relative font-sans overflow-y-auto" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
-        <StoreBanner banner={storeData.store.banner} onBack={() => router.push('/mainPageForPresident')} isOwner={true} />
+        <StoreBanner banner={storeData.banner} onBack={() => router.push('/mainPageForPresident')} isOwner={true} />
         <div className='flex flex-col my-3 pl-4 ' >
           {storeData?.store?.store_name && (
             <p id="storeName" className="font-bold text-3xl" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-              {storeData.store.store_name}
+              {storeData.store_name}
             </p>
           )}
           {storeData?.store?.store_introduction &&
             <p className='whitespace-pre-line text-lg mt-1' style={{ fontFamily: 'NanumSquare' }}>
-              {storeData.store.store_introduction}
+              {storeData.store_introduction}
             </p>
           }
         </div>
@@ -123,7 +121,7 @@ const StoreIntroduceOwner = () => {
           </button> 
         </div>
         <div className="p-4 font-sans mt-3">
-          {activeTab === 'home' && <StoreInfo storeData={storeData.store} />}
+          {activeTab === 'home' && <StoreInfo storeData={storeData} />}
           {activeTab === 'menu' && <MenuList menu={menu} storeCategory={storeCategory} menuTitle={menuTitle} />}
           {activeTab === 'image' && <ImageList images={images} />}
         </div>
