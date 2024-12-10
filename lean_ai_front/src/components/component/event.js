@@ -12,7 +12,7 @@ const EventSwitch = ({ isEventOn, toggleEventOn }) => {
             <input
               type="checkbox"
               checked={isEventOn}
-              onChange={toggleEventOn}  // 스위치 상태 변경 시 동작
+              onChange={(e) => toggleEventOn(e.target.checked)} 
             />
             <span className="slider"></span>
           </label>

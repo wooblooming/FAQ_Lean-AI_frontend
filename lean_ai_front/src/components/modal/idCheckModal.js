@@ -10,15 +10,14 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, isPublic }) 
     const [showErrorModal, setShowErrorModal] = useState(false);
 
     // API 경로 설정 함수
-    const getApiUrl = () => {
+    const APIUrl = () => {
         return isPublic ? `${config.apiDomain}/public/check-username/` : `${config.apiDomain}/api/check-username/`;
     };
 
     const handleIdCheck = async () => {
         setLoading(true);
-        console.log(getApiUrl());
         try {
-            const response = await fetch(getApiUrl(), {
+            const response = await fetch(APIUrl(), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

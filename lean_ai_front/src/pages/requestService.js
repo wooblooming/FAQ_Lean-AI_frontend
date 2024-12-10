@@ -32,12 +32,6 @@ export default function RequestService() {
         if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 입력 값 초기화
     };
 
-    useEffect(() => {
-        if (token && isPublicOn) {
-          console.log("isPublicOn : ", isPublicOn);
-        }
-      }, [token, isPublicOn]);
-
     // 제출 버튼 클릭 시 호출되는 함수
     const handleSubmit = async () => {
         const files = fileInputRef.current?.files; // 파일 입력 참조

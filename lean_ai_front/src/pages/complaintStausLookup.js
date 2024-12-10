@@ -74,7 +74,7 @@ const ComplaintLookup = () => {
 
     // 인증 확인 요청
     const handleVerifyCode = async () => {
-        console.log('Sending complaintNum:', complaintNum); // 디버깅용
+        //console.log('Sending complaintNum:', complaintNum); // 디버깅용
         try {
             const response = await axios.post(`${config.apiDomain}/public/verify-code/`, {
                 phone,

@@ -58,7 +58,6 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
         setStoreName(response.data.store_name || '');
       } else {
         setQrCodeImageUrl(null);
-        console.warn("QR Code URL is null.");
         router.push('/myPage'); // QR 코드 URL이 없으면 /myPage로 리다이렉트
       }
     } catch (error) {

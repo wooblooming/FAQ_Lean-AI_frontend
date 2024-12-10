@@ -46,9 +46,14 @@ const UserProfileForm = ({
       setEmail(userData.email || '');
       setPhoneNumber(userData.phone_number || '');
 
-      if (userData.department) {
+      if (isPublicOn) {
         //console.log("user department: ", userData?.department?.department_name || "부서 정보 없음");
-        setDepart(userData?.department?.department_name);
+        if (userData.department && typeof userData.department === 'object') {
+          setDepart(userData.department.department_name || "부서 정보 없음");
+        } else {
+          setDepart("부서 정보 없음");
+        }
+      
       }
     }
   }, [userData]);

@@ -11,7 +11,7 @@ export const fetchPublicComplaintCustomer = async (complaintNum, phone, setCompl
 
         if (response.status === 200 && response.data.success) {
             setComplaintDetails(response.data.complaint); // 성공적으로 민원 데이터 가져옴
-            console.log(response.data.complaint);
+            //console.log(response.data.complaint);
 
         } else {
             setErrorMessage(response.data.message || '민원 조회에 실패했습니다.');
