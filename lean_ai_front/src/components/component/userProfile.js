@@ -48,7 +48,7 @@ const UserProfileForm = ({
 
       if (isPublicOn) {
         //console.log("user department: ", userData?.department?.department_name || "부서 정보 없음");
-        if (userData.department && typeof userData.department === 'object') {
+        if (userData.department) {
           setDepart(userData.department.department_name || "부서 정보 없음");
         } else {
           setDepart("부서 정보 없음");
