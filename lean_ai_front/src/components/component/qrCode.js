@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
-import config from '../../../config';
 
 const QRCodeSection = ({
-  isPublicOn,
-  storeID,
   userData,
   qrUrl,
   setQrUrl,
@@ -15,13 +12,14 @@ const QRCodeSection = ({
   const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
 
   // QR 코드 URL 초기화
-  useEffect(() => {
+  useEffect(() => { 
     if (!qrUrl && userData.qr_code_url) {
-      // userData.qr_code_url이 존재하면 상태 초기화
-      const timestamp = new Date().getTime(); // 고유한 타임스탬프 생성
-      setQrUrl(`${mediaUrl}/${userData.qr_code_url}?${timestamp}`);
+      const cleanUrl = `${mediaUrl.replace(/\/+$/, '')}/${userData.qr_code_url.replace(/^\/+/, '')}`;
+      const timestamp = new Date().getTime(); // 고유 타임스탬프
+      setQrUrl(`${cleanUrl}?${timestamp}`);
     }
-  }, [userData, qrUrl, setQrUrl]);
+  }, [userData, qrUrl, setQrUrl, mediaUrl]);
+  
 
   // QR 코드 생성 및 업데이트
   const handleGenerateAndDisplayQrCode = async () => {

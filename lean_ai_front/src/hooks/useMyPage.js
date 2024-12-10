@@ -34,16 +34,13 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
   }, [token, storeID]);
 
   useEffect(() => {
-    if (userData) {
-      if (userData.profile_photo === "") {
-        setProfileImage('/profile_default_img.jpg'); // /public 밑에 있는 기본 이미지 경로
-      }
-      else {
-        setProfileImage(`${mediaUrl}${userData.profile_photo}`);
-      }
-
+    if (userData && userData.profile_photo) {
+      setProfileImage(`${mediaUrl}${userData.profile_photo}`);
+    } else {
+      setProfileImage('/profile_default_img.jpg'); // 기본 이미지 경로
     }
-  }, [userData]);
+  }, [userData, mediaUrl]);
+  
 
   useEffect(() => {
     if (userData && initialData) {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft, X } from 'lucide-react';
 import useMyPage from '../hooks/useMyPage';
@@ -19,7 +20,7 @@ const MyPagePublic = () => {
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
   const { isPublicOn } = usePublic();
-  const router = useRouter();
+  const router = useRouter(); 
 
   const {
     userData, handleUserDataChange, profileImage,
@@ -39,7 +40,6 @@ const MyPagePublic = () => {
     generateQrCodeUrl: `${config.apiDomain}/public/generate-qr-code/`,
     deactivateAccountUrl: `${config.apiDomain}/public/deactivate-account/`,
   });
-  
 
   return (
     <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">
@@ -101,9 +101,6 @@ const MyPagePublic = () => {
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
-          isPublicOn={isPublicOn}
-          token={token}
-          storeID={storeID}
           userData={userData}
           qrUrl={qrUrl}
           setQrUrl={setQrUrl}
