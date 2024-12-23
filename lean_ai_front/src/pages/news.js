@@ -82,12 +82,12 @@ const Newsroom = () => {
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
             onClick={() => router.back()}
           />
-          <h1 className="text-4xl font-bold text-left text-indigo-600 mb-4"> 회사소식 </h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-left text-indigo-600 mb-4"> 회사소식 </h1>
         </div>
 
         {/* 필터 버튼 */}
         <motion.div
-          className="flex justify-center space-x-4 mb-12"
+          className="flex justify-center space-x-2 md:space-x-4 mb-6 md:mb-12"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3}}

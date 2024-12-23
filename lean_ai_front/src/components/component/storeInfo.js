@@ -22,11 +22,17 @@ const StoreInfo = ({ storeData }) => (
   </div>
 );
 
-const InfoItem = ({ icon, text }) => (
-  <div className="flex space-x-3 items-center">
-    <FontAwesomeIcon icon={icon} className="text-indigo-500 text-xl" />
-    <p className="whitespace-pre-line leading-normal">{text}</p>
-  </div>
-);
+const InfoItem = ({ icon, text }) => {
+  const isLongText = text.length > 20; // 길이에 따라 변경 기준 설정
+  return (
+    <div className="flex space-x-3 items-center">
+      <FontAwesomeIcon icon={icon} className="text-indigo-500 text-xl" />
+      <p className={`leading-normal ${isLongText ? 'whitespace-pre-line' : 'whitespace-nowrap'}`}>
+        {text}
+      </p>
+    </div>
+  );
+};
+
 
 export default StoreInfo;
