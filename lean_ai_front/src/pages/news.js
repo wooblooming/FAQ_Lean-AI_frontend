@@ -53,9 +53,9 @@ const NewsCard = ({ category, title, date, content, onClick }) => (
       <span className="text-white text-lg font-semibold">{category}</span>
     </div>
     <div className="p-6">
-      <h3 className="text-black text-xl font-bold mb-2 h-16">{title}</h3>
-      <p className="text-gray-600 h-24">{content}...</p>
-      <div className="text-gray-600 text-sm mb-4">{date}</div>
+      <h3 className="text-black text-xl font-bold mb-2 h-10 md:h-16 truncate">{title}</h3>
+      <p className="text-gray-600 md:h-28 line-clamp-2">{content}...</p>
+      <div className="text-gray-600 text-sm my-4">{date}</div>
     </div>
   </motion.div>
 );
@@ -75,7 +75,7 @@ const Newsroom = () => {
 
   return (
     <div className="bg-violet-50 min-h-screen p-8 text-indigo-600 flex items-center justify-center">
-      <div className="max-w-6xl bg-white rounded-lg p-4" style={{ minWidth: '1150px', minHeight: '700px' }}>
+      <div className="bg-white rounded-lg p-4 " style={{minWidth:'95%'}}>
         {/* 헤더 및 뒤로가기 버튼 */}
         <div className='flex flex-row'>
           <ChevronLeft
@@ -95,7 +95,7 @@ const Newsroom = () => {
           {filters.map((filter) => (
             <button
               key={filter}
-              className={`px-6 py-2 rounded-full transition duration-300 whitespace-nowrap ${activeFilter === filter
+              className={`px-4 md:px-6 py-2 rounded-full transition duration-300 whitespace-nowrap ${activeFilter === filter
                 ? 'bg-indigo-500 text-white shadow-lg'
                 : 'bg-white text-gray-600 hover:ring-2 ring-indigo-500'
                 }`}
