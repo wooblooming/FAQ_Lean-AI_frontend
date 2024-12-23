@@ -212,7 +212,7 @@ const CompanySection = ({ isMobile }) => {
               <li 
                 key={news.id} 
                 className="flex justify-between space-x-2 items-center border-b pb-2 cursor-pointer" 
-                onClick={() => router.push(news.link)}
+                onClick={() => window.open(news.link, '_blank')}
               >
                 <h3
                   className="text-lg font-semibold text-black truncate"
