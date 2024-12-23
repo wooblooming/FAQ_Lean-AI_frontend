@@ -5,9 +5,16 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
     const [newNames, setNewNames] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
-    // 환경 변수에서 미디어 URL 가져오기
-    const mediaBaseUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
+    const mediaBaseUrl = process.env.NEXT_PUBLIC_MEDIA_URL || 'https://default-url.com';
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleErrorModalClose = () => {
         setShowErrorModal(false);
@@ -15,7 +22,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
     };
 
     const handleInputChange = (id, value) => {
-        setNewNames((prev) => ({ ...prev, [id]: value })); // id별로 입력값 저장
+        setNewNames((prev) => ({ ...prev, [id]: value }));
     };
 
     const handleRename = (id) => {
@@ -27,88 +34,123 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
             return;
         }
 
-        // 이전 이름 찾기
         const image = images.find((img) => img.id === id);
         if (!image) {
             setErrorMessage('이미지를 찾을 수 없습니다.');
             setShowErrorModal(true);
             return;
         }
-        const oldName = image.name; // 이전 이름
-        const ext = image.ext; // 확장자
 
+        const oldName = image.name;
         if (oldName === newName) {
             setErrorMessage('새 이름이 이전 이름과 같습니다. 다른 이름을 입력해주세요.');
             setShowErrorModal(true);
             return;
         }
 
-        onRename(id, oldName, newName, ext);
-        setNewNames((prev) => ({ ...prev, [id]: '' })); // 입력값 초기화
+        onRename(id, oldName, newName, image.ext);
+        setNewNames((prev) => ({ ...prev, [id]: '' }));
     };
 
     const handleDelete = (id) => {
-        // 이미지 파일 이름 찾기
         const image = images.find((img) => img.id === id);
         if (!image) {
             setErrorMessage('이미지를 찾을 수 없습니다.');
             setShowErrorModal(true);
             return;
         }
-        const name = image.name; // 이미지 파일 이름
-        const ext = image.ext; // 확장자
-
-        onDelete(id, name, ext); // 이미지 파일 이름과 확장자 전달
-        setNewNames('');
+        onDelete(id, image.name, image.ext);
+        setNewNames((prev) => {
+            const updatedNames = { ...prev };
+            delete updatedNames[id];
+            return updatedNames;
+        });
     };
 
     return (
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 ">
             {images && images.length > 0 ? (
                 images.map((image) => (
-                    <div
-                        key={image.id} // 고유한 id를 key로 사용
-                        className="flex items-center justify-between border p-4 rounded-md"
-                    >
-                        <div className="flex items-center space-x-4">
-                            {/* 이미지 미리보기 */}
+                    isMobile ? (
+                        // 모바일 전용 UI
+                        <div
+                            key={image.id}
+                            className="flex flex-col border p-3 rounded-md space-y-3"
+                        >
                             <img
-                                src={`${mediaBaseUrl}/media/${image.path}`} // 이미지 경로 설정
+                                src={`${mediaBaseUrl}/media/${image.path}`}
                                 alt={image.name}
-                                className="w-16 h-16 object-cover rounded-md border"
+                                className="w-full h-32 object-contain rounded-md border"
                             />
-                            <p className="font-semibold text-gray-700 w-36 whitespace-pre-line" >{image.name}</p>
+                            <div className="flex flex-col space-y-2">
+                                <p className="font-semibold text-gray-700 text-lg text-center">
+                                    {image.name}
+                                </p>
+                                <input
+                                    type="text"
+                                    value={newNames[image.id] || ''}
+                                    onChange={(e) => handleInputChange(image.id, e.target.value)}
+                                    placeholder="새 파일 이름 입력"
+                                    className="p-2 border rounded-md text-sm"
+                                />
+                                <div className="flex justify-between">
+                                    <button
+                                        onClick={() => handleRename(image.id)}
+                                        className="px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 text-sm"
+                                    >
+                                        이름 변경
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(image.id)}
+                                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm"
+                                    >
+                                        삭제
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex space-x-4">
-                            <input
-                                type="text"
-                                value={newNames[image.id] || ''} // id별로 상태 관리
-                                onChange={(e) => handleInputChange(image.id, e.target.value)}
-                                placeholder="새 파일 이름 입력"
-                                className="p-2 border rounded-md"
-                            />
-                            <button
-                                onClick={() => handleRename(image.id)}
-                                className="px-3 py-1 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 whitespace-nowrap"
-                                style={{ fontFamily: 'NanumSquareBold' }}
-                            >
-                                이름 변경
-                            </button>
-                            <button
-                                onClick={() => handleDelete(image.id)} // id로 삭제
-                                className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 whitespace-nowrap"
-                                style={{ fontFamily: 'NanumSquareBold' }}
-                            >
-                                삭제
-                            </button>
+                    ) : (
+                        // 데스크톱 전용 UI
+                        <div
+                            key={image.id}
+                            className="flex items-center justify-between border p-4 rounded-md"
+                        >
+                            <div className="flex items-center space-x-4">
+                                <img
+                                    src={`${mediaBaseUrl}/media/${image.path}`}
+                                    alt={image.name}
+                                    className="w-16 h-16 object-cover rounded-md border"
+                                />
+                                <p className="font-semibold text-lg text-gray-700 w-32 whitespace-pre-line">{image.name}</p>
+                            </div>
+                            <div className="flex space-x-4">
+                                <input
+                                    type="text"
+                                    value={newNames[image.id] || ''}
+                                    onChange={(e) => handleInputChange(image.id, e.target.value)}
+                                    placeholder="새 파일 이름 입력"
+                                    className="p-2 border rounded-md"
+                                />
+                                <button
+                                    onClick={() => handleRename(image.id)}
+                                    className="px-3 py-1 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 whitespace-nowrap"
+                                >
+                                    이름 변경
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(image.id)}
+                                    className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 whitespace-nowrap"
+                                >
+                                    삭제
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )
                 ))
             ) : (
                 <div className="p-5">
                     <p
                         className="text-gray-700 text-center text-3xl"
-                        style={{ fontFamily: 'NanumSquareBold' }}
                     >
                         저장된 피드가 없습니다
                     </p>

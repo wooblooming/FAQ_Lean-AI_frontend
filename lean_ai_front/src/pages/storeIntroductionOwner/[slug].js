@@ -31,7 +31,7 @@ const StoreIntroduceOwner = () => {
   useEffect(() => {
     if (token && slug) {
       fetchStoreData({ slug }, token, setStoreData, setErrorMessage, setShowErrorMessageModal);
-      fetchStoreMenu({slug}, token, setMenu, setErrorMessage, setShowErrorMessageModal);
+      fetchStoreMenu({ slug }, token, setMenu, setErrorMessage, setShowErrorMessageModal);
       fetchFeedImage({ slug }, token, setImages); // 피드 가져오기
       setIsLoading(false);
     }
@@ -39,10 +39,10 @@ const StoreIntroduceOwner = () => {
 
 
   useEffect(() => {
-    if (storeData?.store) {
-      //console.log("store data : ", storeData.store);
-      setStoreCategory(storeData.store.store_category);
-      setAgentId(storeData.store.agent_id);
+    if (storeData) {
+      //console.log("store data : ", storeData);
+      setStoreCategory(storeData.store_category);
+      setAgentId(storeData.agent_id);
     }
   }, [storeData]);
 

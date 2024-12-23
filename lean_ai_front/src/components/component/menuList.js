@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import { TriangleAlert } from 'lucide-react';
 import AllergyModal from '../modal/allergyModal';
-import config from '../../../config';
 
 // MenuList 컴포넌트: 메뉴 항목을 카테고리별로 보여주고 알레르기 모달을 관리합니다.
 const MenuList = ({ menu, storeCategory, menuTitle }) => {
@@ -101,7 +100,7 @@ const Category = ({ category, menus, open, onClick }) => (
 // MenuItem 컴포넌트: 개별 메뉴 항목을 렌더링 (이미지, 이름, 가격 포함)
 const MenuItem = ({ menu }) => (
     <div className="flex items-center p-3">
-        <img src={menu.image ? `${config.apiDomain}${menu.image}` : '/menu_default_image.png'} alt={menu.name} className="w-16 h-16 object-cover" />
+        <img src={menu.image ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}` : '/menu_default_image.png'} alt={menu.name} className="w-16 h-16 object-cover" />
         <div className="flex-1 ml-3">
             <p className="font-semibold">{menu.name}</p>
             <p>{Math.floor(menu.price).toLocaleString()} 원</p>

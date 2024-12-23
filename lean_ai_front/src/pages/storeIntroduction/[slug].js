@@ -37,10 +37,10 @@ const StoreIntroduce = () => {
 
 
   useEffect(() => {
-    if (storeData?.store) {
+    if (storeData) {
       //console.log("store data : ", storeData.store);
-      setStoreCategory(storeData.store.store_category);
-      setAgentId(storeData.store.agent_id);
+      setStoreCategory(storeData.store_category);
+      setAgentId(storeData.agent_id);
     }
   }, [storeData]);
 

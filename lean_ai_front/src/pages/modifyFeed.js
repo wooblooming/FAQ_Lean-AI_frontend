@@ -143,9 +143,8 @@ const ModifyFeed = () => {
                     </h1>
                 </div>
 
-                <div className="flex flex-col md:flex-row">
-                    <div className="w-full md:w-1/4 pr-4">
-                        <div className="flex flex-col space-y-2">
+                <div className="flex flex-col md:flex-row space-x-0 space-y-2 md:space-x-2">
+                    <div className="w-full md:w-1/4 flex flex-col items-center">
                             {['피드추가', '피드수정'].map((tab) => (
                                 <button
                                     key={tab}
@@ -161,10 +160,9 @@ const ModifyFeed = () => {
                                     {tab}
                                 </button>
                             ))}
-                        </div>
                     </div>
 
-                    <div className="w-full md:w-3/4">
+                    <div className="w-full">
                         {selectedTab === '피드추가' && (
                             <div className="flex justify-center items-start">
                                 <FeedUpload onUpload={handleUpload} />
