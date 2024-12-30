@@ -143,7 +143,7 @@ function FlipCard({ step, index }) {
 }
 
 // ServiceSection 컴포넌트**: 전체 서비스 섹션을 구성하며, 모바일 및 데스크탑 뷰에 따라 각각의 UI를 다르게 렌더링
-const ServiceSection = ({ isMobile }) => {
+const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
   // 상태값 정의
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeCategory, setActiveCategory] = useState(0);
@@ -400,7 +400,7 @@ const ServiceSection = ({ isMobile }) => {
 
   // 가이드라인 섹션 렌더링 함수 (모바일) 
   const renderGuidelineMobile = () => (
-    <div className="px-4" style={{ height: '1010px' }}>
+    <div className="px-4 w-full h-full">
       <div className="w-full h-full px-2 py-6 bg-indigo-100 rounded-lg">
         <p className="text-3xl font-bold text-center mb-4 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
           <span className="text-indigo-600">무물 서비스</span>는 <br />간단합니다
@@ -409,7 +409,7 @@ const ServiceSection = ({ isMobile }) => {
           <button className={`px-4 py-3 rounded-l-lg whitespace-nowrap ${isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(true)}>업주 가이드라인</button>
           <button className={`px-4 py-3 rounded-r-lg whitespace-nowrap ${!isOwnerStep ? "bg-indigo-500 text-white" : "bg-white text-gray-800"}`} onClick={() => setIsOwnerStep(false)}>고객 가이드라인</button>
         </div>
-        <div className="relative w-full h-full px-4 py-6 rounded-lg bg-white" style={{ height: '824px' }}>
+        <div className="relative w-full h-full px-4 py-6 rounded-lg bg-white" >
           <div className="text-center mb-4">
             <div className="flex justify-center mb-2 space-x-2">
               {React.createElement(steps[currentStep].icon, { className: "w-8 h-8 text-indigo-600" })}
@@ -548,7 +548,8 @@ const ServiceSection = ({ isMobile }) => {
     </div>
   );
 
-  return isMobile ? renderMobileVersion() : renderDesktopVersion();
+  return (isMobile || isTablet) ? renderMobileVersion() : renderDesktopVersion();
+
 };
 
 export default ServiceSection;
