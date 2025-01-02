@@ -1,23 +1,26 @@
-// AuthProvider.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !window.ReactNativeWebView) {
             const storedToken = sessionStorage.getItem('token');
-            //console.log("Token loaded on page load:", storedToken);
+            const isLandingPage = router.pathname === '/'; // 예외 처리할 경로
+
             if (storedToken) {
                 setToken(storedToken);
+            } else if (!isLandingPage) {
+                router.push('/login'); // 토큰 없고, 예외 경로가 아니면 로그인 페이지로 이동
             }
         }
-    }, []);
+    }, [router.pathname]);
 
     const saveToken = (newToken) => {
-        //console.log("Saving new token:", newToken);
         setToken(newToken);
         if (typeof window !== 'undefined' && !window.ReactNativeWebView) {
             sessionStorage.setItem('token', newToken);

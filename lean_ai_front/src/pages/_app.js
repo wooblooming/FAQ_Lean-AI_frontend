@@ -11,22 +11,14 @@ import Chatbot from './mumulChatBotMSG';
 
 function MyApp({ Component, pageProps }) {
   return (
-    <>
-      <Head>
-        <link rel="icon" href="/favicon1.ico" type="image/x-icon" />
-        <title>MUMUL</title>
-      </Head>
-
-      <AuthProvider>
-        <PublicProvider>
-          <StoreProvider>
-            <Component {...pageProps} />
-          </StoreProvider>
-        </PublicProvider>
-      </AuthProvider>
-
-      <Chatbot agentId={config.agentID} />
-    </>
+    <AuthProvider>
+      <PublicProvider>
+        <StoreProvider>
+          <Component {...pageProps} />
+          <Chatbot agentId={config.agentID} />
+        </StoreProvider>
+      </PublicProvider>
+    </AuthProvider>
   );
 }
 

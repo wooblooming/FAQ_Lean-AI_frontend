@@ -29,7 +29,7 @@ const StoreIntroduce = () => {
   useEffect(() => {
     if (slug) {
       fetchStoreData({ slug }, null, setStoreData, setErrorMessage, setShowErrorMessageModal);
-      fetchStoreMenu({slug}, null, setMenu, setErrorMessage, setShowErrorMessageModal);
+      fetchStoreMenu({ slug }, null, setMenu, setErrorMessage, setShowErrorMessageModal);
       fetchFeedImage({ slug }, null, setImages); // 피드 가져오기
       setIsLoading(false);
     }
@@ -79,22 +79,22 @@ const StoreIntroduce = () => {
   return (
     <div>
       <div {...handlers} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="bg-white rounded-lg shadow-lg relative font-sans overflow-y-auto" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
-          <StoreBanner banner={storeData.banner} onBack={() => router.push('/mainPageForPresident')} isOwner={false} />
-          <div className='flex flex-col my-3 pl-4 ' >
-            {storeData?.store_name && (
+        <div className="bg-white rounded-lg shadow-lg relative font-sans" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
+          <StoreBanner banner={storeData.banner} onBack={() => router.push('/mainPageForPresident')} isOwner={true} />
+          <div className="flex flex-col my-3 pl-4">
+            {storeData?.store?.store_name && (
               <p id="storeName" className="font-bold text-3xl" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                 {storeData.store_name}
               </p>
             )}
-            {storeData?.store?.store_introduction &&
-              <p className='whitespace-pre-line text-lg mt-1' style={{ fontFamily: 'NanumSquare' }}>
+            {storeData?.store?.store_introduction && (
+              <p className="whitespace-pre-line text-lg mt-1" style={{ fontFamily: 'NanumSquare' }}>
                 {storeData.store_introduction}
               </p>
-            }
+            )}
           </div>
 
-          <div className='tabs flex justify-around border-b-2 font-medium border-gray-300' style={{ fontFamily: "NanumSquareExtraBold" }}>
+          <div className="tabs flex justify-around border-b-2 font-medium border-gray-300" style={{ fontFamily: 'NanumSquareExtraBold' }}>
             <button
               className={`p-2 w-1/4 ${activeTab === 'home' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
               style={{ fontFamily: activeTab === 'home' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
@@ -109,7 +109,6 @@ const StoreIntroduce = () => {
             >
               {menuTitle}
             </button>
-
             <button
               className={`p-2 w-1/4 ${activeTab === 'image' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
               style={{ fontFamily: activeTab === 'image' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
@@ -118,13 +117,22 @@ const StoreIntroduce = () => {
               피드
             </button>
           </div>
-          <div className="p-4 font-sans mt-3">
+
+          <div className="p-4 font-sans mt-3" style={{ height: 'calc(100vh - 150px)' }}>
             {activeTab === 'home' && <StoreInfo storeData={storeData} />}
-            {activeTab === 'menu' && <MenuList menu={menu} storeCategory={storeCategory} menuTitle={menuTitle} />}
-            {activeTab === 'image' && <ImageList images={images} />}
+            {activeTab === 'menu' && (
+              <div className="scrollable-tab-content">
+                <MenuList menu={menu} storeCategory={storeCategory} menuTitle={menuTitle} />
+              </div>
+            )}
+            {activeTab === 'image' && (
+              <div className="scrollable-tab-content">
+                <ImageList images={images} />
+              </div>
+            )}
           </div>
+          {agentId && <Chatbot agentId={agentId} />}
         </div>
-        {agentId && <Chatbot agentId={agentId} />} {/* agentId를 Chatbot 컴포넌트에 전달 */}
       </div>
 
       <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)}>
@@ -132,7 +140,8 @@ const StoreIntroduce = () => {
           {typeof errorMessage === 'object' ? (
             Object.entries(errorMessage).map(([key, value]) => (
               <span key={key}>
-                {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
+                {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}
+                <br />
               </span>
             ))
           ) : (
@@ -140,6 +149,20 @@ const StoreIntroduce = () => {
           )}
         </p>
       </ModalErrorMSG>
+
+      <style jsx>{`
+        html,
+        body {
+          overflow: hidden; /* 외부 스크롤 제거 */
+          height: 100%;
+        }
+        .scrollable-tab-content {
+          overflow-y: auto; /* 세로 스크롤 활성화 */
+          height: calc(100vh - 350px); /* 콘텐츠 최대 높이 설정 */
+          padding: 16px;
+          box-sizing: border-box;
+        }
+      `}</style>
     </div>
   );
 };

@@ -8,6 +8,7 @@ export default function Document() {
           rel="stylesheet" 
           href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
         />
+        <link rel="icon" href="/favicon1.ico" type="image/x-icon" />
       </Head>
       <body>
         <Main />
