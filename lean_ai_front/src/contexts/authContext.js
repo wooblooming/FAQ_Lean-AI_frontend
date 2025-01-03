@@ -8,16 +8,22 @@ export const AuthProvider = ({ children }) => {
     const router = useRouter();
 
     // 예외 페이지 배열
-    const exceptionPages = ['/', '/storeIntroduction/[slug]', ,'/timeline', '/news', '/notice'];
+    const exceptionPages = ['/', '/storeIntroduction/[slug]', '/publicIntroduction/[slug]', '/timeline', '/news', '/notice', '/signupType',
+                            '/signupStep1', '/signupStep2' , '/signupPublicStep1', '/signupPublicStep2', 
+                            '/findAccount', '/findAccountResult', '/registerPublic',
+                            '/complaintRegister', '/complaintStausLookup'
+                            ];
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !window.ReactNativeWebView) {
             const storedToken = sessionStorage.getItem('token');
-            const isExceptionPage = exceptionPages.some((path) => {
-                // [slug]와 같은 동적 경로를 처리하기 위해 정규식을 포함한 비교
-                const dynamicPathRegex = new RegExp(`^${path.replace(/\[.*?\]/g, '[^/]+')}$`);
-                return dynamicPathRegex.test(router.pathname);
-            });
+            const isExceptionPage = 
+                router.pathname === '/_error' || // 에러 페이지
+                exceptionPages.some((path) => {
+                    // [slug]와 같은 동적 경로를 처리하기 위해 정규식을 포함한 비교
+                    const dynamicPathRegex = new RegExp(`^${path.replace(/\[.*?\]/g, '[^/]+')}$`);
+                    return dynamicPathRegex.test(router.pathname);
+                });
 
             if (storedToken) {
                 setToken(storedToken);
