@@ -10,11 +10,12 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         if (typeof window !== 'undefined' && !window.ReactNativeWebView) {
             const storedToken = sessionStorage.getItem('token');
-            const isLandingPage = router.pathname === '/'; // 예외 처리할 경로
+            const isLandingPage = router.pathname === '/'; // 랜딩 페이지
+            const isStoreIntroductionPage = /^\/storeIntroduction\/\[[^\]]+\]$/.test(router.pathname); // /storeIntroduction/[slug] 패턴
 
             if (storedToken) {
                 setToken(storedToken);
-            } else if (!isLandingPage) {
+            } else if (!isLandingPage && !isStoreIntroductionPage) {
                 router.push('/login'); // 토큰 없고, 예외 경로가 아니면 로그인 페이지로 이동
             }
         }

@@ -15,7 +15,7 @@ const Statistics = () => {
     useEffect(() => {
         fetchStatistics();
     }, []);
-    
+
     // 통계 데이터 API 호출
     const fetchStatistics = async () => {
         try {
@@ -28,22 +28,23 @@ const Statistics = () => {
             });
 
             const data = await response.json();
-            //console.log("data.data : ", data.data);
-            //console.log("data.image : ", data.image_url);
+            //console.log("data:", data); // 응답 데이터 로그
             
             if (response.ok && data.status === "success") {
                 setStatisticsData(data.data);  // 통계 데이터를 상태에 저장
                 setImageUrl(data.image_url);  // 이미지 URL 상태에 저장
             } else {
+                console.error('Failed to fetch data:', data); // 실패 로그
                 setStatisticsData(null);  // 데이터가 없으면 null로 설정
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error in fetchStatistics:', error); // 오류 로그
             setStatisticsData(null);  // 오류 발생 시 데이터 없음으로 설정
         } finally {
             setIsLoadingStatistics(false);  // 로딩 상태를 완료로 설정
         }
     };
+    
 
     return (
         <div className="min-h-screen py-12 px-4 font-sans bg-violet-50">
@@ -55,7 +56,7 @@ const Statistics = () => {
                     />
                     <h1 className="text-3xl font-bold text-center text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>통계 및 분석</h1>
                 </div>
-                
+
                 {/* 통계 데이터 표시 */}
                 {isLoadingStatistics ? (
                     <p>데이터 로딩 중...</p>
@@ -65,7 +66,7 @@ const Statistics = () => {
                             <ul className="text-gray-700 px-0 md:px-4 space-y-2">
                                 {statisticsData.map((stat, index) => (
                                     <li key={index} className="text-gray-800 font-semibold">
-                                        {index+1}. {stat.utterance} - {stat.count}회
+                                        {index + 1}. {stat.utterance} - {stat.count}회
                                     </li>
                                 ))}
                             </ul>
