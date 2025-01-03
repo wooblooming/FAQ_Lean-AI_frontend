@@ -7,15 +7,21 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const router = useRouter();
 
+    // 예외 페이지 배열
+    const exceptionPages = ['/', '/storeIntroduction/[slug]', ,'/timeline', '/news', '/notice'];
+
     useEffect(() => {
         if (typeof window !== 'undefined' && !window.ReactNativeWebView) {
             const storedToken = sessionStorage.getItem('token');
-            const isLandingPage = router.pathname === '/'; // 랜딩 페이지
-            const isStoreIntroductionPage = /^\/storeIntroduction\/\[[^\]]+\]$/.test(router.pathname); // /storeIntroduction/[slug] 패턴
+            const isExceptionPage = exceptionPages.some((path) => {
+                // [slug]와 같은 동적 경로를 처리하기 위해 정규식을 포함한 비교
+                const dynamicPathRegex = new RegExp(`^${path.replace(/\[.*?\]/g, '[^/]+')}$`);
+                return dynamicPathRegex.test(router.pathname);
+            });
 
             if (storedToken) {
                 setToken(storedToken);
-            } else if (!isLandingPage && !isStoreIntroductionPage) {
+            } else if (!isExceptionPage) {
                 router.push('/login'); // 토큰 없고, 예외 경로가 아니면 로그인 페이지로 이동
             }
         }
