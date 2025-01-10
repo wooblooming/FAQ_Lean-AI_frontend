@@ -5,8 +5,8 @@ import { Edit3, Eye, ClipboardList, ChevronDown, ChevronUp, Send, SquareCheckBig
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { fetchStoreData } from '../fetch/fetchStoreData';
-import { announcements } from './notice';
-import { faqs } from './faq';
+import { notifications } from '/public/text/notification.js';
+import faqs from '/public/text/faq.json';
 import ChangeInfo from './changeInfo';
 import RegisterStoreData from './registerStoreData';
 import RequestService from './requestService';
@@ -34,8 +34,8 @@ const Card = ({ children, className, ...props }) => (
 );
 
 // 최신 순으로 공지사항을 정렬하여 상위 3개만 반환하는 함수
-const getLatestAnnouncements = () => {
-  return [...announcements]
+const getLastNotifications = () => {
+  return [...notifications]
     .sort((a, b) => new Date(b.date.replace(/-/g, '/')) - new Date(a.date.replace(/-/g, '/'))) // 최신순 정렬
     .slice(0, 3); // 상위 3개만 선택
 };
@@ -57,8 +57,8 @@ const MainPageWithMenu = () => {
   const [expandedId, setExpandedId] = useState(null); // FAQ 확장 상태 관리
 
   const router = useRouter();
-  const { token } = useAuth();
-  const latestAnnouncements = getLatestAnnouncements(); // 최신 공지사항 가져오기
+  const { token } = useAuth();  
+  const lastNotifications = getLastNotifications(); // 최신 공지사항 가져오기
   const latestFaqs = faqs.slice(0, 3); // FAQ 상위 3개만 선택
 
   // 통계 관련 상태
@@ -284,22 +284,17 @@ const MainPageWithMenu = () => {
                   공지사항
                 </h2>
                 <ul className="space-y-4 px-0 md:px-4 h-36">
-                  {latestAnnouncements.map((announcement) => (
-                    <li
-                      key={announcement.id}
-                      className="flex justify-between items-center border-b pb-2"
-                    >
-                      <h3
-                        className="text-base font-semibold text-black truncate"
-                        style={{ maxWidth: "70%" }}
-                      >
-                        {announcement.title}
-                      </h3>
-                      <p className="text-xs text-gray-500 hidden md:block">
-                        {announcement.date}
-                      </p>
-                    </li>
-                  ))}
+                {lastNotifications.map((notification) => (
+                      <li key={notification.id} className="flex justify-between items-center border-b pb-2">
+                        <h3
+                          className="text-base font-semibold text-black truncate"
+                          style={{ maxWidth: '70%' }} // 긴 제목을 생략하고 너비 제한
+                        >
+                          {notification.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 hidden md:block">{notification.date}</p>
+                      </li>
+                    ))}
                 </ul>
                 <div className="flex justify-end">
                   <button
