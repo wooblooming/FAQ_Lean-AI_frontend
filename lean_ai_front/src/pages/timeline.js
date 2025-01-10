@@ -1,266 +1,121 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import { ChevronLeft } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import { ChevronLeft, Award, CalendarCheck2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import timelineData from "/public/text/timeline.json";
 
-// 타임라인에 표시할 이벤트 데이터 설정
-const timelineData = [
-  // 연도별로 이벤트 데이터가 저장되어 있으며, 연도와 이벤트 정보로 구성됨
-  {
-    year: 2020,
-    events: [
-      { 
-        date: '2020.10', 
-        title: '2020 4IR 어워즈 AI부문 대상', 
-        description: '4차 산업혁명 관련 기술 혁신 성과 인정',
-        details: '인공지능 기술의 혁신적인 적용으로 산업 전반의 효율성 향상에 기여한 점을 높이 평가받아 수상하였습니다.',
-        image: '/images/reward1.png'
-      },
-      { 
-        date: '2020.09', 
-        title: 'AI 데이터가공 바우처지원사업 선정', 
-        description: 'AI 기술 발전을 위한 정부 지원 획득',
-        details: '중소벤처기업부의 AI 데이터 가공 지원 사업에 선정되어 AI 기술 발전을 위한 데이터 가공 프로젝트를 수행하게 되었습니다.',
-      },
-    ],
-  },
-  {
-    year: 2019,
-    events: [
-      { 
-          date: '2019.12', 
-          title: '제 3회 서울혁신챌린지 최우수상', 
-          description: '4차 산업혁명 관련 기술 혁신 성과 인정',
-          details: '인공지능 기술의 혁신적 적용으로 산업 전반의 효율성 향상에 기여한 점을 높이 평가받아 수상하였습니다.',
-          image: '/images/reward2.jpg'
-        },
-        { 
-          date: '2019.11', 
-          title: '고려대 소셜벤처 발굴 프로젝트 우수상', 
-        },
-        { 
-            date: '2019.08', 
-            title: 'AI-Tech 기업 인증', 
-          },
-          { 
-            date: '2019.08', 
-            title: '2019 안암동 캠퍼스타운 창업경진대회 금상', 
-          },
-          { 
-            date: '2019.07', 
-            title: '2019 산업지능화 스타트업 창업경진대회 우수상', 
-          },
-          { 
-            date: '2019.06', 
-            title: '기보벤처캠프 4기 우수기업 선정', 
-          },
-          { 
-            date: '2019.06', 
-            title: '2019년 SW마에스트로 수료생 창업지원사업 선정', 
-          },
-          { 
-            date: '2019.05', 
-            title: '벤처기업 인증', 
-          },
-          { 
-            date: '2019.04', 
-            title: '기업부설연구소 설립', 
-          },
-        ],
-    },
-    {
-      year: 2018,
-      events: [
-        { 
-            date: '2018.12', 
-            title: '2018년 고려대 SW중심대학 창업경진대회 최우수상', 
-          },
-          { 
-            date: '2018.11', 
-            title: 'SW시장성 테스트 지원사업 정보통산업흥원 장상', 
-          },
-          { 
-            date: '2018.09', 
-            title: '빅데이터 기반 학과 종합 정보 서비스 메이저맵 베타버전 런칭', 
-          },
-          { 
-            date: '2018.07', 
-            title: 'H-온드림 7기 선정', 
-          },
-          { 
-            date: '2018.06', 
-            title: '성신여대 창업선도대학 지원팀 선정 (신기술 부문)', 
-          },
-          { 
-            date: '2018.02', 
-            title: '서울창업디딤터 2018년 PRE-BI 입주기업 선발)', 
-          },
-        ],
-    },
-    {
-      year: 2017,
-      events: [
-        { 
-            date: '2017.11', 
-            title: 'SK플래닛 101 Startup Korea 7기 선정', 
-          },
-          { 
-            date: '2017.11', 
-            title: '2017 대학 창업유망팀 300 시제품 전시회 부총리겸 교육부 장관상', 
-          },
-          { 
-            date: '2017.10', 
-            title: '2017 고려대 크라우드펀딩 경진대회 장려상', 
-          },
-          { 
-            date: '2017.10', 
-            title: '2017년 대학 창업유망팀 100 최종선발', 
-          },
-          { 
-            date: '2017.09', 
-            title: '미래에셋대우 청년창업지원 프로젝트 최우수상', 
-          },
-          {
-            date: '2017.08',
-            title: '인공지능 기반 진로 큐레이션 서비스 잡쇼퍼 런칭',
-          },
-          {
-            date: '2017.08',
-            title: 'KU Lean Innovation Challenge&Startup 경진대회 Lean Startup상',
-          },
-          {
-            date: '2017.05',
-            title: '주식회사 잡쇼퍼 법인 설립',
-          },
-          {
-            date: '2017.04',
-            title: '2017년 과학기술기반 창업중심대학 지원팀 선정(과기부)',
-          },
-          {
-            date: '2017.03',
-            title: '2016년 2학기 SK청년비상 창업지원사업 우수팀 선정',
-          },
-        ],
-    },
-    {
-      year: 2016,
-      events: [
-        { 
-            date: '2016.12', 
-            title: '제1회 고려대 모의크라우드펀딩 경진대회 장려상', 
-          },
-          { 
-            date: '2016.12', 
-            title: '제1회7회 KU Campu&RnD CEO 경진대회 최우수상', 
-          },
-          { 
-            date: '2016.12', 
-            title: '2017 사회적기업가 육성사업 사전선발', 
-          },
-          { 
-            date: '2016.09', 
-            title: '2016년 2학기 SK청년비상 창업지원사업 선정', 
-          },
-      ],
-    },
-];
-
-const TimelineEvent = ({ date, title, description }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
+const TimelineEvent = ({ content, type }) => {
   return (
-    <div
-      className=" flex items-center space-x-4 md:space-x-16 group relative transition-all duration-1000 ease-out px-2 "
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* 이벤트 날짜 표시 */}
-      <div className="flex-shrink-0 font-medium text-sm md:text-base text-gray-600">{date}</div>
-      <div className="w-full flex-grow py-2">
-        {/* 이벤트 제목 및 설명 */}
-        <h2
-          style={{ fontFamily: "NanumSquareExtraBold" }}
-          className={`font-bold text-base md:text-xl transition-all duration-300 ease-in-out ${
-            isHovered ? 'text-indigo-500 scale-105' : 'text-black'
-          }`}
-        >
-          {title}
-        </h2>
-        <p className="text-base text-gray-500 font-medium " style={{ fontFamily: "NanumSquare" }}>{description}</p>
+    <div className="flex group items-start space-x-2 md:space-x-6 relative py-2 pl-6 md:pl-8">
+      <div className="absolute left-5 top-0 h-full w-px bg-indigo-200 group-hover:bg-indigo-400 transition-colors duration-300" />
+
+      <div
+        className="bg-white rounded-2xl px-6 py-4 shadow-sm hover:shadow-md transition-all duration-300 border border-indigo-50"
+        style={{ width: "90%" }}
+      >
+        {type === "award" && (
+          <Award className="h-5 w-5 text-indigo-500 mb-3 inline-block" />
+        )}
+        {type === "history" && (
+          <CalendarCheck2 className="h-5 w-5 text-indigo-500 mb-3 inline-block" />
+        )}
+        <p className="text-gray-600 leading-relaxed">{content}</p>
       </div>
     </div>
   );
 };
 
-const YearMarker = ({ year, onClick }) => {
+const YearMarker = ({ period, onClick, isOpen }) => {
   return (
     <div
-      onClick={onClick} // 클릭 시 해당 연도 이벤트 목록을 토글
-      className="cursor-pointer my-3 flex items-center transition-all duration-300 ease-in-out"
+      onClick={onClick}
+      className="group cursor-pointer my-8 transform transition-all duration-300"
     >
-      {/* 연도 표시 */}
-      <div className="flex-shrink-0 w-12 md:w-24 font-bold text-xl md:text-3xl text-gray-600">{year}</div>
-      {/* 연도별 구분선 */}
-      <div className={'w-full border-b-2 flex-grow ml-4 transition-all duration-300 border-indigo-300'}></div>
+      <div className="flex items-center space-x-4">
+        <div className="flex-grow">
+          <div className="flex items-center">
+            <div
+              className="flex w-auto font-bold text-xl md:text-3xl text-gray-500 whitespace-nowrap"
+              style={{ fontFamily: "NanumSquareExtraBold" }}
+            >
+              {period}
+            </div>
+            <div
+              className={`w-full border-b-2 flex-grow ml-4 transition-all duration-300 ${
+                isOpen ? "border-indigo-600" : "border-indigo-300"
+              }`}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 const Timeline = () => {
-  const [openYears, setOpenYears] = useState({});  // 연도별 토글 함수가 열렸는지 여부 관리
+  const [openPeriods, setOpenPeriods] = useState({});
   const router = useRouter();
 
-   // 연도별 토글 함수: 연도 클릭 시 이벤트 목록을 펼치거나 접음
-  const toggleYear = (year) => {
-    setOpenYears((prevOpenYears) => ({
-      ...prevOpenYears,
-      [year]: !prevOpenYears[year],
+  const togglePeriod = (period) => {
+    setOpenPeriods((prev) => ({
+      ...prev,
+      [period]: !prev[period],
     }));
   };
 
   return (
-    <div className="min-h-screen p-4 font-sans bg-violet-50">
-      <div
-        className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg bg-white"
-        style={{borderRadius: '50px 0 50px 0' }}
-      >
-        <div className="flex items-center mb-12">
+    <div className="min-h-screen bg-violet-50 p-8">
+      <div className="max-w-4xl mx-auto p-4 bg-white rounded-lg shadow-xl">
+        <div className="flex flex-row">
           <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.push('/')}
+            onClick={() => router.back()}
           />
-          <h1 className="text-2xl md:text-4xl font-bold text-center text-indigo-600" style={{fontFamily:'NanumSquareExtraBold'}}>린에이아이의 걸어온 길</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-left text-indigo-600 mb-4 whitespace-nowrap">
+            린에이아이의 걸어온 길
+          </h1>
         </div>
 
-        {/* 타임라인 본문 */}
-        <div className="max-w-3xl mx-auto">
-          {timelineData.map((yearData) => (
-            <React.Fragment key={yearData.year}>
-               {/* 연도 마커 표시 */}
+        <div className="px-6 space-y-3">
+          {timelineData.map((periodData) => (
+            <React.Fragment key={periodData.period}>
               <YearMarker
-                year={yearData.year}
-                onClick={() => toggleYear(yearData.year)}
-                isOpen={!!openYears[yearData.year]}
+                period={periodData.period}
+                onClick={() => togglePeriod(periodData.period)}
+                isOpen={openPeriods[periodData.period]}
               />
 
-              {/* 연도별 이벤트 애니메이션 */}
               <AnimatePresence>
-                {openYears[yearData.year] && (
+                {openPeriods[periodData.period] && (
                   <motion.div
-                    key={yearData.year}
+                    key={periodData.period}
                     initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
+                    animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.5, ease: 'easeInOut' }}
-                    style={{ overflow: 'hidden' }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    className="overflow-y-auto max-h-[400px] space-y-2"
                   >
-                    {yearData.events.map((event, index) => (
-                      <TimelineEvent key={index} {...event} />
+                    {periodData.awards?.map((award, index) => (
+                      <TimelineEvent
+                        key={index}
+                        content={award.content}
+                        type="award"
+                        showIndicator={index === 0}
+                      />
+                    ))}
+                    {periodData.history?.map((history, index) => (
+                      <TimelineEvent
+                        key={index}
+                        content={history.content}
+                        type="history"
+                        showIndicator={
+                          index === 0 && !periodData.awards?.length
+                        }
+                      />
                     ))}
                   </motion.div>
                 )}
               </AnimatePresence>
-              
             </React.Fragment>
           ))}
         </div>

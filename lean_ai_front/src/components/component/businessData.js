@@ -1,16 +1,12 @@
 import React from 'react';
+import businessList from '/public/text/business.json';
 
-const BussinessData = ({ limit }) => {
-  const bussinessList = [
-    { content: '글로벌 기업 협업프로그램 선정 (마중-MS 협업)' },
-    { content: '현재 데이터바우처지원사업 32개사 AI학습용 데이터 수집/가공' },
-    { content: '현재 AI바우처지원사업 26개사 AI솔루션 구축' },
-  ]
+const BusinessData = ({ limit }) => {
 
   return (
     <div>
       <ul className="list-none">
-        {bussinessList.slice(0, limit).map((bussiness, index) => (
+        {businessList.slice(0, limit).map((business, index) => (
           <li
             key={index}
             className="flex items-center space-x-2"
@@ -23,7 +19,7 @@ const BussinessData = ({ limit }) => {
                 width: '90%',
               }}
             >
-              {bussiness.content}
+              {business.content}
             </span>
           </li>
         ))}
@@ -43,4 +39,4 @@ const BussinessData = ({ limit }) => {
   );
 };
 
-export default BussinessData;
+export default BusinessData;

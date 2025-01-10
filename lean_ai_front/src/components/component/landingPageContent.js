@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Image from "next/image";
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useMediaQuery } from 'react-responsive';
-import { usePublic } from '../../contexts/publicContext';
 import Nav from './navBar';
 import MobileLayout from './mobileLayout';
 import TabletLayout from './tabletLayout';

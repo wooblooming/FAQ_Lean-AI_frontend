@@ -22,7 +22,7 @@ export default function Custom404() {
   return (
     <div className="relative w-screen h-screen"> {/* 부모 div에 relative와 height 지정 */}
       <CacheBustedImage
-        src="/error_desktop.png"
+        src="/images/error_desktop.png"
         alt="error"
         fill
         style={{ objectFit: 'cover' }}
@@ -30,7 +30,7 @@ export default function Custom404() {
       />
 
     <CacheBustedImage
-        src="/error_mobile.png"
+        src="/images/error_mobile.png"
         alt="error"
         fill
         style={{ objectFit: 'cover' }}

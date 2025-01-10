@@ -95,7 +95,7 @@ const MobileLayout = () => {
                 {/* 이미지 섹션 - PC */}
                 <div className=" md:block z-10 w-full" style={{ height: "650px" }}>
                     <CacheBustedImage
-                        src='/index_desktop.png'
+                        src='/images/index_desktop.png'
                         alt='mumul'
                         layout="fill"
                         style={{ objectFit: "contain" }}

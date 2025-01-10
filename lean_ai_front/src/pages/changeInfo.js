@@ -84,7 +84,7 @@ const ChangeInfo = ({ }) => {
           const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL || ''; // .env.local에서 URL 가져오기
           const storeImageUrl = bannerPath.startsWith('/media/')
             ? `${mediaUrl}${bannerPath}`
-            : '/chatbot.png';
+            : '/images/chatbot.png';
           setPreviewImage(storeImageUrl);
 
         },
@@ -165,7 +165,7 @@ const ChangeInfo = ({ }) => {
 
   // 기본 이미지를 설정하는 함수
   const applyDefaultImage = () => {
-    setPreviewImage('/chatbot.png'); // 미리보기 URL 변경
+    setPreviewImage('/images/chatbot.png'); // 미리보기 URL 변경
     setStoreImage(null); // 파일을 null로 설정
     closeImageModal();
   };

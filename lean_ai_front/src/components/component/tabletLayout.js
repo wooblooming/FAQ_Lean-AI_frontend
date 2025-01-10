@@ -55,7 +55,7 @@ const MobileLayout = () => {
                 {/* 이미지 섹션 - 모바일 */}
                 <div className="w-full h-auto">
                     <CacheBustedImage
-                        src='/index_mobile.png'
+                        src='/images/index_mobile.png'
                         alt='mumul'
                         layout="responsive"
                         width={500}

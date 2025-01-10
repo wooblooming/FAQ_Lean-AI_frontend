@@ -133,7 +133,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
 
     const getImagePreview = (image) => {
         if (image instanceof File) return URL.createObjectURL(image);
-        return '/menu_default_image.png'; // 기본 이미지 경로
+        return '/images/menu_default_image.png'; // 기본 이미지 경로
     };
 
     const handleComplete = async () => {
@@ -153,7 +153,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
                 if (item.image instanceof File) {
                     formData.append(`menus[${index}][image]`, item.image);
                 } else {
-                    const defaultImageBlob = await fetch('/menu_default_image.png').then((res) => res.blob());
+                    const defaultImageBlob = await fetch('/images/menu_default_image.png').then((res) => res.blob());
                     formData.append(`menus[${index}][image]`, defaultImageBlob, 'menu_default_image.png');
                 }
             }

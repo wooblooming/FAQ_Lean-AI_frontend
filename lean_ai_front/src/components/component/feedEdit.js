@@ -7,7 +7,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
-    const mediaBaseUrl = process.env.NEXT_PUBLIC_MEDIA_URL || 'https://default-url.com';
+    const mediaBaseUrl = process.env.NEXT_PUBLIC_MEDIA_URL ;
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);

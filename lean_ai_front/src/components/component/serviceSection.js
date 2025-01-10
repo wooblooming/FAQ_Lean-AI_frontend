@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSwipeable } from "react-swipeable";
@@ -19,23 +19,23 @@ const features = [
 
 // Guide Data (업주/고객 가이드라인 데이터) : 각각의 단계를 저장하고 있는 배열
 const ownerSteps = [
-  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/owner_1.png" },
-  { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀파일로 제공되는 양식에 정보 입력하여 업로드 후 초기 데이터는 기준 3일, 수정 데이터는 기준 1일 내 반영됩니다.", image: "/owner_2.png" },
-  { icon: Store, title: "실시간 매장 정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 기본 매장 정보는 실시간으로 반영됩니다.", image: "/owner_3.png" },
+  { icon: UserPlus, title: "간단한 가입, 직관적 UI", description: "30초만에 가능한 가입 절차, 누구나 쉽게 접근 가능한 UI로 구성되어있습니다.", image: "/images/owner_1.png" },
+  { icon: PencilLine, title: "손쉬운 FAQ 데이터 수정", description: "엑셀파일로 제공되는 양식에 정보 입력하여 업로드 후 초기 데이터는 기준 3일, 수정 데이터는 기준 1일 내 반영됩니다.", image: "/images/owner_2.png" },
+  { icon: Store, title: "실시간 매장 정보 수정", description: "배너 사진, 영업 정보, 메뉴 수정 등 기본 매장 정보는 실시간으로 반영됩니다.", image: "/images/owner_3.png" },
 
 ];
 
 const customerSteps = [
-  { icon: QrCode, title: "QR코드 스캔", description: "매장 고유의 QR코드를 제공하고 테이블, 벽, 의자 등 매장 어디든 설치 가능합니다", image: "/customer_1.png" },
-  { icon: AppWindow, title: "매장 정보 확인", description: "노출하시고자 하는 정보를 고객들이 확인할 수 있습니다.", image: "/customer_2.png" },
-  { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 매장에 필요한 모든 정보를 제공합니다.", image: "/customer_3.png" },
+  { icon: QrCode, title: "QR코드 스캔", description: "매장 고유의 QR코드를 제공하고 테이블, 벽, 의자 등 매장 어디든 설치 가능합니다", image: "/images/customer_1.png" },
+  { icon: AppWindow, title: "매장 정보 확인", description: "노출하시고자 하는 정보를 고객들이 확인할 수 있습니다.", image: "/images/customer_2.png" },
+  { icon: Bot, title: "AI 챗봇 '무물봇'", description: "사전 학습된 정보를 바탕으로 매장에 필요한 모든 정보를 제공합니다.", image: "/images/customer_3.png" },
 ];
 
 // GoodThings Data (장점 섹션 데이터)
 const goodThings = [
-  { image: "/cost_saving.png", text: "인건 비용 절감", description: "반복적인 질문 응대 및 처리 작업을 자동화하여, 인력 운영에 따른 비용을 절감하고 보다 중요한 업무에 집중할 수 있도록 돕습니다." },
-  { image: "/comunications.png", text: "직원-고객 간 감정소비 감소", description: "AI 챗봇을 통해 고객의 불만이나 질문를 처리하여, 직원들이 겪는 감정적 소모를 줄이고 보다 건강한 근무 환경을 조성합니다." },
-  { image: "/efficiency.png", text: "업무 효율성 증대", description: "고객의 질문를 신속하게 해결하고 업무 프로세스를 최적화하여, 업무 효율성과 고객 만족도를 동시에 높입니다." },
+  { image: "/images/cost_saving.png", text: "인건 비용 절감", description: "반복적인 질문 응대 및 처리 작업을 자동화하여, 인력 운영에 따른 비용을 절감하고 보다 중요한 업무에 집중할 수 있도록 돕습니다." },
+  { image: "/images/comunications.png", text: "직원-고객 간 감정소비 감소", description: "AI 챗봇을 통해 고객의 불만이나 질문를 처리하여, 직원들이 겪는 감정적 소모를 줄이고 보다 건강한 근무 환경을 조성합니다." },
+  { image: "/images/efficiency.png", text: "업무 효율성 증대", description: "고객의 질문를 신속하게 해결하고 업무 프로세스를 최적화하여, 업무 효율성과 고객 만족도를 동시에 높입니다." },
 ];
 
 // usecase Data (활용 섹션 데이터)
@@ -69,7 +69,7 @@ const usecase = [
 // 이미지의 캐시를 방지하여 항상 최신 이미지를 불러오게 하는 함
 const CacheBustedImage = ({ src, alt, width, height, priority, ...props }) => {
   const cacheBustSrc = `${src}?v=${Date.now()}`; //  현재 시간을 기반으로 한 타임스탬프를 v라는 쿼리 파라미터로 추가
-  
+
   const imageLoader = ({ src, width, quality }) => {
     return `${src}?w=${width}&q=${quality || 75}&v=${Date.now()}`;
   };
@@ -110,7 +110,7 @@ function FlipCard({ step, index }) {
         style={{ transformStyle: "preserve-3d", perspective: "500px" }}
       >
         {/* 카드 앞면 */}
-        <div className="absolute backface-hidden bg-violet-300 rounded-lg shadow-lg px-4 flex flex-col flex justify-center items-center text-center" style={{ width:"360px", height:"550px", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
+        <div className="absolute backface-hidden bg-violet-300 rounded-lg shadow-lg px-4 flex flex-col flex justify-center items-center text-center" style={{ width: "360px", height: "550px", backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
           <div>
             <div className="flex justify-center space-x-3 items-center text-center mb-3">
               <div className="bg-white rounded-full p-2">
@@ -131,7 +131,7 @@ function FlipCard({ step, index }) {
           <CacheBustedImage
             src={step.image}
             alt={`Step ${index + 1}`}
-            width={250} 
+            width={250}
             height={300}
             className="rounded-lg border border-gray-400 "
             priority
@@ -151,6 +151,8 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
   const [isOwnerStep, setIsOwnerStep] = useState(true); // 업주/고객 가이드라인 구분 상태
   const [goodThingIndex, setGoodThingIndex] = useState(0); // 장점 섹션 슬라이드 인덱스 관리
   const [featureIndex, setFeatureIndex] = useState(0); // Features 섹션 슬라이드 인덱스 관리
+  const [usecaseStores, setUsecaseStores] = useState([]); // 도입 사례 매장
+  const [visibleStoreId, setVisibleStoreId] = useState(false); // 도입 사례 버튼
 
   // 단계별 데이터 설정 (업주/고객에 따라)
   const steps = isOwnerStep ? ownerSteps : customerSteps;
@@ -179,6 +181,19 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
+
+  useEffect(() => {
+    // JSON 파일 로드
+    fetch("/text/usecase.json")
+      .then((response) => response.json())
+      .then((data) => setUsecaseStores(data));
+  }, []);
+
+  // 도입 사례 버튼
+  const handleButtonClick = (id) => {
+    // 버튼 클릭 시 해당 매장의 ID를 visibleStoreId로 설정
+    setVisibleStoreId((prevId) => (prevId === id ? null : id));
+  };
 
   // useInView를 사용하여 각 섹션이 뷰포트에 들어오는지 확인
   const [featuresRef, featuresInView] = useInView({ triggerOnce: true, threshold: 0.2 });
@@ -302,7 +317,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
                   alt={`${thing.text} 이미지`}
                   width={130}
                   height={130}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
               <h2 className="mt-4 text-xl font-semibold text-indigo-800 text-center whitespace-nowrap md:whitespace-pre-line" style={{ fontFamily: "NanumSquareExtraBold" }}>
@@ -320,7 +335,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
         <p className="text-center font-semibold m-8 text-4xl" style={{ fontFamily: "NanumSquareExtraBold" }}>
           <span className="text-indigo-600">무물</span>은 이렇게 활용됩니다
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 " style={{ height: "50%" }}>
           {/* Category 버튼 */}
           <div className="grid grid-cols-2 gap-4">
             {usecase.map((category, index) => (
@@ -341,7 +356,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
           {activeCategory !== null && (
             <motion.div
               className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"
-              style={{ height: 'auto', fontFamily: "NanumSquare" }}
+              style={{ height: '250px', fontFamily: "NanumSquare" }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -358,6 +373,63 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
             </motion.div>
           )}
         </div>
+
+        {/* 실제 사용 사례 */}
+        <div className="bg-violet-200 rounded-lg px-6 py-10 flex flex-col space-y-4">
+          <h2
+            className="text-center font-semibold m-8 text-4xl text-gray-700"
+            style={{ fontFamily: "NanumSquareExtraBold" }}
+          >
+            도입 사례
+          </h2>
+          <div className="flex flex-row gap-4">
+            {/* 왼쪽: 버튼과 매장 소개 */}
+            <div className="flex flex-col space-y-4 w-1/3 ">
+              {usecaseStores.map((store) => (
+                <div
+                  key={store.id}
+                  className="bg-white p-4 rounded-xl shadow-lg overflow-auto cursor-pointer"
+                  style={{ fontFamily: "NanumSquare" }}
+                  onClick={() => handleButtonClick(store.id)}
+                >
+                  <button
+                    className="mb-2 text-indigo-500"
+                    style={{ fontFamily: "NanumSquareExtraBold", fontSize: "22px" }}
+                  >
+                    {store.name}
+                  </button>
+                  {visibleStoreId === store.id && (
+                    <p className="text-lg text-gray-700 leading-relaxed">
+                      {store.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* 오른쪽: 이미지 */}
+            <div className="w-2/3">
+              <div className="flex flex-row gap-4">
+                {usecaseStores
+                  .filter((store) => store.id === visibleStoreId)
+                  .flatMap((store) => store.images.map((image, index) => (
+                    <CacheBustedImage
+                      key={index}
+                      src={image}
+                      alt={`${store.name} 이미지 ${index + 1}`}
+                      className="rounded-lg shadow-md"
+                      layout="contain"
+                      width={800} // 이미지의 원본 너비
+                      height={600} // 이미지의 원본 높이
+                      priority
+                    />
+
+                  )))}
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </motion.div>
   );
@@ -481,48 +553,47 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
         </div>
 
         {/* 활용 섹션 */}
-        <div className="w-full py-6 bg-indigo-100 rounded-lg p-2">
-          <p className="text-3xl font-bold text-center mb-5 text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
-            <span className="text-indigo-600">무물</span>은 <br /> 이렇게 활용됩니다
-          </p>
-          <div className="grid grid-cols-2 justify-center gap-2">
-            {/* Category Buttons */}
-            {usecase.map((category, index) => (
-              <motion.button
-                key={index}
-                className={`py-3 px-4 rounded-lg transition-all duration-300 hover:bg-white hover:shadow-lg text-gray-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex flex-col items-center justify-center ${index === activeCategory ? 'bg-white ' : ''}`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveCategory(index)}
+        <div className="bg-violet-200 rounded-lg px-6 py-10 flex flex-col space-y-4">
+          <h2
+            className="text-center font-semibold m-8 text-4xl text-gray-700"
+            style={{ fontFamily: "NanumSquareExtraBold" }}
+          >
+            도입 사례
+          </h2>
+          <div className="grid grid-cols-2 space-x-4">
+            {usecaseStores.map((store) => (
+              <div
+                key={store.id}
+                className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"
+                style={{ fontFamily: "NanumSquare" }}
               >
-                <category.icon className="w-10 h-10 mb-1 mx-auto text-indigo-500" />
-                <h3 className="text-xl font-semibold text-center" style={{ fontFamily: "NanumSquareBold" }}>{category.name}</h3>
-              </motion.button>
+                <button
+                  className="mb-2 text-indigo-500"
+                  style={{ fontFamily: "NanumSquareExtraBold", fontSize: "22px" }}
+                  onClick={() => handleButtonClick(store.id)}
+                >
+                  {store.name}
+                </button>
+                {visibleStoreId === store.id && (
+                  <>
+                    <p className="text-lg text-gray-700 leading-relaxed">
+                      {store.description}
+                    </p>
+                    <div className="grid grid-cols-3 gap-4 mt-4">
+                      {store.images.map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`${store.name} 이미지 ${index + 1}`}
+                          className="rounded-lg shadow-md"
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             ))}
           </div>
-
-          {/* Category Description */}
-          {activeCategory !== null && (
-            <motion.div
-              className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"
-              style={{ height: 'auto', fontFamily: "NanumSquare" }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h3 className=" mb-2 text-indigo-500" style={{ fontFamily: "NanumSquareExtraBold", fontSize: '22px' }}>
-                {usecase[activeCategory].name}에서 무물 활용
-              </h3>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                {usecase[activeCategory].description}
-              </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                <br />
-                {usecase[activeCategory].exemple}
-              </p>
-            </motion.div>
-          )}
         </div>
       </div>
     </div>

@@ -84,7 +84,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         ? menu.image
         : menu.image
         ? `${process.env.NEXT_PUBLIC_MEDIA_URL}${menu.image}`
-        : '/menu_default_image.png';
+        : '/images/menu_default_image.png';
 };
 
 

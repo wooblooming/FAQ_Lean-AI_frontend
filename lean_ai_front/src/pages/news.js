@@ -2,43 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { ChevronLeft } from 'react-feather';
-
-// 뉴스 데이터를 외부에서 사용할 수 있도록 내보내기
-export const news = [
-  {
-    id: 1,
-    category: '보도자료',
-    title: '린에이아이-동아사이언스, 과학/수학 교육 AI DT 사업 위한 업무협약 체결',
-    date: '2024-08-14',
-    content: '교육/지식 특화 sLLM(smaller Large Language Model) 플랫폼 기업 린에이아이(대표 김하연)와 과학 전문 미디어기업 동아사이언스(대표 장경애)가 과학/수학 교육 AI DT 사업을 위한 업무협약(MOU)을 체결했다.',
-    link: 'https://www.thebigdata.co.kr/view.php?ud=2024081317185739339aeda69934_23'
-  },
-  {
-    id: 2,
-    category: '보도자료',
-    title: `AI기술 활용 소상공인 업무 디지털 혁신 지원 '린에이아이'`,
-    date: '2024-09-03',
-    content: `▶ 창업하게 된 이유와 기업소개 그리고 앞으로 기업 운영 계획은? 
-▷‘린에이아이’는 창업 7년차 스타트업입니다. AI 기술로 지역·소득에 따른 교육 기회의 격차를 해소하고자 ‘잡쇼퍼’라는 회사명으로 창업한 기업입니다.`,
-    link: 'https://xn--zb0b20fnzw5rc.kr/sub_read.html?uid=18862&section=sc4&section2=%EB%8B%A8%EC%B2%B4%EC%86%8C%EC%8B%9D'
-  },
-  {
-    id: 3,
-    category: '보도자료',
-    title: `린에이아이, 한국MS·중기부 '마중 프로그램' 선정`,
-    date: '2024-09-24',
-    content: `인공지능(AI) 전문 스타트업 린에이아이(대표 김하연, 옛 잡쇼퍼)가 한국마이크로소프트(MS)와 중소벤처기업부가 공동으로 진행하는 '마중 프로그램 5기'에 최종 선정됐다고 24일 밝혔다.`,
-    link: 'https://www.etnews.com/20240924000231'
-  },
-  {
-    id: 4,
-    category: '보도자료',
-    title: `“소상공인을 위한 맞춤형 AI서비스 만들어드려요” 린에이아이의 착한 디지털 혁신`,
-    date: '2024-12-16',
-    content: `소상공인들의 업무 디지털 혁신을 도와 경쟁력 높여 맞춤형 AI 활용해 직원들 잡무 줄이고 만족도· 효율성 up AI챗봇 ‘무물(MUMUL)’, 소상공인 위한 ‘무엇이든 물어보세요’`,
-    link: 'https://www.mk.co.kr/news/economy/11195419'
-  },
-];
+import news from '/public/text/news.json' // 뉴스 데이터
 
 // 뉴스 카드 컴포넌트
 const NewsCard = ({ category, title, date, content, onClick }) => (
@@ -75,7 +39,7 @@ const Newsroom = () => {
 
   return (
     <div className="bg-violet-50 min-h-screen p-8 text-indigo-600 flex items-center justify-center">
-      <div className="bg-white rounded-lg p-4 " style={{minWidth:'95%'}}>
+      <div className="bg-white rounded-lg p-4 shadow-xl" style={{minWidth:'95%'}}>
         {/* 헤더 및 뒤로가기 버튼 */}
         <div className='flex flex-row'>
           <ChevronLeft

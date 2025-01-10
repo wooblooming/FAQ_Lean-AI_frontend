@@ -144,11 +144,11 @@ export default function Chatbot({ agentId }) {
                     }}
                 >
                     <df-messenger-chat-bubble
-                        chat-icon="/mumul2.png"
-                        chat-title-icon="/mumul.png"
+                        chat-icon="/images/mumul2.png"
+                        chat-title-icon="/images/mumul.png"
                         chat-title="MUMUL BOT"
                         placeholder-text="자유롭게 질문해주세요"
-                        bot-actor-image="/chatbot.png"
+                        bot-actor-image="/images/chatbot.png"
                         allow-fullscreen="always"
                         bot-writing-text="응답을 생성중입니다. 잠시만 기다려주세요😊" 
                     ></df-messenger-chat-bubble>

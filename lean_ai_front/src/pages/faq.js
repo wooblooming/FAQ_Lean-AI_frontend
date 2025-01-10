@@ -2,13 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { Search, ChevronDown, ChevronUp, ChevronLeft, CreditCard, Settings, HelpCircle, UserRound } from 'lucide-react';
-
-// FAQ 데이터
-export const faqs = [
-  { id: 1, category: '서비스', question: 'AI 챗봇 서비스를 어떻게 시작하나요?', answer: 'AI 챗봇 서비스는 회원가입 후 데이터 등록을 하시면 챗봇 생성 후 바로 시작할 수 있습니다.' },
-  { id: 2, category: '계정', question: '계정 정보를 변경하고 싶어요.', answer: '마이페이지에서 계정 정보를 변경할 수 있습니다.' },
-  { id: 3, category: '서비스', question: '고객이 어떤 질문을 하는지 알고 싶어요.', answer: '서비스 요청 창을 통해 요청해 주시면 FAQ에 대한 파일을 전송해드리겠습니다.' },
-];
+import faqs from '/public/text/faq.json' // FAQ 데이터
 
 const FAQPage = () => {
   const [activeCategory, setActiveCategory] = useState('모든 질문'); // 선택된 카테고리를 저장

@@ -1,0 +1,25 @@
+[
+    {
+      "id": 1,
+      "name": "계림원 누릉지 통닭 (구로 구청점)",
+      "description": " ",
+      "images": [
+        "/images/구로구청 1.jpg",
+        "/images/구로구청 2.jpg",
+        "/images/구로구청 3.jpg"
+
+      ]
+    },
+    {
+      "id": 2,
+      "name": "계림원 누릉지 통닭 (노량진점)",
+      "description": " ",
+      "images": [
+        "/images/노량진 1.jpg",
+        "/images/노량진 2.jpg",
+        "/images/노량진 3.jpg"
+
+      ]
+    }
+  ]
+  
