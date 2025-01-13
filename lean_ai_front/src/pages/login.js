@@ -33,9 +33,10 @@ const Login = () => {
                 ? `${config.apiDomain}/public/login/`
                 : `${config.apiDomain}/api/login/`;
 
+            
             const response = await axios.post(url, {
                 username,
-                password,
+                password
             });
 
             const { access, public_id, store_id } = response.data;

@@ -163,7 +163,7 @@ const CompanySection = ({ isMobile }) => {
 
   return (
     <motion.div
-      className="px-4 mx-3 md:px-8 py-8 md:py-12"
+      className=""
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}

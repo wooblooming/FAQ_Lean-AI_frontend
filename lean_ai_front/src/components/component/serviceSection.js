@@ -587,7 +587,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
         </div>
 
         {/* 실제 사용 사례 */}
-        {/* 
+        
         <div className="bg-violet-200 rounded-lg px-6 py-10 flex flex-col space-y-4">
           <h2
             className="text-center font-semibold m-8 text-4xl text-gray-700"
@@ -605,7 +605,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
                   onClick={() => handleButtonClick(store.id)}
                 >
                   <button
-                    className="mb-2 text-indigo-500"
+                    className="text-indigo-500 whitespace-pre-line"
                     style={{ fontFamily: "NanumSquareExtraBold", fontSize: "22px" }}
                   >
                     {store.name}
@@ -640,7 +640,6 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
             </div>
           </div>
         </div>
-*/}
       </div>
     </motion.div>
   );
