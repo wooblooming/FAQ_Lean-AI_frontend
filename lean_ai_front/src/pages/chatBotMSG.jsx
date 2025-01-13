@@ -167,7 +167,7 @@ export default function Chatbot({ agentId }) {
                         chat-title-icon="/images/mumul.png"
                         chat-title="MUMUL BOT"
                         placeholder-text="자유롭게 질문해주세요"
-                        bot-actor-image="/chatbot.png"
+                        bot-actor-image="/images/chatbot.png"
                         bot-writing-text="응답을 생성중입니다. 잠시만 기다려주세요😊" 
                         allow-fullscreen="always"
                     ></df-messenger-chat-bubble>
