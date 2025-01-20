@@ -47,7 +47,7 @@ const MyPage = () => {
         <div className='flex justify-between items-center'>
           <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.back()} // 뒤로가기 버튼
+            onClick={() => router.push("/mainPage")} // 뒤로가기 버튼
           />
           <p className='font-semibold mt-2.5'> </p>
           <button

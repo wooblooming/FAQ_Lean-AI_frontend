@@ -28,7 +28,7 @@ const MobileLayout = () => {
             if (isPublicOn) {
                 router.push('/mainPageForPublic');
             } else {
-                router.push('/mainPageForPresident');
+                router.push('/mainPage');
             }
         } else {
             router.push('/login');

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import ModalMSG from "./modalMSG";
 import ModalErrorMSG from "./modalErrorMSG";
+import config from "../../../config";
+
 
 const CardChangeModal = ({ userData, isOpen, onClose }) => {
   const [message, setMessage] = useState("");
@@ -17,6 +19,12 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
   const closeErrorModal = () => {
     setShowErrorModal(false);
     setErrorMessage("");
+  };
+
+  const handleSuccessConfirm = () => {
+    closeMessageModal();  // 성공 메시지 모달 닫기
+    onClose();  // 카드 등록 모달 닫기
+    window.location.reload();  // 페이지 리로드
   };
 
   const handleChangeClick = async () => {
@@ -40,8 +48,6 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
             } else {
               // 사용자가 결제를 취소한 경우 처리
               if (rsp.error_msg.includes("PAY_PROCESS_CANCELED")) {
-                setShowErrorModal(true);
-                setErrorMessage("카드 입력이 취소되었습니다.");
                 onClose(); // 모달 닫기
                 return; // 더 이상 진행하지 않음
               }
@@ -53,7 +59,6 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
 
       setShowMessageModal(true);
       setMessage("카드 정보가 성공적으로 변경되었습니다!");
-      onClose(); // 모달 닫기
     } catch (error) {
       console.error("Card change error:", error);
       setShowErrorModal(true);
@@ -98,11 +103,7 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
         </div>
       </div>
 
-      <ModalMSG
-        show={showMessageModal}
-        onClose={closeMessageModal}
-        title="Success"
-      >
+      <ModalMSG show={showMessageModal} onClose={handleSuccessConfirm} title="Success">
         {message}
       </ModalMSG>
 

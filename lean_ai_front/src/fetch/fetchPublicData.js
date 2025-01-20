@@ -17,7 +17,7 @@ export const fetchPublicData = async (slug, token, setPublicData, setErrorMessag
       },
     });
 
-    // console.log("fetch public - response data : ", response.data);
+     console.log("fetch public - response data : ", response.data);
     if (response.data && response.data.public) {
       setPublicData(response.data.public); // 데이터 설정
     } else {

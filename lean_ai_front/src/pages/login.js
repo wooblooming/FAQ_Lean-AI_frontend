@@ -76,7 +76,7 @@ const Login = () => {
             if (isPublicOn) {
                 router.push('/mainPageForPublic');
             } else {
-                router.push('/mainPageForPresident');
+                router.push('/mainPage');
             }
         }
     }, [token, storeID, isPublicOn]);

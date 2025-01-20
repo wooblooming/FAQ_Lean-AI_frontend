@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
 import { CreditCard } from "lucide-react";
+import { fetchCardInfo } from "../../fetch/fetchCardInfo";
 import CardRegistrationModal from "../modal/cardRegistrationModal";
 import CardChangeModal from "../modal/cardChangeModal";
 import CardCancelModal from "../modal/cardCancelModal";
@@ -57,42 +57,13 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
     loadPortOne();
   }, []);
 
-  // 정기 결제 버튼 클릭 시 모달 열기
-  const handleRegisterCard = async () => {
-    setRegistrationOpen(true); // 모달 열기
-  };
-
-  // 카드 변경 버튼 클릭 시 모달 열기
-  const handleChangeCard = async () => {
-    setChangeOpen(true); // 모달 열기
-  };
-
-  // 결제 해지 버튼 클릭 시 모달 열기
-  const handleCancelSubscription = () => {
-    setCancelOpen(true); // 모달 열기
-  };
-
   // 카드 정보 가져오기
   useEffect(() => {
     if (userData.billing_key && token) {
-      fetchCardInfo();
+      fetchCardInfo(token, setCardInfo, setErrorMessage);
     }
   }, [userData.billing_key, token]);
 
-  const fetchCardInfo = async () => {
-    try {
-      const response = await axios.get(`${config.apiDomain}/api/card-info/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      //console.log("Card Info:", response.data);
-      setCardInfo(response.data);
-    } catch (error) {
-      console.error("Failed to fetch card info:", error);
-      setErrorMessage(`카드 정보를 가져오는데 실패했습니다.`);
-    }
-  };
 
   return (
     <div className="flex flex-col space-y-2 items-start mb-5">
@@ -106,7 +77,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
       {cardInfo ? (
         <div className="flex justify-center w-full">
           <div className="bg-white rounded-xl shadow-md p-6 mb-2 border border-indigo-100 flex flex-col items-center">
-            <div className="flex items-center justify-between mb-4 w-full">
+            <div className="flex items-center justify-between mb-2 w-full">
               <h3
                 className="text-lg font-semibold text-indigo-600"
                 style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -196,13 +167,13 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-2 w-full">
-        <button
-          className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap"
-          style={{ fontFamily: "NanumSquareBold" }}
-          onClick={() => setRegistrationOpen(true)}
-        >
-          정기 결제
-        </button>
+          <button
+            className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap"
+            style={{ fontFamily: "NanumSquareBold" }}
+            onClick={() => setRegistrationOpen(true)}
+          >
+            정기 결제
+          </button>
         </div>
       )}
 
@@ -211,20 +182,19 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
         token={token}
         isOpen={isRegistrationOpen}
         onClose={() => setRegistrationOpen(false)}
-        onRegister={handleRegisterCard}
       />
 
       <CardChangeModal
         userData={userData}
         isOpen={isChangeOpen}
         onClose={() => setChangeOpen(false)}
-        onChangeCard={handleChangeCard}
       />
 
       <CardCancelModal
+        userData={userData}
+        token={token}
         isOpen={isCancelOpen}
         onClose={() => setCancelOpen(false)}
-        onCancel={handleCancelSubscription}
       />
 
       <ModalMSG
