@@ -5,7 +5,7 @@ import config from '../../../config';
 const StoreBanner = ({ banner, onBack, isOwner }) => (
     <div className="relative">
         <img
-            src={banner ? `${config.apiDomain}${banner}` : '/mumullogo.jpg'}
+            src={banner ? `${config.apiDomain}${banner}` : '/images/mumullogo.jpg'}
             alt="Store"
             className="w-full h-48 object-cover"
         />

@@ -71,7 +71,7 @@ const StoreIntroductionPublic = () => {
         {/* 배너 이미지 */}
         <div className="relative">
           <img
-            src={publicData.logo ? `${config.apiDomain}${publicData.logo}` : '/mumullogo.jpg'}
+            src={publicData.logo ? `${config.apiDomain}${publicData.logo}` : '/images/mumullogo.jpg'}
             alt="Public"
             className="w-full h-48 object-cover"
           />

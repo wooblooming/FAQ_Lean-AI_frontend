@@ -11,9 +11,10 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, isPublic }) 
 
     // API 경로 설정 함수
     const APIUrl = () => {
-        return isPublic ? `${config.apiDomain}/public/check-username/` : `${config.apiDomain}/api/check-username/`;
+        const url = isPublic ? `${config.apiDomain}/api/check-username/` : `${config.apiDomain}/public/check-username/`
+        return url;
     };
-
+    
     const handleIdCheck = async () => {
         setLoading(true);
         try {

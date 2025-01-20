@@ -37,7 +37,7 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
     if (userData && userData.profile_photo) {
       setProfileImage(`${mediaUrl}${userData.profile_photo}`);
     } else {
-      setProfileImage('/profile_default_img.jpg'); // 기본 이미지 경로
+      setProfileImage('/images/profile_default_img.jpg'); // 기본 이미지 경로
     }
   }, [userData, mediaUrl]);
   
@@ -139,7 +139,7 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
   const applyDefaultImage = async () => {
     try {
       // 기본 이미지 경로
-      const defaultImagePath = '/profile_default_img.jpg'; // /public 경로의 파일
+      const defaultImagePath = '/images/profile_default_img.jpg'; // /public 경로의 파일
 
       // 기본 이미지 파일 생성 (File 객체)
       const defaultImage = new File(

@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
 import UserProfileForm from '../components/component/userProfile';
+import SubscriptionSection from '../components/component/subscription';
 import QrCodeSection from '../components/component/qrCode';
 import EventSwitch from '../components/component/event';
 import SnsConnect from '../components/component/snsConnect';
@@ -97,6 +98,13 @@ const MyPage = () => {
           )
         }
 
+        { /* 정기 구독 및 취소 */}
+        <SubscriptionSection
+          isPublicOn={isPublicOn}
+          token={token}
+          storeID={storeID}
+          userData={userData}
+        />
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
