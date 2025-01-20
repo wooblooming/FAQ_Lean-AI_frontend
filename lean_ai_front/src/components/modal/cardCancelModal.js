@@ -47,7 +47,7 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
         }
       );
 
-      console.log(response);
+      //console.log(response);
 
       if (response.status === 200) {
         setShowMessageModal(true);

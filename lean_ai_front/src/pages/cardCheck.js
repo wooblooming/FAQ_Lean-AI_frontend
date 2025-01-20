@@ -148,17 +148,25 @@ const CardCheck = () => {
                           className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
                             ${
                               history.status === "paid"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-green-100 text-green-800" // 결제완료
                                 : history.status === "failed"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
+                                ? "bg-red-100 text-red-800" // 결제실패
+                                : history.status === "scheduled"
+                                ? "bg-blue-100 text-blue-800" // 결제예정
+                                : history.status === "canceled"
+                                ? "bg-gray-100 text-gray-800" // 결제취소
+                                : "bg-yellow-100 text-yellow-800" // 결제중
                             }`}
                         >
                           {history.status === "paid"
                             ? "결제완료"
                             : history.status === "failed"
                             ? "결제실패"
-                            : "처리중"}
+                            : history.status === "scheduled"
+                            ? "결제예정"
+                            : history.status === "canceled"
+                            ? "결제취소"
+                            : "결제중"}
                         </span>
                       </td>
                       <td className="w-1/5 px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
