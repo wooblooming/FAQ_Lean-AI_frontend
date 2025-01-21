@@ -22,9 +22,9 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
   };
 
   const handleSuccessConfirm = () => {
-    closeMessageModal();  // 성공 메시지 모달 닫기
-    onClose();  // 정기 결제 취소 모달 닫기
-    window.location.reload();  // 페이지 리로드
+    closeMessageModal(); // 성공 메시지 모달 닫기
+    onClose(); // 정기 결제 취소 모달 닫기
+    window.location.reload(); // 페이지 리로드
   };
 
   const handleCancelClick = async () => {
@@ -35,36 +35,66 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
     }
 
     try {
-      const response = await axios.post(
-        `${config.apiDomain}/api/billing-key-delete/`,
-        {
-          billing_key: userData.billing_key,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      //console.log(response);
-
-      if (response.status === 200) {
-        setShowMessageModal(true);
-        setMessage(
-          response.data.message || "정기 결제가 성공적으로 해지되었습니다."
+      // 1. 정기 결제 예약 취소 요청
+      try {
+        await axios.post(
+          `${config.apiDomain}/api/cancel-payment-schedule/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-      } else {
+        console.log("정기 결제 예약 취소 완료");
+      } catch (error) {
+        console.error("Error during schedule cancellation:", error);
+        const errorMsg =
+          error.response?.data?.error ||
+          "정기 결제 예약 취소 중 오류가 발생했습니다. 다시 시도해주세요.";
         setShowErrorModal(true);
-        setErrorMessage(response.data.error || "정기 결제 해지 실패하였습니다");
+        setErrorMessage(errorMsg);
+        return; // 빌링키 삭제로 진행하지 않음
       }
-    } catch (error) {
-      console.error("Failed to cancel subscription:", error);
-      const errorMessage =
-        error.response?.data?.error ||
-        "정기 결제를 해지하는 중 오류가 발생했습니다.";
+
+      // 2. 빌링키 삭제 요청
+      try {
+        const response = await axios.post(
+          `${config.apiDomain}/api/billing-key-delete/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setShowMessageModal(true);
+          setMessage(
+            response.data.message || "정기 결제가 성공적으로 해지되었습니다."
+          );
+        } else {
+          setShowErrorModal(true);
+          setErrorMessage(
+            response.data.error || "정기 결제 해지에 실패했습니다."
+          );
+        }
+      } catch (error) {
+        console.error("Error during billing key deletion:", error);
+        const errorMsg =
+          error.response?.data?.error ||
+          "빌링키 삭제 중 오류가 발생했습니다. 다시 시도해주세요.";
+        setShowErrorModal(true);
+        setErrorMessage(errorMsg);
+      }
+    } catch (generalError) {
+      console.error("General error during cancellation process:", generalError);
+      const errorMsg =
+        generalError.response?.data?.error ||
+        "정기 결제를 해지하는 중 알 수 없는 오류가 발생했습니다.";
       setShowErrorModal(true);
-      setErrorMessage(errorMessage);
+      setErrorMessage(errorMsg);
     }
   };
 
@@ -87,16 +117,12 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
               <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            정기 결제 해지
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">정기 결제 해지</h2>
           <p className="text-gray-600">정말 정기 결제를 해지하시겠습니까?</p>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">
-            해지 시 유의사항:
-          </h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">해지 시 유의사항:</h3>
           <ul className="text-sm text-gray-600 space-y-1">
             <li>• 이번 달 결제 기간까지는 서비스 이용이 가능합니다</li>
             <li>• 다음 달부터 자동 결제가 중단됩니다</li>

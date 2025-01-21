@@ -59,11 +59,12 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
 
   // 카드 정보 가져오기
   useEffect(() => {
-    if (userData.billing_key && token) {
+    if (token) {
       fetchCardInfo(token, setCardInfo, setErrorMessage);
     }
-  }, [userData.billing_key, token]);
+  }, [token]);
 
+  console.log(userData)
 
   return (
     <div className="flex flex-col space-y-2 items-start mb-5">
@@ -90,14 +91,14 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
             </div>
 
             <div className="space-y-3 w-full">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500 w-24">카드 번호</span>
+              <div className="flex items-start space-x-2">
+                <span className="text-sm text-gray-500 w-16 ">카드 번호</span>
                 <span className="text-sm font-medium text-gray-700">
                   {cardInfo.card_number}
                 </span>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500 w-24">카드 회사</span>
+              <div className="flex items-start space-x-2">
+                <span className="text-sm text-gray-500 w-16 ">카드 회사</span>
                 <span className="text-sm font-medium text-gray-700 flex items-center">
                   <span
                     className={`ml-2 px-2 py-0.5 text-xs rounded-full 

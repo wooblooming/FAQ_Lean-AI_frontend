@@ -29,13 +29,15 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
 
   const handleChangeClick = async () => {
     try {
+      const merchant_uid = "card_change"+ userData.billing_key.merchant_uid;
+
       const paymentResponse = await new Promise((resolve, reject) => {
         window.IMP.request_pay(
           {
             pg: config.pgCode, // PG사 코드
             pay_method: "card",
-            merchant_uid: `mid_${new Date().getTime()}`, // 고유 주문 번호
-            customer_uid: userData.billing_key, // 기존 customer_uid 사용
+            merchant_uid: merchant_uid, // 고유 주문 번호
+            customer_uid: userData.billing_key.customer_uid, // 기존 customer_uid 사용
             name: "정기결제 카드 변경",
             amount: 0,
             buyer_email: userData.email || "test@example.com",

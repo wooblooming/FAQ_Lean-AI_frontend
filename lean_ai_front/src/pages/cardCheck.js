@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
 import { useStore } from "../contexts/storeContext";
 import { fetchCardInfo } from "../fetch/fetchCardInfo";
@@ -11,12 +11,13 @@ import config from "../../config";
 const CardCheck = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 9;
   const router = useRouter();
   const { token } = useAuth();
   const { storeID } = useStore();
   const [userData, setUserData] = useState(null);
   const [cardInfo, setCardInfo] = useState(null);
+  const [time, setTime] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   const totalPages = Math.ceil(paymentHistory.length / itemsPerPage);
@@ -60,13 +61,27 @@ const CardCheck = () => {
           },
         }
       );
-      //console.log("Payment History:", response.data);
+      console.log("Payment History:", response.data);
       setPaymentHistory(response.data);
     } catch (error) {
       console.error("Failed to fetch payment history:", error);
     }
   };
 
+  useEffect(() => {
+    if (paymentHistory.length > 0) {
+      const firstPayment = paymentHistory[0];  
+      // `created_at` 또는 `paid_at` 값 확인
+      const timestamp = firstPayment.created_at || firstPayment.paid_at;
+
+      if (timestamp) {
+        setTime(new Date(timestamp * 1000).toLocaleString());
+      } else {
+        console.warn("Neither created_at nor paid_at is available in the payment data.");
+      }
+    }
+  }, [paymentHistory]);
+  
   return (
     <div className="min-h-screen p-6 font-sans bg-violet-50">
       <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
@@ -99,36 +114,36 @@ const CardCheck = () => {
             </p>
           ) : (
             <>
-              <table className="w-full min-w-full divide-y divide-gray-200 ">
-                <thead className="bg-indigo-50 ">
+              <table className="w-full min-w-full divide-y divide-gray-200 table-fixed">
+                <thead className="bg-indigo-50">
                   <tr className="text-indigo-500 font-medium text-center">
                     <th
                       scope="col"
-                      className="w-1/5 px-2 md:px-6 py-3 uppercase tracking-wider"
+                      className="w-[20%] px-2 md:px-6 py-3 uppercase tracking-wider"
                     >
                       결제일시
                     </th>
                     <th
                       scope="col"
-                      className="w-1/5 px-2 md:px-6 py-3 uppercase tracking-wider"
+                      className="w-[20%] px-2 md:px-6 py-3 uppercase tracking-wider"
                     >
                       결제금액
                     </th>
                     <th
                       scope="col"
-                      className="w-1/5 px-2 md:px-6 py-3 uppercase tracking-wider"
+                      className="w-[10%] px-2 md:px-6 py-3 uppercase tracking-wider"
                     >
                       상태
                     </th>
                     <th
                       scope="col"
-                      className="w-1/5 px-2 md:px-6 py-3 uppercase tracking-wider"
+                      className="w-[35%] px-2 md:px-6 py-3 uppercase tracking-wider"
                     >
                       주문번호
                     </th>
                     <th
                       scope="col"
-                      className="w-1/5 px-2 md:px-6 py-3 uppercase tracking-wider"
+                      className="w-[20%] px-2 md:px-6 py-3 uppercase tracking-wider"
                     >
                       카드정보
                     </th>
@@ -137,42 +152,44 @@ const CardCheck = () => {
                 <tbody className="bg-white divide-y divide-gray-200 text-center">
                   {currentItems.map((history) => (
                     <tr key={history.merchant_uid}>
-                      <td className="w-1/5 px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
-                        {new Date(history.created_at).toLocaleString()}
+                      <td className="w-[20%] px-2 md:px-6 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {time}
                       </td>
-                      <td className="w-1/5 px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                      <td className="w-[20%] px-2 md:px-6 py-34 whitespace-nowrap text-sm text-gray-900 font-medium">
                         {history.amount.toLocaleString()}원
                       </td>
-                      <td className="w-1/5 px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                      <td className="w-[10%] px-2 md:px-6 py-3 whitespace-nowrap align-middle">
+                        <div className="flex justify-center">
+                          <span
+                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
                             ${
                               history.status === "paid"
-                                ? "bg-green-100 text-green-800" // 결제완료
+                                ? "bg-green-100 text-green-800"
                                 : history.status === "failed"
-                                ? "bg-red-100 text-red-800" // 결제실패
+                                ? "bg-red-100 text-red-800"
                                 : history.status === "scheduled"
-                                ? "bg-blue-100 text-blue-800" // 결제예정
+                                ? "bg-blue-100 text-blue-800"
                                 : history.status === "canceled"
-                                ? "bg-gray-100 text-gray-800" // 결제취소
-                                : "bg-yellow-100 text-yellow-800" // 결제중
+                                ? "bg-gray-100 text-gray-800"
+                                : "bg-yellow-100 text-yellow-800"
                             }`}
-                        >
-                          {history.status === "paid"
-                            ? "결제완료"
-                            : history.status === "failed"
-                            ? "결제실패"
-                            : history.status === "scheduled"
-                            ? "결제예정"
-                            : history.status === "canceled"
-                            ? "결제취소"
-                            : "결제중"}
-                        </span>
+                          >
+                            {history.status === "paid"
+                              ? "결제완료"
+                              : history.status === "failed"
+                              ? "결제실패"
+                              : history.status === "scheduled"
+                              ? "결제예정"
+                              : history.status === "canceled"
+                              ? "결제취소"
+                              : "결제중"}
+                          </span>
+                        </div>
                       </td>
-                      <td className="w-1/5 px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
+                      <td className="w-[35%] px-2 md:px-6 py-3 whitespace-nowrap text-sm text-gray-500">
                         {history.merchant_uid}
                       </td>
-                      <td className="w-1/5 px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="w-[20%] px-2 md:px-6 py-3 whitespace-nowrap text-sm text-gray-500">
                         {formatCardName(cardInfo)}
                       </td>
                     </tr>
@@ -181,30 +198,37 @@ const CardCheck = () => {
               </table>
               {/* 페이지네이션 */}
               {totalPages > 1 && (
-                <div className="flex justify-center space-x-2 py-4">
+                <div
+                  className="flex justify-center space-x-2 py-4"
+                  style={{ fontFamily: "NanumSquare" }}
+                >
                   <button
-                    className="bg-indigo-500 text-white px-4 py-2 rounded-md"
+                    className="text-indigo-500 font-bold"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                   >
-                    이전
+                    <ChevronLeft />
                   </button>
 
                   {[...Array(totalPages)].map((_, index) => (
                     <button
                       key={index}
-                      className="bg-indigo-500 text-white px-4 py-2 rounded-md"
+                      className={`p-2 rounded-md ${
+                        currentPage === index + 1
+                          ? "text-indigo-500 font-bold" // 현재 페이지
+                          : "text-gray-400 " // 다른 페이지
+                      }`}
                       onClick={() => handlePageChange(index + 1)}
                     >
                       {index + 1}
                     </button>
                   ))}
                   <button
-                    className="bg-indigo-500 text-white px-4 py-2 rounded-md"
+                    className="text-indigo-500 font-bold"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                   >
-                    다음
+                    <ChevronRight />
                   </button>
                 </div>
               )}

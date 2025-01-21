@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Check } from "lucide-react";
 import axios from "axios";
 import ModalMSG from "./modalMSG";
@@ -45,18 +45,19 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
     window.location.reload(); // 페이지 리로드
   };
 
-  
   const handleRegisterClick = async () => {
     if (!selectedPlan) {
       setShowErrorModal(true);
       setErrorMessage("구독 플랜을 선택해주세요.");
       return;
     }
-  
+
     try {
-      const customer_uid = `customer_${userData.user_id}_${new Date().getTime()}`;
+      const customer_uid = `customer_${ userData.user_id }_${new Date().getTime()}`;
+      const merchant_uid = selectedPlan.name + "_" + new Date().getTime();
+
       let paymentResponse;
-  
+
       // 1. 결제 요청 (PG를 통해 최초 결제)
       try {
         paymentResponse = await new Promise((resolve, reject) => {
@@ -64,7 +65,7 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
             {
               pg: config.pgCode,
               pay_method: "card",
-              merchant_uid: `mid_${new Date().getTime()}`,
+              merchant_uid: merchant_uid,
               customer_uid: customer_uid,
               name: `${selectedPlan.name} 구독 결제`,
               amount: selectedPlan.price,
@@ -87,15 +88,17 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
         setErrorMessage(`결제 요청 실패: ${err.message}`);
         return;
       }
-  
-      // 2. Billing Key 및 구독 플랜 등록
+
+      // 2. Billing Key 및 결제 등록
       try {
-        await axios.post(
-          `${config.apiDomain}/api/billing-key-register/`,
+        const response = await axios.post(
+          `${config.apiDomain}/api/billing-key-save/`,
           {
-            customer_uid: customer_uid,
-            payment_id: paymentResponse.imp_uid,
-            subscription_plan: selectedPlan.name,
+            customer_uid: customer_uid, // 고유 빌링키 ID
+            imp_uid: paymentResponse.imp_uid, // 아임포트 결제 고유 ID
+            merchant_uid: paymentResponse.merchant_uid, // 주문 ID
+            plan: selectedPlan.name, // 선택된 플랜
+            user_id: userData.user_id, // 사용자 ID
           },
           {
             headers: {
@@ -103,46 +106,27 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
             },
           }
         );
+
+        if (response.data.success === true) {
+          setShowMessageModal(true);
+          setMessage(
+            response.data.message || "구독 플랜이 성공적으로 등록되었습니다."
+          );
+        } else {
+          throw new Error(response.data.error || "구독 플랜 등록 실패");
+        }
       } catch (err) {
-        console.error("빌링 키 등록 실패:", err.response?.data || err.message);
+        console.error("Billing Key 등록 및 결제 실패:", err.message);
         setShowErrorModal(true);
-        setErrorMessage(
-          `빌링 키 등록 실패: ${
-            err.response?.data?.error || "서버와의 통신 중 오류가 발생했습니다."
-          }`
-        );
+        setErrorMessage(err.message);
         return;
       }
-  
-      // 3. Payment Process API 호출 (정기 결제 예약 또는 즉시 결제)
-      try {
-        await axios.post(
-          `${config.apiDomain}/api/payment-process/`,
-          { merchant_uid: paymentResponse.merchant_uid },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } catch (err) {
-        console.error("결제 처리 실패:", err.response?.data || err.message);
-        setShowErrorModal(true);
-        setErrorMessage(
-          `결제 처리 실패: ${
-            err.response?.data?.error || "서버와의 통신 중 오류가 발생했습니다."
-          }`
-        );
-        return;
-      }
-  
-      // 성공 메시지 표시
-      setShowMessageModal(true);
-      setMessage(`${selectedPlan.name} 플랜 구독이 성공적으로 등록 및 결제되었습니다!`);
     } catch (error) {
       console.error("알 수 없는 오류 발생:", error.message);
       setShowErrorModal(true);
-      setErrorMessage("알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      setErrorMessage(
+        "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+      );
     }
   };
 
@@ -192,7 +176,10 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
               <p className="text-gray-600 mt-2">{plan.description}</p>
               <ul className="mt-4 space-y-2">
                 {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-sm text-gray-600">
+                  <li
+                    key={index}
+                    className="flex items-center text-sm text-gray-600"
+                  >
                     <Check size={16} className="text-indigo-600 mr-2" />
                     {feature}
                   </li>
@@ -220,7 +207,11 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
         </div>
       </div>
 
-      <ModalMSG show={showMessageModal} onClose={handleSuccessConfirm} title="Success">
+      <ModalMSG
+        show={showMessageModal}
+        onClose={handleSuccessConfirm}
+        title="Success"
+      >
         {message}
       </ModalMSG>
 
