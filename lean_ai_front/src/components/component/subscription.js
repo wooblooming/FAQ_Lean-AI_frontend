@@ -10,21 +10,23 @@ import ModalErrorMSG from "../modal/modalErrorMSG";
 import config from "../../../config";
 
 const SubscriptionSection = ({ isPublicOn, token, userData }) => {
-  const router = useRouter();
-  const [isRegistrationOpen, setRegistrationOpen] = useState(false);
+  const router = useRouter(); 
+  const [isRegistrationOpen, setRegistrationOpen] = useState(false); 
   const [isChangeOpen, setChangeOpen] = useState(false);
-  const [isCancelOpen, setCancelOpen] = useState(false);
-  const [cardInfo, setCardInfo] = useState(null);
-  const [message, setMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [isCancelOpen, setCancelOpen] = useState(false); 
+  const [cardInfo, setCardInfo] = useState(null); 
+  const [message, setMessage] = useState(""); 
+  const [errorMessage, setErrorMessage] = useState(""); 
+  const [showMessageModal, setShowMessageModal] = useState(false); 
+  const [showErrorModal, setShowErrorModal] = useState(false); 
 
+  // 성공 메시지 모달 닫기
   const closeMessageModal = () => {
     setShowMessageModal(false);
     setMessage("");
   };
 
+  // 에러 메시지 모달 닫기
   const closeErrorModal = () => {
     setShowErrorModal(false);
     setErrorMessage("");
@@ -34,12 +36,13 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
   useEffect(() => {
     const loadPortOne = () => {
       const script = document.createElement("script");
-      script.src = "https://cdn.iamport.kr/v1/iamport.js";
-      script.async = true;
-      document.head.appendChild(script);
+      script.src = "https://cdn.iamport.kr/v1/iamport.js"; // 포트원 SDK
+      script.async = true; // 비동기 로드
+      document.head.appendChild(script); // DOM에 추가
 
       script.onload = () => {
         if (window.IMP) {
+          // 포트원 모듈 초기화
           window.IMP.init(config.impKey);
         }
       };
@@ -49,19 +52,19 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
       };
     };
 
-    loadPortOne();
+    loadPortOne(); // 포트원 로드 함수 호출
   }, []);
 
   // 카드 정보 가져오기
   useEffect(() => {
     if (token) {
-      fetchCardInfo(token, setCardInfo, setErrorMessage);
+      fetchCardInfo(token, setCardInfo, setErrorMessage); // 카드 정보를 API에서 가져와 설정
     }
   }, [token]);
 
-
   return (
     <div className="flex flex-col space-y-2 items-start mb-5">
+      {/* 제목 */}
       <div
         className="font-semibold text-start text-lg"
         style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -69,6 +72,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
         정기 구독
       </div>
 
+      {/* 카드 정보 표시 */}
       {cardInfo ? (
         <div className="flex justify-center w-full">
           <div className="bg-white rounded-xl shadow-md p-6 mb-2 border border-indigo-100 flex flex-col items-center">
@@ -84,6 +88,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
               </div>
             </div>
 
+            {/* 카드 상세 정보 */}
             <div className="space-y-3 w-full">
               <div className="flex items-start space-x-2">
                 <span className="text-sm text-gray-500 w-16 ">카드 번호</span>
@@ -94,6 +99,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
               <div className="flex items-start space-x-2">
                 <span className="text-sm text-gray-500 w-16 ">카드 회사</span>
                 <span className="text-sm font-medium text-gray-700 flex items-center">
+                  {/* 카드 회사에 따른 색상 및 라벨 */}
                   <span
                     className={`ml-2 px-2 py-0.5 text-xs rounded-full 
                   ${
@@ -124,6 +130,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
           </div>
         </div>
       ) : (
+        // 카드 정보 없을 때 표시
         <div className="flex justify-center w-full">
           <div className="bg-gray-50 rounded-xl p-6 mb-6 border border-gray-200 text-center flex flex-col items-center">
             <div className="text-gray-400 mb-2">
@@ -136,62 +143,67 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
         </div>
       )}
 
+      {/* 버튼 그룹 */}
       {userData.billing_key ? (
+        // Billing Key가 존재할 경우 버튼
         <div className="grid grid-cols-3 gap-2 w-full">
           <button
             className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap w-full"
             style={{ fontFamily: "NanumSquareBold" }}
-            onClick={() => setChangeOpen(true)}
+            onClick={() => setChangeOpen(true)} // 카드 변경 모달 열기
           >
             카드 변경
           </button>
           <button
             className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap w-full"
             style={{ fontFamily: "NanumSquareBold" }}
-            onClick={() => setCancelOpen(true)}
+            onClick={() => setCancelOpen(true)} // 카드 해지 모달 열기
           >
             결제 해지
           </button>
           <button
             className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap w-full"
             style={{ fontFamily: "NanumSquareBold" }}
-            onClick={() => router.push("/cardCheck")}
+            onClick={() => router.push("/cardCheck")} // 결제 조회 페이지로 이동
           >
             결제 조회
           </button>
         </div>
       ) : (
+        // Billing Key가 없을 경우 버튼
         <div className="grid grid-cols-1 gap-2 w-full">
           <button
             className="text-center bg-indigo-500 text-white rounded-lg px-2 py-1.5 whitespace-nowrap"
             style={{ fontFamily: "NanumSquareBold" }}
-            onClick={() => setRegistrationOpen(true)}
+            onClick={() => setRegistrationOpen(true)} // 정기 결제 모달 열기
           >
             정기 결제
           </button>
         </div>
       )}
 
+      {/* 모달 컴포넌트 */}
       <CardRegistrationModal
         userData={userData}
         token={token}
         isOpen={isRegistrationOpen}
-        onClose={() => setRegistrationOpen(false)}
+        onClose={() => setRegistrationOpen(false)} // 카드 등록 모달 닫기
       />
 
       <CardChangeModal
         userData={userData}
         isOpen={isChangeOpen}
-        onClose={() => setChangeOpen(false)}
+        onClose={() => setChangeOpen(false)} // 카드 변경 모달 닫기
       />
 
       <CardCancelModal
         userData={userData}
         token={token}
         isOpen={isCancelOpen}
-        onClose={() => setCancelOpen(false)}
+        onClose={() => setCancelOpen(false)} // 카드 해지 모달 닫기
       />
 
+      {/* 성공 메시지 모달 */}
       <ModalMSG
         show={showMessageModal}
         onClose={closeMessageModal}
@@ -200,6 +212,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
         {message}
       </ModalMSG>
 
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG show={showErrorModal} onClose={closeErrorModal}>
         {errorMessage}
       </ModalErrorMSG>

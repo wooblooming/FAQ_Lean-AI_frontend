@@ -1,78 +1,87 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import ModalMSG from "./modalMSG";
-import ModalErrorMSG from "./modalErrorMSG";
+import ModalMSG from "./modalMSG"; 
+import ModalErrorMSG from "./modalErrorMSG"; 
 import config from "../../../config";
 
-
 const CardChangeModal = ({ userData, isOpen, onClose }) => {
-  const [message, setMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState(""); 
+  const [errorMessage, setErrorMessage] = useState(""); 
   const [showMessageModal, setShowMessageModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false); 
 
+  // 성공 메시지 모달 닫기
   const closeMessageModal = () => {
     setShowMessageModal(false);
     setMessage("");
   };
 
+  // 에러 메시지 모달 닫기
   const closeErrorModal = () => {
     setShowErrorModal(false);
     setErrorMessage("");
   };
 
+  // 성공 메시지 확인 시 동작
   const handleSuccessConfirm = () => {
-    closeMessageModal();  // 성공 메시지 모달 닫기
-    onClose();  // 카드 등록 모달 닫기
-    window.location.reload();  // 페이지 리로드
+    closeMessageModal(); // 성공 메시지 모달 닫기
+    onClose(); // 카드 변경 모달 닫기
+    window.location.reload(); // 페이지 리로드
   };
 
+  // "변경하기" 버튼 클릭 핸들러
   const handleChangeClick = async () => {
     try {
-      const merchant_uid = "card_change"+ userData.billing_key.merchant_uid;
+      // merchant_uid 생성 (고유 주문 번호)
+      const merchant_uid = "card_change" + userData.billing_key.merchant_uid;
 
-      const paymentResponse = await new Promise((resolve, reject) => {
+      // PortOne 결제 요청 (Promise로 래핑)
+      await new Promise((resolve, reject) => {
         window.IMP.request_pay(
           {
             pg: config.pgCode, // PG사 코드
-            pay_method: "card",
-            merchant_uid: merchant_uid, // 고유 주문 번호
+            pay_method: "card", // 결제 방식
+            merchant_uid: merchant_uid, // 주문 번호
             customer_uid: userData.billing_key.customer_uid, // 기존 customer_uid 사용
-            name: "정기결제 카드 변경",
-            amount: 0,
-            buyer_email: userData.email,
-            buyer_name: userData.name || "테스트 유저",
-            buyer_tel: userData.phone_number || "010-0000-0000",
+            name: "정기결제 카드 변경", // 결제 이름
+            amount: 0, // 0원 결제
+            buyer_email: userData.email, // 구매자 이메일
+            buyer_name: userData.name || "테스트 유저", // 구매자 이름
+            buyer_tel: userData.phone_number || "010-0000-0000", // 구매자 전화번호
           },
           function (rsp) {
             if (rsp.success) {
-              resolve(rsp);
+              resolve(rsp); // 결제가 성공하면 Promise를 resolve
             } else {
               // 사용자가 결제를 취소한 경우 처리
               if (rsp.error_msg.includes("PAY_PROCESS_CANCELED")) {
                 onClose(); // 모달 닫기
                 return; // 더 이상 진행하지 않음
               }
-              reject(new Error(rsp.error_msg || "결제 요청 실패"));
+              reject(new Error(rsp.error_msg || "결제 요청 실패")); // 실패 시 Promise를 reject
             }
           }
         );
       });
 
+      // 성공 메시지 모달 표시
       setShowMessageModal(true);
       setMessage("카드 정보가 성공적으로 변경되었습니다!");
     } catch (error) {
+      // 에러 처리
       console.error("Card change error:", error);
-      setShowErrorModal(true);
+      setShowErrorModal(true); // 에러 모달 표시
       setErrorMessage("카드 변경 실패: " + error.message);
     }
   };
 
+  // 모달이 닫혀 있으면 렌더링하지 않음
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-[480px] relative animate-in fade-in duration-300">
+        {/* 닫기 버튼 */}
         <button
           onClick={() => {
             onClose();
@@ -83,12 +92,13 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
           <X className="h-5 w-5 text-gray-500" />
         </button>
 
+        {/* 제목 및 설명 */}
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-gray-800">카드 변경</h2>
           <p className="text-gray-500 mt-2">새로운 카드 정보를 입력해주세요</p>
         </div>
 
-        {/* Action Buttons */}
+        {/* 동작 버튼 */}
         <div className="grid grid-cols-2 gap-4 pt-4">
           <button
             onClick={onClose}
@@ -105,10 +115,12 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
         </div>
       </div>
 
+      {/* 성공 메시지 모달 */}
       <ModalMSG show={showMessageModal} onClose={handleSuccessConfirm} title="Success">
         {message}
       </ModalMSG>
 
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG show={showErrorModal} onClose={closeErrorModal}>
         {errorMessage}
       </ModalErrorMSG>
