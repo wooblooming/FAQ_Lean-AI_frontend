@@ -8,7 +8,7 @@ export const fetchCardInfo = async (token, setCardInfo, setErrorMessage) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      //console.log("Card Info:", response.data.response);
+      //onsole.log("Card Info:", response.data);
       setCardInfo(response.data.response);
     } catch (error) {
       console.error("Failed to fetch card info:", error);

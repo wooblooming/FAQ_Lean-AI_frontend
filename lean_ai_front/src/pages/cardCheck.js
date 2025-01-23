@@ -4,8 +4,6 @@ import { useRouter } from "next/router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
 import { useStore } from "../contexts/storeContext";
-import { fetchCardInfo } from "../fetch/fetchCardInfo";
-import { fetchStoreUser } from "../fetch/fetchStoreUser";
 import config from "../../config";
 
 const CardCheck = () => {
@@ -15,9 +13,6 @@ const CardCheck = () => {
   const router = useRouter();
   const { token } = useAuth();
   const { storeID } = useStore();
-  const [userData, setUserData] = useState(null);
-  const [cardInfo, setCardInfo] = useState(null);
-  const [time, setTime] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   const totalPages = Math.ceil(paymentHistory.length / itemsPerPage);
@@ -33,23 +28,8 @@ const CardCheck = () => {
   useEffect(() => {
     if (token) {
       fetchPaymentHistory();
-      fetchStoreUser(storeID, token, setUserData, setErrorMessage);
     }
   }, [token]);
-
-  // 카드 정보 가져오기
-  useEffect(() => {
-    if (userData?.billing_key && token) {
-      fetchCardInfo(token, setCardInfo, setErrorMessage);
-    }
-  }, [userData, token]);
-
-  const formatCardName = (cardInfo) => {
-    if (!cardInfo) return "카드 정보 없음"; // cardInfo가 없는 경우 기본 메시지 반환
-    const { card_name, card_number } = cardInfo;
-    const formattedNumber = card_number ? card_number.slice(0, 4) : "번호 없음"; // 카드 번호의 앞 4자리
-    return `${card_name}_${formattedNumber}`; // 카드 이름과 번호 결합
-  };
 
   const fetchPaymentHistory = async () => {
     try {
@@ -62,26 +42,21 @@ const CardCheck = () => {
         }
       );
       console.log("Payment History:", response.data);
-      setPaymentHistory(response.data);
+      // 데이터 포맷팅 후 상태 저장
+      const formattedData = response.data.payment_data.map((payment) => ({
+        ...payment,
+        formattedDate: payment.status == "scheduled" 
+          ? new Date(payment.scheduled_at).toLocaleString()
+          : new Date(payment.created_at || payment.paid_at).toLocaleString(),
+        formattedAmount: Number(payment.amount).toLocaleString()
+      }));
+      setPaymentHistory(formattedData);
     } catch (error) {
       console.error("Failed to fetch payment history:", error);
+      setErrorMessage("결제 내역을 가져오는데 실패했습니다.");
     }
   };
 
-  useEffect(() => {
-    if (paymentHistory.length > 0) {
-      const firstPayment = paymentHistory[0];  
-      // `created_at` 또는 `paid_at` 값 확인
-      const timestamp = firstPayment.created_at || firstPayment.paid_at;
-
-      if (timestamp) {
-        setTime(new Date(timestamp * 1000).toLocaleString());
-      } else {
-        console.warn("Neither created_at nor paid_at is available in the payment data.");
-      }
-    }
-  }, [paymentHistory]);
-  
   return (
     <div className="min-h-screen p-6 font-sans bg-violet-50">
       <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
@@ -91,7 +66,6 @@ const CardCheck = () => {
               className="h-6 w-6 md:h-8 md:w-8 text-indigo-700 cursor-pointer mr-2"
               onClick={() => router.push("/myPage")}
             />
-
             <h1
               className="text-xl md:text-3xl font-bold text-center text-indigo-600"
               style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -107,14 +81,14 @@ const CardCheck = () => {
           </p>
         </div>
 
-        <div className="rounded-t-lg border-b border-gray-200 overflow-x-auto">
+        <div className="rounded-t-lg overflow-x-auto">
           {paymentHistory.length === 0 ? (
             <p className="text-gray-600 text-center p-6">
               결제 내역이 없습니다.
             </p>
           ) : (
             <>
-              <table className="w-full min-w-full divide-y divide-gray-200 table-fixed">
+              <table className="w-full min-w-full divide-y divide-gray-200 table-fixed border-b border-gray-200 ">
                 <thead className="bg-indigo-50">
                   <tr className="text-indigo-500 font-medium text-center">
                     <th
@@ -141,22 +115,16 @@ const CardCheck = () => {
                     >
                       주문번호
                     </th>
-                    <th
-                      scope="col"
-                      className="w-[20%] px-2 md:px-6 py-3 uppercase tracking-wider"
-                    >
-                      카드정보
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 text-center">
                   {currentItems.map((history) => (
                     <tr key={history.merchant_uid}>
                       <td className="w-[20%] px-2 md:px-6 py-3 whitespace-nowrap text-sm text-gray-500">
-                        {time}
+                        {history.formattedDate}
                       </td>
-                      <td className="w-[20%] px-2 md:px-6 py-34 whitespace-nowrap text-sm text-gray-900 font-medium">
-                        {history.amount.toLocaleString()}원
+                      <td className="w-[20%] px-2 md:px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        {history.formattedAmount}원
                       </td>
                       <td className="w-[10%] px-2 md:px-6 py-3 whitespace-nowrap align-middle">
                         <div className="flex justify-center">
@@ -189,14 +157,10 @@ const CardCheck = () => {
                       <td className="w-[35%] px-2 md:px-6 py-3 whitespace-nowrap text-sm text-gray-500">
                         {history.merchant_uid}
                       </td>
-                      <td className="w-[20%] px-2 md:px-6 py-3 whitespace-nowrap text-sm text-gray-500">
-                        {formatCardName(cardInfo)}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {/* 페이지네이션 */}
               {totalPages > 1 && (
                 <div
                   className="flex justify-center space-x-2 py-4"
@@ -209,14 +173,13 @@ const CardCheck = () => {
                   >
                     <ChevronLeft />
                   </button>
-
                   {[...Array(totalPages)].map((_, index) => (
                     <button
                       key={index}
                       className={`p-2 rounded-md ${
                         currentPage === index + 1
-                          ? "text-indigo-500 font-bold" // 현재 페이지
-                          : "text-gray-400 " // 다른 페이지
+                          ? "text-indigo-500 font-bold"
+                          : "text-gray-400 "
                       }`}
                       onClick={() => handlePageChange(index + 1)}
                     >

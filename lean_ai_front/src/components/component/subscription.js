@@ -33,11 +33,6 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
   // 포트원 결제 모듈 로드
   useEffect(() => {
     const loadPortOne = () => {
-      if (window.IMP) {
-        //console.log("PortOne SDK already initialized.");
-        return;
-      }
-
       const script = document.createElement("script");
       script.src = "https://cdn.iamport.kr/v1/iamport.js";
       script.async = true;
@@ -64,7 +59,6 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
     }
   }, [token]);
 
-  console.log(userData)
 
   return (
     <div className="flex flex-col space-y-2 items-start mb-5">

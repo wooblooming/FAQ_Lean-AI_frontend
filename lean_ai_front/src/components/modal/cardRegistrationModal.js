@@ -45,90 +45,105 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
     window.location.reload(); // 페이지 리로드
   };
 
-  const handleRegisterClick = async () => {
-    if (!selectedPlan) {
+
+
+const handleRegisterClick = async () => {
+  if (!selectedPlan) {
+    setShowErrorModal(true);
+    setErrorMessage("구독 플랜을 선택해주세요.");
+    return;
+  }
+
+  try {
+    const customer_uid = `customer_${userData.user_id}_${new Date().getTime()}`;
+    const merchant_uid = selectedPlan.name + "_" + new Date().getTime();
+
+    let paymentResponse;
+
+    // 1. 결제 요청 (PG를 통해 최초 결제)
+    try {
+      paymentResponse = await new Promise((resolve, reject) => {
+        window.IMP.request_pay(
+          {
+            pg: config.pgCode,
+            pay_method: "card",
+            merchant_uid: merchant_uid,
+            customer_uid: customer_uid,
+            name: `${selectedPlan.name} 구독 결제`,
+            amount: selectedPlan.price,
+            buyer_email: userData.email,
+            buyer_name: userData.name || "테스트 유저",
+            buyer_tel: userData.phone_number || "010-0000-0000",
+          },
+          function (rsp) {
+            if (rsp.success) {
+              resolve(rsp);
+            } else {
+              // 사용자가 결제를 취소한 경우 처리
+              if (rsp.error_msg.includes("PAY_PROCESS_CANCELED")) {
+                onClose(); // 모달 닫기
+                return; // 더 이상 진행하지 않음
+              }
+              reject(new Error(rsp.error_msg || "결제 요청 실패"));
+            }
+          }
+        );
+      });
+    } catch (err) {
+      console.error("결제 요청 실패:", err.message);
       setShowErrorModal(true);
-      setErrorMessage("구독 플랜을 선택해주세요.");
+      setErrorMessage(err.response?.data?.message || "알 수 없는 오류가 발생했습니다.");
       return;
     }
 
+    // 2. Billing Key 및 결제 등록
     try {
-      const customer_uid = `customer_${ userData.user_id }_${new Date().getTime()}`;
-      const merchant_uid = selectedPlan.name + "_" + new Date().getTime();
-
-      let paymentResponse;
-
-      // 1. 결제 요청 (PG를 통해 최초 결제)
-      try {
-        paymentResponse = await new Promise((resolve, reject) => {
-          window.IMP.request_pay(
-            {
-              pg: config.pgCode,
-              pay_method: "card",
-              merchant_uid: merchant_uid,
-              customer_uid: customer_uid,
-              name: `${selectedPlan.name} 구독 결제`,
-              amount: selectedPlan.price,
-              buyer_email: userData.email,
-              buyer_name: userData.name || "테스트 유저",
-              buyer_tel: userData.phone_number || "010-0000-0000",
-            },
-            function (rsp) {
-              if (rsp.success) {
-                resolve(rsp);
-              } else {
-                reject(new Error(rsp.error_msg || "결제 요청 실패"));
-              }
-            }
-          );
-        });
-      } catch (err) {
-        console.error("결제 요청 실패:", err.message);
-        setShowErrorModal(true);
-        setErrorMessage(`결제 요청 실패: ${err.message}`);
-        return;
-      }
-
-      // 2. Billing Key 및 결제 등록
-      try {
-        const response = await axios.post(
-          `${config.apiDomain}/api/billing-key-save/`,
-          {
-            customer_uid: customer_uid, // 고유 빌링키 ID
-            imp_uid: paymentResponse.imp_uid, // 아임포트 결제 고유 ID
-            merchant_uid: paymentResponse.merchant_uid, // 주문 ID
-            plan: selectedPlan.name, // 선택된 플랜
-            user_id: userData.user_id, // 사용자 ID
+      const response = await axios.post(
+        `${config.apiDomain}/api/billing-key-save/`,
+        {
+          customer_uid: customer_uid, // 고유 빌링키 ID
+          imp_uid: paymentResponse.imp_uid, // 아임포트 결제 고유 ID
+          merchant_uid: paymentResponse.merchant_uid, // 주문 ID
+          plan: selectedPlan.name, // 선택된 플랜
+          user_id: userData.user_id, // 사용자 ID
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.data.success === true) {
-          setShowMessageModal(true);
-          setMessage(
-            response.data.message || "구독 플랜이 성공적으로 등록되었습니다."
-          );
-        } else {
-          throw new Error(response.data.error || "구독 플랜 등록 실패");
         }
-      } catch (err) {
-        console.error("Billing Key 등록 및 결제 실패:", err.message);
-        setShowErrorModal(true);
-        setErrorMessage(err.message);
-        return;
-      }
-    } catch (error) {
-      console.error("알 수 없는 오류 발생:", error.message);
-      setShowErrorModal(true);
-      setErrorMessage(
-        "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
       );
+
+      const data = response.data;
+
+      if (data.success) {
+        setShowMessageModal(true);
+        setMessage(
+          data.message || "결제가 성공적으로 완료되었습니다. 정기 결제가 활성화되었습니다."
+        );
+      } else {
+        throw new Error(data.error || "구독 플랜 등록 실패");
+      }
+    } catch (err) {
+      console.error("Billing Key 등록 및 결제 실패:", err.message);
+      setShowErrorModal(true);
+      const errorMsg =
+        err.response?.data?.message ||
+        "서버 요청 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.";
+      setErrorMessage(errorMsg);
+      return;
     }
-  };
+  } catch (error) {
+    console.error("알 수 없는 오류 발생:", error.message);
+    setShowErrorModal(true);
+    setErrorMessage(
+      "시스템 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의하세요."
+    );
+  }
+};
+
+  
+  
 
   if (!isOpen) return null;
 

@@ -27,39 +27,30 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
     window.location.reload(); // 페이지 리로드
   };
 
+
+  
   const handleCancelClick = async () => {
     if (!userData.billing_key) {
       setShowErrorModal(true);
       setErrorMessage("결제 키가 존재하지 않습니다. 다시 시도해주세요.");
       return;
     }
-
+  
     try {
       // 1. 정기 결제 예약 취소 요청
-      try {
-        await axios.post(
-          `${config.apiDomain}/api/cancel-payment-schedule/`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("정기 결제 예약 취소 완료");
-      } catch (error) {
-        console.error("Error during schedule cancellation:", error);
-        const errorMsg =
-          error.response?.data?.error ||
-          "정기 결제 예약 취소 중 오류가 발생했습니다. 다시 시도해주세요.";
-        setShowErrorModal(true);
-        setErrorMessage(errorMsg);
-        return; // 빌링키 삭제로 진행하지 않음
-      }
-
+      const cancelScheduleResponse = await axios.post(
+        `${config.apiDomain}/api/schedule-cancel-payment/`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
       // 2. 빌링키 삭제 요청
       try {
-        const response = await axios.post(
+        const deleteBillingKeyResponse = await axios.post(
           `${config.apiDomain}/api/billing-key-delete/`,
           {},
           {
@@ -68,16 +59,16 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
             },
           }
         );
-
-        if (response.status === 200) {
+  
+        if (deleteBillingKeyResponse.status === 200) {
           setShowMessageModal(true);
           setMessage(
-            response.data.message || "정기 결제가 성공적으로 해지되었습니다."
+            deleteBillingKeyResponse.data.message || "정기 결제가 성공적으로 해지되었습니다."
           );
         } else {
           setShowErrorModal(true);
           setErrorMessage(
-            response.data.error || "정기 결제 해지에 실패했습니다."
+            deleteBillingKeyResponse.data.error || "정기 결제 해지에 실패했습니다."
           );
         }
       } catch (error) {
@@ -97,6 +88,7 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
       setErrorMessage(errorMsg);
     }
   };
+  
 
   if (!isOpen) return null;
 

@@ -40,9 +40,9 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
             customer_uid: userData.billing_key.customer_uid, // 기존 customer_uid 사용
             name: "정기결제 카드 변경",
             amount: 0,
-            buyer_email: userData.email || "test@example.com",
+            buyer_email: userData.email,
             buyer_name: userData.name || "테스트 유저",
-            buyer_tel: userData.phone || "010-0000-0000",
+            buyer_tel: userData.phone_number || "010-0000-0000",
           },
           function (rsp) {
             if (rsp.success) {
