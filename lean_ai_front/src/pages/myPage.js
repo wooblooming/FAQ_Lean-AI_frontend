@@ -43,7 +43,7 @@ const MyPage = () => {
 
   return (
     <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">
-      <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
+      <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-11/12 text-center relative">
         <div className='flex justify-between items-center'>
           <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
