@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { CreditCard } from "lucide-react";
-import { fetchCardInfo } from "../../fetch/fetchCardInfo";
-import CardRegistrationModal from "../modal/cardRegistrationModal";
-import CardChangeModal from "../modal/cardChangeModal";
-import CardCancelModal from "../modal/cardCancelModal";
-import ModalMSG from "../modal/modalMSG";
-import ModalErrorMSG from "../modal/modalErrorMSG";
-import config from "../../../config";
+import { fetchCardInfo } from "../fetch/fetchCardInfo";
+import CardRegistrationModal from "../components/modal/cardRegistrationModal";
+import CardChangeModal from "../components/modal/cardChangeModal";
+import CardCancelModal from "../components/modal/cardCancelModal";
+import ModalMSG from "../components/modal/modalMSG";
+import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import config from "../../config";
 
 const SubscriptionSection = ({ isPublicOn, token, userData }) => {
   const router = useRouter(); 
@@ -75,7 +75,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
       {/* 카드 정보 표시 */}
       {cardInfo ? (
         <div className="flex justify-center w-full">
-          <div className="bg-white rounded-xl shadow-md p-6 mb-2 border border-indigo-100 flex flex-col items-center">
+          <div className=" w-md p-6 mb-2 border border-indigo-100 flex flex-col items-center">
             <div className="flex items-center justify-between mb-2 w-full">
               <h3
                 className="text-lg font-semibold text-indigo-600"
@@ -144,7 +144,7 @@ const SubscriptionSection = ({ isPublicOn, token, userData }) => {
       )}
 
       {/* 버튼 그룹 */}
-      {userData.billing_key ? (
+      {userData ? (
         // Billing Key가 존재할 경우 버튼
         <div className="grid grid-cols-3 gap-2 w-full">
           <button

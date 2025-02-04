@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import { X, AlertCircle } from "lucide-react";
 import axios from "axios";
 import ModalMSG from "./modalMSG";
@@ -10,6 +11,7 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
   const [errorMessage, setErrorMessage] = useState(""); 
   const [showMessageModal, setShowMessageModal] = useState(false); 
   const [showErrorModal, setShowErrorModal] = useState(false); 
+  const router = useRouter();
 
   // 성공 모달 닫기
   const closeMessageModal = () => {
@@ -27,7 +29,7 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
   const handleSuccessConfirm = () => {
     closeMessageModal(); // 성공 모달 닫기
     onClose(); // 모달 닫기
-    window.location.reload(); // 페이지 새로고침
+    router.push('/mainPage')
   };
 
   // "해지하기" 버튼 클릭 핸들러
@@ -68,13 +70,13 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
           setShowMessageModal(true); // 성공 모달 표시
           setMessage(
             deleteBillingKeyResponse.data.message ||
-              "정기 결제가 성공적으로 해지되었습니다."
+              "정기 구독이 성공적으로 해지되었습니다."
           );
         } else {
           setShowErrorModal(true); // 에러 모달 표시
           setErrorMessage(
             deleteBillingKeyResponse.data.error ||
-              "정기 결제 해지에 실패했습니다."
+              "정기 구독 해지에 실패했습니다."
           );
         }
       } catch (error) {
@@ -117,9 +119,9 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
             </div>
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            정기 결제 해지
+            구독 해지
           </h2>
-          <p className="text-gray-600">정말 정기 결제를 해지하시겠습니까?</p>
+          <p className="text-gray-600">정말 구독을 해지하시겠습니까?</p>
         </div>
 
         {/* 유의사항 */}
@@ -130,7 +132,7 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
           <ul className="text-sm text-gray-600 space-y-1">
             <li>• 이번 달 결제 기간까지는 서비스 이용이 가능합니다</li>
             <li>• 다음 달부터 자동 결제가 중단됩니다</li>
-            <li>• 언제든지 다시 정기 결제를 신청할 수 있습니다</li>
+            <li>• 언제든지 다시 신청할 수 있습니다</li>
           </ul>
         </div>
 

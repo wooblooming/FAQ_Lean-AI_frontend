@@ -78,6 +78,10 @@ const CardCheck = () => {
                 payment.created_at || payment.paid_at
               ).toLocaleDateString(),
         formattedAmount: Number(payment.amount).toLocaleString(),
+        displayMerchantUid:
+          payment.status === "paid" 
+            ?  payment.merchant_uid 
+            : payment.merchant_uid.split("_").slice(0, -1).join("_")
       }));
       setPaymentHistory(formattedData);
       console.log(formattedData);
@@ -173,7 +177,7 @@ const CardCheck = () => {
                       </span>
                     </td>
                     <td className="px-1 md:px-6 py-2 text-xs md:text-sm text-gray-500 truncate">
-                      {history.merchant_uid}
+                      {history.displayMerchantUid}
                     </td>
                   </tr>
                 ))}
@@ -182,24 +186,24 @@ const CardCheck = () => {
           )}
         </div>
 
-                  {/* 모바일: 카드 스타일 */}
-                  <div className="md:hidden space-y-4">
-            {paymentHistory.length === 0 ? (
-              <p className="text-gray-600 text-center p-6">
-                결제 내역이 없습니다.
-              </p>
-            ) : (
-              currentItems.map((history) => (
-                <div
-                  key={history.merchant_uid}
-                  className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-500">
-                      {history.formattedDate}
-                    </span>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium
+        {/* 모바일: 카드 스타일 */}
+        <div className="md:hidden space-y-4">
+          {paymentHistory.length === 0 ? (
+            <p className="text-gray-600 text-center p-6">
+              결제 내역이 없습니다.
+            </p>
+          ) : (
+            currentItems.map((history) => (
+              <div
+                key={history.merchant_uid}
+                className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-500">
+                    {history.formattedDate}
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium
                     ${
                       history.status === "paid"
                         ? "bg-green-200 text-green-900"
@@ -211,30 +215,30 @@ const CardCheck = () => {
                         ? "bg-gray-200 text-gray-900"
                         : "bg-yellow-200 text-yellow-900"
                     }`}
-                    >
-                      {history.status === "paid"
-                        ? "완료"
-                        : history.status === "failed"
-                        ? "실패"
-                        : history.status === "scheduled"
-                        ? "예정"
-                        : history.status === "canceled"
-                        ? "취소"
-                        : "결제중"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700 whitespace-nowrap">
-                      {history.formattedAmount}원
-                    </span>
-                    <span className="text-sm text-gray-500 truncate">
-                      {history.merchant_uid}
-                    </span>
-                  </div>
+                  >
+                    {history.status === "paid"
+                      ? "완료"
+                      : history.status === "failed"
+                      ? "실패"
+                      : history.status === "scheduled"
+                      ? "예정"
+                      : history.status === "canceled"
+                      ? "취소"
+                      : "결제중"}
+                  </span>
                 </div>
-              ))
-            )}
-          </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-gray-700 whitespace-nowrap">
+                    {history.formattedAmount}원
+                  </span>
+                  <span className="text-sm text-gray-500 truncate">
+                    {history.displayMerchantUid}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
 
         {/* 페이지네이션 */}
         {totalPages > 1 && (

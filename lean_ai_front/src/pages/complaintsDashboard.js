@@ -70,7 +70,7 @@ const ComplaintsDashboard = () => {
                                 <button
                                     key={tab}
                                     onClick={() => setSelectedTab(tab)}
-                                    className={`px-2 py-2 w-full text-center md:text-left rounded-lg text-indigo-700 ${selectedTab === tab
+                                    className={`p-3 w-full text-center md:text-left rounded-lg text-indigo-700 ${selectedTab === tab
                                         ? 'bg-indigo-100 text-lg md:text-xl'
                                         : 'hover:bg-gray-100'
                                         }`}

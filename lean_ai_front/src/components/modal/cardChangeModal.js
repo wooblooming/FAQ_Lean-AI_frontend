@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import ModalMSG from "./modalMSG"; 
-import ModalErrorMSG from "./modalErrorMSG"; 
+import ModalMSG from "./modalMSG";
+import ModalErrorMSG from "./modalErrorMSG";
 import config from "../../../config";
 
 const CardChangeModal = ({ userData, isOpen, onClose }) => {
-  const [message, setMessage] = useState(""); 
-  const [errorMessage, setErrorMessage] = useState(""); 
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showMessageModal, setShowMessageModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false); 
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   // 성공 메시지 모달 닫기
   const closeMessageModal = () => {
@@ -29,51 +29,71 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
     window.location.reload(); // 페이지 리로드
   };
 
-  // "변경하기" 버튼 클릭 핸들러
-  const handleChangeClick = async () => {
-    try {
-      // merchant_uid 생성 (고유 주문 번호)
-      const merchant_uid = "card_change" + userData.billing_key.merchant_uid;
 
-      // PortOne 결제 요청 (Promise로 래핑)
-      await new Promise((resolve, reject) => {
-        window.IMP.request_pay(
-          {
-            pg: config.pgCode, // PG사 코드
-            pay_method: "card", // 결제 방식
-            merchant_uid: merchant_uid, // 주문 번호
-            customer_uid: userData.billing_key.customer_uid, // 기존 customer_uid 사용
-            name: "정기결제 카드 변경", // 결제 이름
-            amount: 0, // 0원 결제
-            buyer_email: userData.email, // 구매자 이메일
-            buyer_name: userData.name || "테스트 유저", // 구매자 이름
-            buyer_tel: userData.phone_number || "010-0000-0000", // 구매자 전화번호
-          },
-          function (rsp) {
-            if (rsp.success) {
-              resolve(rsp); // 결제가 성공하면 Promise를 resolve
-            } else {
-              // 사용자가 결제를 취소한 경우 처리
-              if (rsp.error_msg.includes("PAY_PROCESS_CANCELED")) {
-                onClose(); // 모달 닫기
-                return; // 더 이상 진행하지 않음
-              }
-              reject(new Error(rsp.error_msg || "결제 요청 실패")); // 실패 시 Promise를 reject
-            }
-          }
-        );
-      });
-
-      // 성공 메시지 모달 표시
-      setShowMessageModal(true);
-      setMessage("카드 정보가 성공적으로 변경되었습니다!");
-    } catch (error) {
-      // 에러 처리
-      console.error("Card change error:", error);
-      setShowErrorModal(true); // 에러 모달 표시
-      setErrorMessage("카드 변경 실패: " + error.message);
+// "변경하기" 버튼 클릭 핸들러
+const handleChangeClick = async () => {
+  try {
+    // ✅ PortOne 결제 모듈 초기화 (가맹점 코드 설정)
+    if (!window.IMP) {
+      throw new Error("PortOne 결제 모듈이 로드되지 않았습니다. 페이지를 새로고침해주세요.");
     }
-  };
+    window.IMP.init(config.impKey); // ✅ 가맹점 코드 초기화 (반드시 필요!)
+
+    // merchant_uid 생성 (고유 주문 번호)
+    const merchant_uid = `${userData.billing_key.plan}_${new Date().getTime()}`;
+
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+    // PortOne 결제 요청 (Promise로 래핑)
+    await new Promise((resolve, reject) => {
+      window.IMP.request_pay(
+        {
+          pg: config.pgCode, // PG사 코드
+          pay_method: "card", // 결제 방식
+          merchant_uid: merchant_uid, // 주문 번호
+          customer_uid: userData.billing_key.customer_uid, // 기존 customer_uid 사용
+          name: "정기결제 카드 변경", // 결제 이름
+          amount: userData.billing_key.amount, // 결제 금액
+          buyer_email: userData.email, // 구매자 이메일
+          buyer_name: userData.name || "테스트 유저", // 구매자 이름
+          buyer_tel: userData.phone_number || "010-0000-0000", // 구매자 전화번호
+          m_redirect_url: isMobile
+            ? `${config.frontendDomain}/paymentChange`
+            : undefined,
+        },
+        function (rsp) {
+          if (rsp.success) {
+            resolve(rsp); // 결제가 성공하면 Promise를 resolve
+          } else {
+            let errorMsg = rsp.error_msg;
+            if (errorMsg.includes("PAY_PROCESS_CANCELED")) {
+              errorMsg = "사용자가 결제를 취소하였습니다.";
+              setShowErrorModal(true);
+              setErrorMessage(errorMsg);
+              onClose();
+              return;
+            }
+            reject(new Error(errorMsg || "결제 요청 실패"));
+          }
+        }
+      );
+    });
+
+    setShowMessageModal(true);
+    setMessage("카드 정보가 성공적으로 변경되었습니다!");
+  } catch (error) {
+    console.error("Card change error:", error);
+
+    let errorMsg = error.message;
+    if (errorMsg.includes("PAY_PROCESS_CANCELED")) {
+      errorMsg = "사용자가 결제를 취소하였습니다.";
+    }
+
+    setShowErrorModal(true);
+    setErrorMessage("카드 변경 실패: " + errorMsg);
+  }
+};
+
 
   // 모달이 닫혀 있으면 렌더링하지 않음
   if (!isOpen) return null;
@@ -116,7 +136,11 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
       </div>
 
       {/* 성공 메시지 모달 */}
-      <ModalMSG show={showMessageModal} onClose={handleSuccessConfirm} title="Success">
+      <ModalMSG
+        show={showMessageModal}
+        onClose={handleSuccessConfirm}
+        title="Success"
+      >
         {message}
       </ModalMSG>
 

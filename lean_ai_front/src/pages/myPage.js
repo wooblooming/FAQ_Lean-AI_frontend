@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
 import UserProfileForm from '../components/component/userProfile';
-import SubscriptionSection from '../components/component/subscription';
+import SubscriptionSection from '../components/component/subscriptionActive';
 import QrCodeSection from '../components/component/qrCode';
 import EventSwitch from '../components/component/event';
 import SnsConnect from '../components/component/snsConnect';

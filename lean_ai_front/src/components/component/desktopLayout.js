@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { usePublic } from '../../contexts/publicContext';
 import { useAuth } from '../../contexts/authContext';
 
-const MobileLayout = () => {
+const DesktopLayout = () => {
     const router = useRouter();
     const { token } = useAuth();
     const { isPublicOn } = usePublic();
@@ -109,4 +109,4 @@ const MobileLayout = () => {
     )
 }
 
-export default MobileLayout;
+export default DesktopLayout;

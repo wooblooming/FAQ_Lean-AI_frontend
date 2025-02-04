@@ -17,6 +17,8 @@ export const fetchStoreUser = async ({ slug, storeID }, token, setUserData, setE
           throw new Error("잘못된 사용자 데이터입니다.");
         }
         setUserData(response.data);
+        console.log("StoreUser Info:", response.data);
+
       } else {
         throw new Error("해당 매장 정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
       }
