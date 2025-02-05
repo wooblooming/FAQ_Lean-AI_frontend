@@ -102,7 +102,7 @@ const SubscriptionInfo = ({ subscriptionData, setCancelOpen }) => {
             style={{ fontFamily: "NanumSquareBold" }}
             onClick={() => setCancelOpen(true)}
           >
-            구독 취소하기
+            구독 해지하기
           </Button>
         </div>
       </CardContent>
