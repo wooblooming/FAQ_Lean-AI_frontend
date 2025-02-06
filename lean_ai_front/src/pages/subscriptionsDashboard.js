@@ -43,10 +43,10 @@ const SubscriptionsDashboard = () => {
 
   // 구독 정보 및 카드 정보 가져오기
   useEffect(() => {
-    if (token && userData?.billing_key?.id) {
+    if (token && userData?.subscription?.id) {
       fetchSubscription(
         token,
-        userData.billing_key.id,
+        userData.subscription.id,
         setSubscriptionData,
         setCardInfo,
         setErrorMessage
@@ -73,10 +73,10 @@ const SubscriptionsDashboard = () => {
         <div className="flex items-center">
           <ChevronLeft
             className="h-6 w-6 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.back()} // 뒤로 가기
+            onClick={() => router.push("/mainPage")}
           />
           <h1
-            className="text-xl md:text-3xl font-bold text-center text-indigo-600"
+            className="text-2xl md:text-3xl font-bold text-center text-indigo-600"
             style={{ fontFamily: "NanumSquareExtraBold" }}
           >
             구독 관리
@@ -126,7 +126,7 @@ const SubscriptionsDashboard = () => {
 
       {/* 구독 취소 모달 */}
       <CardCancelModal
-        userData={userData}
+        subscriptionData={subscriptionData}
         token={token}
         isOpen={isCancelOpen}
         onClose={() => setCancelOpen(false)}

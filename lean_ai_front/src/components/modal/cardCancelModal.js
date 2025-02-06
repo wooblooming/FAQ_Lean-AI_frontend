@@ -6,7 +6,8 @@ import ModalMSG from "./modalMSG";
 import ModalErrorMSG from "./modalErrorMSG";
 import config from "../../../config";
 
-const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
+const CancelPaymentModal = ({ subscriptionData, token, isOpen, onClose }) => {
+  const subscriptionID = subscriptionData?.id;
   const [message, setMessage] = useState(""); 
   const [errorMessage, setErrorMessage] = useState(""); 
   const [showMessageModal, setShowMessageModal] = useState(false); 
@@ -34,68 +35,34 @@ const CancelPaymentModal = ({ userData, token, isOpen, onClose }) => {
 
   // "해지하기" 버튼 클릭 핸들러
   const handleCancelClick = async () => {
-    if (!userData.billing_key) {
-      // Billing Key가 없을 경우 에러 모달 표시
-      setShowErrorModal(true);
-      setErrorMessage("결제 키가 존재하지 않습니다. 다시 시도해주세요.");
-      return;
-    }
-
     try {
-      // 1. 정기 결제 예약 취소 요청
-      await axios.post(
-        `${config.apiDomain}/api/schedule-cancel-payment/`, // 정기 결제 취소 API
-        {},
+      // 구독 해지 요청
+      const response = await axios.delete(
+        `${config.apiDomain}/api/subscription/${subscriptionID}/`, // Subscription 해지 API
         {
           headers: {
-            Authorization: `Bearer ${token}`, // 인증 토큰 헤더에 포함
+            Authorization: `Bearer ${token}`, // JWT 토큰 추가
           },
         }
       );
-
-      // 2. 빌링키 삭제 요청
-      try {
-        const deleteBillingKeyResponse = await axios.post(
-          `${config.apiDomain}/api/billing-key-delete/`, // 빌링키 삭제 API
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // 응답 상태에 따라 성공/실패 메시지 처리
-        if (deleteBillingKeyResponse.status === 200) {
-          setShowMessageModal(true); // 성공 모달 표시
-          setMessage(
-            deleteBillingKeyResponse.data.message ||
-              "정기 구독이 성공적으로 해지되었습니다."
-          );
-        } else {
-          setShowErrorModal(true); // 에러 모달 표시
-          setErrorMessage(
-            deleteBillingKeyResponse.data.error ||
-              "정기 구독 해지에 실패했습니다."
-          );
-        }
-      } catch (error) {
-        console.error("Error during billing key deletion:", error);
-        const errorMsg =
-          error.response?.data?.error ||
-          "빌링키 삭제 중 오류가 발생했습니다. 다시 시도해주세요.";
-        setShowErrorModal(true); // 에러 모달 표시
-        setErrorMessage(errorMsg);
+  
+      // 2️⃣ 응답이 정상적으로 오면 성공 모달 표시
+      if (response.status === 200) {
+        setShowMessageModal(true);
+        setMessage(response.data.message || "구독이 성공적으로 해지되었습니다.");
+      } else {
+        throw new Error(response.data.error || "구독 해지에 실패했습니다.");
       }
-    } catch (generalError) {
-      console.error("General error during cancellation process:", generalError);
+    } catch (error) {
+      console.error("Error during subscription cancellation:", error);
       const errorMsg =
-        generalError.response?.data?.error ||
-        "정기 결제를 해지하는 중 알 수 없는 오류가 발생했습니다.";
-      setShowErrorModal(true); // 에러 모달 표시
+        error.response?.data?.error ||
+        "구독 해지 중 오류가 발생했습니다. 다시 시도해주세요.";
+      setShowErrorModal(true);
       setErrorMessage(errorMsg);
     }
   };
+  
 
   if (!isOpen) return null; // 모달이 열리지 않았을 경우 렌더링하지 않음
 

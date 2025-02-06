@@ -54,6 +54,7 @@ const MainPageWithMenu = () => {
   const { storeID } = useStore();
   const [storeData, setStoreData] = useState("");
   const [userData, setUserData] = useState("");
+  const [subscriptionData, setSubscriptionData] = useState("");
   const [isOwner, setIsOwner] = useState("");
   const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 상태
   const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false); // 정보 수정 모달 상태
@@ -127,6 +128,11 @@ const MainPageWithMenu = () => {
     }
   }, [storeData]);
   
+  useEffect(() => {
+    if (userData?.subscription) {
+       setSubscriptionData(userData.subscription); 
+     }
+  }, [userData]);
 
   // 통계 데이터 API 호출
   const fetchStatistics = async () => {
@@ -287,16 +293,13 @@ const MainPageWithMenu = () => {
                   정기 구독
                 </h2>
                 <div>
-                  {userData.billing_key? (
+                  {userData.subscription?.billing_key? (
                     <SubscriptionActive
-                      token={token}
-                      storeID={storeID}
-                      userData={userData}
+                      subscriptionData={subscriptionData}
                     />
                   ) : (
                     <SubscriptionSignup
                       token={token}
-                      storeID={storeID}
                       userData={userData}
                     />
                   )}

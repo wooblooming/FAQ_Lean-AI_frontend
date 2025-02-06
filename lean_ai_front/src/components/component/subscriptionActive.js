@@ -2,60 +2,46 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Calendar, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { fetchSubscription } from "../../fetch/fetchSubscription";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 
-const SubscriptionStatus = ({ token, userData }) => {
-  const billingKeyId = userData?.billing_key?.id;
-  const [subscriptionData, setSubscriptionData] = useState(null);
-  const [cardInfo, setCardInfo] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
+const SubscriptionStatus = ({ subscriptionData }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (token && billingKeyId) {
-      fetchSubscription(
-        token,
-        billingKeyId,
-        setSubscriptionData,
-        setCardInfo,
-        setErrorMessage
-      ).finally(() => setLoading(false));
+    if (subscriptionData) {
+      setLoading(false);
     }
-  }, [token, billingKeyId]);
+  }, [subscriptionData]);
 
   // 경과 일 수 계산 함수
-  const calculateSubscriptionDays = (startDate) => {   
+  const calculateSubscriptionDays = (startDate) => {
     if (!startDate) return "정보 없음";
 
     // 시간대 오프셋 제거 & Date 객체 변환
     const start = new Date(startDate.split("+")[0]); // "+09:00" 같은 시간대 정보 제거
     const today = new Date();
 
+    // 시간을 00:00:00.000으로 설정 (오전 0시 기준 비교)
+    start.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
     // 시간 차이 계산
     const diffTime = today - start;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // 밀리초 -> 일 변환
-    
-    return `${diffDays}일`;
-};
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // 밀리초 -> 일 변환 후 올림
 
+    return `${diffDays}일`;
+  };
 
   // 로딩 중 상태 처리
-  if (loading) {
-    return (
-      <div className="bg-white rounded-lg p-6 space-y-4 w-full text-center">
-        <p className="text-gray-500">구독 정보를 불러오는 중...</p>
-      </div>
-    );
-  }
-
-  // 에러 메시지 처리
-  if (errorMessage) {
-    return (
-      <div className="w-full text-center">
-        <p className="text-red-500">{errorMessage}</p>
-      </div>
-    );
-  }
+// 로딩 중 상태 처리
+if (loading) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <LoadingSpinner />
+    </div>
+  );
+}
 
   return (
     <div className="p-4 space-y-6 w-full">
@@ -66,8 +52,13 @@ const SubscriptionStatus = ({ token, userData }) => {
         ) : (
           <AlertCircle className="w-5 h-5 text-yellow-500" />
         )}
-        <span className="font-medium text-gray-700" style={{ fontFamily: "NanumSquareBold" }}>
-          {subscriptionData?.is_active ? `${subscriptionData.plan} 구독 중` : "구독 중지됨"}
+        <span
+          className="font-medium text-gray-700"
+          style={{ fontFamily: "NanumSquareBold" }}
+        >
+          {subscriptionData?.is_active
+            ? `${subscriptionData.plan} 구독 중`
+            : "구독 중지됨"}
         </span>
       </div>
 
@@ -77,9 +68,19 @@ const SubscriptionStatus = ({ token, userData }) => {
           <Clock className="w-7 h-7 text-indigo-400 mr-3" />
           <div className="w-full flex justify-center">
             <div className="flex flex-col items-center text-center">
-              <p className="text-sm text-gray-500" style={{ fontFamily: "NanumSquare" }}>구독한 지</p>
-              <p className="font-medium text-gray-800" style={{ fontFamily: "NanumSquareBold" }}>
-                {calculateSubscriptionDays(subscriptionData?.billing_key?.created_at)}
+              <p
+                className="text-sm text-gray-500"
+                style={{ fontFamily: "NanumSquare" }}
+              >
+                구독한 지
+              </p>
+              <p
+                className="font-medium text-gray-800"
+                style={{ fontFamily: "NanumSquareBold" }}
+              >
+                {calculateSubscriptionDays(
+                  subscriptionData?.billing_key?.created_at
+                )}
               </p>
             </div>
           </div>
@@ -90,8 +91,16 @@ const SubscriptionStatus = ({ token, userData }) => {
           <Calendar className="w-7 h-7 text-indigo-400 mr-3" />
           <div className="w-full flex justify-center">
             <div className="flex flex-col items-center text-center">
-              <p className="text-sm text-gray-500" style={{ fontFamily: "NanumSquare" }}>다음 결제일</p>
-              <p className="font-medium text-gray-800" style={{ fontFamily: "NanumSquareBold" }}>
+              <p
+                className="text-sm text-gray-500"
+                style={{ fontFamily: "NanumSquare" }}
+              >
+                다음 결제일
+              </p>
+              <p
+                className="font-medium text-gray-800"
+                style={{ fontFamily: "NanumSquareBold" }}
+              >
                 {subscriptionData?.next_billing_date || "결제 예정 없음"}
               </p>
             </div>

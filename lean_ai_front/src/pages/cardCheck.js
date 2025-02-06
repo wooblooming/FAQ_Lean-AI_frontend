@@ -84,7 +84,7 @@ const CardCheck = () => {
             : payment.merchant_uid.split("_").slice(0, -1).join("_")
       }));
       setPaymentHistory(formattedData);
-      console.log(formattedData);
+      //console.log(formattedData);
     } catch (error) {
       console.error("Failed to fetch payment history:", error);
       setErrorMessage("결제 내역을 가져오는데 실패했습니다.");

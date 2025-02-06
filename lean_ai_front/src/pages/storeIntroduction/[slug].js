@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSwipeable } from 'react-swipeable';
-import Loading from '../../components/component/loading';
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StoreBanner from '../../components/component/storeBanner';
 import StoreInfo from '../../components/component/storeInfo';
 import MenuList from '../../components/component/menuList';
@@ -31,7 +31,6 @@ const StoreIntroduce = () => {
       fetchStoreData({ slug }, null, setStoreData, setErrorMessage, setShowErrorMessageModal);
       fetchStoreMenu({ slug }, null, setMenu, setErrorMessage, setShowErrorMessageModal);
       fetchFeedImage({ slug }, null, setImages); // 피드 가져오기
-      setIsLoading(false);
     }
   }, [slug]);
 
@@ -41,6 +40,7 @@ const StoreIntroduce = () => {
       //console.log("store data : ", storeData.store);
       setStoreCategory(storeData.store_category);
       setAgentId(storeData.agent_id);
+      setIsLoading(false);
     }
   }, [storeData]);
 
@@ -62,9 +62,7 @@ const StoreIntroduce = () => {
     trackTouch: true, // 터치 이벤트 추적
   });
 
-
-  if (isLoading) return <Loading />;
-  if (!storeData) return <div>Store not found.</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   const getMenuTitle = (storeCategory) => {
     return storeCategory === 'FOOD'

@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { X } from "lucide-react";
+import { useAuth } from "../../contexts/authContext";
 import ModalMSG from "./modalMSG";
 import ModalErrorMSG from "./modalErrorMSG";
 import config from "../../../config";
 
 const CardChangeModal = ({ userData, isOpen, onClose }) => {
+  const { token } = useAuth();
   const [message, setMessage] = useState(""); // 성공 메시지
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -33,7 +36,11 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
   const requestPayment = async (paymentRequest) => {
     return new Promise((resolve, reject) => {
       if (!window.IMP) {
-        reject(new Error("PortOne 결제 모듈이 로드되지 않았습니다. 페이지를 새로고침해주세요."));
+        reject(
+          new Error(
+            "PortOne 결제 모듈이 로드되지 않았습니다. 페이지를 새로고침해주세요."
+          )
+        );
         return;
       }
 
@@ -76,29 +83,58 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
   // "변경하기" 버튼 클릭 핸들러
   const handleChangeClick = async () => {
     try {
-      const merchant_uid = `${userData.billing_key.plan}_${new Date().getTime()}`;
+      const merchant_uid = `${
+        userData.billing_key.plan
+      }_${new Date().getTime()}`;
       const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-      
+
       const paymentRequest = {
         pg: config.pgCode,
         pay_method: "card",
         merchant_uid: merchant_uid,
-        customer_uid: userData.billing_key.customer_uid,
+        customer_uid: userData.billing_key.customer_uid, // 새로운 카드 정보 업데이트 예정
         name: "정기결제 카드 변경",
-        amount: userData.billing_key.amount,
+        amount: userData.billing_key.amount, // 0원 결제
         buyer_email: userData.email,
         buyer_name: userData.name || "테스트 유저",
         buyer_tel: userData.phone_number || "010-0000-0000",
-        m_redirect_url: isMobile ? `${config.frontendDomain}/paymentChange` : undefined,
+        m_redirect_url: isMobile
+          ? `${config.frontendDomain}/paymentChange`
+          : undefined,
       };
 
-      await requestPayment(paymentRequest);
+      // PortOne 결제 요청
+      const response = await requestPayment(paymentRequest);
+      console.log("✅ 카드 변경 결제 성공:", response);
+
+      // 결제가 성공하면 새로운 BillingKey 업데이트 요청 (BillingKeyChangeView 호출)
+      await updateBillingKey(response.imp_uid, response.customer_uid);
+
       setShowMessageModal(true);
       setMessage("카드 정보가 성공적으로 변경되었습니다!");
     } catch (error) {
-      console.error("Card change error:", error);
+      console.error("❌ Card change error:", error);
       setShowErrorModal(true);
       setErrorMessage(mapErrorMessage(error.message));
+    }
+  };
+
+  // BillingKey 변경 API 요청 (BillingKeyChangeView 호출)
+  const updateBillingKey = async (imp_uid, newCustomerUid) => {
+    try {
+      const response = await axios.post(
+        `${config.apiDomain}/api/billing-key-change/`, // BillingKeyChangeView API 엔드포인트
+        { customer_uid: newCustomerUid, imp_uid: imp_uid },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("✅ BillingKey 변경 성공:", response.data);
+    } catch (error) {
+      console.error(
+        "❌ BillingKey 변경 실패:",
+        error.response?.data || error.message
+      );
+      throw new Error("BillingKey 변경 중 오류가 발생했습니다.");
     }
   };
 
@@ -119,12 +155,30 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
           <p className="text-gray-500 mt-2">새로운 카드 정보를 입력해주세요</p>
         </div>
         <div className="grid grid-cols-2 gap-4 pt-4">
-          <button onClick={onClose} className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors">취소</button>
-          <button onClick={handleChangeClick} className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors">변경하기</button>
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleChangeClick}
+            className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
+          >
+            변경하기
+          </button>
         </div>
       </div>
-      <ModalMSG show={showMessageModal} onClose={handleSuccessConfirm} title="Success">{message}</ModalMSG>
-      <ModalErrorMSG show={showErrorModal} onClose={closeErrorModal}>{errorMessage}</ModalErrorMSG>
+      <ModalMSG
+        show={showMessageModal}
+        onClose={handleSuccessConfirm}
+        title="Success"
+      >
+        {message}
+      </ModalMSG>
+      <ModalErrorMSG show={showErrorModal} onClose={closeErrorModal}>
+        {errorMessage}
+      </ModalErrorMSG>
     </div>
   );
 };

@@ -7,7 +7,7 @@ import ModalErrorMSG from "../components/modal/modalErrorMSG";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import config from "../../config";
 
-const PaymentChangeCard = () => {
+const PaymentCancel = () => {
   const router = useRouter();
   const { token } = useAuth();
   const [message, setMessage] = useState("");
@@ -117,4 +117,4 @@ const PaymentChangeCard = () => {
   );
 };
 
-export default PaymentChangeCard;
+export default PaymentCancel;

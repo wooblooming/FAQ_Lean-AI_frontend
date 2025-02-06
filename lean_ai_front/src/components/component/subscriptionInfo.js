@@ -23,7 +23,7 @@ const SubscriptionInfo = ({ subscriptionData, setCancelOpen }) => {
 
   return (
     <Card className="bg-white shadow-sm">
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-3 md:p-6 space-y-6">
         <h3 className="text-xl font-bold text-indigo-700 flex items-center gap-2">
           <BadgeCheck className="h-6 w-6" />
           현재 플랜 정보
@@ -63,7 +63,7 @@ const SubscriptionInfo = ({ subscriptionData, setCancelOpen }) => {
           <div className="border-b border-indigo-200" />
 
           {/* 날짜 정보 섹션 */}
-          <div className="grid grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 ">
             <InfoCard
               icon={Clock}
               title="구독 시작일"

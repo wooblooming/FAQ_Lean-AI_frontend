@@ -83,7 +83,7 @@ const PaymentHistory = () => {
             : payment.merchant_uid.split("_").slice(0, -1).join("_"),
       }));
       setPaymentHistory(formattedData);
-      console.log(formattedData);
+      // console.log(formattedData);
     } catch (error) {
       console.error("Failed to fetch payment history:", error);
       setErrorMessage("결제 내역을 가져오는데 실패했습니다.");
@@ -95,7 +95,7 @@ const PaymentHistory = () => {
     <div>
       <Card className="bg-white">
         {/* 헤더 */}
-        <CardContent className="p-6 flex flex-col space-y-2">
+        <CardContent className="p-3 md:p-6 flex flex-col space-y-2">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-indigo-700 flex items-center gap-2">
               <ScrollText className="h-6 w-6" />

@@ -49,7 +49,7 @@ const PaymentMethod = ({ userData, cardInfo }) => {
     <div>
       {/* 결제 수단 카드 */}
       <Card className="bg-white">
-        <CardContent className="p-6">
+        <CardContent className="p-3 md:p-6">
           {/* 결제 수단 제목 */}
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-indigo-700 flex items-center gap-2">

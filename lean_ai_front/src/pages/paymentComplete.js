@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "../contexts/authContext";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import config from "../../config";
 
 const PaymentComplete = () => {
@@ -28,6 +29,7 @@ const PaymentComplete = () => {
 
   // 빌링키 저장 함수 추가
   const saveBillingKey = async (paymentData) => {
+    console.log("결제 성공:", paymentData);
     try {
       const response = await axios.post(
         `${config.apiDomain}/api/billing-key-save/`,
@@ -36,6 +38,7 @@ const PaymentComplete = () => {
           imp_uid: paymentData.imp_uid,
           merchant_uid: paymentData.merchant_uid,
           plan: paymentData.plan, // 플랜 정보 전달
+          price: paymentData.price, // 결제 금액 전달
           user_id: paymentData.user_id, // 유저 ID 전달
         },
         {
@@ -85,10 +88,11 @@ const PaymentComplete = () => {
 
           // 2️. 빌링키 저장 API 호출
           const billingKeyMessage = await saveBillingKey({
-            customer_uid: paymentData.customer_uid, 
+            customer_uid: paymentData.customer_uid,
             imp_uid: paymentData.imp_uid,
             merchant_uid: paymentData.merchant_uid,
             plan: paymentData.plan,
+            price: paymentData.price,
             user_id: paymentData.user_id,
           });
 
@@ -111,9 +115,13 @@ const PaymentComplete = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <h1 className="text-xl font-bold text-gray-800">결제 처리 중...</h1>
+      <LoadingSpinner />
 
-      <ModalMSG show={showMessageModal} onClose={closeMessageModal} title="Success">
+      <ModalMSG
+        show={showMessageModal}
+        onClose={closeMessageModal}
+        title="Success"
+      >
         {message}
       </ModalMSG>
 

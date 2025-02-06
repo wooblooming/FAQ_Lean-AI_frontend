@@ -4,7 +4,7 @@ import CardRegistrationModal from "../modal/cardRegistrationModal";
 import ModalMSG from "../modal/modalMSG";
 import ModalErrorMSG from "../modal/modalErrorMSG";
 
-const SubscriptionSignup = ({ token, storeID, userData }) => {
+const SubscriptionSignup = ({ token, userData }) => {
   const [isRegistrationOpen, setRegistrationOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");

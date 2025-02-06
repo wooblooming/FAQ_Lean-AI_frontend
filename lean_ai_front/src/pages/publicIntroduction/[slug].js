@@ -6,7 +6,7 @@ import { Headset, User, MailCheck } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faLocationDot, faClock, faPhone } from '@fortawesome/free-solid-svg-icons'; 
 import { fetchPublicDetailData } from '../../fetch/fetchPublicDetailData'; // 특정 공공기관 데이터를 가져오는 함수
-import Loading from '../../components/component/loading'; // 로딩 컴포넌트
+import LoadingSpinner from "@/components/ui/loadingSpinner"; // 로딩 컴포넌트
 import ModalErrorMSG from '../../components/modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import Chatbot from '../chatBotMSG'; // 챗봇 컴포넌트
 import config from '../../../config'; // API 도메인 등 환경설정 정보
@@ -54,9 +54,7 @@ const StoreIntroductionPublic = () => {
   }, [publicData]);
 
   // 로딩 중일 경우 로딩 컴포넌트 표시
-  if (isLoading) {
-    return <Loading />;
-  }
+   if (isLoading) return <LoadingSpinner />;
 
   // 탭 클릭 핸들러
   const handleTabClick = (tab) => {
