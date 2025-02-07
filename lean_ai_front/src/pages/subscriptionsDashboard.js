@@ -16,8 +16,6 @@ const SubscriptionsDashboard = () => {
   const router = useRouter();
   const { token } = useAuth(); // 사용자 인증 토큰 가져오기
   const { storeID } = useStore(); // 현재 스토어 ID 가져오기
-
-  // 상태 관리
   const [userData, setUserData] = useState(null); // 사용자 정보 저장
   const [subscriptionData, setSubscriptionData] = useState(null); // 구독 정보 저장
   const [cardInfo, setCardInfo] = useState(null); // 결제 카드 정보 저장

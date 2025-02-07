@@ -91,13 +91,13 @@ const MainPageWithMenu = () => {
 
   useEffect(() => {
     if (!token) return;
-  
+
     // 통계 데이터 가져오기
     fetchStatistics();
-  
+
     if (storeID) {
       setIsOwner(true);
-  
+
       // 📌 상점 및 유저 데이터 가져오기
       fetchStoreData(
         { storeID },
@@ -105,9 +105,9 @@ const MainPageWithMenu = () => {
         setStoreData,
         setErrorMessage,
         setShowErrorMessageModal,
-        true
+        isOwner
       );
-  
+
       fetchStoreUser(
         { storeID },
         token,
@@ -117,7 +117,7 @@ const MainPageWithMenu = () => {
       );
     }
   }, [token, storeID]);
-  
+
   // storeData가 변경되면 상태 업데이트
   useEffect(() => {
     if (storeData?.store) {
@@ -127,11 +127,11 @@ const MainPageWithMenu = () => {
       setStoreSlug(slug);
     }
   }, [storeData]);
-  
+
   useEffect(() => {
     if (userData?.subscription) {
-       setSubscriptionData(userData.subscription); 
-     }
+      setSubscriptionData(userData.subscription);
+    }
   }, [userData]);
 
   // 통계 데이터 API 호출
@@ -164,6 +164,16 @@ const MainPageWithMenu = () => {
       const encodedSlug = encodeURIComponent(slug);
       router.push(`/storeIntroductionOwner/${encodedSlug}`);
     }
+  };
+
+  // 구독 여부 확인 후 실행할 함수
+  const handleActionWithSubscriptionCheck = (callback) => {
+    if (!userData?.subscription) {
+      setErrorMessage("구독을 먼저 신청해주세요.");
+      setShowErrorMessageModal(true);
+      return;
+    }
+    callback();
   };
 
   return (
@@ -214,7 +224,7 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={Edit3}
-                    onClick={() => setIsChangeInfoModalOpen(true)}
+                    onClick={() => handleActionWithSubscriptionCheck(() => setIsChangeInfoModalOpen(true) )}
                   >
                     정보 수정
                   </Button>
@@ -233,7 +243,10 @@ const MainPageWithMenu = () => {
                   고객에게 보여지는 <br /> 챗봇 화면을 미리 확인해보세요
                 </p>
                 <div className="flex justify-center items-center">
-                  <Button icon={Eye} onClick={goToChatbot}>
+                  <Button
+                    icon={Eye}
+                    onClick={() => handleActionWithSubscriptionCheck(goToChatbot)}
+                  >
                     미리보기
                   </Button>
                 </div>
@@ -253,7 +266,7 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={ClipboardList}
-                    onClick={() => setIsEditDataModalOpen(true)}
+                    onClick={() => handleActionWithSubscriptionCheck(() => setIsEditDataModalOpen(true))}
                   >
                     데이터 등록
                   </Button>
@@ -293,15 +306,10 @@ const MainPageWithMenu = () => {
                   정기 구독
                 </h2>
                 <div>
-                  {userData.subscription?.billing_key? (
-                    <SubscriptionActive
-                      subscriptionData={subscriptionData}
-                    />
+                  {userData.subscription? (
+                    <SubscriptionActive subscriptionData={subscriptionData} />
                   ) : (
-                    <SubscriptionSignup
-                      token={token}
-                      userData={userData}
-                    />
+                    <SubscriptionSignup token={token} userData={userData} />
                   )}
                 </div>
               </div>
