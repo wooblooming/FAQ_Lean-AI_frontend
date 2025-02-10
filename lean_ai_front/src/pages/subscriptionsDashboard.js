@@ -9,22 +9,25 @@ import SubscriptionInfo from "../components/component/subscriptionInfo";
 import PaymentMethod from "../components/component/paymentMethod";
 import PaymentHistory from "../components/component/paymentHistory";
 import CardCancelModal from "../components/modal/cardCancelModal";
+import CardRestoreModal from "../components/modal/cardRestoreModal";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 
 const SubscriptionsDashboard = () => {
   const router = useRouter();
-  const { token } = useAuth(); // 사용자 인증 토큰 가져오기
-  const { storeID } = useStore(); // 현재 스토어 ID 가져오기
-  const [userData, setUserData] = useState(null); // 사용자 정보 저장
-  const [subscriptionData, setSubscriptionData] = useState(null); // 구독 정보 저장
-  const [cardInfo, setCardInfo] = useState(null); // 결제 카드 정보 저장
-  const [isCancelOpen, setCancelOpen] = useState(false); // 구독 취소 모달 상태
-  const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 상태
-  const [showErrorModal, setShowErrorModal] = useState(false); // 에러 모달 표시 여부
-  const [showMessageModal, setShowMessageModal] = useState(false); // 성공 모달 표시 여부
-  const [message, setMessage] = useState(""); // 성공 메시지
-  const [selectedTab, setSelectedTab] = useState("구독정보"); // 선택된 탭 (기본값: "구독정보")
+  const { token } = useAuth();
+  const { storeID } = useStore();
+  const [userData, setUserData] = useState(null);
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  const [cardInfo, setCardInfo] = useState(null);
+  const [isCancelOpen, setCancelOpen] = useState(false);
+  const [isRestoreOpen, setRestoreOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [message, setMessage] = useState("");
+  const [selectedTab, setSelectedTab] = useState("구독정보");
+  const [isLoading, setIsLoading] = useState(true); // 🔄 로딩 상태 추가
 
   // 사용자 정보 가져오기
   useEffect(() => {
@@ -42,13 +45,14 @@ const SubscriptionsDashboard = () => {
   // 구독 정보 및 카드 정보 가져오기
   useEffect(() => {
     if (token && userData?.subscription?.id) {
+      setIsLoading(true); // 데이터 로딩 시작
       fetchSubscription(
         token,
         userData.subscription.id,
         setSubscriptionData,
         setCardInfo,
         setErrorMessage
-      );
+      ).finally(() => setIsLoading(false)); // 데이터 로딩 완료
     }
   }, [token, userData]);
 
@@ -81,45 +85,55 @@ const SubscriptionsDashboard = () => {
           </h1>
         </div>
 
-        {/* 사이드바 및 콘텐츠 영역 */}
-        <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-6">
-          {/* 사이드바 (탭 버튼) */}
-          <div className="w-full md:w-1/5">
-            {["구독정보", "결제수단", "결제내역"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setSelectedTab(tab)} // 선택된 탭 변경
-                className={`p-3 w-full text-center md:text-left rounded-lg text-indigo-700 ${
-                  selectedTab === tab
-                    ? "bg-indigo-100 text-lg md:text-xl"
-                    : "hover:bg-gray-100"
-                }`}
-                style={{
-                  fontFamily:
-                    selectedTab === tab
-                      ? "NanumSquareExtraBold"
-                      : "NanumSquareBold",
-                }}
-              >
-                {tab}
-              </button>
-            ))}
+        {/* 로딩 상태 표시 */}
+        {isLoading ? (
+          <div className="flex justify-center items-center h-48">
+            <p className="text-gray-600 text-lg" style={{ fontFamily: "NanumSquareBold" }}>구독 데이터를 가져오는 중입니다...</p>
           </div>
+        ) : (
+          <>
+            {/* 사이드바 및 콘텐츠 영역 */}
+            <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-6">
+              {/* 사이드바 (탭 버튼) */}
+              <div className="w-full md:w-1/5">
+                {["구독정보", "결제수단", "결제내역"].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setSelectedTab(tab)}
+                    className={`p-3 w-full text-center md:text-left rounded-lg text-indigo-700 ${
+                      selectedTab === tab
+                        ? "bg-indigo-100 text-lg md:text-xl"
+                        : "hover:bg-gray-100"
+                    }`}
+                    style={{
+                      fontFamily:
+                        selectedTab === tab
+                          ? "NanumSquareExtraBold"
+                          : "NanumSquareBold",
+                    }}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
 
-          {/* 콘텐츠 영역 */}
-          <div className="flex-1 bg-white">
-            {selectedTab === "구독정보" && (
-              <SubscriptionInfo
-                subscriptionData={subscriptionData}
-                setCancelOpen={setCancelOpen}
-              />
-            )}
-            {selectedTab === "결제수단" && (
-              <PaymentMethod userData={userData} cardInfo={cardInfo} />
-            )}
-            {selectedTab === "결제내역" && <PaymentHistory />}
-          </div>
-        </div>
+              {/* 콘텐츠 영역 */}
+              <div className="flex-1 bg-white">
+                {selectedTab === "구독정보" && (
+                  <SubscriptionInfo
+                    subscriptionData={subscriptionData}
+                    setCancelOpen={setCancelOpen}
+                    setRestoreOpen={setRestoreOpen}
+                  />
+                )}
+                {selectedTab === "결제수단" && (
+                  <PaymentMethod userData={userData} cardInfo={cardInfo} />
+                )}
+                {selectedTab === "결제내역" && <PaymentHistory />}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* 구독 취소 모달 */}
@@ -130,7 +144,15 @@ const SubscriptionsDashboard = () => {
         onClose={() => setCancelOpen(false)}
       />
 
-      {/* ✅ 성공 메시지 모달 */}
+      {/* 구독 해지 취소 모달 */}
+      <CardRestoreModal
+        subscriptionData={subscriptionData}
+        token={token}
+        isOpen={isRestoreOpen}
+        onClose={() => setRestoreOpen(false)}
+      />
+
+      {/* 성공 메시지 모달 */}
       <ModalMSG
         show={showMessageModal}
         onClose={handleMessageModalClose}
@@ -139,7 +161,7 @@ const SubscriptionsDashboard = () => {
         {message}
       </ModalMSG>
 
-      {/* ✅ 에러 메시지 모달 */}
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG
         show={showErrorModal}
         onClose={handleErrorModalClose}

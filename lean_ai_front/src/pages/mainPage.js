@@ -168,7 +168,7 @@ const MainPageWithMenu = () => {
 
   // 구독 여부 확인 후 실행할 함수
   const handleActionWithSubscriptionCheck = (callback) => {
-    if (!userData?.subscription) {
+    if (!userData?.subscription?.is_active) {
       setErrorMessage("구독을 먼저 신청해주세요.");
       setShowErrorMessageModal(true);
       return;
@@ -224,7 +224,11 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={Edit3}
-                    onClick={() => handleActionWithSubscriptionCheck(() => setIsChangeInfoModalOpen(true) )}
+                    onClick={() =>
+                      handleActionWithSubscriptionCheck(() =>
+                        setIsChangeInfoModalOpen(true)
+                      )
+                    }
                   >
                     정보 수정
                   </Button>
@@ -245,7 +249,9 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={Eye}
-                    onClick={() => handleActionWithSubscriptionCheck(goToChatbot)}
+                    onClick={() =>
+                      handleActionWithSubscriptionCheck(goToChatbot)
+                    }
                   >
                     미리보기
                   </Button>
@@ -266,7 +272,11 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={ClipboardList}
-                    onClick={() => handleActionWithSubscriptionCheck(() => setIsEditDataModalOpen(true))}
+                    onClick={() =>
+                      handleActionWithSubscriptionCheck(() =>
+                        setIsEditDataModalOpen(true)
+                      )
+                    }
                   >
                     데이터 등록
                   </Button>
@@ -306,7 +316,7 @@ const MainPageWithMenu = () => {
                   정기 구독
                 </h2>
                 <div>
-                  {userData.subscription? (
+                  {userData.subscription?.is_active ? (
                     <SubscriptionActive subscriptionData={subscriptionData} />
                   ) : (
                     <SubscriptionSignup token={token} userData={userData} />

@@ -1,7 +1,8 @@
 [
     { 
       "id": 1, 
-      "plan": "BASIC", 
+      "plan": "BASIC",
+      "alias" : "BASIC",
       "price": 9900,
       "description": "기본 구독",
       "features": ["기본 FAQ 챗봇", "기본 분석 기능"]
@@ -9,6 +10,7 @@
     { 
       "id": 2,
       "plan": "ENTERPRISE",
+      "alias" : "ENT",
       "price": 500000,
       "description": "기업용 구독",
       "features": ["CS 응대 챗봇", "사내 챗봇", "고급 분석 기능"]

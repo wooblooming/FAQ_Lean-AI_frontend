@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 import { X } from "lucide-react";
 import { useAuth } from "../../contexts/authContext";
 import ModalMSG from "./modalMSG";
@@ -82,30 +83,30 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
 
   // "변경하기" 버튼 클릭 핸들러
   const handleChangeClick = async () => {
+
     try {
-      const merchant_uid = `${
-        userData.billing_key.plan
-      }_${new Date().getTime()}`;
+      const planAlias = userData.subscription.billing_key?.merchant_uid?.split("_")[0];
+      const merchant_uid = `${planAlias}_${uuidv4().slice(0, 8)}${Date.now().toString(36)}`;
       const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
       const paymentRequest = {
         pg: config.pgCode,
         pay_method: "card",
         merchant_uid: merchant_uid,
-        customer_uid: userData.billing_key.customer_uid, // 새로운 카드 정보 업데이트 예정
+        customer_uid: userData.subscription.billing_key.customer_uid, // 새로운 카드 정보 업데이트 예정
         name: "정기결제 카드 변경",
-        amount: userData.billing_key.amount, // 0원 결제
+        amount: userData.subscription.billing_key.amount,
         buyer_email: userData.email,
         buyer_name: userData.name || "테스트 유저",
         buyer_tel: userData.phone_number || "010-0000-0000",
         m_redirect_url: isMobile
-          ? `${config.frontendDomain}/paymentChange`
+          ? `${config.frontendDomain}/subPaymentChangeCard`
           : undefined,
       };
 
       // PortOne 결제 요청
       const response = await requestPayment(paymentRequest);
-      console.log("✅ 카드 변경 결제 성공:", response);
+      //console.log("✅ 카드 변경 결제 성공:", response);
 
       // 결제가 성공하면 새로운 BillingKey 업데이트 요청 (BillingKeyChangeView 호출)
       await updateBillingKey(response.imp_uid, response.customer_uid);
@@ -123,12 +124,12 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
   const updateBillingKey = async (imp_uid, newCustomerUid) => {
     try {
       const response = await axios.post(
-        `${config.apiDomain}/api/billing-key-change/`, // BillingKeyChangeView API 엔드포인트
+        `${config.apiDomain}/api/subscription/update_billing_key/`,
         { customer_uid: newCustomerUid, imp_uid: imp_uid },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("✅ BillingKey 변경 성공:", response.data);
+      //console.log("✅ BillingKey 변경 성공:", response.data);
     } catch (error) {
       console.error(
         "❌ BillingKey 변경 실패:",

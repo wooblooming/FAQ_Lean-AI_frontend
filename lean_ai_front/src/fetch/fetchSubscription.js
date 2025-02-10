@@ -8,7 +8,7 @@ export const fetchSubscription = async (token, ID, setSubscriptionData, setCardI
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Subscription Info:", response.data);
+      //console.log("Subscription Info:", response.data);
       setSubscriptionData(response.data.subscription);
       setCardInfo(response.data.card_info);
     } catch (error) {

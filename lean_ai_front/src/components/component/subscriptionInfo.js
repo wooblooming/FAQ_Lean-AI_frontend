@@ -4,14 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import plans from "/public/text/plan.json";
 
-const SubscriptionInfo = ({ subscriptionData, setCancelOpen }) => {
+const SubscriptionInfo = ({ subscriptionData, setCancelOpen, setRestoreOpen }) => {
   if (!subscriptionData?.billing_key) {
     return (
       <div className="text-center p-6 text-gray-600">구독 정보가 없습니다.</div>
     );
   }
 
-  const planType = subscriptionData.plan || "BASIC";
+  const planType = subscriptionData.plan || " ";
   const currentPlan = plans.find((plan) => plan.plan === planType);
   const planFeatures = currentPlan?.features || [];
 
@@ -69,11 +69,21 @@ const SubscriptionInfo = ({ subscriptionData, setCancelOpen }) => {
               title="구독 시작일"
               value={formatDate(subscriptionData.billing_key.created_at)}
             />
-            <InfoCard
-              icon={Calendar}
-              title="다음 결제일"
-              value={formatDate(subscriptionData.next_billing_date)}
-            />
+            {subscriptionData?.billing_key?.deactivation_date ? (
+              <InfoCard
+                icon={Calendar}
+                title="구독 해지일"
+                value={formatDate(
+                  subscriptionData.billing_key.deactivation_date
+                )}
+              />
+            ) : (
+              <InfoCard
+                icon={Calendar}
+                title="다음 결제일"
+                value={formatDate(subscriptionData.next_billing_date)}
+              />
+            )}
           </div>
 
           <div className="border-b border-indigo-200" />
@@ -95,16 +105,29 @@ const SubscriptionInfo = ({ subscriptionData, setCancelOpen }) => {
         </div>
 
         {/* 구독 취소 버튼 */}
-        <div className="flex w-full">
-          <Button
-            variant="outline"
-            className="w-full py-6 text-lg text-white bg-indigo-500 hover:bg-indigo-600 transition-colors"
-            style={{ fontFamily: "NanumSquareBold" }}
-            onClick={() => setCancelOpen(true)}
-          >
-            구독 해지하기
-          </Button>
-        </div>
+        {subscriptionData?.billing_key?.deactivation_date ? (
+          <div className="flex w-full">
+            <Button
+              variant="outline"
+              className="w-full py-6 text-lg text-white bg-indigo-500 hover:bg-indigo-600 transition-colors"
+              style={{ fontFamily: "NanumSquareBold" }}
+              onClick={() => setRestoreOpen(true)}
+            >
+              구독 해지 취소하기
+            </Button>
+          </div>
+        ) : (
+          <div className="flex w-full">
+            <Button
+              variant="outline"
+              className="w-full py-6 text-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
+              style={{ fontFamily: "NanumSquareBold" }}
+              onClick={() => setCancelOpen(true)}
+            >
+              구독 해지하기
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

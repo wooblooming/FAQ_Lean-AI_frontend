@@ -49,7 +49,8 @@
     "slick-carousel": "^1.8.1",
     "swiper": "^11.1.14",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@types/react-slick": "^0.23.13",

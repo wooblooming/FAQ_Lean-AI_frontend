@@ -7,7 +7,7 @@ import ModalErrorMSG from "../components/modal/modalErrorMSG";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import config from "../../config";
 
-const PaymentCancel = () => {
+const PaymentChangeCard = () => {
   const router = useRouter();
   const { token } = useAuth();
   const [message, setMessage] = useState("");
@@ -56,7 +56,6 @@ const PaymentCancel = () => {
         }
 
         const customer_uid = response.data.customer_uid;
-        console.log("✅ customer_uid 조회 성공:", customer_uid);
 
         // customer_uid를 이용하여 BillingKey 변경 API 호출
         await updateBillingKey(imp_uid, customer_uid);
@@ -79,7 +78,7 @@ const PaymentCancel = () => {
   const updateBillingKey = async (imp_uid, newCustomerUid) => {
     try {
       const response = await axios.post(
-        `${config.apiDomain}/api/billing-key-change/`,
+        `${config.apiDomain}/api/subscription/update_billing_key/`,
         { customer_uid: newCustomerUid, imp_uid: imp_uid },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -88,7 +87,7 @@ const PaymentCancel = () => {
         throw new Error(response.data.message || "BillingKey 변경 실패");
       }
 
-      console.log("✅ BillingKey 변경 성공:", response.data);
+      //console.log("BillingKey 변경 성공:", response.data);
     } catch (error) {
       console.error(
         "❌ BillingKey 변경 실패:",
@@ -117,4 +116,4 @@ const PaymentCancel = () => {
   );
 };
 
-export default PaymentCancel;
+export default PaymentChangeCard;

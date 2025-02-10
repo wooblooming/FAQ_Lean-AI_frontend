@@ -68,20 +68,18 @@ const PaymentHistory = () => {
         }
       );
 
-      const formattedData = response.data.payment_data.map((payment) => ({
-        ...payment,
-        formattedDate:
-          payment.status === "scheduled"
-            ? new Date(payment.scheduled_at).toLocaleDateString()
-            : new Date(
-                payment.created_at || payment.paid_at
-              ).toLocaleDateString(),
-        formattedAmount: Number(payment.amount).toLocaleString(),
-        displayMerchantUid:
-          payment.status === "paid"
-            ? payment.merchant_uid
-            : payment.merchant_uid.split("_").slice(0, -1).join("_"),
-      }));
+      const formattedData = response.data.payment_data.map((payment) => {
+        return {
+          ...payment,
+          formattedDate:
+            payment.status === "scheduled"
+              ? new Date(payment.scheduled_at).toLocaleDateString()
+              : new Date(payment.created_at || payment.paid_at).toLocaleDateString(),
+          formattedAmount: Number(payment.amount).toLocaleString(),
+
+        };
+      });
+      
       setPaymentHistory(formattedData);
       // console.log(formattedData);
     } catch (error) {
@@ -157,7 +155,7 @@ const PaymentHistory = () => {
                         </span>
                       </td>
                       <td className="px-1 md:px-6 py-2 truncate">
-                        {history.displayMerchantUid}
+                        {history.merchant_uid}
                       </td>
                     </tr>
                   ))}
@@ -207,12 +205,12 @@ const PaymentHistory = () => {
                         : "결제중"}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col justify-between items-start">
                     <span className="font-semibold text-gray-700 whitespace-nowrap">
                       {history.formattedAmount}원
                     </span>
                     <span className="text-sm text-gray-500 truncate">
-                      {history.displayMerchantUid}
+                      {history.merchant_uid}
                     </span>
                   </div>
                 </div>

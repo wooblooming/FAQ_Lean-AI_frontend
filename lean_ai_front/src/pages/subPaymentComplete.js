@@ -29,10 +29,10 @@ const PaymentComplete = () => {
 
   // 빌링키 저장 함수 추가
   const saveBillingKey = async (paymentData) => {
-    console.log("결제 성공:", paymentData);
+    // console.log("결제 성공:", paymentData);
     try {
       const response = await axios.post(
-        `${config.apiDomain}/api/billing-key-save/`,
+        `${config.apiDomain}/api/subscription/`,
         {
           customer_uid: paymentData.customer_uid,
           imp_uid: paymentData.imp_uid,
@@ -96,7 +96,7 @@ const PaymentComplete = () => {
             user_id: paymentData.user_id,
           });
 
-          setMessage("결제가 성공적으로 완료되었습니다." || billingKeyMessage);
+          setMessage("구독 신청이 성공적으로 완료되었습니다." || billingKeyMessage);
           setShowMessageModal(true);
         } else {
           throw new Error(response.data.error || "결제 처리 실패");

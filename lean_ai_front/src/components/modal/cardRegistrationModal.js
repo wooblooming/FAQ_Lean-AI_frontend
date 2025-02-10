@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { v4 as uuidv4 } from "uuid";
 import { X, Check } from "lucide-react";
 import axios from "axios";
 import plans from "/public/text/plan.json"; // ✅ 구독 플랜 데이터 JSON 파일
@@ -89,11 +90,11 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
 
   // BillingKey 저장 요청 함수
   const saveBillingKey = async (paymentResponse) => {
-    console.log("paymentResponse : ", paymentResponse);
+    //console.log("paymentResponse : ", paymentResponse);
 
     // API 요청
     const response = await axios.post(
-      `${config.apiDomain}/api/billing-key-save/`, // 서버의 BillingKey 저장 API
+      `${config.apiDomain}/api/subscription/`, // 서버의 구독 신청 API
       {
         customer_uid: paymentResponse.customer_uid, // 아임포트에서 반환된 고객 UID
         imp_uid: paymentResponse.imp_uid, // 아임포트에서 반환된 결제 고유 ID
@@ -126,8 +127,8 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
     }
 
     // 고객 UID와 주문 UID 생성
-    const customer_uid = `customer_${userData.user_id}_${new Date().getTime()}`;
-    const merchant_uid = `${selectedPlan.plan}_${new Date().getTime()}`;
+    const customer_uid = `customer_${uuidv4().slice(0, 8)}`;
+    const merchant_uid = `${selectedPlan.alias}_${uuidv4().slice(0, 8)}${Date.now().toString(36)}`;
     const isMobile = /Mobi|Android/i.test(navigator.userAgent); // 모바일 여부 확인
 
     // 결제 요청 데이터
@@ -142,7 +143,7 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
       buyer_name: userData.name || "테스트 유저", // 사용자 이름
       buyer_tel: userData.phone_number || "010-0000-0000", // 사용자 전화번호
       m_redirect_url: isMobile
-        ? `${config.frontendDomain}/paymentComplete` // 모바일 리디렉션 URL
+        ? `${config.frontendDomain}/subPaymentComplete` // 모바일 리디렉션 URL
         : undefined,
     };
 

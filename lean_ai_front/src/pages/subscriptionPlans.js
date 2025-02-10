@@ -1,154 +1,288 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../contexts/authContext';
-import { useStore } from '../contexts/storeContext';
-import { usePublic } from '../contexts/publicContext';
-import ConvertSwitch from '../components/component/convertSwitch1';
-import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import config from '../../config';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { v4 as uuidv4 } from "uuid";
+import { Check } from "lucide-react";
+import axios from "axios";
+import plans from "/public/text/plan.json"; // 구독 플랜 데이터 JSON 파일
+import { useAuth } from "../contexts/authContext";
+import { useStore } from "../contexts/storeContext";
+import { fetchStoreUser } from "../fetch/fetchStoreUser";
+import ModalMSG from "../components/modal/modalMSG";
+import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import config from "../../config";
 
-const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [userData, setUserData] = useState(null); // 사용자 데이터 상태 추가
-    const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+const SubscriptionPlans = ({}) => {
+  const { token } = useAuth(); // 사용자 인증 토큰 가져오기
+  const { storeID } = useStore(); // 현재 스토어 ID 가져오기
+  const [userData, setUserData] = useState(null); // 사용자 정보 저장
+  const router = useRouter();
+  const [selectedPlan, setSelectedPlan] = useState(null); // 선택된 플랜
+  const [message, setMessage] = useState(""); // 성공 메시지
+  const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지
+  const [showMessageModal, setShowMessageModal] = useState(false); // 성공 모달 표시 여부
+  const [showErrorModal, setShowErrorModal] = useState(false); // 에러 모달 표시 여부
 
-    const router = useRouter();
-    const { saveToken, token } = useAuth();
-    const { storeID, setStoreID } = useStore();
-    const { isPublicOn, togglePublicOn } = usePublic();
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    if (storeID && token) {
+      fetchStoreUser(
+        { storeID },
+        token,
+        setUserData,
+        setErrorMessage,
+        setShowErrorModal
+      );
+    }
+  }, [storeID, token]);
 
-    const handleErrorMessageModalClose = () => {
-        setShowErrorMessageModal(false);
-    };
+  const onClose = () => {
+    setShowMessageModal(false); // 성공 모달 닫기
+    setShowErrorModal(false); // 에러 모달 닫기
+    setMessage(""); // 성공 메시지 초기화
+    setErrorMessage(""); // 에러 메시지 초기화
+    setSelectedPlan(null); // 선택된 플랜 초기화
+  };
 
-    // 로그인 요청 함수
-    const handleLoginClick = async () => {
-        try {
-            const url = isPublicOn 
-                ? `${config.apiDomain}/public/login/`
-                : `${config.apiDomain}/api/login/`;
+  // 성공 모달 확인 클릭 시 동작
+  const handleSuccessConfirm = () => {
+    onClose();
+    router.push("/mainPage");
+  };
 
-            const response = await axios.post(url, {
-                username,
-                password
-            });
+  const handleCancelNavigation = () => {
+    router.push("/");
+  };
 
-            const { access, public_id, store_id, user_data } = response.data;
-            
-            // 토큰 저장
-            await saveToken(access);
+  // 오류 메시지 매핑
+  const mapErrorMessage = (errorMsg) => {
+    if (errorMsg.includes("PAY_PROCESS_CANCELED")) {
+      return "사용자가 결제를 취소하였습니다.";
+    } else if (errorMsg.includes("INVALID_CARD_NUMBER")) {
+      return "카드 번호를 잘못 입력하셨습니다.";
+    } else if (errorMsg.includes("EXPIRED_CARD")) {
+      return "카드가 만료되었습니다.";
+    } else if (errorMsg.includes("INSUFFICIENT_FUNDS")) {
+      return "잔액이 부족합니다.";
+    } else if (errorMsg.includes("CARD_LIMIT_EXCEEDED")) {
+      return "카드 한도를 초과하였습니다.";
+    } else if (errorMsg.includes("NOT_SUPPORTED_CARD_TYPE")) {
+      return "해당 카드가 지원되지 않습니다. 다른 카드를 이용해주세요.";
+    } else if (errorMsg.includes("ACQUIRER_ERROR")) {
+      return "카드사 승인에 실패했습니다. 다른 카드를 사용해 주세요.";
+    } else if (errorMsg.includes("NETWORK_ERROR")) {
+      return "네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+    } else if (errorMsg.includes("SERVER_ERROR")) {
+      return "결제 서버 오류가 발생했습니다. 고객센터로 문의하세요.";
+    }
+    return errorMsg;
+  };
 
-            // 사용자 데이터 및 storeID 설정
-            setUserData(user_data);
-            const id = isPublicOn ? public_id : store_id;
-            setStoreID(id);
-        } catch (error) {
-            console.error('로그인 요청 중 오류 발생:', error);
-            const errorMsg = error.response?.data?.error || '로그인에 실패했습니다';
-            setErrorMessage(errorMsg);
-            setShowErrorMessageModal(true);
+  // 결제 요청 함수
+  const requestPayment = async (paymentRequest) => {
+    return new Promise((resolve, reject) => {
+      if (!window.IMP) {
+        // 아임포트 객체가 없는 경우 에러
+        reject(
+          new Error(
+            "결제 모듈이 로드되지 않았습니다. 페이지를 새로고침해주세요."
+          )
+        );
+        return;
+      }
+
+      // 아임포트 초기화
+      window.IMP.init(config.impKey);
+
+      // 결제 요청
+      window.IMP.request_pay(paymentRequest, function (rsp) {
+        if (rsp.success) {
+          // 결제 성공
+          resolve(rsp);
+        } else {
+          // 결제 실패
+          reject(new Error(rsp.error_msg || "결제 요청 실패"));
         }
-    };
+      });
+    });
+  };
 
-    // token, storeID, userData 변경 감지
-    useEffect(() => {
-        if (token && storeID && userData) {
-            const hasSubscription = userData.subscription;
+  // BillingKey 저장 요청 함수
+  const saveBillingKey = async (paymentResponse) => {
+    //console.log("paymentResponse : ", paymentResponse);
 
-            // 구독 여부에 따라 페이지 이동
-            if (hasSubscription) {
-                if (isPublicOn) {
-                    router.push('/mainPageForPublic');
-                } else {
-                    router.push('/mainPage');
-                }
-            } else {
-                router.push('/subscriptionPlans');
-            }
-        }
-    }, [token, storeID, userData, isPublicOn]);
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            handleLoginClick();
-        }
-    };
-
-    return (
-        <div className="bg-violet-50 flex justify-center items-center h-screen font-sans">
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md m-10" style={{ width: '400px' }}>
-                <h1 className="text-3xl font-bold text-indigo-600 text-center mb-8 cursor-pointer"
-                    style={{ fontFamily: 'NanumSquareExtraBold' }}
-                    onClick={() => router.push('/')}
-                >
-                    MUMUL
-                </h1>
-                <div className="space-y-4">
-                    <ConvertSwitch  
-                        isPublicOn={isPublicOn}
-                        togglePublicOn={togglePublicOn} // toggle 함수 전달
-                    />
-                    <div className="flex items-center border rounded-md px-4 py-2">
-                        <FontAwesomeIcon icon={faUser} />
-                        <input
-                            type="text"
-                            placeholder="아이디"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="ml-2 w-full border-none focus:ring-0"
-                        />
-                    </div>
-
-                    <div className="flex items-center border rounded-md px-4 py-2">
-                        <FontAwesomeIcon icon={faLock} />
-                        <input
-                            type="password"
-                            placeholder="비밀번호"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="ml-2 w-full border-none focus:ring-0"
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-
-                    <button
-                        className="bg-indigo-500 text-white text-lg font-semibold py-2 px-4 rounded-full w-full"
-                        onClick={handleLoginClick}
-                    >
-                        로그인
-                    </button>
-                </div>
-
-                <div className="mt-4 text-center text-gray-500">
-                    <p>
-                        <Link href="/signupType" className="hover:underline text-blue-500 m-1">회원가입</Link>
-                        {" | "}
-                        <Link href="/findAccount" className="hover:underline text-blue-500 m-1">계정찾기</Link>
-                    </p>
-                </div>
-
-                <ModalErrorMSG show={showErrorMessageModal} onClose={handleErrorMessageModalClose}>
-                    <p style={{ whiteSpace: 'pre-line' }}>
-                        {typeof errorMessage === 'object' ? (
-                            Object.entries(errorMessage).map(([key, value]) => (
-                                <span key={key}>
-                                    {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}<br />
-                                </span>
-                            ))
-                        ) : (
-                            errorMessage
-                        )}
-                    </p>
-                </ModalErrorMSG>
-            </div>
-        </div>
+    // API 요청
+    const response = await axios.post(
+      `${config.apiDomain}/api/subscription/`, // 서버의 BillingKey 저장 API
+      {
+        customer_uid: paymentResponse.customer_uid, // 아임포트에서 반환된 고객 UID
+        imp_uid: paymentResponse.imp_uid, // 아임포트에서 반환된 결제 고유 ID
+        merchant_uid: paymentResponse.merchant_uid, // 주문 고유 ID
+        plan: selectedPlan.plan, // 선택한 플랜 이름
+        price: selectedPlan.price, // 선택한 플랜 가격
+        user_id: userData?.user_id, // 사용자 ID
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // 인증 토큰
+        },
+      }
     );
+
+    if (response.data.success) {
+      return response.data.message; // 성공 메시지 반환
+    } else {
+      throw new Error(response.data.error || "구독 플랜 등록 실패");
+    }
+  };
+
+  // "결제하기" 버튼 클릭 핸들러
+  const handleRegisterClick = async () => {
+    if (!selectedPlan) {
+      // 선택된 플랜이 없을 경우 에러 처리
+      setShowErrorModal(true);
+      setErrorMessage("구독 플랜을 선택해주세요.");
+      return;
+    }
+
+    // 고객 UID와 주문 UID 생성
+    const customer_uid = `customer_${uuidv4().slice(0, 8)}`;
+    const merchant_uid = `${selectedPlan.alias}_${uuidv4().slice(0, 8)}${Date.now().toString(36)}`;
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent); // 모바일 여부 확인
+
+    // 결제 요청 데이터
+    const paymentRequest = {
+      pg: config.pgCode, // PG사 설정 (예: kakaopay, tosspay)
+      pay_method: "card", // 결제 방식
+      merchant_uid: merchant_uid, // 주문 번호
+      customer_uid: customer_uid, // 고객 UID
+      name: `${selectedPlan.plan} 구독 결제`, // 결제 이름
+      amount: selectedPlan.price, // 결제 금액
+      buyer_email: userData.email, // 사용자 이메일
+      buyer_name: userData.name || "테스트 유저", // 사용자 이름
+      buyer_tel: userData.phone_number || "010-0000-0000", // 사용자 전화번호
+      m_redirect_url: isMobile
+        ? `${config.frontendDomain}/paymentComplete` // 모바일 리디렉션 URL
+        : undefined,
+    };
+
+    try {
+      // 결제 요청
+      const paymentResponse = await requestPayment(paymentRequest);
+
+      // BillingKey 저장
+      const successMessage = await saveBillingKey(paymentResponse);
+
+      // 성공 메시지 표시
+      setShowMessageModal(true);
+      setMessage(successMessage || "정기 결제가 성공적으로 완료되었습니다.");
+    } catch (err) {
+      console.error("❌ 결제 오류:", err.message);
+      setShowErrorModal(true);
+      setErrorMessage(mapErrorMessage(err.message));
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-violet-50  z-50 h-full">
+      <div
+        className="bg-white rounded-2xl shadow-xl px-6 py-8 md:px-8 
+                      w-[95%] h-[95%] md:w-[600px] md:h-[550px] relative animate-in fade-in duration-300 overflow-y-auto"
+      >
+        {/* 제목 및 설명 */}
+        <div className="mb-8 text-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+            구독 플랜 선택
+          </h2>
+          <p className="text-gray-500 mt-2 text-sm sm:text-base whitespace-nowrap">
+            원하시는 구독 플랜을 선택하고 결제를 진행하세요
+          </p>
+        </div>
+
+        {/* 구독 플랜 목록 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          {plans.map((plan) => (
+            <div
+              key={plan.id}
+              onClick={() => setSelectedPlan(plan)}
+              className={`p-6 rounded-xl border-2 cursor-pointer transition-all h-72 ${
+                selectedPlan?.id === plan.id
+                  ? "border-indigo-600 bg-indigo-50"
+                  : "border-gray-200 hover:border-indigo-300"
+              }`}
+            >
+              <div className="relative">
+                {/* 선택된 플랜 표시 */}
+                {selectedPlan?.id === plan.id && (
+                  <span className="absolute -top-3 -left-3 bg-indigo-600 text-white p-1 rounded-full">
+                    <Check size={16} />
+                  </span>
+                )}
+
+                {/* 플랜 정보 */}
+                <div className="flex flex-col items-center rounded-lg p-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 text-center">
+                    {plan.plan}
+                  </h3>
+                  <p className="text-lg sm:text-2xl font-bold text-indigo-600 mt-2 text-center">
+                    {plan.price.toLocaleString()}원
+                    <span className="text-sm text-gray-500 font-normal">
+                      /월
+                    </span>
+                  </p>
+                  <p className="text-gray-600 mt-2 text-sm text-center">
+                    {plan.description}
+                  </p>
+                  <ul className="mt-4 space-y-2 text-sm text-center">
+                    {plan.features.map((feature, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center justify-center"
+                      >
+                        <Check size={16} className="text-indigo-600 mr-2" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 버튼 */}
+        <div className="grid grid-cols-2 gap-4 pt-4">
+          <button
+            onClick={handleCancelNavigation}
+            className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors text-sm sm:text-base"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleRegisterClick}
+            className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors text-sm sm:text-base"
+          >
+            {selectedPlan
+              ? `${selectedPlan.price.toLocaleString()}원 결제하기`
+              : "플랜 선택하기"}
+          </button>
+        </div>
+      </div>
+
+      {/* 성공 메시지 모달 */}
+      <ModalMSG
+        show={showMessageModal}
+        onClose={handleSuccessConfirm}
+        title="Success"
+      >
+        {message}
+      </ModalMSG>
+
+      {/* 에러 메시지 모달 */}
+      <ModalErrorMSG show={showErrorModal} onClose={onClose}>
+        {errorMessage}
+      </ModalErrorMSG>
+    </div>
+  );
 };
 
-export default Login;
+export default SubscriptionPlans;

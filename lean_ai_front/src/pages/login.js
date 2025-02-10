@@ -14,6 +14,7 @@ import config from '../../config';
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [userData, setUserData] = useState(null); // 사용자 데이터 상태 추가
     const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -33,32 +34,20 @@ const Login = () => {
                 ? `${config.apiDomain}/public/login/`
                 : `${config.apiDomain}/api/login/`;
 
-            
             const response = await axios.post(url, {
                 username,
                 password
             });
 
-            const { access, public_id, store_id } = response.data;
-            //console.log("response.data : ",  response.data);
+            const { access, public_id, store_id, user_data } = response.data;
             
-            // 토큰 저장 후 확인
+            // 토큰 저장
             await saveToken(access);
-            //console.log('Token saved:', access);
 
-            // 웹뷰에 메시지 전송
-            if (window.ReactNativeWebView) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'LOGIN',
-                    token: access
-                }));
-            }
-            
-            // storeID 설정
+            // 사용자 데이터 및 storeID 설정
+            setUserData(user_data);
             const id = isPublicOn ? public_id : store_id;
             setStoreID(id);
-            //console.log('StoreID set:', id);
-            
         } catch (error) {
             console.error('로그인 요청 중 오류 발생:', error);
             const errorMsg = error.response?.data?.error || '로그인에 실패했습니다';
@@ -67,19 +56,23 @@ const Login = () => {
         }
     };
 
-    // token과 storeID 변경 감지
+    // token, storeID, userData 변경 감지
     useEffect(() => {
-        //console.log('', token);
-        //console.log('Current storeID:', storeID);
-        
-        if (token && storeID) {
-            if (isPublicOn) {
-                router.push('/mainPageForPublic');
+        if (token && storeID && userData) {
+            const hasSubscription = userData.subscription;
+
+            // 구독 여부에 따라 페이지 이동
+            if (hasSubscription) {
+                if (isPublicOn) {
+                    router.push('/mainPageForPublic');
+                } else {
+                    router.push('/mainPage');
+                }
             } else {
-                router.push('/mainPage');
+                router.push('/subscriptionPlans');
             }
         }
-    }, [token, storeID, isPublicOn]);
+    }, [token, storeID, userData, isPublicOn]);
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
