@@ -1,11 +1,12 @@
 // fetchPublicComplaint.js
 import axios from 'axios';
-import config from '../../config';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchPublicComplaint = async (storeID, token, setComplaints , setErrorMessage, setShowErrorModal) => {
     try {
         const response = await axios.get(
-            `${config.apiDomain}/public/complaints/`,
+            `${API_DOMAIN}/public/complaints/`,
             {
                 params: { publicID: storeID }, // GET 요청에 적합한 방식
                 headers: {

@@ -7,7 +7,8 @@ import PersonalInfoModal from '../components/modal/personalInfoModal';
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import TextInput from '../components/component/textInput';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const RegisterComplaint = () => {
     const router = useRouter();
@@ -85,7 +86,7 @@ const RegisterComplaint = () => {
                 slug,
             };
 
-            const response = await axios.post(`${config.apiDomain}/public/complaints/`, requestData);
+            const response = await axios.post(`${API_DOMAIN}/public/complaints/`, requestData);
 
             if (response.data.status === 'success') {
                 setMessage(response.data.message);

@@ -7,8 +7,9 @@ import makeAnimated from 'react-select/animated';
 import { fetchMenuCategoryData } from '../../fetch/fetchStoreMenuCategory';
 import ModalMSG from '../modal/modalMSG'; // 메시지 모달 컴포넌트
 import ModalErrorMSG from '../modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
-import config from '../../../config';
 import styles from '../../styles/viewMenu.module.css';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle }) {
     const { token } = useAuth();
@@ -160,8 +161,8 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
     
             // editItemId에 따라 URL과 메서드 결정
             const url = editItemId
-                ? `${config.apiDomain}/api/menus/${editItemId}/` // Update API
-                : `${config.apiDomain}/api/menus/`;             // Create API
+                ? `${API_DOMAIN}/api/menus/${editItemId}/` // Update API
+                : `${API_DOMAIN}/api/menus/`;             // Create API
     
             const method = editItemId ? 'PUT' : 'POST';
     

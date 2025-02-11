@@ -6,7 +6,8 @@ import ConvertSwitch from "../components/component/convertSwitch2";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 import ModalResetPassword from "../components/modal/resetPasswordModal";
-import config from "../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 function FindAccountResult() {
   const router = useRouter();
@@ -30,8 +31,8 @@ function FindAccountResult() {
   const [timerActive, setTimerActive] = useState(false); // 타이머 활성화 상태
 
   const apiEndpoint = isPublicOn
-    ? `${config.apiDomain}/public`
-    : `${config.apiDomain}/api`; // ConvertSwitch 상태에 따라 API 엔드포인트 설정
+    ? `${API_DOMAIN}/public`
+    : `${API_DOMAIN}/api`; // ConvertSwitch 상태에 따라 API 엔드포인트 설정
 
   // 세션 저장된 사용자 정보 불러오기
   useEffect(() => {

@@ -14,7 +14,8 @@ import EventAlertModal from '../components/modal/eventModal';
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import ConfirmDeleteAccountModal from '../components/modal/confirmDeleteAccountModal';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const MyPagePublic = () => {
   const { token, removeToken } = useAuth();
@@ -35,10 +36,10 @@ const MyPagePublic = () => {
     token, removeToken,
     storeID, removeStoreID,
     fetchUserData: fetchPublicUser,
-    updateProfileUrl: `${config.apiDomain}/public/user-profile/`,
-    updateProfilePhotoUrl: `${config.apiDomain}/public/update-profile-photo/`,
-    generateQrCodeUrl: `${config.apiDomain}/public/generate-qr-code/`,
-    deactivateAccountUrl: `${config.apiDomain}/public/deactivate-account/`,
+    updateProfileUrl: `${API_DOMAIN}/public/user-profile/`,
+    updateProfilePhotoUrl: `${API_DOMAIN}/public/update-profile-photo/`,
+    generateQrCodeUrl: `${API_DOMAIN}/public/generate-qr-code/`,
+    deactivateAccountUrl: `${API_DOMAIN}/public/deactivate-account/`,
   });
 
   return (

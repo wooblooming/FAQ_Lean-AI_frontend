@@ -2,6 +2,7 @@ import React from "react";
 import { Dot, Calendar, Clock, BadgeCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { formatDate, getLastAvailableDate } from "../../utils/dateUtils";
 import plans from "/public/text/plan.json";
 
 const SubscriptionInfo = ({ subscriptionData, setCancelOpen, setRestoreOpen }) => {
@@ -15,11 +16,6 @@ const SubscriptionInfo = ({ subscriptionData, setCancelOpen, setRestoreOpen }) =
   const currentPlan = plans.find((plan) => plan.plan === planType);
   const planFeatures = currentPlan?.features || [];
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "정보 없음";
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
-  };
 
   return (
     <Card className="bg-white shadow-sm">
@@ -73,9 +69,7 @@ const SubscriptionInfo = ({ subscriptionData, setCancelOpen, setRestoreOpen }) =
               <InfoCard
                 icon={Calendar}
                 title="구독 해지일"
-                value={formatDate(
-                  subscriptionData.billing_key.deactivation_date
-                )}
+                value={getLastAvailableDate(subscriptionData.billing_key.deactivation_date)}
               />
             ) : (
               <InfoCard

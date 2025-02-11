@@ -1,5 +1,6 @@
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchFeedImage = async ({ slug, storeID }, token, setImages) => {
   try {
@@ -13,7 +14,7 @@ export const fetchFeedImage = async ({ slug, storeID }, token, setImages) => {
     if (slug) {
       // slug 기반 요청
       response = await axios.get(
-        `${config.apiDomain}/api/feeds/list_images_by_slug/`,
+        `${API_DOMAIN}/api/feeds/list_images_by_slug/`,
         {
           headers,
           params : {slug: decodeURIComponent(slug)},
@@ -22,7 +23,7 @@ export const fetchFeedImage = async ({ slug, storeID }, token, setImages) => {
     } else if (storeID) {
       // storeID 기반 요청
       response = await axios.get(
-        `${config.apiDomain}/api/feeds/list_images/`,
+        `${API_DOMAIN}/api/feeds/list_images/`,
         {
           headers,
           params: { store_id: storeID }, // 쿼리 파라미터로 storeID 전달

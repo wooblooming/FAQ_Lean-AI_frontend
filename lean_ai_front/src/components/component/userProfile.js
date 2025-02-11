@@ -7,7 +7,8 @@ import ModalErrorMSG from '../modal/modalErrorMSG';
 import VerificationModal from '../modal/verificationModal';
 import { fetchPublicDepartment } from '../../fetch/fetchPublicDepart';
 import styles from '../../styles/selectStyles.module.css';
-import config from '../../../config';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const UserProfileForm = ({
   userData = {},
@@ -38,7 +39,7 @@ const UserProfileForm = ({
   const [departOptions, setDepartOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
 
-  const fetchUrl = isPublicOn ? `${config.apiDomain}/public` : `${config.apiDomain}/api`;
+  const fetchUrl = isPublicOn ? `${API_DOMAIN}/public` : `${API_DOMAIN}/api`;
 
   useEffect(() => {
     if (userData) {
@@ -93,7 +94,7 @@ const UserProfileForm = ({
     if (editing && selectedDepartment) {
       try {
         const response = await axios.put(
-          `${config.apiDomain}/public/departments/update/`,
+          `${API_DOMAIN}/public/departments/update/`,
           {
             department_name: selectedDepartment.value,
             public_id: storeID,
@@ -151,7 +152,7 @@ const UserProfileForm = ({
   const handleCreateDepartment = async (newDepartment) => {
     try {
       const response = await axios.post(
-        `${config.apiDomain}/public/departments/`,
+        `${API_DOMAIN}/public/departments/`,
         { department_name: newDepartment, public_id: storeID },
         {
           headers: {

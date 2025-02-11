@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ModalMSG from './modalMSG';
 import ModalErrorMSG from './modalErrorMSG';
-import config from '../../../config';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, isPublic }) => {
     const [message, setMessage] = useState('');
@@ -11,7 +12,7 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, isPublic }) 
 
     // API 경로 설정 함수
     const APIUrl = () => {
-        const url = isPublic ? `${config.apiDomain}/api/check-username/` : `${config.apiDomain}/public/check-username/`
+        const url = isPublic ? `${API_DOMAIN}/api/check-username/` : `${API_DOMAIN}/public/check-username/`
         return url;
     };
     

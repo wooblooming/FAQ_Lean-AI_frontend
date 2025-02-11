@@ -1,5 +1,6 @@
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchPublicUser = async ({ slug, storeID }, token, setUserData, setErrorMessage, setShowErrorMessageModal) => {
     try {
@@ -9,7 +10,7 @@ export const fetchPublicUser = async ({ slug, storeID }, token, setUserData, set
         ...(token && { Authorization: `Bearer ${token}` }),
       };
   
-      const response = await axios.post(`${config.apiDomain}/public/user-profile/`, payload, { headers });
+      const response = await axios.post(`${API_DOMAIN}/public/user-profile/`, payload, { headers });
   
       if (response.status === 200 && response.data) {
         //console.log("response data : ", response.data);

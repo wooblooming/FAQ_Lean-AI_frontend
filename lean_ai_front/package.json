@@ -28,6 +28,7 @@
     "axios": "^1.7.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
     "focus-trap-react": "^10.3.0",
     "framer-motion": "^11.7.0",
     "lucide-react": "^0.438.0",

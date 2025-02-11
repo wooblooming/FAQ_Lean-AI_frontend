@@ -1,12 +1,13 @@
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchPublicData = async (slug, token, setPublicData, setErrorMessage, setShowErrorMessageModal, isOwner) => {
   const type = isOwner ? 'owner' : 'customer';
   try {
     const decodedSlug = decodeURIComponent(slug); // 인코딩된 슬러그 디코딩
 
-    const response = await axios.get(`${config.apiDomain}/public/publics/`, {
+    const response = await axios.get(`${API_DOMAIN}/public/publics/`, {
       params: {
         slug: decodedSlug,
         type: type,
@@ -17,7 +18,7 @@ export const fetchPublicData = async (slug, token, setPublicData, setErrorMessag
       },
     });
 
-     console.log("fetch public - response data : ", response.data);
+     //console.log("fetch public - response data : ", response.data);
     if (response.data && response.data.public) {
       setPublicData(response.data.public); // 데이터 설정
     } else {

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faClock, faPhone, faStore } from '@fortawesome/free-solid-svg-icons';
+import { formatPhoneNumber } from "@/utils/telUtils"; 
 
 const StoreInfo = ({ storeData }) => (
   <div className="flex flex-col space-y-8 p-2">
@@ -15,7 +16,7 @@ const StoreInfo = ({ storeData }) => (
       >
         {storeData.store_address && <InfoItem icon={faLocationDot} text={storeData.store_address} />}
         {storeData.store_hours && <InfoItem icon={faClock} text={storeData.store_hours} />}
-        {storeData.store_tel && <InfoItem icon={faPhone} text={storeData.store_tel} />}
+        {storeData.store_tel && <InfoItem icon={faPhone} text={formatPhoneNumber(storeData.store_tel)} />}
         {storeData.store_information && <InfoItem icon={faStore} text={storeData.store_information} />}
       </motion.div>
     </div>

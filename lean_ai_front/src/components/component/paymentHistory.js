@@ -4,7 +4,8 @@ import { ChevronLeft, ChevronRight, ScrollText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "../../contexts/authContext";
 import ModalErrorMSG from "../modal/modalErrorMSG";
-import config from "../../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const PaymentHistory = () => {
   const [paymentHistory, setPaymentHistory] = useState([]); // 결제 내역 상태
@@ -60,7 +61,7 @@ const PaymentHistory = () => {
   const fetchPaymentHistory = async () => {
     try {
       const response = await axios.get(
-        `${config.apiDomain}/api/payment-history/`,
+        `${API_DOMAIN}/api/payment-history/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

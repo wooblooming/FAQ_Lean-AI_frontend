@@ -7,7 +7,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
-    const mediaBaseUrl = process.env.NEXT_PUBLIC_MEDIA_URL ;
+    const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -78,7 +78,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
                             className="flex flex-col border p-3 rounded-md space-y-3"
                         >
                             <img
-                                src={`${mediaBaseUrl}/media/${image.path}`}
+                                src={`${MEDIA_URL}/media/${image.path}`}
                                 alt={image.name}
                                 className="w-full h-32 object-contain rounded-md border"
                             />
@@ -117,7 +117,7 @@ const FeedEdit = ({ images, onDelete, onRename }) => {
                         >
                             <div className="flex items-center space-x-4">
                                 <img
-                                    src={`${mediaBaseUrl}/media/${image.path}`}
+                                    src={`${MEDIA_URL}/media/${image.path}`}
                                     alt={image.name}
                                     className="w-16 h-16 object-cover rounded-md border"
                                 />

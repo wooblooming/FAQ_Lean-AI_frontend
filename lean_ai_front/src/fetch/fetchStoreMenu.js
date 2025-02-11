@@ -1,5 +1,6 @@
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchStoreMenu = async ({ slug, storeID }, token, setMenu, setErrorMessage, setShowErrorMessageModal) => {
     try {
@@ -15,7 +16,7 @@ export const fetchStoreMenu = async ({ slug, storeID }, token, setMenu, setError
         if (slug) {
             // slug 기반 요청
             response = await axios.get(
-                `${config.apiDomain}/api/menus/list_menus_by_slug/`,
+                `${API_DOMAIN}/api/menus/list_menus_by_slug/`,
                 {
                     headers,
                     params : {slug: decodeURIComponent(slug)},
@@ -24,7 +25,7 @@ export const fetchStoreMenu = async ({ slug, storeID }, token, setMenu, setError
         } else if (storeID) {
             // storeID 기반 요청
             response = await axios.get(
-                `${config.apiDomain}/api/menus/${storeID}/`,
+                `${API_DOMAIN}/api/menus/${storeID}/`,
                 {
                     headers,
                 }

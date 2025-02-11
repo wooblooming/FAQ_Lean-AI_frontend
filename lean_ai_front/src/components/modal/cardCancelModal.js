@@ -4,7 +4,8 @@ import { X, AlertCircle } from "lucide-react";
 import axios from "axios";
 import ModalMSG from "./modalMSG";
 import ModalErrorMSG from "./modalErrorMSG";
-import config from "../../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const CancelPaymentModal = ({ subscriptionData, token, isOpen, onClose }) => {
   const subscriptionID = subscriptionData?.id;
@@ -38,7 +39,7 @@ const CancelPaymentModal = ({ subscriptionData, token, isOpen, onClose }) => {
     try {
       // 구독 해지 요청
       const response = await axios.delete(
-        `${config.apiDomain}/api/subscription/${subscriptionID}/`, // Subscription 해지 API
+        `${API_DOMAIN}/api/subscription/${subscriptionID}/`, // Subscription 해지 API
         {
           headers: {
             Authorization: `Bearer ${token}`, // JWT 토큰 추가

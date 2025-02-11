@@ -3,7 +3,8 @@ import { useRouter } from 'next/router';
 import { usePublic } from "../../contexts/publicContext";
 import ModalMSG from '../modal/modalMSG';
 import ModalErrorMSG from '../modal/modalErrorMSG';
-import config from '../../../config';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 function ModalResetPassword({ show, onClose, phone }) {
     const [newPassword, setNewPassword] = useState(''); // 새로운 비밀번호 입력값
@@ -16,8 +17,8 @@ function ModalResetPassword({ show, onClose, phone }) {
     const router = useRouter();
     const { isPublicOn } = usePublic(); // 상태와 토글 함수
     const apiEndpoint = isPublicOn
-        ? `${config.apiDomain}/public`
-        : `${config.apiDomain}/api`; // 상태에 따라 API 엔드포인트 설정
+        ? `${API_DOMAIN}/public`
+        : `${API_DOMAIN}/api`; // 상태에 따라 API 엔드포인트 설정
 
     // 모달이 열릴 때 비밀번호 입력 필드를 초기화
     useEffect(() => {

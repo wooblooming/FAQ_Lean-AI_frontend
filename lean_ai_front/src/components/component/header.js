@@ -8,7 +8,8 @@ import { usePublic } from '../../contexts/publicContext';
 import { Menu, X } from 'lucide-react';
 import LogoutModal from '../modal/logout'; // 로그아웃 모달 컴포넌트 가져오기
 import ModalErrorMSG from '../modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
-import config from '../../../config'; // config 파일에서 API URL 등을 가져오기
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN; // config 파일에서 API URL 등을 가져오기
 
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null); // QR 코드 이미지 URL 관리
@@ -37,8 +38,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   // QR 코드를 서버에서 가져오는 함수
   const fetchQRCode = async () => {
     const url = isPublicOn
-      ? `${config.apiDomain}/public/qrCodeImage/`
-      : `${config.apiDomain}/api/qrCodeImage/`;
+      ? `${API_DOMAIN}/public/qrCodeImage/`
+      : `${API_DOMAIN}/api/qrCodeImage/`;
 
     try {
       setIsLoading(true); // 로딩 시작

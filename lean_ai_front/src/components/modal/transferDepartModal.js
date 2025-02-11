@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from '../../contexts/authContext';
 import axios from 'axios';
 import ModalMSG from '../modal/modalMSG';
-import config from '../../../config';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export default function TransferDepartmentModal({ show, onClose, depart, onTransfer, complaintId }) {
     const { token } = useAuth();
@@ -27,7 +28,7 @@ export default function TransferDepartmentModal({ show, onClose, depart, onTrans
         setLoading(true);
         try {
             await axios.post(
-                `${config.apiDomain}/public/complaints/${complaintId}/transfer/`,
+                `${API_DOMAIN}/public/complaints/${complaintId}/transfer/`,
                 {
                     complaint_id: complaintId,
                     department: selectedDepartment,

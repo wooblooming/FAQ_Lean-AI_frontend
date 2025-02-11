@@ -5,7 +5,8 @@ import TermsOfServiceModal from '../components/modal/termsOfServiceModal';
 import MarketingModal from '../components/modal/marketingModal';
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const SignupStep2 = () => {
     const router = useRouter();
@@ -70,7 +71,7 @@ const SignupStep2 = () => {
         const marketingValue = marketingAccepted ? 'Y' : 'N';
 
         try {
-            const response = await fetch(`${config.apiDomain}/api/signup/`, {
+            const response = await fetch(`${API_DOMAIN}/api/signup/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

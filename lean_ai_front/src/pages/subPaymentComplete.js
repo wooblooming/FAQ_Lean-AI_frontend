@@ -5,7 +5,8 @@ import { useAuth } from "../contexts/authContext";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import config from "../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const PaymentComplete = () => {
   const router = useRouter();
@@ -32,7 +33,7 @@ const PaymentComplete = () => {
     // console.log("결제 성공:", paymentData);
     try {
       const response = await axios.post(
-        `${config.apiDomain}/api/subscription/`,
+        `${API_DOMAIN}/api/subscription/`,
         {
           customer_uid: paymentData.customer_uid,
           imp_uid: paymentData.imp_uid,
@@ -78,7 +79,7 @@ const PaymentComplete = () => {
       try {
         // 1️. 결제 완료 API 호출
         const response = await axios.post(
-          `${config.apiDomain}/api/payment-complete/`,
+          `${API_DOMAIN}/api/payment-complete/`,
           { imp_uid }, // 백엔드에 imp_uid만 전달
           { headers: { Authorization: `Bearer ${token}` } } // 인증 토큰
         );

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Calendar, CheckCircle2, AlertCircle, Clock } from "lucide-react";
-import { fetchSubscription } from "../../fetch/fetchSubscription";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { getLastAvailableDate } from "../../utils/dateUtils";
 
 const SubscriptionStatus = ({ subscriptionData }) => {
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ const SubscriptionStatus = ({ subscriptionData }) => {
 
     return `${diffDays}일`;
   };
-
+  
   // 로딩 중 상태 처리
   if (loading) {
     return (
@@ -51,8 +51,13 @@ const SubscriptionStatus = ({ subscriptionData }) => {
         ) : (
           <AlertCircle className="w-5 h-5 text-yellow-500" />
         )}
-        <span className="font-medium text-gray-700" style={{ fontFamily: "NanumSquareBold" }}>
-          {subscriptionData?.is_active ? `${subscriptionData.plan} 구독 중` : "구독 중지됨"}
+        <span
+          className="font-medium text-gray-700"
+          style={{ fontFamily: "NanumSquareBold" }}
+        >
+          {subscriptionData?.is_active
+            ? `${subscriptionData.plan} 구독 중`
+            : "구독 중지됨"}
         </span>
       </div>
 
@@ -62,11 +67,19 @@ const SubscriptionStatus = ({ subscriptionData }) => {
           <Clock className="w-7 h-7 text-indigo-400 mr-3" />
           <div className="w-full flex justify-center">
             <div className="flex flex-col items-center text-center">
-              <p className="text-sm text-gray-500" style={{ fontFamily: "NanumSquare" }}>
+              <p
+                className="text-sm text-gray-500"
+                style={{ fontFamily: "NanumSquare" }}
+              >
                 구독한 지
               </p>
-              <p className="font-medium text-gray-800" style={{ fontFamily: "NanumSquareBold" }}>
-                {calculateSubscriptionDays(subscriptionData?.billing_key?.created_at)}
+              <p
+                className="font-medium text-gray-800"
+                style={{ fontFamily: "NanumSquareBold" }}
+              >
+                {calculateSubscriptionDays(
+                  subscriptionData?.billing_key?.created_at
+                )}
               </p>
             </div>
           </div>
@@ -79,11 +92,17 @@ const SubscriptionStatus = ({ subscriptionData }) => {
             <Calendar className="w-7 h-7 text-indigo-400 mr-3" />
             <div className="w-full flex justify-center">
               <div className="flex flex-col items-center text-center">
-                <p className="text-sm text-gray-500" style={{ fontFamily: "NanumSquare" }}>
+                <p
+                  className="text-sm text-gray-500"
+                  style={{ fontFamily: "NanumSquare" }}
+                >
                   구독 해지일
                 </p>
-                <p className="font-medium text-gray-800" style={{ fontFamily: "NanumSquareBold" }}>
-                  {subscriptionData?.billing_key?.deactivation_date || "해지 예정 없음"}
+                <p
+                  className="font-medium text-gray-800"
+                  style={{ fontFamily: "NanumSquareBold" }}
+                >
+                  {getLastAvailableDate(subscriptionData.billing_key.deactivation_date)}
                 </p>
               </div>
             </div>
@@ -94,10 +113,16 @@ const SubscriptionStatus = ({ subscriptionData }) => {
             <Calendar className="w-7 h-7 text-indigo-400 mr-3" />
             <div className="w-full flex justify-center">
               <div className="flex flex-col items-center text-center">
-                <p className="text-sm text-gray-500" style={{ fontFamily: "NanumSquare" }}>
+                <p
+                  className="text-sm text-gray-500"
+                  style={{ fontFamily: "NanumSquare" }}
+                >
                   다음 결제일
                 </p>
-                <p className="font-medium text-gray-800" style={{ fontFamily: "NanumSquareBold" }}>
+                <p
+                  className="font-medium text-gray-800"
+                  style={{ fontFamily: "NanumSquareBold" }}
+                >
                   {subscriptionData?.next_billing_date || "결제 예정 없음"}
                 </p>
               </div>

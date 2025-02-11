@@ -6,7 +6,8 @@ import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import OpeningHoursSelector from '../components/component/openingHours';
 import FileInput from '../components/component/fileInput';
 import TextInput from '../components/component/textInput';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export default function RegisterPublic() {
     const router = useRouter();
@@ -65,7 +66,7 @@ export default function RegisterPublic() {
                 formPayload.append('logo', formData.publicLogo);
             }
 
-            const response = await axios.post(`${config.apiDomain}/public/publics/`, formPayload, {
+            const response = await axios.post(`${API_DOMAIN}/public/publics/`, formPayload, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

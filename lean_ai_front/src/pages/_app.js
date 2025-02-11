@@ -7,7 +7,6 @@ import "../../public/font/font.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import Head from "next/head";
 import "../styles/App.css";
-import config from "../../config";
 import Chatbot from "./mumulChatBotMSG";
 
 function MyApp({ Component, pageProps }) {
@@ -16,7 +15,7 @@ function MyApp({ Component, pageProps }) {
       <PublicProvider>
         <StoreProvider>
           <Component {...pageProps} />
-          <Chatbot agentId={config.agentID} />
+          <Chatbot agentId={process.env.NEXT_PUBLIC_AGENT_ID} />
           <Script
             src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"
             strategy="beforeInteractive"

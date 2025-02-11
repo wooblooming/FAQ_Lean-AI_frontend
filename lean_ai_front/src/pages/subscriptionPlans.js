@@ -9,7 +9,11 @@ import { useStore } from "../contexts/storeContext";
 import { fetchStoreUser } from "../fetch/fetchStoreUser";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
-import config from "../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
+const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
+const PG_CODE = process.env.NEXT_PUBLIC_PG_CODE;
+const IMP_KEY = process.env.NEXT_PUBLIC_IMP_KEY;
 
 const SubscriptionPlans = ({}) => {
   const { token } = useAuth(); // 사용자 인증 토큰 가져오기
@@ -91,7 +95,7 @@ const SubscriptionPlans = ({}) => {
       }
 
       // 아임포트 초기화
-      window.IMP.init(config.impKey);
+      window.IMP.init(IMP_KEY);
 
       // 결제 요청
       window.IMP.request_pay(paymentRequest, function (rsp) {
@@ -112,7 +116,7 @@ const SubscriptionPlans = ({}) => {
 
     // API 요청
     const response = await axios.post(
-      `${config.apiDomain}/api/subscription/`, // 서버의 BillingKey 저장 API
+      `${API_DOMAIN}/api/subscription/`, // 서버의 BillingKey 저장 API
       {
         customer_uid: paymentResponse.customer_uid, // 아임포트에서 반환된 고객 UID
         imp_uid: paymentResponse.imp_uid, // 아임포트에서 반환된 결제 고유 ID
@@ -146,12 +150,15 @@ const SubscriptionPlans = ({}) => {
 
     // 고객 UID와 주문 UID 생성
     const customer_uid = `customer_${uuidv4().slice(0, 8)}`;
-    const merchant_uid = `${selectedPlan.alias}_${uuidv4().slice(0, 8)}${Date.now().toString(36)}`;
+    const merchant_uid = `${selectedPlan.alias}_${uuidv4().slice(
+      0,
+      8
+    )}${Date.now().toString(36)}`;
     const isMobile = /Mobi|Android/i.test(navigator.userAgent); // 모바일 여부 확인
 
     // 결제 요청 데이터
     const paymentRequest = {
-      pg: config.pgCode, // PG사 설정 (예: kakaopay, tosspay)
+      pg: PG_CODE, // PG사 설정 (예: kakaopay, tosspay)
       pay_method: "card", // 결제 방식
       merchant_uid: merchant_uid, // 주문 번호
       customer_uid: customer_uid, // 고객 UID
@@ -161,7 +168,7 @@ const SubscriptionPlans = ({}) => {
       buyer_name: userData.name || "테스트 유저", // 사용자 이름
       buyer_tel: userData.phone_number || "010-0000-0000", // 사용자 전화번호
       m_redirect_url: isMobile
-        ? `${config.frontendDomain}/paymentComplete` // 모바일 리디렉션 URL
+        ? `${FRONTEND_DOMAIN}/paymentComplete` // 모바일 리디렉션 URL
         : undefined,
     };
 

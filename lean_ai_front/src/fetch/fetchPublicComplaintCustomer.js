@@ -1,10 +1,11 @@
 // fetchPublicComplaintCustomer.js
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchPublicComplaintCustomer = async (complaintNum, phone, setComplaintDetails, setErrorMessage, setShowErrorModal) => {
     try {
-        const response = await axios.post(`${config.apiDomain}/public/complaints/customer_view/`, {
+        const response = await axios.post(`${API_DOMAIN}/public/complaints/customer_view/`, {
             complaint_number: complaintNum,
             phone,
         });

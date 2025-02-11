@@ -1,6 +1,7 @@
 // fetchPublicDepartment.js
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchPublicDepartment = async ({ slug, storeID }, token, setDepartments) => {
     try {
@@ -13,7 +14,7 @@ export const fetchPublicDepartment = async ({ slug, storeID }, token, setDepartm
             ...(token && { Authorization: `Bearer ${token}` }), // token이 있을 경우에만 Authorization 헤더 추가
         };
 
-        const response = await axios.post(`${config.apiDomain}/public/departments/list_departments/`, data, {
+        const response = await axios.post(`${API_DOMAIN}/public/departments/list_departments/`, data, {
             headers,
         });
 

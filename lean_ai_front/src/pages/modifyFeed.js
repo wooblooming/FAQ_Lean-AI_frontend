@@ -9,7 +9,8 @@ import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import FeedUpload from '../components/component/feedUpload';
 import FeedEdit from '../components/component/feedEdit';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const ModifyFeed = () => {
     const router = useRouter();
@@ -56,7 +57,7 @@ const ModifyFeed = () => {
         try {
             formData.append('store_id', storeID);
 
-            const response = await axios.post(`${config.apiDomain}/api/feeds/upload_image/`, formData, {
+            const response = await axios.post(`${API_DOMAIN}/api/feeds/upload_image/`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -81,7 +82,7 @@ const ModifyFeed = () => {
 
         setLoading(true);
         try {
-            await axios.delete(`${config.apiDomain}/api/feeds/delete_image/`, {
+            await axios.delete(`${API_DOMAIN}/api/feeds/delete_image/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ const ModifyFeed = () => {
         setLoading(true);
         try {
             await axios.put(
-                `${config.apiDomain}/api/feeds/rename_image/`,
+                `${API_DOMAIN}/api/feeds/rename_image/`,
                 { id: full_id, name: newName, store_id: storeID },
                 {
                     headers: {

@@ -9,7 +9,8 @@ import { useStore } from '../contexts/storeContext';
 import { usePublic } from '../contexts/publicContext';
 import ConvertSwitch from '../components/component/convertSwitch1';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -31,8 +32,8 @@ const Login = () => {
     const handleLoginClick = async () => {
         try {
             const url = isPublicOn 
-                ? `${config.apiDomain}/public/login/`
-                : `${config.apiDomain}/api/login/`;
+                ? `${API_DOMAIN}/public/login/`
+                : `${API_DOMAIN}/api/login/`;
 
             const response = await axios.post(url, {
                 username,

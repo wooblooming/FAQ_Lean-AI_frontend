@@ -6,7 +6,11 @@ import axios from "axios";
 import plans from "/public/text/plan.json"; // ✅ 구독 플랜 데이터 JSON 파일
 import ModalMSG from "./modalMSG";
 import ModalErrorMSG from "./modalErrorMSG";
-import config from "../../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
+const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
+const PG_CODE = process.env.NEXT_PUBLIC_PG_CODE;
+const IMP_KEY = process.env.NEXT_PUBLIC_IMP_KEY;
 
 const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
   const router = useRouter();
@@ -35,29 +39,29 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
     router.reload(); // 페이지 새로고침
   };
 
-    // 오류 메시지 매핑
-    const mapErrorMessage = (errorMsg) => {
-      if (errorMsg.includes("PAY_PROCESS_CANCELED")) {
-        return "사용자가 결제를 취소하였습니다.";
-      } else if (errorMsg.includes("INVALID_CARD_NUMBER")) {
-        return "카드 번호를 잘못 입력하셨습니다.";
-      } else if (errorMsg.includes("EXPIRED_CARD")) {
-        return "카드가 만료되었습니다.";
-      } else if (errorMsg.includes("INSUFFICIENT_FUNDS")) {
-        return "잔액이 부족합니다.";
-      } else if (errorMsg.includes("CARD_LIMIT_EXCEEDED")) {
-        return "카드 한도를 초과하였습니다.";
-      } else if (errorMsg.includes("NOT_SUPPORTED_CARD_TYPE")) {
-        return "해당 카드가 지원되지 않습니다. 다른 카드를 이용해주세요.";
-      } else if (errorMsg.includes("ACQUIRER_ERROR")) {
-        return "카드사 승인에 실패했습니다. 다른 카드를 사용해 주세요.";
-      } else if (errorMsg.includes("NETWORK_ERROR")) {
-        return "네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
-      } else if (errorMsg.includes("SERVER_ERROR")) {
-        return "결제 서버 오류가 발생했습니다. 고객센터로 문의하세요.";
-      }
-      return errorMsg;
-    };
+  // 오류 메시지 매핑
+  const mapErrorMessage = (errorMsg) => {
+    if (errorMsg.includes("PAY_PROCESS_CANCELED")) {
+      return "사용자가 결제를 취소하였습니다.";
+    } else if (errorMsg.includes("INVALID_CARD_NUMBER")) {
+      return "카드 번호를 잘못 입력하셨습니다.";
+    } else if (errorMsg.includes("EXPIRED_CARD")) {
+      return "카드가 만료되었습니다.";
+    } else if (errorMsg.includes("INSUFFICIENT_FUNDS")) {
+      return "잔액이 부족합니다.";
+    } else if (errorMsg.includes("CARD_LIMIT_EXCEEDED")) {
+      return "카드 한도를 초과하였습니다.";
+    } else if (errorMsg.includes("NOT_SUPPORTED_CARD_TYPE")) {
+      return "해당 카드가 지원되지 않습니다. 다른 카드를 이용해주세요.";
+    } else if (errorMsg.includes("ACQUIRER_ERROR")) {
+      return "카드사 승인에 실패했습니다. 다른 카드를 사용해 주세요.";
+    } else if (errorMsg.includes("NETWORK_ERROR")) {
+      return "네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+    } else if (errorMsg.includes("SERVER_ERROR")) {
+      return "결제 서버 오류가 발생했습니다. 고객센터로 문의하세요.";
+    }
+    return errorMsg;
+  };
 
   // 결제 요청 함수
   const requestPayment = async (paymentRequest) => {
@@ -73,7 +77,7 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
       }
 
       // 아임포트 초기화
-      window.IMP.init(config.impKey);
+      window.IMP.init(IMP_KEY);
 
       // 결제 요청
       window.IMP.request_pay(paymentRequest, function (rsp) {
@@ -94,7 +98,7 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
 
     // API 요청
     const response = await axios.post(
-      `${config.apiDomain}/api/subscription/`, // 서버의 구독 신청 API
+      `${API_DOMAIN}/api/subscription/`, // 서버의 구독 신청 API
       {
         customer_uid: paymentResponse.customer_uid, // 아임포트에서 반환된 고객 UID
         imp_uid: paymentResponse.imp_uid, // 아임포트에서 반환된 결제 고유 ID
@@ -128,12 +132,15 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
 
     // 고객 UID와 주문 UID 생성
     const customer_uid = `customer_${uuidv4().slice(0, 8)}`;
-    const merchant_uid = `${selectedPlan.alias}_${uuidv4().slice(0, 8)}${Date.now().toString(36)}`;
+    const merchant_uid = `${selectedPlan.alias}_${uuidv4().slice(
+      0,
+      8
+    )}${Date.now().toString(36)}`;
     const isMobile = /Mobi|Android/i.test(navigator.userAgent); // 모바일 여부 확인
 
     // 결제 요청 데이터
     const paymentRequest = {
-      pg: config.pgCode, // PG사 설정 (예: kakaopay, tosspay)
+      pg: PG_CODE, // PG사 설정 (예: kakaopay, tosspay)
       pay_method: "card", // 결제 방식
       merchant_uid: merchant_uid, // 주문 번호
       customer_uid: customer_uid, // 고객 UID
@@ -143,7 +150,7 @@ const CardRegistrationModal = ({ userData, token, isOpen, onClose }) => {
       buyer_name: userData.name || "테스트 유저", // 사용자 이름
       buyer_tel: userData.phone_number || "010-0000-0000", // 사용자 전화번호
       m_redirect_url: isMobile
-        ? `${config.frontendDomain}/subPaymentComplete` // 모바일 리디렉션 URL
+        ? `${FRONTEND_DOMAIN}/subPaymentComplete` // 모바일 리디렉션 URL
         : undefined,
     };
 

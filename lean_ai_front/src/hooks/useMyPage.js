@@ -23,7 +23,7 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
   const [qrUrl, setQrUrl] = useState('');
   const [initialData, setInitialData] = useState({});
 
-  const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
+  const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
 
 
   // 초기 사용자 정보 가져오기
@@ -35,11 +35,11 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
 
   useEffect(() => {
     if (userData && userData.profile_photo) {
-      setProfileImage(`${mediaUrl}${userData.profile_photo}`);
+      setProfileImage(`${MEDIA_URL}${userData.profile_photo}`);
     } else {
       setProfileImage('/images/profile_default_img.jpg'); // 기본 이미지 경로
     }
-  }, [userData, mediaUrl]);
+  }, [userData, MEDIA_URL]);
   
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
         //console.log("data : ", data);
         setMessage('프로필 이미지를 변경하였습니다.');
         setShowMessageModal(true);
-        setProfileImage(`${mediaUrl}${data.profile_photo_url}`);
+        setProfileImage(`${MEDIA_URL}${data.profile_photo_url}`);
       } catch (error) {
         setErrorMessage('프로필 이미지 변경에 실패했습니다.');
         setShowErrorMessageModal(true);
@@ -168,7 +168,7 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
       }
 
       const data = await response.json();
-      setProfileImage(`${mediaUrl}${data.profile_photo_url}`);
+      setProfileImage(`${MEDIA_URL}${data.profile_photo_url}`);
       setMessage(data.message);
       setShowMessageModal(true);
     } catch (error) {

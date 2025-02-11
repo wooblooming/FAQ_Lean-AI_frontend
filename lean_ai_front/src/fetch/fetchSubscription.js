@@ -1,9 +1,10 @@
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchSubscription = async (token, ID, setSubscriptionData, setCardInfo, setErrorMessage) => {
     try {
-      const response = await axios.get(`${config.apiDomain}/api/subscription/${ID}/`, {
+      const response = await axios.get(`${API_DOMAIN}/api/subscription/${ID}/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

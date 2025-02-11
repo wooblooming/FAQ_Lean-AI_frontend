@@ -9,7 +9,8 @@ import { fetchPublicDetailData } from '../../fetch/fetchPublicDetailData'; // �
 import LoadingSpinner from "@/components/ui/loadingSpinner"; // 로딩 컴포넌트
 import ModalErrorMSG from '../../components/modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 import Chatbot from '../chatBotMSG'; // 챗봇 컴포넌트
-import config from '../../../config'; // API 도메인 등 환경설정 정보
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN; // API 도메인 등 환경설정 정보
 
 const StoreIntroductionPublic = () => {
   const router = useRouter(); // 라우터 객체 생성
@@ -69,7 +70,7 @@ const StoreIntroductionPublic = () => {
         {/* 배너 이미지 */}
         <div className="relative">
           <img
-            src={publicData.logo ? `${config.apiDomain}${publicData.logo}` : '/images/mumullogo.jpg'}
+            src={publicData.logo ? `${API_DOMAIN}${publicData.logo}` : '/images/mumullogo.jpg'}
             alt="Public"
             className="w-full h-48 object-cover"
           />

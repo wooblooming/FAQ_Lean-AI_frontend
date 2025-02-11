@@ -3,7 +3,8 @@ import { useAuth } from '../contexts/authContext';
 import { usePublic } from '../contexts/publicContext';
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export default function RequestService() {
     const { token } = useAuth();
@@ -53,7 +54,7 @@ export default function RequestService() {
         let fetchUrl; // URL 변수를 선언
 
         try {
-            fetchUrl = isPublicOn ? `${config.apiDomain}/public/request-service/` : `${config.apiDomain}/api/request-service/`;
+            fetchUrl = isPublicOn ? `${API_DOMAIN}/public/request-service/` : `${API_DOMAIN}/api/request-service/`;
 
             const response = await fetch(fetchUrl, {
                 method: 'POST',

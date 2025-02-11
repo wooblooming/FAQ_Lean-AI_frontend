@@ -1,11 +1,12 @@
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
-import config from '../../../config';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const StoreBanner = ({ banner, onBack, isOwner }) => (
     <div className="relative">
         <img
-            src={banner ? `${config.apiDomain}${banner}` : '/images/mumullogo.jpg'}
+            src={banner ? `${API_DOMAIN}${banner}` : '/images/mumullogo.jpg'}
             alt="Store"
             className="w-full h-48 object-cover"
         />

@@ -5,7 +5,8 @@ import { ChevronLeft } from 'lucide-react';
 import IdCheckModal from '../components/modal/idCheckModal'; // 아이디 중복 검사 기능이 있는 컴포넌트
 import VerificationModal from '../components/modal/verificationModal'; // 핸드폰 인증 기능이 있는 컴포넌트
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const SignupStep1 = () => {
     const [formData, setFormData] = useState({
@@ -121,7 +122,7 @@ const SignupStep1 = () => {
 
         // 인증 요청하여 백엔드에서 인증번호 전송 
         try {
-            const response = await fetch(`${config.apiDomain}/api/send-code/`, {
+            const response = await fetch(`${API_DOMAIN}/api/send-code/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -152,7 +153,7 @@ const SignupStep1 = () => {
     // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
     const handleVerifyCode = async () => {
         try {
-            const response = await fetch(`${config.apiDomain}/api/verify-code/`, {
+            const response = await fetch(`${API_DOMAIN}/api/verify-code/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

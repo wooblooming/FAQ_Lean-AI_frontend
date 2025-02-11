@@ -3,7 +3,8 @@ import { ArrowDown, Upload } from "lucide-react";
 import { useAuth } from '../contexts/authContext';
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export default function RegisterStoreData() {
   const { token } = useAuth();
@@ -55,7 +56,7 @@ export default function RegisterStoreData() {
     Array.from(files).forEach((file) => formData.append('files', file));
   
     try {
-      const response = await fetch(`${config.apiDomain}/api/register-data/`, {
+      const response = await fetch(`${API_DOMAIN}/api/register-data/`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -82,7 +83,7 @@ export default function RegisterStoreData() {
         }
   
         if (successMessages) {
-          setMessage(`다음 파일이 성공적으로 업로드되었습니다:\n${successMessages}`);
+          setMessage(`성공적으로 업로드되었습니다.`);
           setShowMessageModal(true);
         }
   

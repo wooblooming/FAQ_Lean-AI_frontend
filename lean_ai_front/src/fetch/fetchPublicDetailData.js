@@ -1,12 +1,13 @@
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchPublicDetailData = async (slug, token, setPublicData, setErrorMessage, setShowErrorMessageModal, isOwner) => {
   const type = isOwner ? 'owner' : 'customer';
   try {
     const decodedSlug = decodeURIComponent(slug); // 인코딩된 슬러그 디코딩
 
-    const response = await axios.post(`${config.apiDomain}/public/publics/detail_by_slug/`,
+    const response = await axios.post(`${API_DOMAIN}/public/publics/detail_by_slug/`,
       {
         slug: decodedSlug,
         type: type,

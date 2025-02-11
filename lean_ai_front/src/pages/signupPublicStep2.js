@@ -8,7 +8,8 @@ import MarketingModal from '../components/modal/marketingModal';
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 function InfoItem({ icon, label, value }) {
     return (
@@ -54,7 +55,7 @@ const SignupPublicStep2 = () => {
     // 기관 목록을 가져오는 함수
     const fetchPublicInstitutions = async () => {
         try {
-            const response = await axios.get(`${config.apiDomain}/public/publics/`);
+            const response = await axios.get(`${API_DOMAIN}/public/publics/`);
             setPublicInstitutions(response.data);
 
         } catch (error) {
@@ -68,7 +69,7 @@ const SignupPublicStep2 = () => {
     const fetchInstitutionDetails = async (institutionId) => {
         //console.log("institutionId : ", institutionId);
         try {
-            const response = await axios.get(`${config.apiDomain}/public/publics/${institutionId}/`);
+            const response = await axios.get(`${API_DOMAIN}/public/publics/${institutionId}/`);
             
             setSelectedInstitution(response.data); // 선택된 기관의 상세 정보를 상태에 저장
         } catch (error) {
@@ -139,7 +140,7 @@ const SignupPublicStep2 = () => {
         //console.log('Sending payload:', payload);
 
         try {
-            const response = await axios.post(`${config.apiDomain}/public/signup/`, payload);
+            const response = await axios.post(`${API_DOMAIN}/public/signup/`, payload);
 
             if (response.data.success) {
                 setShowWelcomeModal(true); // 성공 시 환영 모달 표시

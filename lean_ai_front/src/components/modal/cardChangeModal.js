@@ -5,7 +5,11 @@ import { X } from "lucide-react";
 import { useAuth } from "../../contexts/authContext";
 import ModalMSG from "./modalMSG";
 import ModalErrorMSG from "./modalErrorMSG";
-import config from "../../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
+const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
+const PG_CODE = process.env.NEXT_PUBLIC_PG_CODE;
+const IMP_KEY = process.env.NEXT_PUBLIC_IMP_KEY;
 
 const CardChangeModal = ({ userData, isOpen, onClose }) => {
   const { token } = useAuth();
@@ -45,7 +49,7 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
         return;
       }
 
-      window.IMP.init(config.impKey);
+      window.IMP.init(IMP_KEY);
 
       window.IMP.request_pay(paymentRequest, function (rsp) {
         if (rsp.success) {
@@ -83,14 +87,17 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
 
   // "변경하기" 버튼 클릭 핸들러
   const handleChangeClick = async () => {
-
     try {
-      const planAlias = userData.subscription.billing_key?.merchant_uid?.split("_")[0];
-      const merchant_uid = `${planAlias}_${uuidv4().slice(0, 8)}${Date.now().toString(36)}`;
+      const planAlias =
+        userData.subscription.billing_key?.merchant_uid?.split("_")[0];
+      const merchant_uid = `${planAlias}_${uuidv4().slice(
+        0,
+        8
+      )}${Date.now().toString(36)}`;
       const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
       const paymentRequest = {
-        pg: config.pgCode,
+        pg: PG_CODE,
         pay_method: "card",
         merchant_uid: merchant_uid,
         customer_uid: userData.subscription.billing_key.customer_uid, // 새로운 카드 정보 업데이트 예정
@@ -100,7 +107,7 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
         buyer_name: userData.name || "테스트 유저",
         buyer_tel: userData.phone_number || "010-0000-0000",
         m_redirect_url: isMobile
-          ? `${config.frontendDomain}/subPaymentChangeCard`
+          ? `${FRONTEND_DOMAIN}/subPaymentChangeCard`
           : undefined,
       };
 
@@ -124,7 +131,7 @@ const CardChangeModal = ({ userData, isOpen, onClose }) => {
   const updateBillingKey = async (imp_uid, newCustomerUid) => {
     try {
       const response = await axios.post(
-        `${config.apiDomain}/api/subscription/update_billing_key/`,
+        `${API_DOMAIN}/api/subscription/update_billing_key/`,
         { customer_uid: newCustomerUid, imp_uid: imp_uid },
         { headers: { Authorization: `Bearer ${token}` } }
       );

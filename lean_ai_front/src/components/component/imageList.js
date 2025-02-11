@@ -1,7 +1,8 @@
 import React from 'react';
 
+const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL; // 환경 변수에서 MEDIA_URL 가져오기
+
 const ImageList = ({ images }) => {
-  const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL; // 환경 변수에서 MEDIA_URL 가져오기
 
   if (!images || images.length === 0) {
     return <p>이미지가 없습니다.</p>;
@@ -10,7 +11,7 @@ const ImageList = ({ images }) => {
   return (
     <div className="grid grid-cols-3 gap-1 p-2">
       {images.map((image, index) => {
-        const fullImageUrl = `${mediaUrl}/media/${image.path}`; // 전체 이미지 URL 생성
+        const fullImageUrl = `${MEDIA_URL}/media/${image.path}`; // 전체 이미지 URL 생성
         const fileName = image.name; // 이미지 경로에서 파일 이름 추출
 
         return (

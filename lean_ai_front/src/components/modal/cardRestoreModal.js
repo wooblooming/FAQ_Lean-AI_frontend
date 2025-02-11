@@ -4,7 +4,8 @@ import { X, RefreshCw } from "lucide-react";
 import axios from "axios";
 import ModalMSG from "./modalMSG";
 import ModalErrorMSG from "./modalErrorMSG";
-import config from "../../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const RestoreSubscriptionModal = ({
   subscriptionData,
@@ -43,7 +44,7 @@ const RestoreSubscriptionModal = ({
     try {
       // 구독 복구 요청
       const response = await axios.post(
-        `${config.apiDomain}/api/subscription/restore/`,
+        `${API_DOMAIN}/api/subscription/restore/`,
         {},
         {
           headers: {

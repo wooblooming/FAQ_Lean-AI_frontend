@@ -1,5 +1,6 @@
 import axios from 'axios';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchMenuCategoryData = async ({ slug, storeID }, token, setCategory, setErrorMessage, setShowErrorMessageModal) => {
 
@@ -16,7 +17,7 @@ export const fetchMenuCategoryData = async ({ slug, storeID }, token, setCategor
         };
 
         // axios GET 요청
-        const response = await axios.get(`${config.apiDomain}/api/menus/view_category/`, { headers, params });
+        const response = await axios.get(`${API_DOMAIN}/api/menus/view_category/`, { headers, params });
 
         // 응답 데이터 처리
         if (response.status === 200 && response.data) {

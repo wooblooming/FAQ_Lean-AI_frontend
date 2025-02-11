@@ -6,7 +6,8 @@ import { fetchPublicComplaintCustomer } from '../fetch/fetchPublicComplaintCusto
 import ModalMSG from '../components/modal/modalMSG';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
 import VerificationModal from '../components/modal/verificationModal';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const ComplaintLookup = () => {
     const router = useRouter();
@@ -53,7 +54,7 @@ const ComplaintLookup = () => {
         }
 
         try {
-            const response = await axios.post(`${config.apiDomain}/public/send-code/`, {
+            const response = await axios.post(`${API_DOMAIN}/public/send-code/`, {
                 phone,
                 type: 'complaint',
                 complaintNum
@@ -76,7 +77,7 @@ const ComplaintLookup = () => {
     const handleVerifyCode = async () => {
         //console.log('Sending complaintNum:', complaintNum); // 디버깅용
         try {
-            const response = await axios.post(`${config.apiDomain}/public/verify-code/`, {
+            const response = await axios.post(`${API_DOMAIN}/public/verify-code/`, {
                 phone,
                 code: verificationCode,
                 type: 'complaint',

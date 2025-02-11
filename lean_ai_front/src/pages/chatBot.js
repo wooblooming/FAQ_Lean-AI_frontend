@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from '../styles/bubble.module.css'; // 말풍선 스타일을 정의한 CSS 모듈을 import
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const Chatbot = () => {
   const [message, setMessage] = useState('');
@@ -25,7 +26,7 @@ const Chatbot = () => {
     setMessage('');
 
     try {
-      const response = await fetch(`${config.apiDomain}/chatbot/chating/`, {
+      const response = await fetch(`${API_DOMAIN}/chatbot/chating/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

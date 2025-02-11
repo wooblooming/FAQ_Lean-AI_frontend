@@ -7,7 +7,8 @@ import { fetchPublicDepartment } from '../../fetch/fetchPublicDepart';
 import ComplaintDetailTabs from '../component/complaintDetailTabs';
 import ComplaintDetailContent from '../component/complaintDetailContent';
 import ModalMSG from '../modal/modalMSG';
-import config from '../../../config';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 
 const TabButton = ({ active, onClick, children }) => (
@@ -57,7 +58,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
 
     try {
       await axios.patch(
-        `${config.apiDomain}/public/complaints/${complaint.complaint_id}/update_status/`,
+        `${API_DOMAIN}/public/complaints/${complaint.complaint_id}/update_status/`,
         { status: newStatus },
         {
           headers: {
@@ -89,7 +90,7 @@ const ComplaintDetailModal = ({ show, onClose, complaint, onStatusChange }) => {
     try {
       // 백엔드로 답변 내용 및 전화번호 전송
       await axios.post(
-        `${config.apiDomain}/public/complaints/${complaint.complaint_id}/answer/`,
+        `${API_DOMAIN}/public/complaints/${complaint.complaint_id}/answer/`,
         {
           complaint_id: complaint.complaint_id,
           answer

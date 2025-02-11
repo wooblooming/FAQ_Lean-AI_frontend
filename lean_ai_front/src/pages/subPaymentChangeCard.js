@@ -5,7 +5,8 @@ import { useAuth } from "../contexts/authContext";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import config from "../../config";
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const PaymentChangeCard = () => {
   const router = useRouter();
@@ -46,7 +47,7 @@ const PaymentChangeCard = () => {
       try {
         // imp_uid로 백엔드에 요청하여 customer_uid 조회
         const response = await axios.post(
-          `${config.apiDomain}/api/payment-change-complete/`,
+          `${API_DOMAIN}/api/payment-change-complete/`,
           { imp_uid },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -78,7 +79,7 @@ const PaymentChangeCard = () => {
   const updateBillingKey = async (imp_uid, newCustomerUid) => {
     try {
       const response = await axios.post(
-        `${config.apiDomain}/api/subscription/update_billing_key/`,
+        `${API_DOMAIN}/api/subscription/update_billing_key/`,
         { customer_uid: newCustomerUid, imp_uid: imp_uid },
         { headers: { Authorization: `Bearer ${token}` } }
       );

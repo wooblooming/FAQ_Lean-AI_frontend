@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
-import config from '../../config';
+ 
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const Statistics = () => {
     const router = useRouter();
@@ -19,7 +20,7 @@ const Statistics = () => {
     // 통계 데이터 API 호출
     const fetchStatistics = async () => {
         try {
-            const response = await fetch(`${config.apiDomain}/api/statistics/`, {
+            const response = await fetch(`${API_DOMAIN}/api/statistics/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ const Statistics = () => {
                         {imageUrl && (
                             <div className="mt-8 text-center">
                                 <img
-                                    src={`${config.apiDomain}${imageUrl}`}  // 절대 URL을 구성해 이미지 렌더링
+                                    src={`${API_DOMAIN}${imageUrl}`}  // 절대 URL을 구성해 이미지 렌더링
                                     alt="최다 질문 통계"
                                     className="mx-auto shadow-md rounded-lg"
                                     style={{ maxWidth: '100%', height: 'auto' }}

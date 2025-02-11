@@ -11,8 +11,9 @@ import faqs from '/public/text/faq.json';
 import RequestData from './requestService';
 import Modal from '../components/modal/modal';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import config from '../../config';
 import Footer from '../components/component/footer';
+
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 // 버튼 컴포넌트 정의: 아이콘과 텍스트를 포함한 버튼 스타일 지정
 const Button = ({ children, icon: Icon, className, ...props }) => (
@@ -87,7 +88,7 @@ const MainPageWithMenu = () => {
     //console.log("Current Token:", token);
     try {
       const response = await axios.post(
-        `${config.apiDomain}/public/publics/user_info/`, { },
+        `${API_DOMAIN}/public/publics/user_info/`, { },
         {
           headers: {
             Authorization: `Bearer ${token}`, // 인증 토큰
@@ -126,7 +127,7 @@ const MainPageWithMenu = () => {
   // 통계 데이터 API 호출
   const fetchStatistics = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/public/statistics/`, {
+      const response = await fetch(`${API_DOMAIN}/public/statistics/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
