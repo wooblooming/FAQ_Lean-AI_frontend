@@ -1,11 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/router';
-import HistoryData from './historyData';
-import AwardsData  from './awardsData';
-import BusinessData from './businessData';
+import HistoryData from '../historyData';
+import AwardsData  from '../awardsData';
+import BusinessData from '../businessData';
 import news from '/public/text/news.json' // 뉴스 데이터
+import {formatDate} from '@/utils/dateUtils';
 
 
 // SectionItem 컴포넌트: 각 섹션의 반복적인 렌더링을 처리
@@ -221,7 +222,7 @@ const CompanySection = ({ isMobile }) => {
                 >
                   {news.title}
                 </h3>
-                <p className="text-sm text-gray-500 hidden md:block whitespace-nowrap">{news.date}</p>
+                <p className="text-sm text-gray-500 hidden md:block whitespace-nowrap">{formatDate(news.date)}</p>
               </li>
             ))}
           </ul>

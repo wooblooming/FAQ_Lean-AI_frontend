@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
+import { formatPhoneNumber } from '@/utils/telUtils';
 import ModalMSG from '../modal/modalMSG';
 import ModalErrorMSG from '../modal/modalErrorMSG';
 import VerificationModal from '../modal/verificationModal';
@@ -381,7 +382,7 @@ const UserProfileForm = ({
           <div className='flex flex-row justify-between space-x-4'>
             <input
               type="text"
-              value={phoneNumber || ''}
+              value={formatPhoneNumber(phoneNumber) || ''}
               onChange={(e) => handleChange('phone_number', e.target.value)}
               style={{
                 border: 'none',

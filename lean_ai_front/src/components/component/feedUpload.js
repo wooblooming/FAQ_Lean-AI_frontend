@@ -21,15 +21,22 @@ export default function FeedUpload({ onUpload }) {
     multiple: false,
   });
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) return;
 
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('original_name', selectedFile.name.split('.')[0]); // 확장자를 제외한 원본 이름 추가
-    onUpload(formData);
-};
+    try {
+      await onUpload(formData); // 업로드 요청
 
+      // 업로드 성공 시 상태 초기화
+      setSelectedFile(null);
+      setPreview(null);
+  } catch (error) {
+      console.error("업로드 실패:", error);
+  }
+};
 
   const handleRemove = () => {
     setSelectedFile(null);

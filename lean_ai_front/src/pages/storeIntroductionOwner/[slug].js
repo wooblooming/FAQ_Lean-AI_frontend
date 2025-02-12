@@ -6,7 +6,7 @@ import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StoreBanner from '../../components/component/storeBanner';
 import StoreInfo from '../../components/component/storeInfo';
 import MenuList from '../../components/component/menuList';
-import ImageList from '../../components/component/imageList';
+import FeedList from '../../components/component/feedList';
 import { fetchStoreData } from '../../fetch/fetchStoreData';
 import { fetchStoreMenu } from '../../fetch/fetchStoreMenu';
 import { fetchFeedImage } from '../../fetch/fetchStoreFeed';
@@ -78,13 +78,13 @@ const StoreIntroduceOwner = () => {
         <div className="bg-white rounded-lg shadow-lg relative font-sans" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
           <StoreBanner banner={storeData.banner} onBack={() => router.push('/mainPage')} isOwner={true} />
           <div className="flex flex-col my-3 pl-4">
-            {storeData?.store?.store_name && (
+            {storeData?.store_name && (
               <p id="storeName" className="font-bold text-3xl" style={{ fontFamily: 'NanumSquareExtraBold' }}>
                 {storeData.store_name}
               </p>
             )}
-            {storeData?.store?.store_introduction && (
-              <p className="whitespace-pre-line text-lg mt-1" style={{ fontFamily: 'NanumSquare' }}>
+            {storeData?.store_introduction && (
+              <p className="whitespace-pre-line mt-1" style={{ fontFamily: 'NanumSquare' }}>
                 {storeData.store_introduction}
               </p>
             )}
@@ -123,7 +123,7 @@ const StoreIntroduceOwner = () => {
             )}
             {activeTab === 'image' && (
               <div className="scrollable-tab-content">
-                <ImageList images={images} />
+                <FeedList images={images} />
               </div>
             )}
           </div>

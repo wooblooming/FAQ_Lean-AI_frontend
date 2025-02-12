@@ -1,9 +1,8 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import React from "react";
+import { X } from "lucide-react";
 
 const AllergyModal = ({ show, onClose, menuDetails }) => {
   if (!show) return null;
-
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -12,27 +11,31 @@ const AllergyModal = ({ show, onClose, menuDetails }) => {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-20"
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: "pointer" }}
           aria-label="Close"
         >
           <X className="bg-indigo-500 rounded-full text-white p-1" />
         </button>
         <div className="overflow-y-auto max-h-96">
-          {menuDetails && menuDetails.length > 0 &&
+          {menuDetails && menuDetails.length > 0 ? (
+            <p className="text-gray-600 text-center py-4">
+              알레르기 유발 성분 정보가 없습니다.
+            </p>
+          ) : (
             menuDetails
-            .filter(
-              (menu) =>
-                menu.allergy && // allergy가 존재하며
-                menu.allergy !== '' && // 빈 문자열이 아니며
-                menu.allergy.toLowerCase() !== 'nan' // 'nan' 문자열이 아니어야 함
-            )
+              .filter(
+                (menu) =>
+                  menu.allergy && // allergy가 존재하며
+                  menu.allergy !== "" && // 빈 문자열이 아니며
+                  menu.allergy.toLowerCase() !== "nan" // 'nan' 문자열이 아니어야 함
+              )
               .map((menu, index) => (
                 <div key={index} className="mb-4">
                   <h3 className="font-semibold">{menu.name}</h3>
                   <p>알레르기 정보: {menu.allergy}</p>
                 </div>
               ))
-          }
+          )}
         </div>
       </div>
     </div>

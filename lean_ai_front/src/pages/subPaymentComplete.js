@@ -11,6 +11,7 @@ const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 const PaymentComplete = () => {
   const router = useRouter();
   const { token } = useAuth();
+  const { paymentKey, orderId, amount, customerKey } = router.query;
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -28,91 +29,43 @@ const PaymentComplete = () => {
     router.push("/mainPage"); // 에러 발생 시에도 마이페이지로 이동
   };
 
-  // 빌링키 저장 함수 추가
-  const saveBillingKey = async (paymentData) => {
-    // console.log("결제 성공:", paymentData);
-    try {
-      const response = await axios.post(
-        `${API_DOMAIN}/api/subscription/`,
-        {
-          customer_uid: paymentData.customer_uid,
-          imp_uid: paymentData.imp_uid,
-          merchant_uid: paymentData.merchant_uid,
-          plan: paymentData.plan, // 플랜 정보 전달
-          price: paymentData.price, // 결제 금액 전달
-          user_id: paymentData.user_id, // 유저 ID 전달
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        return response.data.message;
-      } else {
-        throw new Error(response.data.error || "구독 플랜 등록 실패");
-      }
-    } catch (err) {
-      console.error("BillingKey 저장 오류:", err.message);
-      throw new Error("BillingKey 저장 실패: " + err.message);
-    }
-  };
-
   useEffect(() => {
-    const handlePaymentResult = async () => {
-      const { imp_uid, success, error_msg } = router.query;
-
-      if (!imp_uid) {
-        setErrorMessage("결제 정보가 누락되었습니다.");
-        setShowErrorModal(true);
-        return;
-      }
-
-      if (success === "false") {
-        setErrorMessage(error_msg || "결제 실패");
-        setShowErrorModal(true);
-        return;
-      }
-
+    const completePaymentAndBilling = async () => {
       try {
-        // 1️. 결제 완료 API 호출
+        // 1. 결제 승인 및 빌링키 발급 요청
         const response = await axios.post(
-          `${API_DOMAIN}/api/payment-complete/`,
-          { imp_uid }, // 백엔드에 imp_uid만 전달
-          { headers: { Authorization: `Bearer ${token}` } } // 인증 토큰
+          `${API_DOMAIN}/api/payment/complete`,
+          {
+            paymentKey,
+            orderId,
+            amount,
+            customerKey,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (response.data.success) {
-          const paymentData = response.data.payment_data;
-
-          // 2️. 빌링키 저장 API 호출
-          const billingKeyMessage = await saveBillingKey({
-            customer_uid: paymentData.customer_uid,
-            imp_uid: paymentData.imp_uid,
-            merchant_uid: paymentData.merchant_uid,
-            plan: paymentData.plan,
-            price: paymentData.price,
-            user_id: paymentData.user_id,
-          });
-
-          setMessage("구독 신청이 성공적으로 완료되었습니다." || billingKeyMessage);
-          setShowMessageModal(true);
+          // 성공 시 메인 페이지로 리다이렉트
+          router.replace("/mainPage");
         } else {
-          throw new Error(response.data.error || "결제 처리 실패");
+          // 실패 시 에러 페이지로 리다이렉트
+          router.replace("/payment/fail");
         }
       } catch (error) {
-        console.error("Error during payment process:", error.message);
-        setErrorMessage("결제 처리 중 문제가 발생했습니다.");
-        setShowErrorModal(true);
+        console.error("결제 완료 실패:", error);
+        router.replace("/payment/fail");
       }
     };
 
-    if (router.isReady) {
-      handlePaymentResult();
+    // 쿼리 파라미터가 모두 있을 때만 실행
+    if (paymentKey && orderId && amount && customerKey && token) {
+      completePaymentAndBilling();
     }
-  }, [router.isReady]);
+  }, [paymentKey, orderId, amount, customerKey, token, router]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">

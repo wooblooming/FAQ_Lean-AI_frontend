@@ -37,7 +37,7 @@ const StoreIntroduce = () => {
 
   useEffect(() => {
     if (storeData) {
-      //console.log("store data : ", storeData.store);
+      //console.log("store data : ", storeData);
       setStoreCategory(storeData.store_category);
       setAgentId(storeData.agent_id);
       setIsLoading(false);
@@ -78,7 +78,7 @@ const StoreIntroduce = () => {
     <div>
       <div {...handlers} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div className="bg-white rounded-lg shadow-lg relative font-sans" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
-          <StoreBanner banner={storeData.banner} onBack={() => router.push('/mainPage')} isOwner={false} />
+          <StoreBanner banner={storeData.banner} onBack={() => router.push('/')} isOwner={true} />
           <div className="flex flex-col my-3 pl-4">
             {storeData?.store_name && (
               <p id="storeName" className="font-bold text-3xl" style={{ fontFamily: 'NanumSquareExtraBold' }}>

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { v4 as uuidv4 } from "uuid";
 import { Check } from "lucide-react";
 import axios from "axios";
-import plans from "/public/text/plan.json"; // 구독 플랜 데이터 JSON 파일
+import plans from "/public/text/plan.json";
 import { useAuth } from "../contexts/authContext";
 import { useStore } from "../contexts/storeContext";
 import { fetchStoreUser } from "../fetch/fetchStoreUser";
@@ -11,22 +11,20 @@ import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
+const TOSS_CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY;
 const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
-const PG_CODE = process.env.NEXT_PUBLIC_PG_CODE;
-const IMP_KEY = process.env.NEXT_PUBLIC_IMP_KEY;
 
-const SubscriptionPlans = ({}) => {
-  const { token } = useAuth(); // 사용자 인증 토큰 가져오기
-  const { storeID } = useStore(); // 현재 스토어 ID 가져오기
-  const [userData, setUserData] = useState(null); // 사용자 정보 저장
+const SubscriptionPlans = () => {
+  const { token } = useAuth();
+  const { storeID } = useStore();
+  const [userData, setUserData] = useState(null);
   const router = useRouter();
-  const [selectedPlan, setSelectedPlan] = useState(null); // 선택된 플랜
-  const [message, setMessage] = useState(""); // 성공 메시지
-  const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지
-  const [showMessageModal, setShowMessageModal] = useState(false); // 성공 모달 표시 여부
-  const [showErrorModal, setShowErrorModal] = useState(false); // 에러 모달 표시 여부
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
-  // 사용자 정보 가져오기
   useEffect(() => {
     if (storeID && token) {
       fetchStoreUser(
@@ -40,14 +38,13 @@ const SubscriptionPlans = ({}) => {
   }, [storeID, token]);
 
   const onClose = () => {
-    setShowMessageModal(false); // 성공 모달 닫기
-    setShowErrorModal(false); // 에러 모달 닫기
-    setMessage(""); // 성공 메시지 초기화
-    setErrorMessage(""); // 에러 메시지 초기화
-    setSelectedPlan(null); // 선택된 플랜 초기화
+    setShowMessageModal(false);
+    setShowErrorModal(false);
+    setMessage("");
+    setErrorMessage("");
+    setSelectedPlan(null);
   };
 
-  // 성공 모달 확인 클릭 시 동작
   const handleSuccessConfirm = () => {
     onClose();
     router.push("/mainPage");
@@ -57,135 +54,100 @@ const SubscriptionPlans = ({}) => {
     router.push("/");
   };
 
-  // 오류 메시지 매핑
   const mapErrorMessage = (errorMsg) => {
-    if (errorMsg.includes("PAY_PROCESS_CANCELED")) {
-      return "사용자가 결제를 취소하였습니다.";
-    } else if (errorMsg.includes("INVALID_CARD_NUMBER")) {
-      return "카드 번호를 잘못 입력하셨습니다.";
-    } else if (errorMsg.includes("EXPIRED_CARD")) {
-      return "카드가 만료되었습니다.";
-    } else if (errorMsg.includes("INSUFFICIENT_FUNDS")) {
-      return "잔액이 부족합니다.";
-    } else if (errorMsg.includes("CARD_LIMIT_EXCEEDED")) {
-      return "카드 한도를 초과하였습니다.";
-    } else if (errorMsg.includes("NOT_SUPPORTED_CARD_TYPE")) {
-      return "해당 카드가 지원되지 않습니다. 다른 카드를 이용해주세요.";
-    } else if (errorMsg.includes("ACQUIRER_ERROR")) {
-      return "카드사 승인에 실패했습니다. 다른 카드를 사용해 주세요.";
-    } else if (errorMsg.includes("NETWORK_ERROR")) {
-      return "네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
-    } else if (errorMsg.includes("SERVER_ERROR")) {
-      return "결제 서버 오류가 발생했습니다. 고객센터로 문의하세요.";
-    }
-    return errorMsg;
+    const errorMessages = {
+      "INVALID_CARD_COMPANY": "지원하지 않는 카드사입니다.",
+      "INVALID_CARD_NUMBER": "잘못된 카드 번호입니다.",
+      "EXPIRED_CARD": "만료된 카드입니다.",
+      "INVALID_PIN": "잘못된 비밀번호입니다.",
+      "INSUFFICIENT_BALANCE": "잔액이 부족합니다.",
+      "EXCEED_MAX_PAYMENT_AMOUNT": "최대 결제금액을 초과했습니다.",
+      "INVALID_CARD_EXPIRY": "잘못된 유효기간입니다.",
+      "PAY_PROCESS_CANCELED": "결제가 취소되었습니다.",
+      "NETWORK_ERROR": "네트워크 오류가 발생했습니다.",
+    };
+    
+    return errorMessages[errorMsg] || "결제 중 오류가 발생했습니다.";
   };
 
-  // 결제 요청 함수
-  const requestPayment = async (paymentRequest) => {
-    return new Promise((resolve, reject) => {
-      if (!window.IMP) {
-        // 아임포트 객체가 없는 경우 에러
-        reject(
-          new Error(
-            "결제 모듈이 로드되지 않았습니다. 페이지를 새로고침해주세요."
-          )
-        );
-        return;
-      }
+  const requestPayment = async () => {
+    if (!window.TossPayments) {
+      throw new Error("토스페이먼츠 SDK가 로드되지 않았습니다.");
+    }
 
-      // 아임포트 초기화
-      window.IMP.init(IMP_KEY);
+    const tossPayments = window.TossPayments(TOSS_CLIENT_KEY);
+    const paymentKey = `payment_${uuidv4()}`;
+    const orderID = `${selectedPlan.alias}_${uuidv4().slice(0, 8)}${Date.now().toString(36)}`;
 
-      // 결제 요청
-      window.IMP.request_pay(paymentRequest, function (rsp) {
-        if (rsp.success) {
-          // 결제 성공
-          resolve(rsp);
-        } else {
-          // 결제 실패
-          reject(new Error(rsp.error_msg || "결제 요청 실패"));
-        }
+    try {
+      // 결제 위젯 실행
+      const paymentResponse = await tossPayments.requestPayment('카드', {
+        amount: selectedPlan.price,
+        orderId: orderID,
+        orderName: `${selectedPlan.plan} 구독`,
+        customerName: userData?.name || "고객",
+        customerEmail: userData?.email,
+        successUrl: `${FRONTEND_DOMAIN}/payment/success`,
+        failUrl: `${FRONTEND_DOMAIN}/payment/fail`,
+        // 빌링키 발급을 위한 설정
+        flowMode: 'BILLING',
+        useInternationalCardOnly: false
       });
-    });
-  };
 
-  // BillingKey 저장 요청 함수
-  const saveBillingKey = async (paymentResponse) => {
-    //console.log("paymentResponse : ", paymentResponse);
-
-    // API 요청
-    const response = await axios.post(
-      `${API_DOMAIN}/api/subscription/`, // 서버의 BillingKey 저장 API
-      {
-        customer_uid: paymentResponse.customer_uid, // 아임포트에서 반환된 고객 UID
-        imp_uid: paymentResponse.imp_uid, // 아임포트에서 반환된 결제 고유 ID
-        merchant_uid: paymentResponse.merchant_uid, // 주문 고유 ID
-        plan: selectedPlan.plan, // 선택한 플랜 이름
-        price: selectedPlan.price, // 선택한 플랜 가격
-        user_id: userData?.user_id, // 사용자 ID
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // 인증 토큰
-        },
-      }
-    );
-
-    if (response.data.success) {
-      return response.data.message; // 성공 메시지 반환
-    } else {
-      throw new Error(response.data.error || "구독 플랜 등록 실패");
+      return paymentResponse;
+    } catch (error) {
+      console.error('토스 결제 에러:', error);
+      throw new Error(error.message);
     }
   };
 
-  // "결제하기" 버튼 클릭 핸들러
+  const saveSubscription = async (paymentResponse) => {
+    try {
+      const response = await axios.post(
+        `${API_DOMAIN}/api/subscription/`,
+        {
+          payment_key: paymentResponse.paymentKey,
+          billing_key: paymentResponse.billingKey,
+          order_id: paymentResponse.orderId,
+          plan: selectedPlan.plan,
+          price: selectedPlan.price,
+          user_id: userData?.user_id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        return response.data.message;
+      } else {
+        throw new Error(response.data.error || "구독 등록 실패");
+      }
+    } catch (error) {
+      console.error('구독 저장 에러:', error);
+      throw error;
+    }
+  };
+
   const handleRegisterClick = async () => {
     if (!selectedPlan) {
-      // 선택된 플랜이 없을 경우 에러 처리
       setShowErrorModal(true);
       setErrorMessage("구독 플랜을 선택해주세요.");
       return;
     }
 
-    // 고객 UID와 주문 UID 생성
-    const customer_uid = `customer_${uuidv4().slice(0, 8)}`;
-    const merchant_uid = `${selectedPlan.alias}_${uuidv4().slice(
-      0,
-      8
-    )}${Date.now().toString(36)}`;
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent); // 모바일 여부 확인
-
-    // 결제 요청 데이터
-    const paymentRequest = {
-      pg: PG_CODE, // PG사 설정 (예: kakaopay, tosspay)
-      pay_method: "card", // 결제 방식
-      merchant_uid: merchant_uid, // 주문 번호
-      customer_uid: customer_uid, // 고객 UID
-      name: `${selectedPlan.plan} 구독 결제`, // 결제 이름
-      amount: selectedPlan.price, // 결제 금액
-      buyer_email: userData.email, // 사용자 이메일
-      buyer_name: userData.name || "테스트 유저", // 사용자 이름
-      buyer_tel: userData.phone_number || "010-0000-0000", // 사용자 전화번호
-      m_redirect_url: isMobile
-        ? `${FRONTEND_DOMAIN}/paymentComplete` // 모바일 리디렉션 URL
-        : undefined,
-    };
-
     try {
-      // 결제 요청
-      const paymentResponse = await requestPayment(paymentRequest);
-
-      // BillingKey 저장
-      const successMessage = await saveBillingKey(paymentResponse);
-
-      // 성공 메시지 표시
+      const paymentResponse = await requestPayment();
+      const successMessage = await saveSubscription(paymentResponse);
+      
       setShowMessageModal(true);
-      setMessage(successMessage || "정기 결제가 성공적으로 완료되었습니다.");
-    } catch (err) {
-      console.error("❌ 결제 오류:", err.message);
+      setMessage(successMessage || "정기 결제가 성공적으로 등록되었습니다.");
+    } catch (error) {
+      console.error("결제 오류:", error);
       setShowErrorModal(true);
-      setErrorMessage(mapErrorMessage(err.message));
+      setErrorMessage(mapErrorMessage(error.message));
     }
   };
 

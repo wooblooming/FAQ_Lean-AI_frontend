@@ -94,7 +94,7 @@ export default function AddMenuModal({ isOpen, onClose, onSave, slug, menuTitle 
 
     const handleCreateNewCategory = (newValue) => {
         const newCategoryOption = { value: newValue, label: newValue };
-        setCategoryOptions((prev) => [...prev, newCategoryOption]);
+        setCategory((prev) => [...prev, newCategoryOption]);
         setNewItem((prev) => ({ ...prev, category: newValue }));
     };
 
