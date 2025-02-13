@@ -39,14 +39,14 @@ const Newsroom = () => {
 
   return (
     <div className="bg-violet-50 min-h-screen p-8 text-indigo-600 flex items-center justify-center">
-      <div className="bg-white rounded-lg p-4 shadow-xl" style={{minWidth:'95%'}}>
+      <div className="bg-white rounded-lg py-12 px-8 shadow-xl" style={{minWidth:'95%'}}>
         {/* 헤더 및 뒤로가기 버튼 */}
         <div className='flex flex-row'>
           <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
             onClick={() => router.back()}
           />
-          <h1 className="text-3xl md:text-4xl font-bold text-left text-indigo-600 mb-4"> 회사소식 </h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-left text-indigo-600 mb-4" style={{ fontFamily: "NanumSquareExtraBold" }}> 회사소식 </h1>
         </div>
 
         {/* 필터 버튼 */}

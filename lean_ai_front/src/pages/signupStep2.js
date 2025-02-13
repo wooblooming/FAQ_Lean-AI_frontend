@@ -186,7 +186,17 @@ const SignupStep2 = () => {
                             className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
                             onClick={handleTermsCheckboxChange}
                         >
-                            이용약관 및 개인정보 수집 동의(필수)
+                            이용약관 및 개인정보 수집 동<div className="flex items-center justify-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={marketingAccepted}
+                            onChange={() => setMarketingAccepted(!marketingAccepted)}
+                            className="form-checkbox h-4 w-4 text-blue-600"
+                        />
+                        <label className="text-sm font-medium underline hover:text-blue-600" onClick={() => setShowMarketingModal(true)}>
+                            마케팅 활용 동의 및 광고 수신 동의(선택)
+                        </label>
+                    </div>의(필수)
                         </label>
                     </div>
 

@@ -1,66 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { ChevronLeft, Store, Building2 } from 'lucide-react';
-const SignupType = ({ }) => {
-    const router = useRouter(); // 페이지 이동 및 뒤로 가기 기능을 위한 라우터
+import React from "react";
+import { useRouter } from "next/router";
+import { ChevronLeft, Store, Building2 } from "lucide-react";
 
-    return (
-        <div className="min-h-screen flex justify-center items-center py-12 px-4 bg-violet-50" >
-            <div className="max-w-4xl mx-auto w-full p-6 shadow-md rounded-lg bg-white flex flex-col gap-6" >
-                <div className='flex flex-col space-y-2'>
-                    <div className="flex items-center">
-                        <ChevronLeft
-                            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-                            onClick={() => router.back()} // 뒤로가기 버튼
-                        />
-                        <h1 className="text-3xl font-bold text-left  text-indigo-600" style={{ fontFamily: 'NanumSquareExtraBold' }}>회원가입</h1>
-                    </div>
-                    <div className="text-xl font-bold text-left text-gray-600 px-5" style={{ fontFamily: 'NanumSquareBold' }}>회원 유형을 선택해주세요</div>
-                </div>
+const Card = ({ title, description, icon, onClick }) => {
+  return (
+    <div
+      className="flex flex-col items-center justify-center space-y-2 p-8 rounded-lg 
+                 border border-gray-200 hover:border-2 hover:border-indigo-400 cursor-pointer transition-all duration-300"
+      onClick={onClick}
+    >
+      <div className="h-28 w-28 flex items-center justify-center rounded-full bg-indigo-400">
+        {icon}
+      </div>
+      <p
+        className="text-gray-600 text-lg flex text-center items-center whitespace-pre-line h-20"
+        style={{ fontFamily: "NanumSquareBold" }}
+      >
+        {description}
+      </p>
+      <button
+        className="text-lg px-3 py-2 rounded-md bg-indigo-400 hover:bg-indigo-500 text-white"
+        style={{ fontFamily: "NanumSquareBold" }}
+      >
+        가입하기
+      </button>
+    </div>
+  );
+};
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4 justify-center items-center'>
+const SignupType = () => {
+  const router = useRouter();
 
-                    <div className="flex flex-col items-center justify-center space-y-2 border border-gray-200 p-4 rounded-lg">
-                        <div className="h-28 w-28 flex items-center justify-center rounded-full bg-indigo-400 ">
-                            <Store className="text-white h-20 w-20" />
-                        </div>
-                        <p className='text-gray-600 text-lg flex text-center items-center whitespace-pre-line h-20' style={{ fontFamily: 'NanumSquareBold' }}> 
-                            음식점이나 판매점을 <br/>
-                            운영 중이시라면?
-                        </p>
-                        <button 
-                            className='text-lg px-3 py-2 rounded-md bg-indigo-400 text-white'
-                            style={{ fontFamily: 'NanumSquareBold' }} 
-                            onClick={()=> router.push('/signupStep1')}
-                        >
-                            가입하기
-                        </button>
-                    </div>
-
-                    <div   
-                        className="flex flex-col items-center justify-center space-y-2 border border-gray-200 p-4 rounded-lg"
-                        onClick={()=> router.push('/signupPublicStep1')}
-                    >
-                        <div className="h-28 w-28 flex items-center justify-center rounded-full bg-indigo-400 ">
-                            <Building2 className="text-white h-20 w-20" />
-                        </div>
-                        <p className='text-gray-600 text-lg flex text-center items-center whitespace-pre-line h-20' style={{ fontFamily: 'NanumSquareBold' }}>
-                            공공기관에서 <br/>
-                            업무 중이시라면?
-                        </p>
-                        <button 
-                            className='text-lg px-3 py-2 rounded-md bg-indigo-400 text-white'
-                            style={{ fontFamily: 'NanumSquareBold' }} 
-                            onClick={()=> router.push('/signupPublicStep1')}
-                        >
-                            가입하기
-                        </button>
-                    </div>
-
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen flex justify-center items-center bg-violet-50">
+      <div className="max-w-5xl w-full mx-auto py-12 px-8 shadow-lg rounded-xl bg-white flex flex-col gap-4">
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center">
+            <ChevronLeft
+              className="h-8 w-8 text-indigo-600 cursor-pointer mr-2"
+              onClick={() => router.push("/")}
+            />
+            <h1
+              className="text-4xl font-bold text-center text-indigo-600"
+              style={{ fontFamily: "NanumSquareExtraBold" }}
+            >
+              회원가입
+            </h1>
+          </div>
         </div>
-    )
-}
+
+        <div
+          className="text-3xl text-center text-gray-700"
+          style={{ fontFamily: "NanumSquareBold" }}
+        >
+          회원 유형을 선택해주세요
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-center items-center">
+          <Card
+            title="음식점/판매점"
+            description={"음식점이나 판매점을 \n운영 중이시라면?"}
+            icon={<Store className="text-white h-20 w-20" />}
+            onClick={() => router.push("/signupStep1")}
+          />
+          <Card
+            title="공공기관"
+            description={"공공기관에서 \n업무 중이시라면?"}
+            icon={<Building2 className="text-white h-20 w-20" />}
+            onClick={() => router.push("/signupPublicStep1")}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default SignupType;

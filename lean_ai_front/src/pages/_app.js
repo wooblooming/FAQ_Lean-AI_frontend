@@ -17,9 +17,10 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
           <Chatbot agentId={process.env.NEXT_PUBLIC_AGENT_ID} />
           <Script
-            src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"
+            src=" https://testspay.kcp.co.kr/plugin/kcp_spay_hub.js" // 테스트
+            //src="https://spay.kcp.co.kr/plugin/kcp_spay_hub.js" // 실제
             strategy="beforeInteractive"
-            onLoad={() => console.log("📌 아임포트 스크립트 로드 완료")}
+            onLoad={() => console.log("KCP 스크립트 로드 완료")}
           />
         </StoreProvider>
       </PublicProvider>

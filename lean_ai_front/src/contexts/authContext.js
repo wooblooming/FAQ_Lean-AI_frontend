@@ -8,10 +8,12 @@ export const AuthProvider = ({ children }) => {
     const router = useRouter();
 
     // 예외 페이지 배열
-    const exceptionPages = ['/', '/storeIntroduction/[slug]', '/publicIntroduction/[slug]', '/timeline', '/news', '/notice', '/faq', '/signupType',
+    const exceptionPages = ['/', '/storeIntroduction/[slug]', '/publicIntroduction/[slug]', '/storeIntroductionExample/[slug]',
+                            '/timeline', '/news', '/notice', '/faq', '/signupType',
                             '/signupStep1', '/signupStep2' , '/signupPublicStep1', '/signupPublicStep2', 
                             '/findAccount', '/findAccountResult', '/registerPublic',
                             '/complaintRegister', '/complaintStatusLookup'
+                            ,'/subscriptionPlansIntroduce',
                             ];
 
     useEffect(() => {

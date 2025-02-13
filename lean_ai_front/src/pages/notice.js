@@ -11,7 +11,7 @@ const AnnouncementPage = () => {
 
   return (
     <div className="min-h-screen py-12 px-4 font-sans bg-violet-50" >
-      <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg" style={{ backgroundColor: '#fff', borderRadius: '50px 0 50px 0' }}>
+      <div className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg bg-white" style={{ borderRadius: '50px 0 50px 0' }}>
         <div className="flex items-center mb-12">
           <ChevronLeft
             className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"

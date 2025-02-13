@@ -12,7 +12,7 @@ import { fetchFeedImage } from '../../fetch/fetchStoreFeed';
 import ModalErrorMSG from '../../components/modal/modalErrorMSG';
 import Chatbot from '../chatBotMSG';
 
-const StoreIntroduce = () => {
+const StoreIntroductionExample = () => {
   const router = useRouter();
   const { slug } = router.query;
   const [storeData, setStoreData] = useState(null);
@@ -165,4 +165,4 @@ const StoreIntroduce = () => {
   );
 };
 
-export default StoreIntroduce;
+export default StoreIntroductionExample;

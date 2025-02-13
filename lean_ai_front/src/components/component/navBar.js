@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { Menu, X } from 'lucide-react'; 
-import { useAuth } from '../../contexts/authContext';
-import { useStore } from '../../contexts/storeContext';
-import { usePublic } from '../../contexts/publicContext';
-import LogoutModal from '../modal/logout'; 
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
+import { useAuth } from "../../contexts/authContext";
+import { useStore } from "../../contexts/storeContext";
+import { usePublic } from "../../contexts/publicContext";
+import LogoutModal from "../modal/logout";
 
 const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 열림 상태
@@ -20,14 +20,15 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
 
   // 네비게이션 항목 설정
   const navItems = [
-    { title: '회사소개', link: 'company' },
-    { title: '서비스', link: 'services' },
+    { title: "회사소개", link: "company" },
+    { title: "서비스", link: "services" },
+    { title: "구독", link: "/subscriptionPlansIntroduce" },
     {
-      title: '고객지원',
-      link: 'support',
+      title: "고객지원",
+      link: "support",
       subItems: [
-        { title: '공지사항', link: '/notice' },
-        { title: 'FAQ', link: '/faq' },
+        { title: "공지사항", link: "/notice" },
+        { title: "FAQ", link: "/faq" },
       ],
     },
   ];
@@ -35,12 +36,12 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   // 모바일 메뉴가 열릴 때 스크롤 방지 설정
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'visible';
+      document.body.style.overflow = "visible";
     }
     return () => {
-      document.body.style.overflow = 'visible';
+      document.body.style.overflow = "visible";
     };
   }, [isMobileMenuOpen]);
 
@@ -61,22 +62,20 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   };
 
   // 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
-useEffect(() => {
-  if (token) {
+  useEffect(() => {
+    if (token) {
       setIsLoggedIn(true); // 토큰이 존재하면 로그인 상태로 설정
-      
-  } else {
+    } else {
       setIsLoggedIn(false); // 토큰이 없으면 비로그인 상태로 설정
-      
-  }
-}, [token]);
+    }
+  }, [token]);
 
   // 로그인/로그아웃 버튼 클릭 핸들러
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
       setShowLogoutModal(true); // 로그아웃 모달 열기
     } else {
-      router.push('/login'); // 로그인 페이지로 이동
+      router.push("/login"); // 로그인 페이지로 이동
     }
   };
 
@@ -87,7 +86,7 @@ useEffect(() => {
     removeToken();
     removeStoreID();
     resetPublicOn();
-    router.push('/'); // 홈으로 이동
+    router.push("/"); // 홈으로 이동
   };
 
   // 로그아웃 취소 시 모달 닫기
@@ -96,17 +95,29 @@ useEffect(() => {
   };
 
   // 페이지 섹션으로 이동
+
   const handleSectionClick = (section) => {
-    router.push(`/?section=${section}`); // 섹션 이름을 쿼리로 추가하여 이동
+    if (section === "/subscriptionPlansIntroduce") {
+      router.push(section); // 구독 페이지는 즉시 이동
+    } else {
+      router.push(`/?section=${section}`); // 다른 섹션은 기존 방식 유지
+    }
   };
 
   return (
     <div ref={navRef}>
       <header className="bg-indigo-600 fixed w-full z-30 transition-all duration-300 px-4">
         <div className="container md:mx-auto px-6 md:px-0 py-5">
-          <div className="flex items-center justify-between" style={{ fontFamily: 'NanumSquareBold' }}>
+          <div
+            className="flex items-center justify-between"
+            style={{ fontFamily: "NanumSquareBold" }}
+          >
             {/* 로고 링크 */}
-            <Link href="/" className="text-2xl md:text-4xl font-bold text-white cursor-pointer" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+            <Link
+              href="/"
+              className="text-2xl md:text-4xl font-bold text-white cursor-pointer"
+              style={{ fontFamily: "NanumSquareExtraBold" }}
+            >
               MUMUL
             </Link>
             {/* 데스크탑 네비게이션 */}
@@ -126,7 +137,10 @@ useEffect(() => {
                           <ul className="absolute left-0 mt-2 py-2 rounded bg-white shadow-lg">
                             {item.subItems.map((subItem, subIndex) => (
                               <li key={subIndex} className="px-3 py-2">
-                                <Link href={subItem.link} className="hover:text-indigo-600 whitespace-nowrap">
+                                <Link
+                                  href={subItem.link}
+                                  className="hover:text-indigo-600 whitespace-nowrap"
+                                >
                                   {subItem.title}
                                 </Link>
                               </li>
@@ -150,7 +164,7 @@ useEffect(() => {
                     className="text-white text-xl md:text-2xl font-medium hover:underline"
                     onClick={handleLoginLogoutClick}
                   >
-                    {isLoggedIn ? 'Log out' : 'Log in'}
+                    {isLoggedIn ? "Log out" : "Log in"}
                   </button>
                 </li>
               </ul>
@@ -181,7 +195,11 @@ useEffect(() => {
                       <ul className="pl-4 mt-2 space-y-2">
                         {item.subItems.map((subItem, subIndex) => (
                           <li key={subIndex}>
-                            <Link href={subItem.link} className="text-xl" onClick={toggleMobileMenu}>
+                            <Link
+                              href={subItem.link}
+                              className="text-xl"
+                              onClick={toggleMobileMenu}
+                            >
                               - {subItem.title}
                             </Link>
                           </li>
@@ -205,7 +223,7 @@ useEffect(() => {
             {/* 로그인/로그아웃 버튼 */}
             <li>
               <button className="text-3xl" onClick={handleLoginLogoutClick}>
-                {isLoggedIn ? 'Log out' : 'Log in'}
+                {isLoggedIn ? "Log out" : "Log in"}
               </button>
             </li>
           </ul>

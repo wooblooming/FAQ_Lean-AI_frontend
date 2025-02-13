@@ -129,7 +129,7 @@ const LandingPageContent = () => {
         <motion.button
           className="bg-indigo-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center group relative"
           style={{ fontFamily: "NanumSquareExtraBold" }}
-          onClick={() => router.push(`${FRONTEND_DOMAIN}/apply`)}
+          onClick={() => router.push("https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform")}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
