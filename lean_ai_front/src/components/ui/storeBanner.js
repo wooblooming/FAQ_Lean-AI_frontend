@@ -9,7 +9,7 @@ const StoreBanner = ({ banner, onBack, isOwner }) => (
     <img
       src={banner ? `${API_DOMAIN}${banner}` : "/images/mumullogo.jpg"}
       alt="Store"
-      className="w-full h-48 object-cover"
+      className="w-full h-48 object-cover rounded-t-lg"
     />
     {isOwner && (
       <motion.button

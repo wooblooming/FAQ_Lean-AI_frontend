@@ -1,162 +1,228 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useSwipeable } from 'react-swipeable';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useSwipeable } from "react-swipeable";
+import { Quote, Triangle } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import StoreBanner from '../../components/ui/storeBanner';
-import StoreInfo from '../../components/component/storeInfo';
-import MenuList from '../../components/component/menuList';
-import FeedList from '../../components/component/feedList'
-import { fetchStoreData } from '../../fetch/fetchStoreData';
-import { fetchStoreMenu } from '../../fetch/fetchStoreMenu';
-import { fetchFeedImage } from '../../fetch/fetchStoreFeed';
-import ModalErrorMSG from '../../components/modal/modalErrorMSG';
-import Chatbot from '../chatBotMSG';
+import StoreBanner from "../../components/ui/storeBanner";
+import StoreInfo from "../../components/component/storeInfo";
+import MenuList from "../../components/component/menuList";
+import FeedList from "../../components/component/feedList";
+import { fetchStoreData } from "../../fetch/fetchStoreData";
+import { fetchStoreMenu } from "../../fetch/fetchStoreMenu";
+import { fetchFeedImage } from "../../fetch/fetchStoreFeed";
+import ModalErrorMSG from "../../components/modal/modalErrorMSG";
+import Chatbot from "../chatBotMSG";
 
 const StoreIntroductionExample = () => {
   const router = useRouter();
   const { slug } = router.query;
   const [storeData, setStoreData] = useState(null);
-  const [images, setImages] = useState([]);;
+  const [images, setImages] = useState([]);
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
   const [menu, setMenu] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('home');
-  const tabOrder = ['home', 'menu', 'image']; // 탭 순서 배열
-  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [activeTab, setActiveTab] = useState("home");
+  const tabOrder = ["home", "menu", "image"];
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (slug) {
-      fetchStoreData({ slug }, null, setStoreData, setErrorMessage, setShowErrorMessageModal);
-      fetchStoreMenu({ slug }, null, setMenu, setErrorMessage, setShowErrorMessageModal);
-      fetchFeedImage({ slug }, null, setImages); // 피드 가져오기
+      fetchStoreData(
+        { slug },
+        null,
+        setStoreData,
+        setErrorMessage,
+        setShowErrorMessageModal
+      );
+      fetchStoreMenu(
+        { slug },
+        null,
+        setMenu,
+        setErrorMessage,
+        setShowErrorMessageModal
+      );
+      fetchFeedImage({ slug }, null, setImages);
     }
   }, [slug]);
 
-
   useEffect(() => {
     if (storeData) {
-      //console.log("store data : ", storeData);
       setStoreCategory(storeData.store_category);
       setAgentId(storeData.agent_id);
       setIsLoading(false);
     }
   }, [storeData]);
 
-
-  // Swipeable hook 설정: 좌우 스와이프로 탭 전환
   const handlers = useSwipeable({
     onSwipedLeft: () => {
       const currentIndex = tabOrder.indexOf(activeTab);
       if (currentIndex < tabOrder.length - 1) {
-        setActiveTab(tabOrder[currentIndex + 1]); // 다음 탭으로 이동
+        setActiveTab(tabOrder[currentIndex + 1]);
       }
     },
     onSwipedRight: () => {
       const currentIndex = tabOrder.indexOf(activeTab);
       if (currentIndex > 0) {
-        setActiveTab(tabOrder[currentIndex - 1]); // 이전 탭으로 이동
+        setActiveTab(tabOrder[currentIndex - 1]);
       }
     },
-    trackTouch: true, // 터치 이벤트 추적
+    trackTouch: true,
   });
 
   if (isLoading) return <LoadingSpinner />;
 
   const getMenuTitle = (storeCategory) => {
-    return storeCategory === 'FOOD'
-      ? '메뉴'
-      : storeCategory === 'RETAIL' || storeCategory === 'UNMANNED'
-        ? '상품'
-        : '기타'
+    return storeCategory === "FOOD"
+      ? "메뉴"
+      : storeCategory === "RETAIL" || storeCategory === "UNMANNED"
+      ? "상품"
+      : "기타";
   };
 
   const menuTitle = getMenuTitle(storeCategory);
 
   return (
-    <div>
-      <div {...handlers} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="bg-white rounded-lg shadow-lg relative font-sans" style={{ width: '95%', maxWidth: '450px', height: '95%' }}>
-          <StoreBanner banner={storeData.banner} onBack={() => router.push('/')} isOwner={true} />
-          <div className="flex flex-col my-3 pl-4">
-            {storeData?.store_name && (
-              <p id="storeName" className="font-bold text-3xl" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-                {storeData.store_name}
-              </p>
-            )}
-            {storeData?.store_introduction && (
-              <p className="whitespace-pre-line mt-1" style={{ fontFamily: 'NanumSquare' }}>
-                {storeData.store_introduction}
-              </p>
-            )}
-          </div>
+    <div className="modal-wrapper">
+      <div {...handlers} className="modal-content">
+        <StoreBanner
+          banner={storeData.banner}
+          onBack={() => router.push("/")}
+          isOwner={true}
+        />
 
-          <div className="tabs flex justify-around border-b-2 font-medium border-gray-300" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-            <button
-              className={`p-2 w-1/4 ${activeTab === 'home' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
-              style={{ fontFamily: activeTab === 'home' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
-              onClick={() => setActiveTab('home')}
-            >
-              홈
-            </button>
-            <button
-              className={`p-2 w-1/4 ${activeTab === 'menu' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
-              style={{ fontFamily: activeTab === 'menu' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
-              onClick={() => setActiveTab('menu')}
-            >
-              {menuTitle}
-            </button>
-            <button
-              className={`p-2 w-1/4 ${activeTab === 'image' ? 'text-indigo-600 text-xl font-bold border-b-4 border-indigo-500' : ''}`}
-              style={{ fontFamily: activeTab === 'image' ? 'NanumSquareExtraBold' : 'NanumSquareBold' }}
-              onClick={() => setActiveTab('image')}
-            >
-              피드
-            </button>
-          </div>
+        {/* Enhanced store introduction section */}
+        <div className="flex flex-col my-3 px-4">
+          {storeData?.store_name && (
+            <h1 className="font-bold text-3xl text-gray-800 mb-2">
+              {storeData.store_name}
+            </h1>
+          )}
 
-          <div className="p-4 font-sans mt-3" style={{ height: 'calc(100vh - 150px)' }}>
-            {activeTab === 'home' && <StoreInfo storeData={storeData} />}
-            {activeTab === 'menu' && (
-              <div className="scrollable-tab-content">
-                <MenuList menu={menu} storeCategory={storeCategory} menuTitle={menuTitle} />
-              </div>
-            )}
-            {activeTab === 'image' && (
-              <div className="scrollable-tab-content">
-                <FeedList images={images} />
+          {storeData?.store_introduction && (
+            <div className="bg-gray-50 rounded-lg p-4 relative">
+            <Quote className="text-indigo-500 absolute top-2 left-2" size={20} />
+            
+            <div
+              className={`mt-4 text-gray-600 leading-relaxed ${
+                isExpanded ? "max-h-full" : "max-h-16"
+              } overflow-hidden transition-all duration-300`}
+            >
+              <p className="whitespace-pre-line pl-6">{storeData.store_introduction}</p>
+            </div>
+          
+            {storeData.store_introduction.length > 100 && (
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-indigo-500 font-bold text-lg"></span>
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="flex items-center justify-end w-6"
+                >
+                  <Triangle
+                    size={16}
+                    className={`text-indigo-500 transform transition-transform duration-300 ${
+                      isExpanded ? "" : "rotate-180"
+                    }`}
+                  />
+                </button>
               </div>
             )}
           </div>
-          {agentId && <Chatbot agentId={agentId} />}
+          
+          )}
         </div>
+
+        <div className="tabs">
+          <button
+            className={`tab-btn ${activeTab === "home" ? "active" : ""}`}
+            onClick={() => setActiveTab("home")}
+          >
+            홈
+          </button>
+          <button
+            className={`tab-btn ${activeTab === "menu" ? "active" : ""}`}
+            onClick={() => setActiveTab("menu")}
+          >
+            {menuTitle}
+          </button>
+          <button
+            className={`tab-btn ${activeTab === "image" ? "active" : ""}`}
+            onClick={() => setActiveTab("image")}
+          >
+            피드
+          </button>
+        </div>
+
+        <div className="scrollable-tab-content">
+          {activeTab === "home" && <StoreInfo storeData={storeData} />}
+          {activeTab === "menu" && <MenuList menu={menu} />}
+          {activeTab === "image" && <FeedList images={images} />}
+        </div>
+
+        {agentId && <Chatbot agentId={agentId} />}
       </div>
 
-      <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)}>
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {typeof errorMessage === 'object' ? (
-            Object.entries(errorMessage).map(([key, value]) => (
-              <span key={key}>
-                {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}
-                <br />
-              </span>
-            ))
-          ) : (
-            errorMessage
-          )}
-        </p>
+      <ModalErrorMSG
+        show={showErrorMessageModal}
+        onClose={() => setShowErrorMessageModal(false)}
+      >
+        <p style={{ whiteSpace: "pre-line" }}>{errorMessage}</p>
       </ModalErrorMSG>
 
       <style jsx>{`
-        html,
-        body {
-          overflow: hidden; /* 외부 스크롤 제거 */
-          height: 100%;
+        .modal-wrapper {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
         }
+
+        .modal-content {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 90%;
+          max-width: 430px;
+          height: 95%;
+          max-height: 900px;
+          overflow: hidden;
+          background: white;
+          border-radius: 6px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tabs {
+          display: flex;
+          justify-content: space-around;
+          border-bottom: 2px solid #ccc;
+          font-weight: bold;
+        }
+
+        .tab-btn {
+          padding: 10px 20px;
+          flex: 1;
+          text-align: center;
+          font-size: 16px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+          color: #4f46e5;
+          font-size: 18px;
+          font-weight: bold;
+          border-bottom: 4px solid #4f46e5;
+        }
+
         .scrollable-tab-content {
-          overflow-y: auto; /* 세로 스크롤 활성화 */
-          height: calc(100vh - 350px); /* 콘텐츠 최대 높이 설정 */
+          overflow-y: auto;
+          max-height: 50vh;
           padding: 16px;
           box-sizing: border-box;
         }

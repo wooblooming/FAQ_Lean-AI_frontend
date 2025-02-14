@@ -10,7 +10,7 @@ const PublicBanner = ({ banner, onBack, isOwner }) => (
     <img
       src={banner ? `${API_DOMAIN}${banner}` : "/images/mumullogo.jpg"}
       alt="public"
-      className="w-full h-48 object-cover"
+      className="w-full h-48 object-cover rounded-t-lg"
     />
 
     {/* 뒤로 가기 버튼 (isOwner일 때만 표시) */}
