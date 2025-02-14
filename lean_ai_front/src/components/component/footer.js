@@ -11,11 +11,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-20">
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
-            <h2 className="text-2xl font-bold">MUMUL</h2>
-            <p className="text-gray-400 whitespace-nowrap">
-              AI 기반 고객 질문 관리 및 응대 솔루션을
-              <br /> 제공하는 서비스입니다.
-            </p>
+              <h2 className="text-2xl font-bold">MUMUL</h2>
+              <p className="text-gray-400 whitespace-nowrap">
+                AI 기반 고객 질문 관리 및 응대 솔루션을
+                <br /> 제공하는 서비스입니다.
+              </p>
             </div>
             <div className="text-sm text-gray-400 space-y-1">
               <p>상호명: 주식회사 린에이아이</p>
@@ -119,8 +119,8 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-4 pt-2 border-t border-gray-700 flex flex-col md:flex-row gap-10 items-center">
-          <p className="text-gray-400">
+        <div className="mt-4 pt-2 border-t border-gray-700 flex flex-col md:flex-row gap-10 items-center justify-center w-full">
+          <p className="text-gray-400 text-center">
             &copy; {new Date().getFullYear()} MUMUL. All rights reserved.
           </p>
         </div>

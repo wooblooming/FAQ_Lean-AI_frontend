@@ -1,20 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Check, ChevronLeft, ChevronUp, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import plans from "/public/text/plan.json";
+import { useAuth } from "@/contexts/authContext";
+import { useStore } from "../contexts/storeContext";
+import { fetchStoreUser } from "@/fetch/fetchStoreUser";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const SubscriptionPlansIntroduce = () => {
   const router = useRouter();
+  const { token } = useAuth();
+  const { storeID } = useStore();
   const [isRulesOpen, setIsRulesOpen] = useState(false);
-
+  const [userData, setUserData] = useState(null); // 유저 데이터 상태
+  const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 상태
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
   const toggleRules = () => setIsRulesOpen(!isRulesOpen);
 
+  const handleSubscriptionButton = async () => {
+    if (!token) {
+      router.push("/signupType");
+      return;
+    }
+
+    try {
+      const userData = await fetchStoreUser(
+        { storeID },
+        token,
+        setUserData,
+        setErrorMessage,
+        setShowErrorMessageModal
+      );
+
+      //console.log(userData);
+
+      if (userData?.subscription?.is_active) {
+        router.push("/mainPage");
+      } else {
+        router.push("/subscriptionPlans");
+      }
+    } catch (error) {
+      console.error("구독 상태 확인 실패:", error);
+      setErrorMessage("구독 상태를 확인할 수 없습니다.");
+      setShowErrorMessageModal(true);
+    }
+  };
+
   return (
-    <div className="min-h-screen py-12 px-4 font-sans bg-violet-50">
-      <div
-        className="max-w-5xl mx-auto py-12 px-8 shadow-lg rounded-xl bg-white"
-      >
+    <div className="min-h-screen py-12 px-4 fon                                                                                                             t-sans bg-violet-50">
+      <div className="max-w-5xl mx-auto py-12 px-8 shadow-lg rounded-xl bg-white">
         <div className="flex items-center mb-12">
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <ChevronLeft
@@ -100,7 +135,7 @@ const SubscriptionPlansIntroduce = () => {
                 지금 바로 시작하세요!
               </p>
               <button
-                onClick={() => router.push("/signupType")}
+                onClick={handleSubscriptionButton}
                 className="bg-indigo-500 text-white px-10 py-5 rounded-2xl text-2xl
                          hover:bg-indigo-600 transition-colors duration-200 shadow-lg"
                 style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -231,6 +266,13 @@ const SubscriptionPlansIntroduce = () => {
           </div>
         </motion.div>
       </div>
+      {/* 에러 메시지 모달 */}
+      <ModalErrorMSG
+        show={showErrorMessageModal}
+        onClose={() => setShowErrorMessageModal(false)}
+      >
+        {errorMessage}
+      </ModalErrorMSG>
     </div>
   );
 };

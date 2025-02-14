@@ -1,40 +1,64 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import { ChevronLeft, X } from 'lucide-react';
-import useMyPage from '../hooks/useMyPage';
-import { fetchPublicUser } from '../fetch/fetchPublicUser';
-import { useAuth } from '../contexts/authContext';
-import { useStore } from '../contexts/storeContext';
-import { usePublic } from '../contexts/publicContext';
-import UserProfileForm from '../components/component/userProfile';
-import QrCodeSection from '../components/component/qrCode';
-import EventSwitch from '../components/component/event';
-import SnsConnect from '../components/component/snsConnect';
-import EventAlertModal from '../components/modal/eventModal';
-import ModalMSG from '../components/modal/modalMSG';
-import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import ConfirmDeleteAccountModal from '../components/modal/confirmDeleteAccountModal';
- 
+import React from "react";
+import { useRouter } from "next/router";
+import { motion } from "framer-motion";
+import { ChevronLeft, X } from "lucide-react";
+import useMyPage from "../hooks/useMyPage";
+import { fetchPublicUser } from "../fetch/fetchPublicUser";
+import { useAuth } from "../contexts/authContext";
+import { useStore } from "../contexts/storeContext";
+import { usePublic } from "../contexts/publicContext";
+import UserProfileForm from "../components/component/userProfile";
+import QrCodeSection from "../components/component/qrCode";
+import EventSwitch from "../components/component/event";
+import SnsConnect from "../components/component/snsConnect";
+import EventAlertModal from "../components/modal/eventModal";
+import ModalMSG from "../components/modal/modalMSG";
+import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import ConfirmDeleteAccountModal from "../components/modal/confirmDeleteAccountModal";
+
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const MyPagePublic = () => {
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
   const { isPublicOn } = usePublic();
-  const router = useRouter(); 
+  const router = useRouter();
 
   const {
-    userData, handleUserDataChange, profileImage,
-    toggleImageModal, chooseImage, applyDefaultImage, isImageModalOpen,    
-    showQrCode, qrUrl, setQrUrl, handleGenerateQrCode, handleDownloadQrCode, toggleQrCode,
-    isEventOn, toggleEventOn, showEventAlertModal, handleEventAlertModalClose,
-    handleConfirmAccountDeletion, handleAccountDeletionClick, setShowDeleteModal, showDeleteModal,
-    handleSaveChanges, isChanged,
-    showMessageModal, message, handleMessageModalClose,
-    showErrorMessageModal, errorMessage, handleErrorMessageModalClose
+    userData,
+    handleUserDataChange,
+    profileImage,
+    toggleImageModal,
+    chooseImage,
+    applyDefaultImage,
+    isImageModalOpen,
+    showQrCode,
+    qrUrl,
+    setQrUrl,
+    handleGenerateQrCode,
+    handleDownloadQrCode,
+    toggleQrCode,
+    isEventOn,
+    toggleEventOn,
+    showEventAlertModal,
+    handleEventAlertModalClose,
+    handleConfirmAccountDeletion,
+    handleAccountDeletionClick,
+    setShowDeleteModal,
+    showDeleteModal,
+    handleSaveChanges,
+    isChanged,
+    showMessageModal,
+    message,
+    handleMessageModalClose,
+    showErrorMessageModal,
+    errorMessage,
+    handleErrorMessageModalClose,
   } = useMyPage({
-    token, removeToken,
-    storeID, removeStoreID,
+    token,
+    removeToken,
+    storeID,
+    removeStoreID,
     fetchUserData: fetchPublicUser,
     updateProfileUrl: `${API_DOMAIN}/public/user-profile/`,
     updateProfilePhotoUrl: `${API_DOMAIN}/public/update-profile-photo/`,
@@ -45,14 +69,18 @@ const MyPagePublic = () => {
   return (
     <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">
       <div className="bg-white p-8 my-4 rounded-lg shadow-lg max-w-sm w-full text-center relative">
-        <div className='flex justify-between items-center'>
-          <ChevronLeft
-            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.back()} // 뒤로가기 버튼
-          />
-          <p className='font-semibold mt-2.5'> </p>
+        <div className="flex justify-between items-center">
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <ChevronLeft
+              className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+              onClick={() => router.push("/mainPageForPublic")}
+            />
+          </motion.div>
+          <p className="font-semibold mt-2.5"> </p>
           <button
-            className={`font-semibold text-lg ${isChanged ? 'text-indigo-500' : 'text-gray-500'}`}
+            className={`font-semibold text-lg ${
+              isChanged ? "text-indigo-500" : "text-gray-500"
+            }`}
             onClick={handleSaveChanges}
             disabled={!isChanged}
           >
@@ -67,19 +95,19 @@ const MyPagePublic = () => {
             alt="프로필 이미지"
             className="w-24 h-24 rounded-full mx-auto mb-4 border border-2 border-indigo-500"
             onClick={toggleImageModal}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           />
           <div
             className="absolute flex items-center justify-center text-xs font-bold text-white"
             style={{
-              bottom: '0',
-              left: '50%',
-              transform: 'translate(-50%, 50%)',
-              backgroundColor: '#6366f1',
-              padding: '4px 8px',
-              borderRadius: '12px',
-              width: '60px',
-              cursor: 'pointer',
+              bottom: "0",
+              left: "50%",
+              transform: "translate(-50%, 50%)",
+              backgroundColor: "#6366f1",
+              padding: "4px 8px",
+              borderRadius: "12px",
+              width: "60px",
+              cursor: "pointer",
             }}
             onClick={toggleImageModal}
           >
@@ -89,16 +117,14 @@ const MyPagePublic = () => {
 
         {/* 사용자 정보 입력 필드 */}
         {userData && (
-            <UserProfileForm
-              isPublicOn={isPublicOn}
-              token={token}
-              storeID={storeID}
-              userData={userData} // 유효한 userData만 전달
-              onUpdateUserData={handleUserDataChange}
-            />
-          )
-        }
-
+          <UserProfileForm
+            isPublicOn={isPublicOn}
+            token={token}
+            storeID={storeID}
+            userData={userData} // 유효한 userData만 전달
+            onUpdateUserData={handleUserDataChange}
+          />
+        )}
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
@@ -112,15 +138,12 @@ const MyPagePublic = () => {
         />
 
         {/* 이벤트 스위치 */}
-        <EventSwitch
-          isEventOn={isEventOn}
-          toggleEventOn={toggleEventOn}
-        />
+        <EventSwitch isEventOn={isEventOn} toggleEventOn={toggleEventOn} />
 
         {/* 회원 탈퇴 버튼 */}
         <button
           className="text-red-600 font-bold mt-4 hover:underline"
-          onClick={handleAccountDeletionClick}  // 탈퇴 모달 열기
+          onClick={handleAccountDeletionClick} // 탈퇴 모달 열기
         >
           회원탈퇴
         </button>
@@ -135,8 +158,14 @@ const MyPagePublic = () => {
 
         {/* 이미지 모달 */}
         {isImageModalOpen && (
-          <div id="imageModal" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="modal-content bg-white p-6 rounded-lg text-center" style={{ width: '380px', position: 'relative' }}>
+          <div
+            id="imageModal"
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          >
+            <div
+              className="modal-content bg-white p-6 rounded-lg text-center"
+              style={{ width: "380px", position: "relative" }}
+            >
               <button
                 onClick={toggleImageModal}
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
@@ -152,12 +181,15 @@ const MyPagePublic = () => {
                 onChange={chooseImage}
               />
               <button
-                onClick={() => document.getElementById('fileInput').click()}
+                onClick={() => document.getElementById("fileInput").click()}
                 className="block w-full mb-2 py-2 text-black"
               >
                 앨범에서 사진/동영상 선택
               </button>
-              <button onClick={applyDefaultImage} className="block w-full py-2 text-black">
+              <button
+                onClick={applyDefaultImage}
+                className="block w-full py-2 text-black"
+              >
                 기본 이미지 적용
               </button>
             </div>
@@ -179,7 +211,7 @@ const MyPagePublic = () => {
               handleConfirmAccountDeletion(); // 탈퇴 확정 시 처리
             }
           }}
-          message="정말 탈퇴를 하시겠습니까?"  // 탈퇴 확인 메시지
+          message="정말 탈퇴를 하시겠습니까?" // 탈퇴 확인 메시지
         />
 
         {/* 성공 메시지 모달 */}
@@ -188,9 +220,7 @@ const MyPagePublic = () => {
           onClose={handleMessageModalClose}
           title="Success"
         >
-          <p style={{ whiteSpace: 'pre-line' }}>
-            {message}
-          </p>
+          <p style={{ whiteSpace: "pre-line" }}>{message}</p>
         </ModalMSG>
 
         {/* 에러 메시지 모달 */}
@@ -199,12 +229,8 @@ const MyPagePublic = () => {
           onClose={handleErrorMessageModalClose}
           title="Error"
         >
-          <p style={{ whiteSpace: 'pre-line' }}>
-            {errorMessage}
-          </p>
+          <p style={{ whiteSpace: "pre-line" }}>{errorMessage}</p>
         </ModalErrorMSG>
-
-
       </div>
     </div>
   );

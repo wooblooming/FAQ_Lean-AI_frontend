@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { usePublic } from "../contexts/publicContext";
 import ConvertSwitch from "../components/component/convertSwitch2";
@@ -27,9 +28,7 @@ function FindAccount() {
   const [timeLeft, setTimeLeft] = useState(0); // 인증 제한 시간
   const [timerActive, setTimerActive] = useState(false); // 타이머 활성화 상태
 
-  const apiEndpoint = isPublicOn
-    ? `${API_DOMAIN}/public`
-    : `${API_DOMAIN}/api`; // ConvertSwitch 상태에 따라 API 엔드포인트 설정
+  const apiEndpoint = isPublicOn ? `${API_DOMAIN}/public` : `${API_DOMAIN}/api`; // ConvertSwitch 상태에 따라 API 엔드포인트 설정
 
   // 입력 값 변경 시 폼 상태 업데이트
   const handleInputChange = (e) => {
@@ -154,10 +153,12 @@ function FindAccount() {
     <div className="bg-violet-50 flex items-center justify-center h-screen">
       <div className="bg-white w-full max-w-md mx-auto p-4 rounded-md shadow-md space-y-4">
         <div className="flex items-center">
-          <ChevronLeft
-            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.push("/login")}
-          />
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <ChevronLeft
+              className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+              onClick={() => router.push("/login")}
+            />
+          </motion.div>
           <h1
             className="text-2xl font-bold text-center text-indigo-600"
             style={{ fontFamily: "NanumSquareExtraBold" }}

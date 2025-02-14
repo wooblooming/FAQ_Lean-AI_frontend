@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSwipeable } from 'react-swipeable';
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import StoreBanner from '../../components/component/storeBanner';
+import StoreBanner from '../../components/ui/storeBanner';
 import StoreInfo from '../../components/component/storeInfo';
 import MenuList from '../../components/component/menuList';
 import FeedList from '../../components/component/feedList'

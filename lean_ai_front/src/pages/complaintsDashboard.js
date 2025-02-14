@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,10 +56,12 @@ const ComplaintsDashboard = () => {
     <div className="min-h-screen p-6 font-sans bg-violet-50">
       <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
         <div className="flex items-center">
-          <ChevronLeft
-            className="h-6 w-6 md:h-8 md:w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.back()}
-          />
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <ChevronLeft
+              className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+              onClick={() => router.back()}
+            />
+          </motion.div>
           <h1
             className="text-2xl md:text-3xl font-bold text-center text-indigo-600"
             style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -66,7 +69,6 @@ const ComplaintsDashboard = () => {
             민원 조회 및 관리
           </h1>
         </div>
-
         <div className="flex flex-col space-y-2 md:flex-row">
           {/* 사이드바 탭 */}
           <div className="w-full md:w-1/5 md:pr-6">

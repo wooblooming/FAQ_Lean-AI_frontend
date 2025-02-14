@@ -67,11 +67,16 @@ const Timeline = () => {
     <div className="min-h-screen bg-violet-50 p-8">
       <div className="max-w-4xl mx-auto py-12 px-8  bg-white rounded-lg shadow-xl">
         <div className="flex flex-row">
-          <ChevronLeft
-            className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.back()}
-          />
-          <h1 className="text-3xl md:text-4xl font-bold text-left text-indigo-600 mb-4 whitespace-nowrap" style={{ fontFamily: "NanumSquareExtraBold" }}>
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <ChevronLeft
+              className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+              onClick={() => router.back()}
+            />
+          </motion.div>
+          <h1
+            className="text-3xl md:text-4xl font-bold text-left text-indigo-600 mb-4 whitespace-nowrap"
+            style={{ fontFamily: "NanumSquareExtraBold" }}
+          >
             린에이아이의 걸어온 길
           </h1>
         </div>

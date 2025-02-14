@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import { ChevronLeft, Store, Building2 } from "lucide-react";
 
 const Card = ({ title, description, icon, onClick }) => {
@@ -36,10 +37,12 @@ const SignupType = () => {
       <div className="max-w-5xl w-full mx-auto py-12 px-8 shadow-lg rounded-xl bg-white flex flex-col gap-4">
         <div className="flex flex-col space-y-2">
           <div className="flex items-center">
-            <ChevronLeft
-              className="h-8 w-8 text-indigo-600 cursor-pointer mr-2"
-              onClick={() => router.push("/")}
-            />
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <ChevronLeft
+                className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+                onClick={() => router.back()}
+              />
+            </motion.div>
             <h1
               className="text-4xl font-bold text-center text-indigo-600"
               style={{ fontFamily: "NanumSquareExtraBold" }}

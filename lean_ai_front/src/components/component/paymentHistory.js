@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ChevronLeft, ChevronRight, ScrollText } from "lucide-react";
+import { ScrollText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useAuth } from "../../contexts/authContext";
+import { paginate } from "@/utils/pagingUtils";
+import Pagination from "@/components/ui/pagination";
+import { useAuth } from "@/contexts/authContext";
 import ModalErrorMSG from "../modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
@@ -10,28 +12,14 @@ const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 const PaymentHistory = () => {
   const [paymentHistory, setPaymentHistory] = useState([]); // 결제 내역 상태
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
-  const [itemsPerPage, setItemsPerPage] = useState(8); // 페이지당 항목 수 (기본값 데스크탑)
+  const [itemsPerPage, setItemsPerPage] = useState(8); // 기본값: 데스크탑 (8개)
   const { token } = useAuth();
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
 
-  // 총 페이지 수 계산
-  const totalPages = Math.ceil(paymentHistory.length / itemsPerPage);
-
-  const currentItems = paymentHistory.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   const closeErrorModal = () => {
     setShowErrorModal(false);
     setErrorMessage("");
-  };
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
   };
 
   useEffect(() => {
@@ -60,14 +48,11 @@ const PaymentHistory = () => {
 
   const fetchPaymentHistory = async () => {
     try {
-      const response = await axios.get(
-        `${API_DOMAIN}/api/payment-history/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_DOMAIN}/api/payment-history/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const formattedData = response.data.payment_data.map((payment) => {
         return {
@@ -75,12 +60,13 @@ const PaymentHistory = () => {
           formattedDate:
             payment.status === "scheduled"
               ? new Date(payment.scheduled_at).toLocaleDateString()
-              : new Date(payment.created_at || payment.paid_at).toLocaleDateString(),
+              : new Date(
+                  payment.created_at || payment.paid_at
+                ).toLocaleDateString(),
           formattedAmount: Number(payment.amount).toLocaleString(),
-
         };
       });
-      
+
       setPaymentHistory(formattedData);
       // console.log(formattedData);
     } catch (error) {
@@ -89,6 +75,13 @@ const PaymentHistory = () => {
       setShowErrorModal(true);
     }
   };
+
+  // 결제내역을 paginate 함수로 페이징 처리
+  const { paginatedItems, totalPages, hasNextPage, hasPrevPage } = paginate(
+    paymentHistory,
+    currentPage,
+    itemsPerPage
+  );
 
   return (
     <div>
@@ -121,7 +114,7 @@ const PaymentHistory = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 text-center text-gray-700 rounded-b-lg">
-                  {currentItems.map((history) => (
+                  {paginatedItems.map((history) => (
                     <tr key={history.merchant_uid}>
                       <td className="px-1 md:px-6 py-2">
                         {history.formattedDate}
@@ -132,17 +125,17 @@ const PaymentHistory = () => {
                       <td className="px-1 md:px-6 py-2">
                         <span
                           className={`px-3 py-1.5 text-sm whitespace-nowrap leading-5 font-semibold rounded-full
-              ${
-                history.status === "paid"
-                  ? "bg-green-100 text-green-800"
-                  : history.status === "failed"
-                  ? "bg-red-100 text-red-800"
-                  : history.status === "scheduled"
-                  ? "bg-blue-100 text-blue-800"
-                  : history.status === "canceled"
-                  ? "bg-gray-100 text-gray-800"
-                  : "bg-yellow-100 text-yellow-800"
-              }`}
+                          ${
+                            history.status === "paid"
+                              ? "bg-green-100 text-green-800"
+                              : history.status === "failed"
+                              ? "bg-red-100 text-red-800"
+                              : history.status === "scheduled"
+                              ? "bg-blue-100 text-blue-800"
+                              : history.status === "canceled"
+                              ? "bg-gray-100 text-gray-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
                         >
                           {history.status === "paid"
                             ? "결제완료"
@@ -172,7 +165,7 @@ const PaymentHistory = () => {
                 결제 내역이 없습니다.
               </p>
             ) : (
-              currentItems.map((history) => (
+              paginatedItems.map((history) => (
                 <div
                   key={history.merchant_uid}
                   className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
@@ -220,40 +213,15 @@ const PaymentHistory = () => {
           </div>
         </CardContent>
 
-        {/* 페이지네이션 */}
+        {/* 페이지네이션 버튼 */}
         {totalPages > 1 && (
-          <div
-            className="flex justify-center space-x-2 py-4"
-            style={{ fontFamily: "NanumSquare" }}
-          >
-            <button
-              className="text-indigo-500 font-bold"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft />
-            </button>
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                className={`p-2 rounded-md ${
-                  currentPage === index + 1
-                    ? "text-indigo-500 font-bold"
-                    : "text-gray-400"
-                }`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              className="text-indigo-500 font-bold"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight />
-            </button>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            hasPrevPage={hasPrevPage}
+            hasNextPage={hasNextPage}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         )}
 
         {/* 에러 메시지 모달 */}

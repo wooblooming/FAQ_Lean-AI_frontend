@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
 import { useStore } from "../contexts/storeContext";
@@ -73,10 +74,12 @@ const SubscriptionsDashboard = () => {
       <div className="flex flex-col space-y-6 w-full py-12 px-6 shadow-md rounded-lg bg-white">
         {/* 헤더 영역 */}
         <div className="flex items-center">
-          <ChevronLeft
-            className="h-6 w-6 text-indigo-700 cursor-pointer mr-2"
-            onClick={() => router.push("/mainPage")}
-          />
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <ChevronLeft
+              className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
+              onClick={() => router.push("/mainPage")}
+            />
+          </motion.div>
           <h1
             className="text-2xl md:text-3xl font-bold text-center text-indigo-600"
             style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -88,7 +91,12 @@ const SubscriptionsDashboard = () => {
         {/* 로딩 상태 표시 */}
         {isLoading ? (
           <div className="flex justify-center items-center h-48">
-            <p className="text-gray-600 text-lg" style={{ fontFamily: "NanumSquareBold" }}>구독 데이터를 가져오는 중입니다...</p>
+            <p
+              className="text-gray-600 text-lg"
+              style={{ fontFamily: "NanumSquareBold" }}
+            >
+              구독 데이터를 가져오는 중입니다...
+            </p>
           </div>
         ) : (
           <>
