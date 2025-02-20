@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import Header from '../components/component/header';
+import Header from '../components/component/ui/header';
 import {  Eye, ChevronDown, ChevronUp, Send, SquareCheckBig } from 'lucide-react';
 import { useAuth } from '../contexts/authContext';
 import { useStore } from '../contexts/storeContext';
@@ -11,7 +11,7 @@ import faqs from '/public/text/faq.json';
 import RequestData from './requestService';
 import Modal from '../components/modal/modal';
 import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import Footer from '../components/component/footer';
+import Footer from '../components/component/ui/footer';
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
           <Chatbot agentId={process.env.NEXT_PUBLIC_AGENT_ID} />
           <Script
-            src=" https://testspay.kcp.co.kr/plugin/kcp_spay_hub.js" // 테스트
+            src="https://testspay.kcp.co.kr/plugin/kcp_spay_hub.js" // 테스트
             //src="https://spay.kcp.co.kr/plugin/kcp_spay_hub.js" // 실제
             strategy="beforeInteractive"
             onLoad={() => console.log("KCP 스크립트 로드 완료")}

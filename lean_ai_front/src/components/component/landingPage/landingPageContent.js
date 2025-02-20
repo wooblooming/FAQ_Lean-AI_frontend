@@ -4,13 +4,13 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useMediaQuery } from "react-responsive";
 import { ArrowRight } from "lucide-react";
-import Nav from "../navBar";
+import Nav from "../ui/navBar";
 import MobileLayout from "./mobileLayout";
 import TabletLayout from "./tabletLayout";
 import DesktopLayout from "./desktopLayout";
 import CompanySection from "./companySection";
 import ServiceSection from "./serviceSection";
-import Footer from "../footer";
+import Footer from "../ui/footer";
 
 const LandingPageContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
@@ -120,16 +120,20 @@ const LandingPageContent = () => {
 
       {/* 도입 신청 버튼 */}
       <motion.div
+        name="introduction"
         className="fixed bottom-24 right-2"
         style={{ zIndex: 50 }}
-        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
         <motion.button
           className="bg-indigo-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center group relative"
           style={{ fontFamily: "NanumSquareExtraBold" }}
-          onClick={() => router.push("https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform")}
+          onClick={() =>
+            router.push(
+              "https://docs.google.com/forms/d/e/1FAIpQLSfrPgaIfdHYLW6CO9cSbr4s-JqtWy2zkyAb1XEjqXClFITTIw/viewform"
+            )
+          }
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -141,8 +145,6 @@ const LandingPageContent = () => {
           >
             <span className="text-sm font-bold">도입 신청</span>
           </motion.div>
-
-
         </motion.button>
       </motion.div>
 

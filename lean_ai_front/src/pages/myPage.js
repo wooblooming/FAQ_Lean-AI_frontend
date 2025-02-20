@@ -1,15 +1,19 @@
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft, X } from "lucide-react";
+import kakaoIcon from "../../public/btn_kakao.svg";
+import naverIcon from "../../public/btn_naver.svg";
+import googleIcon from "../../public/btn_google.svg";
 import useMyPage from "../hooks/useMyPage";
 import { fetchStoreUser } from "../fetch/fetchStoreUser";
 import { useAuth } from "../contexts/authContext";
 import { useStore } from "../contexts/storeContext";
 import { usePublic } from "../contexts/publicContext";
-import UserProfileForm from "../components/component/userProfile";
-import QrCodeSection from "../components/component/qrCode";
-import EventSwitch from "../components/component/event";
-import SnsConnect from "../components/component/snsConnect";
+import UserProfileForm from "../components/component/commons/userProfile";
+import QrCodeSection from "../components/component/commons/qrCode";
+import EventSwitch from "../components/component/ui/event";
+import SnsConnect from "../components/component/commons/snsConnect";
 import EventAlertModal from "../components/modal/eventModal";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
@@ -64,6 +68,36 @@ const MyPage = () => {
     generateQrCodeUrl: `${API_DOMAIN}/api/generate-qr-code/`,
     deactivateAccountUrl: `${API_DOMAIN}/api/deactivate-account/`,
   });
+
+  const [snsList, setSnsList] = useState([
+    {
+      name: "kakao",
+      displayName: "카카오",
+      icon: kakaoIcon,
+      isConnected: false,
+    },
+    {
+      name: "naver",
+      displayName: "네이버",
+      icon: naverIcon,
+      isConnected: false,
+    },
+    {
+      name: "google",
+      displayName: "구글",
+      icon: googleIcon,
+      isConnected: false,
+    },
+  ]); // SNS 연결 상태 관리
+
+  // SNS 연결 상태 토글 함수
+  const toggleSnsConnection = (snsName) => {
+    setSnsList((prevSnsList) =>
+      prevSnsList.map((sns) =>
+        sns.name === snsName ? { ...sns, isConnected: !sns.isConnected } : sns
+      )
+    );
+  };
 
   return (
     <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">
@@ -142,6 +176,12 @@ const MyPage = () => {
         {/* 이벤트 스위치 */}
         <EventSwitch isEventOn={isEventOn} toggleEventOn={toggleEventOn} />
 
+        {/* SNS 연결 섹션 */}
+        <SnsConnect
+          snsList={snsList}
+          toggleSnsConnection={toggleSnsConnection}
+        />
+
         {/* 회원 탈퇴 버튼 */}
         <button
           className="text-red-600 font-bold mt-4 hover:underline"
@@ -149,14 +189,6 @@ const MyPage = () => {
         >
           회원탈퇴
         </button>
-
-        {/* 추후 업데이트 */}
-        {/* SNS 연결 섹션 
-        <SnsConnect
-          snsList={snsList}
-          toggleSnsConnection={toggleSnsConnection}
-        />
-        */}
 
         {/* 이미지 모달 */}
         {isImageModalOpen && (

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { paginate } from "@/utils/pagingUtils";
 import Pagination from "@/components/ui/pagination";
 import { useAuth } from "@/contexts/authContext";
-import ModalErrorMSG from "../modal/modalErrorMSG";
+import ModalErrorMSG from "../../modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

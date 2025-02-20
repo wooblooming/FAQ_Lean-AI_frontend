@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useAuth } from "../../contexts/authContext";
-import { useStore } from "../../contexts/storeContext";
-import { usePublic } from "../../contexts/publicContext";
-import LogoutModal from "../modal/logout";
+import { useAuth } from "../../../contexts/authContext";
+import { useStore } from "../../../contexts/storeContext";
+import { usePublic } from "../../../contexts/publicContext";
+import LogoutModal from "../../modal/logout";
 
 const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 모바일 메뉴 열림 상태

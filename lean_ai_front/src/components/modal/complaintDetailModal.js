@@ -4,8 +4,8 @@ import { useAuth } from '../../contexts/authContext';
 import { useStore } from '../../contexts/storeContext';
 import { X } from 'lucide-react';
 import { fetchPublicDepartment } from '../../fetch/fetchPublicDepart';
-import ComplaintDetailTabs from '../component/complaintDetailTabs';
-import ComplaintDetailContent from '../component/complaintDetailContent';
+import ComplaintDetailTabs from '../component/complaints/complaintDetailTabs';
+import ComplaintDetailContent from '../component/complaints/complaintDetailContent';
 import ModalMSG from '../modal/modalMSG';
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;

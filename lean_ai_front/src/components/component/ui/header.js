@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
-import { useAuth } from '../../contexts/authContext';
-import { useStore } from '../../contexts/storeContext';
-import { usePublic } from '../../contexts/publicContext';
+import { useAuth } from '../../../contexts/authContext';
+import { useStore } from '../../../contexts/storeContext';
+import { usePublic } from '../../../contexts/publicContext';
 import { Menu, X } from 'lucide-react';
-import LogoutModal from '../modal/logout'; // 로그아웃 모달 컴포넌트 가져오기
-import ModalErrorMSG from '../modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
+import LogoutModal from '../../modal/logout'; // 로그아웃 모달 컴포넌트 가져오기
+import ModalErrorMSG from '../../modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN; // config 파일에서 API URL 등을 가져오기
 

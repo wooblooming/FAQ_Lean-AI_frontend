@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { v4 as uuidv4 } from "uuid";
 import { Check } from "lucide-react";
 import axios from "axios";
 import plans from "/public/text/plan.json";
@@ -12,8 +11,8 @@ import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
-const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
 const SITE_CD = process.env.NEXT_PUBLIC_KCP_SITE_CD;
+const TEST_CD = process.env.NEXT_PUBLIC_KCP_TEST_SITE_CD;
 
 const SubscriptionPlans = () => {
   const { token } = useAuth();
@@ -21,15 +20,12 @@ const SubscriptionPlans = () => {
   const [userData, setUserData] = useState(null);
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [isPolicyConfirmed, setIsPolicyConfirmed] = useState(false); // ✅ 모달 확인 상태 추가
+  const [isPolicyConfirmed, setIsPolicyConfirmed] = useState(false);
   const [showChangeModal, setShowChangeModal] = useState(false);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-
-   // 결제 버튼 활성화 조건
-   const isPaymentEnabled = selectedPlan && isPolicyConfirmed;
 
   useEffect(() => {
     if (storeID && token) {
@@ -66,127 +62,59 @@ const SubscriptionPlans = () => {
 
   const handleClosePolicyModal = () => {
     setShowChangeModal(false);
-    setIsPolicyConfirmed(true); // ✅ 모달을 닫을 때 확인 상태 변경
+    setIsPolicyConfirmed(true);
   };
 
-  const handleRegisterClick = async () => {
-    if (!selectedPlan) {
-      setShowErrorModal(true);
-      setErrorMessage("구독 플랜을 선택해주세요.");
+  const isPaymentEnabled = selectedPlan && isPolicyConfirmed;
+
+  /** ✅ KCP 결제창 호출 함수 */
+  const handlePayment = () => {
+    console.log("현재 사용 중인 KCP site_cd:", TEST_CD);
+    console.log("KCP 결제 모듈 확인:", window.KCP_Pay_Execute_Web);
+
+    if (!window.KCP_Pay_Execute_Web) {
+      reject(new Error("KCP 결제 모듈이 로드되지 않았습니다."));
       return;
     }
 
-    if (!isPolicyConfirmed) {
-      setShowErrorModal(true);
-      setErrorMessage("구독 규정을 먼저 확인해주세요.");
-      return;
-    }
+    const orderId = `ORDER-${Date.now()}`;
 
-    try {
-      // 1️⃣ KCP 정기결제 요청 (한 번에 결제 + 빌링키 발급)
-      const paymentResponse = await requestKCPSubscriptionPayment();
-      console.log("정기 결제 성공:", paymentResponse);
+    // 결제창에 전달할 form 생성
+    const form = document.createElement("form");
+    form.name = "order_info";
+    form.method = "post";
+    form.action = `${API_DOMAIN}/api/kcp-approval`; // Ret_URL에서 승인 처리
 
-      // 2️⃣ 빌링키를 백엔드에 저장하여 구독 등록
-      const successMessage = await saveSubscription(paymentResponse);
-
-      setShowMessageModal(true);
-      setMessage(successMessage || "정기 결제가 성공적으로 등록되었습니다.");
-    } catch (error) {
-      console.error("결제 오류:", error);
-      setShowErrorModal(true);
-      setErrorMessage(error.message || "결제 중 오류가 발생했습니다.");
-    }
-  };
-
-  const requestKCPSubscriptionPayment = async () => {
-    return new Promise((resolve, reject) => {
-      if (!window.KCP_Pay_Execute_Web) {
-        reject(new Error("KCP 결제 모듈이 로드되지 않았습니다."));
-        return;
-      }
-
-      const orderInfo = {
-        site_cd: SITE_CD, // 테스트용 Site Code (운영에서는 실제 코드 사용)
-        pay_method: "100000000000", // 신용카드
-        currency: "410", // KRW
-        approval_key: "",
-        good_name: selectedPlan?.plan || "구독 플랜",
-        good_mny: selectedPlan?.price.toString() || "0",
-        buyr_name: userData?.name || "사용자",
-        buyr_mail: userData?.email || "test@test.com",
-        buyr_tel1: userData?.phone || "010-0000-0000",
-        ordr_idxx: uuidv4().replace(/-/g, "").substring(0, 20), // 랜덤 주문번호 생성
-        escrow_yn: "N", // 에스크로 사용 여부 (정기 결제에서는 "N"으로 설정)
-        pay_type: "P", // 🔥 정기결제 (자동결제) 모드 활성화
-        Ret_URL: `${FRONTEND_DOMAIN}/subscription`, // 현재 페이지에서 처리
-      };
-
-      // 🔥 KCP 정기 결제 요청
-      window.KCP_Pay_Execute_Web(orderInfo, (response) => {
-        if (response.res_cd === "0000") {
-          console.log("정기 결제 성공, 빌링키 발급 완료:", response);
-          resolve(response);
-        } else {
-          reject(new Error(response.res_msg || "정기 결제 실패"));
-        }
-      });
-    });
-  };
-
-  const saveSubscription = async (paymentResponse) => {
-    try {
-      const response = await axios.post(
-        `${API_DOMAIN}/api/subscription/`,
-        {
-          store_id: storeID,
-          user_email: userData?.email,
-          plan_id: selectedPlan?.id,
-          payment_method: "KCP",
-          billing_key: paymentResponse.card_cd, // 🔥 정기결제 빌링키 (KCP 응답에서 가져옴)
-          payment_status: "success",
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (response.data.success) {
-        return "정기 결제가 정상적으로 등록되었습니다.";
-      } else {
-        throw new Error("구독 등록 실패");
-      }
-    } catch (error) {
-      console.error("구독 저장 실패:", error);
-      throw error;
-    }
-  };
-
-  // 에러 메시지 매핑 함수에 KCP 관련 에러 추가
-  const mapErrorMessage = (errorMsg) => {
-    const errorMessages = {
-      INVALID_CARD_COMPANY: "지원하지 않는 카드사입니다.",
-      INVALID_CARD_NUMBER: "잘못된 카드 번호입니다.",
-      EXPIRED_CARD: "만료된 카드입니다.",
-      INVALID_PIN: "잘못된 비밀번호입니다.",
-      INSUFFICIENT_BALANCE: "잔액이 부족합니다.",
-      EXCEED_MAX_PAYMENT_AMOUNT: "최대 결제금액을 초과했습니다.",
-      INVALID_CARD_EXPIRY: "잘못된 유효기간입니다.",
-      PAY_PROCESS_CANCELED: "결제가 취소되었습니다.",
-      NETWORK_ERROR: "네트워크 오류가 발생했습니다.",
-      KCP_SCRIPT_NOT_LOADED:
-        "결제 모듈 로딩에 실패했습니다. 페이지를 새로고침해주세요.",
+    const paymentData = {
+      site_cd: TEST_CD,
+      card_cert_type: "BATCH",
+      site_name: "TEST SITE",
+      pay_method: "AUTH:CARD",
+      kcpgroup_id: "",
+      ordr_idxx: orderId,
+      good_expr: "2:1m",
+      batch_soc: "Y",
+      module_type: "01",
+      buyr_name: userData?.name || "홍길동",
     };
 
-    return errorMessages[errorMsg] || "결제 중 오류가 발생했습니다.";
+    console.log("paymentData :", paymentData);
+
+    Object.keys(paymentData).forEach((key) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = paymentData[key];
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    KCP_Pay_Execute_Web(form);
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-violet-50  z-50 h-full">
-      <div
-        className="bg-white rounded-2xl shadow-xl px-6 py-8 md:px-8 
-                      w-[95%] h-[95%] md:w-[600px] md:h-[600px] relative animate-in fade-in duration-300 overflow-y-auto"
-      >
+    <div className="fixed inset-0 flex items-center justify-center bg-violet-50 z-50 h-full">
+      <div className="bg-white rounded-2xl shadow-xl px-6 py-8 md:px-8 w-[95%] h-[95%] md:w-[600px] md:h-[600px] relative animate-in fade-in duration-300 overflow-y-auto">
         {/* 제목 및 설명 */}
         <div className="mb-8 text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
@@ -267,8 +195,8 @@ const SubscriptionPlans = () => {
             취소
           </button>
           <button
-            onClick={handleRegisterClick}
-            disabled={!isPaymentEnabled} // ✅ 모달 확인 전까지 버튼 비활성화
+            onClick={handlePayment}
+            disabled={!isPaymentEnabled}
             className={`w-full px-4 py-3 rounded-lg font-medium transition-colors text-sm sm:text-base ${
               isPaymentEnabled
                 ? "bg-indigo-600 text-white hover:bg-indigo-700"
@@ -282,13 +210,11 @@ const SubscriptionPlans = () => {
         </div>
       </div>
 
-      {/* 교환,환불 모달 */}
+      {/* 모달 컴포넌트들 */}
       <SubscriptionRulesModal
         show={showChangeModal}
         onClose={handleClosePolicyModal}
       />
-
-      {/* 성공 메시지 모달 */}
       <ModalMSG
         show={showMessageModal}
         onClose={handleSuccessConfirm}
@@ -296,8 +222,6 @@ const SubscriptionPlans = () => {
       >
         {message}
       </ModalMSG>
-
-      {/* 에러 메시지 모달 */}
       <ModalErrorMSG show={showErrorModal} onClose={onClose}>
         {errorMessage}
       </ModalErrorMSG>

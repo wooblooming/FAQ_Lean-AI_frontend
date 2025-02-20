@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ModalErrorMSG from '../modal/modalErrorMSG';
+import ModalErrorMSG from '../../modal/modalErrorMSG';
 
 const FeedEdit = ({ images, onDelete, onRename }) => {
     const [newNames, setNewNames] = useState({});

@@ -4,9 +4,9 @@ import { useSwipeable } from "react-swipeable";
 import { Quote, Triangle } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StoreBanner from "../../components/ui/storeBanner";
-import StoreInfo from "../../components/component/storeInfo";
-import MenuList from "../../components/component/menuList";
-import FeedList from "../../components/component/feedList";
+import StoreInfo from "../../components/component/store/storeInfo";
+import MenuList from "../../components/component/store/menuList";
+import FeedList from "../../components/component/store/feedList";
 import { fetchStoreData } from "../../fetch/fetchStoreData";
 import { fetchStoreMenu } from "../../fetch/fetchStoreMenu";
 import { fetchFeedImage } from "../../fetch/fetchStoreFeed";
@@ -94,7 +94,7 @@ const StoreIntroductionExample = () => {
         />
 
         {/* Enhanced store introduction section */}
-        <div className="flex flex-col my-3 px-4">
+        <div className="flex flex-col mt-3 px-4">
           {storeData?.store_name && (
             <h1 className="font-bold text-3xl text-gray-800 mb-2">
               {storeData.store_name}
@@ -102,9 +102,8 @@ const StoreIntroductionExample = () => {
           )}
 
           {storeData?.store_introduction && (
-            <div className="bg-gray-50 rounded-lg p-4 relative">
-            <Quote className="text-indigo-500 absolute top-2 left-2" size={20} />
-            
+            <div className="bg-gray-50 rounded-lg p-2 relative">
+            <Quote className="text-indigo-500 absolute top-2 left-2" size={18} />
             <div
               className={`mt-4 text-gray-600 leading-relaxed ${
                 isExpanded ? "max-h-full" : "max-h-16"

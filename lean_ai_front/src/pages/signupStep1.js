@@ -194,7 +194,7 @@ const SignupStep1 = () => {
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <ChevronLeft
                 className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-                onClick={() => router.push('/')}
+                onClick={() => router.push("/")}
               />
             </motion.div>
             <h1
@@ -390,7 +390,6 @@ const SignupStep1 = () => {
               />
             </label>
           </div>
-
           <button
             className="w-full bg-indigo-500 text-white py-2 rounded-full text-lg font-semibold"
             onClick={handleNextStep}

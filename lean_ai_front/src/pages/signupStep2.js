@@ -32,12 +32,27 @@ const SignupStep2 = () => {
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
   useEffect(() => {
-    // sessionStorage에서 사용자 정보를 불러오기
     const storedUserData = sessionStorage.getItem("signupUserData");
+    const isOAuthUser = sessionStorage.getItem("isOAuthUser") === "true"; // ✅ 소셜 로그인 여부 확인
+
     if (storedUserData) {
       setFormData(JSON.parse(storedUserData));
     } else {
-      // 만약 데이터가 없으면 첫 단계로 리다이렉트
+      setFormData({
+        username: "",
+        password: "",
+        name: "",
+        dob: "",
+        phone: "",
+        email: "",
+        businessType: "",
+        businessName: "",
+        address: "",
+      });
+    }
+    //console.log("storedUserData : " + storedUserData);
+
+    if (!storedUserData && !isOAuthUser) {
       router.push("/signupStep1");
     }
   }, []);
@@ -64,6 +79,9 @@ const SignupStep2 = () => {
     } = formData;
 
     if (!businessType || !businessName || !address) {
+      console.log(
+        f`businessType : ${businessType} \n businessName : ${businessName} \n address : ${address} \n`
+      );
       setErrorMessage("필수 항목들을 기입해주시길 바랍니다.");
       setShowErrorMessageModal(true);
       return;
@@ -76,6 +94,7 @@ const SignupStep2 = () => {
       return;
     }
 
+    console.log("dob : ", dob);
     let dobFormatted = dob;
     if (dob.length === 6) {
       const yearPrefix = parseInt(dob.substring(0, 2)) > 24 ? "19" : "20";
@@ -198,7 +217,7 @@ const SignupStep2 = () => {
                 type="text"
                 name="businessName"
                 placeholder="매장명"
-                value={formData.businessName}
+                value={formData.businessName || ""}
                 onChange={handleInputChange}
                 className="border px-4 py-2 border-gray-300 rounded-md w-full"
               />
@@ -212,7 +231,7 @@ const SignupStep2 = () => {
                 type="text"
                 name="address"
                 placeholder="주소"
-                value={formData.address}
+                value={formData.address || ""}
                 onChange={handleInputChange}
                 className="border px-4 py-2 border-gray-300 rounded-md w-full"
               />
@@ -231,22 +250,7 @@ const SignupStep2 = () => {
               className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
               onClick={handleTermsCheckboxChange}
             >
-              이용약관 및 개인정보 수집 동
-              <div className="flex items-center justify-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={marketingAccepted}
-                  onChange={() => setMarketingAccepted(!marketingAccepted)}
-                  className="form-checkbox h-4 w-4 text-blue-600"
-                />
-                <label
-                  className="text-sm font-medium underline hover:text-blue-600"
-                  onClick={() => setShowMarketingModal(true)}
-                >
-                  마케팅 활용 동의 및 광고 수신 동의(선택)
-                </label>
-              </div>
-              의(필수)
+              이용약관 및 개인정보 수집 동의(필수)
             </label>
           </div>
 

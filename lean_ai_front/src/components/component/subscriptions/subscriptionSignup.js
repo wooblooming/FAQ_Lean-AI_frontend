@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { CreditCard, ArrowRight } from "lucide-react";
-import CardRegistrationModal from "../modal/cardRegistrationModal";
-import ModalMSG from "../modal/modalMSG";
-import ModalErrorMSG from "../modal/modalErrorMSG";
+import CardRegistrationModal from "../../modal/cardRegistrationModal";
+import ModalMSG from "../../modal/modalMSG";
+import ModalErrorMSG from "../../modal/modalErrorMSG";
 
 const SubscriptionSignup = ({ token, userData }) => {
   const [isRegistrationOpen, setRegistrationOpen] = useState(false);

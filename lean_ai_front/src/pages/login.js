@@ -4,10 +4,10 @@ import Link from "next/link";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../contexts/authContext";
-import { useStore } from "../contexts/storeContext";
-import { usePublic } from "../contexts/publicContext";
-import ConvertSwitch from "../components/component/convertSwitch1";
+import { useAuth } from "@/contexts/authContext";
+import { useStore } from "@/contexts/storeContext";
+import { usePublic } from "@/contexts/publicContext";
+import ConvertSwitch from "../components/component/ui/convertSwitch1";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
@@ -59,27 +59,33 @@ const Login = () => {
 
   // token, storeID, userData 변경 감지
   /*
-    useEffect(() => {
-        if (token && storeID && userData) {
-            console.log('userData.subscription : ',userData.subscription);
-            const hasSubscription = userData.subscription?.is_active;
+  useEffect(() => {
+    if (token && storeID && userData) {
+      console.log("userData.subscription : ", userData.subscription);
+      const hasSubscription = userData.subscription
+        ? userData.subscription.is_active
+        : false;
 
-            // 구독 여부에 따라 페이지 이동
-            if (hasSubscription) {
-                if (isPublicOn) {
-                    router.push('/mainPageForPublic');
-                } else {
-                    router.push('/mainPage');
-                }
-            } else {
-                router.push('/subscriptionPlans');
-            }
+        console.log("hasSubscription : ", hasSubscription);
+
+      // 구독 여부에 따라 페이지 이동
+      if (hasSubscription) {
+        if (isPublicOn) {
+          router.push("/mainPageForPublic");
+        } else {
+          router.push("/mainPage");
         }
-    }, [token, storeID, userData, isPublicOn]);
-    */
+      } else {
+        router.push("/subscriptionPlans");
+      }
+    }
+  }, [token, storeID, userData, isPublicOn]);
+  */
 
   useEffect(() => {
     if (token && storeID) {
+      // 구독 여부에 따라 페이지 이동
+
       if (isPublicOn) {
         router.push("/mainPageForPublic");
       } else {
@@ -92,6 +98,21 @@ const Login = () => {
     if (e.key === "Enter") {
       handleLoginClick();
     }
+  };
+
+  const handleSocialLogin = (provider) => {
+    let authUrl = "";
+
+    if (provider === "kakao") {
+      if (provider === "kakao") {
+        authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code&scope=name,phone_number,birthday`;
+    }
+    } else if (provider === "naver") {
+      authUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI}&response_type=code`;
+    }
+
+    console.log("handleSocialLogin - 이동할 URL:", authUrl); // ✅ 로그 추가 (URL 확인)
+    window.location.href = authUrl; // ✅ SNS 로그인 페이지로 이동
   };
 
   return (
@@ -133,6 +154,41 @@ const Login = () => {
               className="ml-2 w-full border-none focus:ring-0"
               onKeyDown={handleKeyDown}
             />
+          </div>
+
+          <div className="w-full flex flex-col items-center text-center justify-center">
+            {/* SNS 로그인 텍스트 & 구분선 */}
+            <div className="w-full flex items-center my-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="px-4 text-gray-600 whitespace-nowrap">
+                SNS 로그인
+              </span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            {/* SNS 버튼 */}
+            <div className="flex space-x-4">
+              <button
+                className="text-sm text-gray-600 hover:text-gray-800"
+                onClick={() => handleSocialLogin("kakao")}
+              >
+                <img
+                  src="/images/kakaotalk_btn_icon.png"
+                  className="w-10 h-10 p-1 rounded-full"
+                  style={{ backgroundColor: "#FEE500" }}
+                />
+              </button>
+              <button
+                className="text-sm text-gray-600 hover:text-gray-800"
+                onClick={() => handleSocialLogin("naver")}
+              >
+                <img
+                  src="/images/naver_btn_icon.png"
+                  className="w-10 h-10 p-1 rounded-full"
+                  style={{ backgroundColor: "#03C75A" }}
+                />
+              </button>
+            </div>
           </div>
 
           <button

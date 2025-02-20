@@ -8,8 +8,8 @@ import { useStore } from "../contexts/storeContext";
 import { fetchFeedImage } from "../fetch/fetchStoreFeed";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
-import FeedUpload from "../components/component/feedUpload";
-import FeedEdit from "../components/component/feedEdit";
+import FeedUpload from "../components/component/store/feedUpload";
+import FeedEdit from "../components/component/store/feedEdit";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
