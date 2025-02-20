@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import TermsOfServiceModal from "../components/modal/termsOfServiceModal";
-import MarketingModal from "../components/modal/marketingModal";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 
@@ -22,12 +20,8 @@ const SignupStep2 = () => {
     businessName: "",
     address: "",
   });
-  const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
-  const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 저장
   const [showWarning, setShowWarning] = useState(false); // 비즈니스 종류 미선택 경고
-  const [showTermsModal, setShowTermsModal] = useState(false); // 이용약관 모달 상태
-  const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
   const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 환영 모달 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
 
@@ -87,13 +81,6 @@ const SignupStep2 = () => {
       return;
     }
 
-    // 약관 동의 확인
-    if (!termsAccepted) {
-      setErrorMessage("이용약관 및 개인정보 수집 동의는 필수입니다.");
-      setShowErrorMessageModal(true);
-      return;
-    }
-
     console.log("dob : ", dob);
     let dobFormatted = dob;
     if (dob.length === 6) {
@@ -137,15 +124,6 @@ const SignupStep2 = () => {
     } catch (error) {
       setErrorMessage("회원가입 요청 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
-    }
-  };
-
-  // 약관 동의 상태 변경
-  const handleTermsCheckboxChange = () => {
-    if (!termsAccepted) {
-      setShowTermsModal(true);
-    } else {
-      setTermsAccepted(!termsAccepted);
     }
   };
 
@@ -238,36 +216,6 @@ const SignupStep2 = () => {
             </label>
           </div>
 
-          {/* 약관 및 마케팅 동의 체크박스 */}
-          <div className="flex items-center justify-center space-x-2">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={handleTermsCheckboxChange}
-              className="form-checkbox h-4 w-4 text-blue-600"
-            />
-            <label
-              className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
-              onClick={handleTermsCheckboxChange}
-            >
-              이용약관 및 개인정보 수집 동의(필수)
-            </label>
-          </div>
-
-          <div className="flex items-center justify-center space-x-2">
-            <input
-              type="checkbox"
-              checked={marketingAccepted}
-              onChange={() => setMarketingAccepted(!marketingAccepted)}
-              className="form-checkbox h-4 w-4 text-blue-600"
-            />
-            <label
-              className="text-sm font-medium underline hover:text-blue-600"
-              onClick={() => setShowMarketingModal(true)}
-            >
-              마케팅 활용 동의 및 광고 수신 동의(선택)
-            </label>
-          </div>
 
           {/* 회원가입 버튼 */}
           <button
@@ -276,20 +224,6 @@ const SignupStep2 = () => {
           >
             회원가입
           </button>
-
-          {/* 이용약관 모달 */}
-          <TermsOfServiceModal
-            show={showTermsModal}
-            onClose={() => setShowTermsModal(false)}
-            onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
-          />
-
-          {/* 마케팅 약관 모달 */}
-          <MarketingModal
-            show={showMarketingModal}
-            onClose={() => setShowMarketingModal(false)}
-            onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
-          />
 
           {/* 에러 메시지 모달 */}
           <ModalErrorMSG

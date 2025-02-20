@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
                             '/signupStep1', '/signupStep2' , '/signupPublicStep1', '/signupPublicStep2', 
                             '/findAccount', '/findAccountResult', '/registerPublic',
                             '/complaintRegister', '/complaintStatusLookup'
-                            ,'/subscriptionPlansIntroduce',
+                            ,'/subscriptionPlansIntroduce','/terms-of-service',
                             ];
 
     useEffect(() => {

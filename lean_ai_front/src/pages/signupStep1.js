@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import IdCheckModal from "../components/modal/idCheckModal"; // 아이디 중복 검사 기능이 있는 컴포넌트
 import VerificationModal from "../components/modal/verificationModal"; // 핸드폰 인증 기능이 있는 컴포넌트
+import TermsOfServiceModal from "../components/modal/termsOfServiceModal";
+import MarketingModal from "../components/modal/marketingModal";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
@@ -30,6 +32,12 @@ const SignupStep1 = () => {
   const [codeCheck, setCodeCheck] = useState(false); // 인증번호 확인 여부 저장
   const [showIdCheckModal, setShowIdCheckModal] = useState(false); // 아이디 중복 검사 모달 상태 관리
   const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
+  const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
+  const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
+
+  const [showTermsModal, setShowTermsModal] = useState(false); // 이용약관 모달 상태
+  const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
+
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태 관리
 
   const router = useRouter();
@@ -79,6 +87,15 @@ const SignupStep1 = () => {
     });
   };
 
+  // 약관 동의 상태 변경
+  const handleTermsCheckboxChange = () => {
+    if (!termsAccepted) {
+      setShowTermsModal(true);
+    } else {
+      setTermsAccepted(!termsAccepted);
+    }
+  };
+
   // 회원가입 버튼 클릭 시 필수 정보 확인 후 다음 페이지로 이동
   const handleNextStep = () => {
     const { username, password, confirmPassword, name, dob, phone } = formData;
@@ -103,6 +120,13 @@ const SignupStep1 = () => {
 
     if (!codeCheck) {
       setErrorMessage("핸드폰 인증을 해주세요.");
+      setShowErrorMessageModal(true);
+      return;
+    }
+
+    // 약관 동의 확인
+    if (!termsAccepted) {
+      setErrorMessage("이용약관 및 개인정보 수집 동의는 필수입니다.");
       setShowErrorMessageModal(true);
       return;
     }
@@ -212,184 +236,220 @@ const SignupStep1 = () => {
           </div>
         </div>
 
-        <div className="px-5 space-y-3">
-          {/* 아이디 입력 및 중복 확인 */}
-          <div className="flex items-center w-full space-x-4 ">
-            <div className="flex-grow relative">
-              <input
-                type="text"
-                name="username"
-                placeholder="아이디"
-                value={formData.username}
-                onChange={handleInputChange}
-                className="border px-4 py-2 border-gray-300 rounded-md w-full"
-              />
-              <label
-                htmlFor="user-id"
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500"
+        <div className="px-5 space-y-5">
+          <div className="space-y-3">
+            {/* 아이디 입력 및 중복 확인 */}
+            <div className="flex items-center w-full space-x-4 ">
+              <div className="flex-grow relative">
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="아이디"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  className="border px-4 py-2 border-gray-300 rounded-md w-full"
+                />
+                <label
+                  htmlFor="user-id"
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500"
+                >
+                  *
+                </label>
+              </div>
+              <button
+                className="flex items-center justify-end text-indigo-500 rounded-md px-4 py-2 hover:font-semibold whitespace-nowrap"
+                onClick={() => setShowIdCheckModal(true)}
               >
-                *
-              </label>
+                아이디 확인
+              </button>
             </div>
-            <button
-              className="flex items-center justify-end text-indigo-500 rounded-md px-4 py-2 hover:font-semibold whitespace-nowrap"
-              onClick={() => setShowIdCheckModal(true)}
-            >
-              아이디 확인
-            </button>
-          </div>
-          <div className="flex flex-col space-y-1">
-            {/* 비밀번호 입력 */}
-            <label
-              className="flex items-center text-gray-700 w-full"
-              htmlFor="password"
-            >
-              <div className="relative flex-grow">
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="비밀번호"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="border px-4 py-2 border-gray-300 rounded-md w-full"
-                />
-                <label
-                  htmlFor="user-pw"
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500"
-                >
-                  *
-                </label>
-              </div>
-            </label>
-            {/* 비밀번호가 정규식에 적합한지 여부에 따라 출력 메시지가 달라짐 */}
-            {!passwordValid ? (
-              <p className="text-red-400 text-sm font-medium whitespace-pre-line ">
-                비밀번호가 8~20자 이내인지, 알파벳(대/소문자), 숫자, 특수문자 중
-                최소 2가지를 포함하는지 확인해주세요.
-              </p>
-            ) : (
-              <p className="text-gray-600 text-sm font-medium whitespace-pre-line">
-                8~20자 비밀번호를 입력하고, 알파벳(대/소문자), 숫자, 특수문자 중
-                최소 2가지를 포함해야 합니다.
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col space-y-1">
-            {/* 비밀번호 확인 입력 */}
-            <label
-              className="flex items-center text-gray-700 w-full"
-              htmlFor="confirmPassword"
-            >
-              <div className="relative flex-grow">
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="비밀번호 확인"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className={`border px-4 py-2 border-gray-300 rounded-md w-full ${
-                    !passwordsMatch ? "border-red-500" : ""
-                  }`}
-                />
-                <label
-                  htmlFor="user-pw"
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500"
-                >
-                  *
-                </label>
-              </div>
-            </label>
-            {/* 비밀번호와 비밀번호 확인란 입력값이 동일한지 확인 */}
-            {!passwordsMatch && (
-              <p className="text-red-500 text-sm font-medium">
-                비밀번호가 일치하지 않습니다.
-              </p>
-            )}
-          </div>
-
-          <div className="flex space-x-2">
-            {/* 이름 입력 */}
-            <label className="flex items-center block text-gray-700 w-1/2">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="이름"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="border px-4 py-2 border-gray-300 rounded-md w-full"
-                />
-                <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">
-                  *
-                </label>
-              </div>
-            </label>
-
-            {/* 생년월일 입력 */}
-            <label className="flex items-center justify-end text-gray-700 w-1/2">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  name="dob"
-                  placeholder="생년월일(ex.880111)"
-                  value={formData.dob}
-                  onChange={handleInputChange}
-                  className="border px-4 py-2 border-gray-300 rounded-md w-full"
-                />
-                <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">
-                  *
-                </label>
-              </div>
-            </label>
-          </div>
-
-          <div className="flex ">
-            {/* 핸드폰 번호 입력 */}
-            <label className="block text-gray-700 w-full">
-              <div className="flex items-center justify-start space-x-2.5">
+            <div className="flex flex-col space-y-1">
+              {/* 비밀번호 입력 */}
+              <label
+                className="flex items-center text-gray-700 w-full"
+                htmlFor="password"
+              >
                 <div className="relative flex-grow">
                   <input
-                    type="text"
-                    name="phone"
-                    placeholder="휴대폰 번호( - 제외숫자만)"
-                    value={formData.phone}
+                    type="password"
+                    name="password"
+                    placeholder="비밀번호"
+                    value={formData.password}
                     onChange={handleInputChange}
-                    className="border px-4 py-2 border-gray-300 rounded-md w-full "
+                    className="border px-4 py-2 border-gray-300 rounded-md w-full"
+                  />
+                  <label
+                    htmlFor="user-pw"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500"
+                  >
+                    *
+                  </label>
+                </div>
+              </label>
+              {/* 비밀번호가 정규식에 적합한지 여부에 따라 출력 메시지가 달라짐 */}
+              {!passwordValid ? (
+                <p className="text-red-400 text-sm font-medium whitespace-pre-line ">
+                  비밀번호가 8~20자 이내인지, 알파벳(대/소문자), 숫자, 특수문자
+                  중 최소 2가지를 포함하는지 확인해주세요.
+                </p>
+              ) : (
+                <p className="text-gray-600 text-sm font-medium whitespace-pre-line">
+                  8~20자 비밀번호를 입력하고, 알파벳(대/소문자), 숫자, 특수문자
+                  중 최소 2가지를 포함해야 합니다.
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col space-y-1">
+              {/* 비밀번호 확인 입력 */}
+              <label
+                className="flex items-center text-gray-700 w-full"
+                htmlFor="confirmPassword"
+              >
+                <div className="relative flex-grow">
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="비밀번호 확인"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className={`border px-4 py-2 border-gray-300 rounded-md w-full ${
+                      !passwordsMatch ? "border-red-500" : ""
+                    }`}
+                  />
+                  <label
+                    htmlFor="user-pw"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500"
+                  >
+                    *
+                  </label>
+                </div>
+              </label>
+              {/* 비밀번호와 비밀번호 확인란 입력값이 동일한지 확인 */}
+              {!passwordsMatch && (
+                <p className="text-red-500 text-sm font-medium">
+                  비밀번호가 일치하지 않습니다.
+                </p>
+              )}
+            </div>
+
+            <div className="flex space-x-2">
+              {/* 이름 입력 */}
+              <label className="flex items-center block text-gray-700 w-1/2">
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="이름"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="border px-4 py-2 border-gray-300 rounded-md w-full"
                   />
                   <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">
                     *
                   </label>
                 </div>
-                <button
-                  className="flex items-center justify-end text-indigo-500 rounded-md px-4 py-2 hover:font-semibold whitespace-nowrap"
-                  onClick={handleSendCode}
-                >
-                  인증번호 받기
-                </button>
-              </div>
-              {/* 핸드폰 번호 오류 메시지 표시 */}
-              {phoneError && (
-                <p className="text-red-500 text-xs mt-1 font-medium ">
-                  {phoneError}
-                </p>
-              )}
-            </label>
+              </label>
+
+              {/* 생년월일 입력 */}
+              <label className="flex items-center justify-end text-gray-700 w-1/2">
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    name="dob"
+                    placeholder="생년월일(ex.880111)"
+                    value={formData.dob}
+                    onChange={handleInputChange}
+                    className="border px-4 py-2 border-gray-300 rounded-md w-full"
+                  />
+                  <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">
+                    *
+                  </label>
+                </div>
+              </label>
+            </div>
+
+            <div className="flex ">
+              {/* 핸드폰 번호 입력 */}
+              <label className="block text-gray-700 w-full">
+                <div className="flex items-center justify-start space-x-2.5">
+                  <div className="relative flex-grow">
+                    <input
+                      type="text"
+                      name="phone"
+                      placeholder="휴대폰 번호( - 제외숫자만)"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 border-gray-300 rounded-md w-full "
+                    />
+                    <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-500">
+                      *
+                    </label>
+                  </div>
+                  <button
+                    className="flex items-center justify-end text-indigo-500 rounded-md px-4 py-2 hover:font-semibold whitespace-nowrap"
+                    onClick={handleSendCode}
+                  >
+                    인증번호 받기
+                  </button>
+                </div>
+                {/* 핸드폰 번호 오류 메시지 표시 */}
+                {phoneError && (
+                  <p className="text-red-500 text-xs mt-1 font-medium ">
+                    {phoneError}
+                  </p>
+                )}
+              </label>
+            </div>
+
+            <div>
+              {/* 이메일 입력 */}
+              <label className="flex text-gray-700 w-full">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="이메일"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="border px-4 py-2 border-gray-300 rounded-md w-full "
+                />
+              </label>
+            </div>
           </div>
 
-          <div>
-            {/* 이메일 입력 */}
-            <label className="flex text-gray-700 w-full">
+          {/* 약관 및 마케팅 동의 체크박스 */}
+          <div className="flex flex-col space-y-1.5">
+            <div className="flex items-center justify-center space-x-2">
               <input
-                type="email"
-                name="email"
-                placeholder="이메일"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="border px-4 py-2 border-gray-300 rounded-md w-full "
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={handleTermsCheckboxChange}
+                className="form-checkbox h-4 w-4 text-blue-600"
               />
-            </label>
+              <label
+                className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
+                onClick={handleTermsCheckboxChange}
+              >
+                이용약관 및 개인정보 수집 동의(필수)
+              </label>
+            </div>
+
+            <div className="flex items-center justify-center space-x-2">
+              <input
+                type="checkbox"
+                checked={marketingAccepted}
+                onChange={() => setMarketingAccepted(!marketingAccepted)}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <label
+                className="text-sm font-medium underline hover:text-blue-600"
+                onClick={() => setShowMarketingModal(true)}
+              >
+                마케팅 활용 동의 및 광고 수신 동의(선택)
+              </label>
+            </div>
           </div>
+
           <button
             className="w-full bg-indigo-500 text-white py-2 rounded-full text-lg font-semibold"
             onClick={handleNextStep}
@@ -397,7 +457,7 @@ const SignupStep1 = () => {
             다음
           </button>
 
-          <div className="text-center text-gray-500 flex flex-col space-y-2">
+          <div className="text-center text-gray-500 flex flex-col">
             <p>
               이미 계정이 있나요?
               <Link href="/login" className="underline text-blue-500 p-1 m-1">
@@ -437,6 +497,20 @@ const SignupStep1 = () => {
             verificationCode={formData.verificationCode}
             onChange={handleInputChange}
             errorMessage={verificationError}
+          />
+
+          {/* 이용약관 모달 */}
+          <TermsOfServiceModal
+            show={showTermsModal}
+            onClose={() => setShowTermsModal(false)}
+            onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
+          />
+
+          {/* 마케팅 약관 모달 */}
+          <MarketingModal
+            show={showMarketingModal}
+            onClose={() => setShowMarketingModal(false)}
+            onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
           />
 
           {/* 에러메시지 모달 */}
