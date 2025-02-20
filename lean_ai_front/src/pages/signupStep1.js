@@ -457,7 +457,7 @@ const SignupStep1 = () => {
             다음
           </button>
 
-          <div className="text-center text-gray-500 flex flex-col">
+          <div className="text-center text-gray-500 flex flex-col space-y-2">
             <p>
               이미 계정이 있나요?
               <Link href="/login" className="underline text-blue-500 p-1 m-1">

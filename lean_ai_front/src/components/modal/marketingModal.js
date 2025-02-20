@@ -1,8 +1,20 @@
-import React from 'react';
-import ModalText from '../modal/modalText';
+import React, { useState, useEffect } from "react";
+import ModalText from "../modal/modalText";
 
 const MarketingModal = ({ show, onClose, onAgree }) => {
-    const marketingOfService = `
+  const [agreements, setAgreements] = useState({
+    marketing: false,
+  });
+
+  useEffect(() => {
+    if (!show) {
+      setAgreements({
+        marketing: false,
+      });
+    }
+  }, [show]);
+
+  const marketingOfService = `
         ㈜린에이아이는 정보통신망의 이용촉진 및 정보보호 등에 관한 법률 제50조 제1항에 따라 광고성 정보를 전송하기 위해 수신자의 사전 동의를 받고 있으며, 수신 동의여부를 정기적으로 확인합니다.
 
         광고성 정보 수신에 동의하실 경우, (주)린에이아이가 제공하는 이벤트/혜택 등 다양한 정보 및 기타 유용한 광고성 정보가 휴대전화(카카오톡 알림 또는 문자), 이메일을 통해 발송됩니다.
@@ -16,35 +28,73 @@ const MarketingModal = ({ show, onClose, onAgree }) => {
         수신동의의 의사표시 이후에도 마이페이지 접속을 통해 이용자의 의사에 따라 수신동의 상태를 변경(동의/철회)할 수 있습니다.
     `;
 
-    function handleAgree(isAgreed) {
-        onAgree(isAgreed); // 동의 여부를 상위 컴포넌트에 전달
-        onClose(); // 모달 닫기
+  function handleCheckbox(type) {
+    setAgreements((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }));
+  }
 
-    };
+  function handleSubmit() {
+    onAgree(agreements.marketing);
+    onClose();
+  }
 
-    return (
-        <ModalText show={show} onClose={onClose} title="마케팅 활용 동의 및 광고 수신 동의 선택">
-            <div className=" border rounded-md p-2 whitespace-pre text-wrap font-sans">
-                <p>{marketingOfService}</p>
+  return (
+    <div>
+      <ModalText
+        show={show}
+        onClose={onClose}
+        title="마케팅 활용 동의 및 광고 수신 동의"
+      >
+        <div className="flex flex-col space-y-4">
+          {/* 마케팅 동의 섹션 */}
+          <div className="border rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  checked={agreements.marketing}
+                  onChange={() => handleCheckbox("marketing")}
+                  className="w-4 h-4 accent-indigo-600"
+                />
+                <span className="font-medium">
+                  마케팅 활용 동의 및 광고 수신 동의 (선택)
+                </span>
+              </div>
             </div>
-            <div className='flex flex-row items-center justify-center mt-3 mb-3 font-sans'>
-                <div className='flex space-x-2'>
-                    <button
-                        onClick={() => handleAgree(true)}
-                        className="text-blue-500 px-4 py-2 font-semibold rounded-md hover:ring-2 ring-blue-400"
-                    >
-                        동의합니다
-                    </button>
-                    <button
-                        onClick={() => handleAgree(false)}
-                        className="text-gray-500 px-4 py-2 font-semibold rounded-md hover:ring-2 ring-gray-400"
-                    >
-                        동의하지 않습니다
-                    </button>
-                </div>
+            <div className="max-h-80 overflow-y-auto bg-gray-50 rounded-lg p-4">
+              <pre className="whitespace-pre-wrap text-sm text-gray-600">
+                {marketingOfService}
+              </pre>
             </div>
-        </ModalText>
-    );
+          </div>
+
+          {/* 버튼 영역 */}
+          <div className="flex space-x-3 justify-center pt-4">
+            <button
+              onClick={handleSubmit}
+              disabled={!agreements.marketing}
+              className={`px-6 py-2 rounded-lg transition-colors font-medium min-w-[120px]
+              ${
+                agreements.marketing
+                  ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                  : "bg-indigo-100 text-gray-600 cursor-not-allowed"
+              }`}
+            >
+              확인
+            </button>
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors font-medium min-w-[120px]"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      </ModalText>
+    </div>
+  );
 };
 
 export default MarketingModal;
