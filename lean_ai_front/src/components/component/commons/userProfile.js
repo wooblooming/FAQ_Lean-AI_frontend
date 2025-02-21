@@ -320,7 +320,7 @@ const UserProfileForm = ({
   };
 
   return (
-    <div className="flex flex-col items-start py-4 font-sans space-y-2">
+    <div className="flex flex-col items-start py-4 font-sans space-y-2 w-full">
       <div className='font-semibold text-lg' style={{ fontFamily: "NanumSquareExtraBold" }}>사용자 정보</div>
 
       {/* 사용자 정보 입력 필드 */}
@@ -337,7 +337,7 @@ const UserProfileForm = ({
               borderBottom: '1.5px solid #6366f1',
               outline: 'none',
               padding: '2px 0',
-              width: '100%',
+              width: '90%',
             }}
           />
         </div>
@@ -352,7 +352,7 @@ const UserProfileForm = ({
               borderBottom: '1.5px solid #6366f1',
               outline: 'none',
               padding: '2px 0',
-              width: '100%',
+              width: '90%',
             }}
           >
             <div className='text-left'>{userData.user_id}</div> {/* ID는 수정 불가 */}
@@ -371,15 +371,15 @@ const UserProfileForm = ({
               borderBottom: '1.5px solid #6366f1',
               outline: 'none',
               padding: '2px 0',
-              width: '100%',
+              width: '90%',
             }}
           />
         </div>
 
         {/* 전화번호 입력 필드 및 인증번호 받기 버튼 */}
-        <div className='flex flex-col'>
-          <div className='text-sm text-gray-400 mr-1.5 text-left' style={{ fontFamily: "NanumSquare" }}>전화번호</div>
-          <div className='flex flex-row justify-between space-x-4'>
+        <div className='flex flex-col w-full'>
+          <div className='text-sm text-gray-400 text-left' style={{ fontFamily: "NanumSquare" }}>전화번호</div>
+          <div className='flex flex-row w-full space-x-4'>
             <input
               type="text"
               value={formatPhoneNumber(phoneNumber) || ''}
@@ -389,7 +389,6 @@ const UserProfileForm = ({
                 borderBottom: '1.5px solid #6366f1',
                 outline: 'none',
                 padding: '2px 0',
-                width: '100%',
               }}
             />
             <button

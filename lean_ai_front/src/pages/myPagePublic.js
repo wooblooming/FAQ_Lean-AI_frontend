@@ -10,7 +10,6 @@ import { usePublic } from "../contexts/publicContext";
 import UserProfileForm from "../components/component/commons/userProfile";
 import QrCodeSection from "../components/component/commons/qrCode";
 import EventSwitch from "../components/component/ui/event";
-import SnsConnect from "../components/component/commons/snsConnect";
 import EventAlertModal from "../components/modal/eventModal";
 import ModalMSG from "../components/modal/modalMSG";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
@@ -148,13 +147,7 @@ const MyPagePublic = () => {
           회원탈퇴
         </button>
 
-        {/* 추후 업데이트 */}
-        {/* SNS 연결 섹션 
-        <SnsConnect
-          snsList={snsList}
-          toggleSnsConnection={toggleSnsConnection}
-        />
-        */}
+
 
         {/* 이미지 모달 */}
         {isImageModalOpen && (

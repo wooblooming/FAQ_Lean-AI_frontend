@@ -66,11 +66,9 @@ const MainPageWithMenu = () => {
   const [category, setCategory] = useState("")
   const [storeName, setStoreName] = useState("") // 상점 이름 상태
   const [slug, setStoreSlug] = useState("") // 상점 슬러그 상태
-
   const router = useRouter()
   const { token } = useAuth()
   const lastNotifications = getLastNotifications() // 최신 공지사항 가져오기
-  const latestFaqs = faqs.slice(0, 3) // FAQ 상위 3개만 선택
 
   // 통계 관련 상태
   const [statisticsData, setStatisticsData] = useState([]) // 통계 데이터 상태
@@ -112,6 +110,8 @@ const MainPageWithMenu = () => {
       setCategory(store_category)
       setStoreName(store_name)
       setStoreSlug(slug)
+
+      //console.log("store data : ", storeData);
     }
   }, [storeData])
 
