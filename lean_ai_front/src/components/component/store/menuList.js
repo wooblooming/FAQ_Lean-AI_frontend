@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import { TriangleAlert } from 'lucide-react';
-import AllergyModal from '../../modal/allergyModal';
+import AllergyModal from '@/components/modal/allergyModal';
 
 const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
 

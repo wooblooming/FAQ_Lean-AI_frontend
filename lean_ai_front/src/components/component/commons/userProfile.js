@@ -3,9 +3,9 @@ import axios from 'axios';
 import CreatableSelect from 'react-select/creatable';
 import makeAnimated from 'react-select/animated';
 import { formatPhoneNumber } from '@/utils/telUtils';
-import ModalMSG from '../../modal/modalMSG';
-import ModalErrorMSG from '../../modal/modalErrorMSG';
-import VerificationModal from '../../modal/verificationModal';
+import ModalMSG from '@/components/modal/modalMSG';
+import ModalErrorMSG from '@/components/modal/modalErrorMSG';
+import VerificationModal from '@/components/modal/verificationModal';
 import { fetchPublicDepartment } from '@/fetch/fetchPublicDepart';
 import styles from '@/styles/selectStyles.module.css';
 

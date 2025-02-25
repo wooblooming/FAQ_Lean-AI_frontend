@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { usePublic } from "../../../contexts/publicContext";
-import { useAuth } from "../../../contexts/authContext";
+import { usePublic } from "@/contexts/publicContext";
+import { useAuth } from "@/contexts/authContext";
 
 const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
 

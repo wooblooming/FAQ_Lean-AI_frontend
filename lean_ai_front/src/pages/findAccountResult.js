@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import { usePublic } from "../contexts/publicContext";
-import ConvertSwitch from "../components/component/ui/convertSwitch2";
-import ModalMSG from "../components/modal/modalMSG";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
-import ModalResetPassword from "../components/modal/resetPasswordModal";
+import { usePublic } from "@/contexts/publicContext";
+import ConvertSwitch from "@/components/component/ui/convertSwitch2";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
+import ModalResetPassword from "@/components/modal/resetPasswordModal";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

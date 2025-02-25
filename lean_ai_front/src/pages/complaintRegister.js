@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import { fetchPublicDepartment } from "../fetch/fetchPublicDepart";
-import PersonalInfoModal from "../components/modal/personalInfoModal";
-import ModalMSG from "../components/modal/modalMSG";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
-import TextInput from "../components/component/ui/textInput";
+import { fetchPublicDepartment } from "@/fetch/fetchPublicDepart";
+import PersonalInfoModal from "@/components/modal/personalInfoModal";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
+import TextInput from "@/components/component/ui/textInput";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

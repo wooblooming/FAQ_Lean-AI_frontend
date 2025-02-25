@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "@/contexts/authContext";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

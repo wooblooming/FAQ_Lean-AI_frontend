@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import { useAuth } from "../contexts/authContext";
-import { useStore } from "../contexts/storeContext";
-import { fetchStoreUser } from "../fetch/fetchStoreUser";
-import { fetchSubscription } from "../fetch/fetchSubscription";
-import SubscriptionInfo from "../components/component/subscriptions/subscriptionInfo";
-import PaymentMethod from "../components/component/subscriptions/paymentMethod";
-import PaymentHistory from "../components/component/subscriptions/paymentHistory";
-import CardCancelModal from "../components/modal/cardCancelModal";
-import CardRestoreModal from "../components/modal/cardRestoreModal";
-import ModalMSG from "../components/modal/modalMSG";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import { useAuth } from "@/contexts/authContext";
+import { useStore } from "@/contexts/storeContext";
+import { fetchStoreUser } from "@/fetch/fetchStoreUser";
+import { fetchSubscription } from "@/fetch/fetchSubscription";
+import SubscriptionInfo from "@/components/component/subscriptions/subscriptionInfo";
+import PaymentMethod from "@/components/component/subscriptions/paymentMethod";
+import PaymentHistory from "@/components/component/subscriptions/paymentHistory";
+import CardCancelModal from "@/components/modal/cardCancelModal";
+import CardRestoreModal from "@/components/modal/cardRestoreModal";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const SubscriptionsDashboard = () => {
   const router = useRouter();

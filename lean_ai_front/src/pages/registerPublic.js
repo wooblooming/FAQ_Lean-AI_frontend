@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import ModalMSG from '../components/modal/modalMSG';
-import ModalErrorMSG from '../components/modal/modalErrorMSG';
-import OpeningHoursSelector from '../components/component/ui/openingHours';
-import FileInput from '../components/component/ui/fileInput';
-import TextInput from '../components/component/ui/textInput';
+import ModalMSG from '@/components/modal/modalMSG';
+import ModalErrorMSG from '@/components/modal/modalErrorMSG';
+import OpeningHoursSelector from '@/components/component/ui/openingHours';
+import FileInput from '@/components/component/ui/fileInput';
+import TextInput from '@/components/component/ui/textInput';
  
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

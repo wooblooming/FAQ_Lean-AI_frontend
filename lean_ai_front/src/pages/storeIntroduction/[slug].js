@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { useSwipeable } from "react-swipeable";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useSwipeable } from 'react-swipeable';
 import { Quote, Triangle } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import StoreBanner from "@/components/ui/storeBanner";
-import StoreInfo from "../../components/component/store/storeInfo";
-import MenuList from "../../components/component/store/menuList";
-import FeedList from "../../components/component/store/feedList";
-import { fetchStoreData } from "../../fetch/fetchStoreData";
-import { fetchStoreMenu } from "../../fetch/fetchStoreMenu";
-import { fetchFeedImage } from "../../fetch/fetchStoreFeed";
-import ModalErrorMSG from "../../components/modal/modalErrorMSG";
-import Chatbot from "../chatBotMSG";
+import StoreBanner from '@/components/ui/storeBanner';
+import StoreInfo from '@/components/component/store/storeInfo';
+import MenuList from '@/components/component/store/menuList';
+import FeedList from '@/components/component/store/feedList';
+import { fetchStoreData } from '@/fetch/fetchStoreData';
+import { fetchStoreMenu } from '@/fetch/fetchStoreMenu';
+import { fetchFeedImage } from '@/fetch/fetchStoreFeed';
+import ModalErrorMSG from '@/components/modal/modalErrorMSG';
+import Chatbot from '../chatBotMSG';
 
 const StoreIntroduce = () => {
   const router = useRouter();

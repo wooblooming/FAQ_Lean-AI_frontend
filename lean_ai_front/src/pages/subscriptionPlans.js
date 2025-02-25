@@ -3,12 +3,12 @@ import { useRouter } from "next/router";
 import { Check } from "lucide-react";
 import axios from "axios";
 import plans from "/public/text/plan.json";
-import { useAuth } from "../contexts/authContext";
-import { useStore } from "../contexts/storeContext";
-import { fetchStoreUser } from "../fetch/fetchStoreUser";
-import SubscriptionRulesModal from "../components/modal/subscriptionRulesModal";
-import ModalMSG from "../components/modal/modalMSG";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import { useAuth } from "@/contexts/authContext";
+import { useStore } from "@/contexts/storeContext";
+import { fetchStoreUser } from "@/fetch/fetchStoreUser";
+import SubscriptionRulesModal from "@/components/modal/subscriptionRulesModal";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 const SITE_CD = process.env.NEXT_PUBLIC_KCP_SITE_CD;

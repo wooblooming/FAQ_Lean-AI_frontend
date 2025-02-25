@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../contexts/authContext';
-import { usePublic } from '../contexts/publicContext';
-import ModalMSG from '../components/modal/modalMSG';
-import ModalErrorMSG from '../components/modal/modalErrorMSG';
+import { useAuth } from '@/contexts/authContext';
+import { usePublic } from '@/contexts/publicContext';
+import ModalMSG from '@/components/modal/modalMSG';
+import ModalErrorMSG from '@/components/modal/modalErrorMSG';
  
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

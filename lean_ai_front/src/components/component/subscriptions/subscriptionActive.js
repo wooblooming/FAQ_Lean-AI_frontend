@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Calendar, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import { getLastAvailableDate } from "../../../utils/dateUtils";
+import { getLastAvailableDate } from "@/utils/dateUtils";
 
 const SubscriptionStatus = ({ subscriptionData }) => {
   const [loading, setLoading] = useState(true);

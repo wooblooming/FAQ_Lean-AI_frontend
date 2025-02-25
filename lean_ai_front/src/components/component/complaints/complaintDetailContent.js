@@ -1,5 +1,5 @@
 import React from 'react';
-import TransferDepartmentModal from '../../modal/transferDepartModal';
+import TransferDepartmentModal from '@/components/modal/transferDepartModal';
 import { Button } from "@/components/ui/button";
 
 

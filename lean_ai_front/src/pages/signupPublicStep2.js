@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import {
-  ChevronLeft,
-  RotateCw,
-  Building2,
-  Clock,
-  Phone,
-  MapPin,
-  Users,
-} from "lucide-react";
-import TermsOfServiceModal from "../components/modal/termsOfServiceModal";
-import RegisterPublic from "./registerPublic";
-import Modal from "../components/modal/modal";
-import MarketingModal from "../components/modal/marketingModal";
-import ModalMSG from "../components/modal/modalMSG";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
 import axios from "axios";
+import { ChevronLeft, RotateCw, Building2, Clock, Phone, MapPin, Users } from "lucide-react";
+import TermsOfServiceModal from "@/components/modal/termsOfServiceModal";
+import RegisterPublic from "./registerPublic";
+import Modal from "@/components/modal/modal";
+import MarketingModal from "@/components/modal/marketingModal";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

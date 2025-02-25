@@ -2,7 +2,7 @@ import React from "react";
 import { Dot, Calendar, Clock, BadgeCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatDate, getLastAvailableDate } from "../../../utils/dateUtils";
+import { formatDate, getLastAvailableDate } from "@/utils/dateUtils";
 import plans from "/public/text/plan.json";
 
 const SubscriptionInfo = ({ subscriptionData, setCancelOpen, setRestoreOpen }) => {

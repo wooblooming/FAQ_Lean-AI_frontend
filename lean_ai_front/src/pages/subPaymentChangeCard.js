@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useAuth } from "../contexts/authContext";
-import ModalMSG from "../components/modal/modalMSG";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import { useAuth } from "@/contexts/authContext";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;

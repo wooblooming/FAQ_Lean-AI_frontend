@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import ImageZoomModal from "../../modal/imageZoomModal";
+import ImageZoomModal from "@/components/modal/imageZoomModal";
 
 const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL; // 환경 변수에서 MEDIA_URL 가져오기
 

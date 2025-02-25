@@ -2,15 +2,9 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import {
-  Search,
-  ChevronDown,
-  ChevronUp,
-  ChevronLeft,
-  CreditCard,
-  Settings,
-  HelpCircle,
-  UserRound,
-} from "lucide-react";
+  Search, ChevronDown, ChevronUp,
+  ChevronLeft, CreditCard, Settings,
+  HelpCircle, UserRound } from "lucide-react";
 import faqs from "/public/text/faq.json"; // FAQ 데이터
 import { paginate } from "@/utils/pagingUtils";
 import Pagination from "@/components/ui/pagination";

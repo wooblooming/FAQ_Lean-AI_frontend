@@ -7,8 +7,8 @@ import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
 import { usePublic } from "@/contexts/publicContext";
-import ConvertSwitch from "../components/component/ui/convertSwitch1";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import ConvertSwitch from "@/components/component/ui/convertSwitch1";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
@@ -18,11 +18,12 @@ const Login = () => {
   const [userData, setUserData] = useState(null); // 사용자 데이터 상태 추가
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
   const router = useRouter();
   const { saveToken, token } = useAuth();
   const { storeID, setStoreID } = useStore();
   const { isPublicOn, togglePublicOn } = usePublic();
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState("");
 
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
@@ -101,18 +102,25 @@ const Login = () => {
   };
 
   const handleSocialLogin = (provider) => {
+    setIsLoading(true);
+    setLoadingProvider(provider);
+
     let authUrl = "";
 
     if (provider === "kakao") {
       if (provider === "kakao") {
         authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code`;
-    }
+      }
     } else if (provider === "naver") {
       authUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI}&response_type=code`;
     }
 
-    console.log("handleSocialLogin - 이동할 URL:", authUrl); // ✅ 로그 추가 (URL 확인)
-    window.location.href = authUrl; // ✅ SNS 로그인 페이지로 이동
+    //console.log("handleSocialLogin - 이동할 URL:", authUrl); // ✅ 로그 추가 (URL 확인)
+
+    // 짧은 지연 후 리다이렉트 (로딩 상태를 보여줄 시간 확보)
+    setTimeout(() => {
+      window.location.href = authUrl;
+    }, 500);
   };
 
   return (
@@ -167,24 +175,42 @@ const Login = () => {
             </div>
 
             {/* SNS 버튼 */}
+            {/* SNS 버튼 */}
             <div className="flex space-x-4">
               <button
-                className="text-sm text-gray-600 hover:text-gray-800"
+                className="text-sm text-gray-600 hover:text-gray-800 relative"
                 onClick={() => handleSocialLogin("kakao")}
+                disabled={isLoading}
               >
+                {isLoading && loadingProvider === "kakao" ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-yellow-100 rounded-full opacity-80">
+                    <div className="w-5 h-5 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : null}
                 <img
                   src="/images/kakaotalk_btn_icon.png"
-                  className="w-10 h-10 p-1 rounded-full"
+                  className={`w-10 h-10 p-1 rounded-full ${
+                    isLoading && loadingProvider !== "kakao" ? "opacity-50" : ""
+                  }`}
                   style={{ backgroundColor: "#FEE500" }}
                 />
               </button>
+
               <button
-                className="text-sm text-gray-600 hover:text-gray-800"
+                className="text-sm text-gray-600 hover:text-gray-800 relative"
                 onClick={() => handleSocialLogin("naver")}
+                disabled={isLoading}
               >
+                {isLoading && loadingProvider === "naver" ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-green-100 rounded-full opacity-80">
+                    <div className="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : null}
                 <img
                   src="/images/naver_btn_icon.png"
-                  className="w-10 h-10 p-1 rounded-full"
+                  className={`w-10 h-10 p-1 rounded-full ${
+                    isLoading && loadingProvider !== "naver" ? "opacity-50" : ""
+                  }`}
                   style={{ backgroundColor: "#03C75A" }}
                 />
               </button>

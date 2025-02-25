@@ -4,7 +4,7 @@ import { Check, ChevronLeft, ChevronUp, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import plans from "/public/text/plan.json";
 import { useAuth } from "@/contexts/authContext";
-import { useStore } from "../contexts/storeContext";
+import { useStore } from "@/contexts/storeContext";
 import { fetchStoreUser } from "@/fetch/fetchStoreUser";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 

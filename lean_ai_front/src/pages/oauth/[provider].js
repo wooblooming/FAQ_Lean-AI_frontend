@@ -23,9 +23,12 @@ const OAuthPage = () => {
       return;
     }
 
-    const handleOAuth = async () => {
+    const handleOAuth = async () => {        
+      
+      setIsRedirecting(true);
+
       try {
-        setIsRedirecting(true);
+
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_DOMAIN}/api/oauth-token/`,
           { provider, code },
@@ -71,7 +74,7 @@ const OAuthPage = () => {
 
         setTimeout(() => {
           router.replace(redirectPath);
-        }, 500);
+        }, 700);
       } catch (error) {
         console.error("❌ [ERROR] OAuth 오류:", error);
         setIsRedirecting(true);

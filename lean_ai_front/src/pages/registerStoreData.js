@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { ArrowDown, Upload } from "lucide-react";
-import { useAuth } from '../contexts/authContext';
-import ModalMSG from '../components/modal/modalMSG';
-import ModalErrorMSG from '../components/modal/modalErrorMSG';
+import { useAuth } from '@/contexts/authContext';
+import ModalMSG from '@/components/modal/modalMSG';
+import ModalErrorMSG from '@/components/modal/modalErrorMSG';
  
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

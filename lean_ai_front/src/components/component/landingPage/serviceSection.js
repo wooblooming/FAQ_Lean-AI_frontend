@@ -3,24 +3,10 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSwipeable } from "react-swipeable";
 import { useInView } from "react-intersection-observer";
-import {
-  Utensils,
-  Monitor,
-  ShoppingCart,
-  Landmark,
-  ChevronLeft,
-  ChevronRight,
-  UserPlus,
-  PencilLine,
-  Store,
-  QrCode,
-  Bot,
-  FileCode2,
-  HelpCircle,
-  Brain,
-  FileText,
-  AppWindow,
-} from "lucide-react";
+import {  Utensils, Monitor, ShoppingCart, Landmark, ChevronLeft,
+          ChevronRight, UserPlus, PencilLine, Store, QrCode, Bot,
+          FileCode2, HelpCircle, Brain, FileText, AppWindow 
+        } from "lucide-react";
 
 // Features Data (서비스 소개 섹션 데이터)
 const features = [

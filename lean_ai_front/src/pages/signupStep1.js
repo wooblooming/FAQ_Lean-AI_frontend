@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import IdCheckModal from "../components/modal/idCheckModal"; // 아이디 중복 검사 기능이 있는 컴포넌트
-import VerificationModal from "../components/modal/verificationModal"; // 핸드폰 인증 기능이 있는 컴포넌트
-import TermsOfServiceModal from "../components/modal/termsOfServiceModal";
-import MarketingModal from "../components/modal/marketingModal";
-import ModalErrorMSG from "../components/modal/modalErrorMSG";
+import IdCheckModal from "@/components/modal/idCheckModal"; // 아이디 중복 검사 기능이 있는 컴포넌트
+import VerificationModal from "@/components/modal/verificationModal"; // 핸드폰 인증 기능이 있는 컴포넌트
+import TermsOfServiceModal from "@/components/modal/termsOfServiceModal";
+import MarketingModal from "@/components/modal/marketingModal";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 

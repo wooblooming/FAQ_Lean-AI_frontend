@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { CreditCard, Wallet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import CardChangeModal from "../../modal/cardChangeModal";
-import ModalMSG from "../../modal/modalMSG";
-import ModalErrorMSG from "../../modal/modalErrorMSG";
+import CardChangeModal from "@/components/modal/cardChangeModal";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const PaymentMethod = ({ userData, cardInfo }) => {
   // 상태 관리
