@@ -109,7 +109,7 @@ export default function Chatbot({ agentId }) {
         <div>
             {sessionId && (
                 <df-messenger
-                    location="asia-northeast1"
+                    //location="asia-northeast1"
                     project-id="lean-ai-faq"
                     agent-id={agentId}
                     language-code="ko"
