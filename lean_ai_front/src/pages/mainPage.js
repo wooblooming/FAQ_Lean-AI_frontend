@@ -59,7 +59,7 @@ const MainPageWithMenu = () => {
   const [isMobile, setIsMobile] = useState(false) // 모바일 화면 여부 상태
   const [isChangeInfoModalOpen, setIsChangeInfoModalOpen] = useState(false) // 정보 수정 모달 상태
   const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false) // 데이터 편집 모달 상태
-  const [isRequestDataModalOpen, setIsReqestDataModalOpen] = useState(false) // 데이터 요청 모달 상태
+  const [isRequestDataModalOpen, setIsRequestDataModalOpen] = useState(false) // 데이터 요청 모달 상태
   const [isLoggedIn, setIsLoggedIn] = useState(true) // 로그인 여부 상태
   const [errorMessage, setErrorMessage] = useState("") // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false) // 에러 메시지 모달 상태
@@ -270,7 +270,7 @@ const MainPageWithMenu = () => {
                   서비스에 관한 무엇이든 <br /> 편하게 문의해보세요
                 </p>
                 <div className="flex justify-center items-center">
-                  <Button icon={Send} onClick={() => setIsReqestDataModalOpen(true)}>
+                  <Button icon={Send} onClick={() => setIsRequestDataModalOpen(true)}>
                     문의하기
                   </Button>
                 </div>
@@ -381,7 +381,7 @@ const MainPageWithMenu = () => {
       {isRequestDataModalOpen && (
         <Modal
           onClose={() => {
-            setIsReqestDataModalOpen(false)
+            setIsRequestDataModalOpen(false)
           }}
         >
           <RequestService />

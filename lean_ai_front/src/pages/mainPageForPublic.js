@@ -42,7 +42,7 @@ const getLastNotifications = () => {
 
 const MainPageWithMenu = () => {
   const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 상태
-  const [isRequestDataModalOpen, setIsReqestDataModalOpen] = useState(false); // 데이터 요청 모달 상태
+  const [isRequestDataModalOpen, setIsRequestDataModalOpen] = useState(false); // 데이터 요청 모달 상태
   const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 상태
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
@@ -215,7 +215,7 @@ const MainPageWithMenu = () => {
                   </h3>
                   <p className='h-16'>FAQ 수정이나 서비스 관련 요청을 <br /> 편하게 문의하세요.</p>
                   <div className='flex justify-center items-center'>
-                    <Button icon={Send} onClick={() => setIsReqestDataModalOpen(true)}> 문의하기</Button>
+                    <Button icon={Send} onClick={() => setIsRequestDataModalOpen(true)}> 문의하기</Button>
                   </div>
                 </Card>
               </div>
@@ -305,7 +305,7 @@ const MainPageWithMenu = () => {
       {/* 데이터 요청 모달 */}
       {isRequestDataModalOpen && (
         <Modal
-          onClose={() => { setIsReqestDataModalOpen(false); }}
+          onClose={() => { setIsRequestDataModalOpen(false); }}
         >
           <RequestData />
         </Modal>
