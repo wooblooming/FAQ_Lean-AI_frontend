@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSwipeable } from "react-swipeable";
+import { Quote, Triangle } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StoreBanner from "@/components/ui/storeBanner";
 import StoreInfo from "../../components/component/store/storeInfo";
@@ -25,6 +26,7 @@ const StoreIntroduce = () => {
   const tabOrder = ["home", "menu", "image"]; // 탭 순서 배열
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (slug) {

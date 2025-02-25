@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/authContext';
 import { useSwipeable } from 'react-swipeable';
+import { Quote, Triangle } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StoreBanner from '../../components/ui/storeBanner';
 import StoreInfo from '../../components/component/store/storeInfo';
@@ -27,6 +28,7 @@ const StoreIntroduceOwner = () => {
   const tabOrder = ['home', 'menu', 'image']; // 탭 순서 배열
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (token && slug) {
@@ -38,6 +40,7 @@ const StoreIntroduceOwner = () => {
 
   useEffect(() => {
     if (storeData) {
+      //console.log("store data : ",storeData);
       setStoreCategory(storeData.store_category);
       setAgentId(storeData.agent_id);
       setIsLoading(false);
