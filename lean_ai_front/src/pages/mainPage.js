@@ -66,9 +66,11 @@ const MainPageWithMenu = () => {
   const [category, setCategory] = useState("")
   const [storeName, setStoreName] = useState("") // 상점 이름 상태
   const [slug, setStoreSlug] = useState("") // 상점 슬러그 상태
+
   const router = useRouter()
   const { token } = useAuth()
   const lastNotifications = getLastNotifications() // 최신 공지사항 가져오기
+  const latestFaqs = faqs.slice(0, 3) // FAQ 상위 3개만 선택
 
   // 통계 관련 상태
   const [statisticsData, setStatisticsData] = useState([]) // 통계 데이터 상태
@@ -110,8 +112,6 @@ const MainPageWithMenu = () => {
       setCategory(store_category)
       setStoreName(store_name)
       setStoreSlug(slug)
-
-      //console.log("store data : ", storeData);
     }
   }, [storeData])
 
@@ -155,11 +155,12 @@ const MainPageWithMenu = () => {
 
   // 구독 여부 확인 후 실행할 함수
   const handleActionWithSubscriptionCheck = (callback) => {
+    /*
     if (!userData?.subscription?.is_active) {
       setErrorMessage("구독을 먼저 신청해주세요.")
       setShowErrorMessageModal(true)
       return
-    }
+    }*/
     callback()
   }
 
@@ -195,7 +196,9 @@ const MainPageWithMenu = () => {
             {/* 버튼 카드 영역 */}
             <div className="grid grid-cols-1 gap-6 w-full md:grid-cols-2 lg:grid-cols-4 md:gap-4">
               {/* 매장 정보 변경 카드 */}
-              <Card disabled={!userData?.subscription?.is_active}>
+              <Card 
+              //disabled={!userData?.subscription?.is_active}
+              >
                 <h3 className="text-2xl text-indigo-600" style={{ fontFamily: "NanumSquareExtraBold" }}>
                   정보 변경
                 </h3>
@@ -205,7 +208,7 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={Edit3}
-                    disabled={!userData?.subscription?.is_active}
+                    //disabled={!userData?.subscription?.is_active}
                     onClick={() => handleActionWithSubscriptionCheck(() => setIsChangeInfoModalOpen(true))}
                   >
                     정보 수정
@@ -214,7 +217,9 @@ const MainPageWithMenu = () => {
               </Card>
 
               {/* 챗봇 미리보기 카드 */}
-              <Card disabled={!userData?.subscription?.is_active}>
+              <Card 
+                //disabled={!userData?.subscription?.is_active}
+              >
                 <h3
                   className="text-2xl text-indigo-600 whitespace-nowrap"
                   style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -227,7 +232,7 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={Eye}
-                    disabled={!userData?.subscription?.is_active}
+                    //disabled={!userData?.subscription?.is_active}
                     onClick={() => handleActionWithSubscriptionCheck(goToChatbot)}
                   >
                     미리보기
@@ -236,7 +241,9 @@ const MainPageWithMenu = () => {
               </Card>
 
               {/* 데이터 등록 카드 */}
-              <Card disabled={!userData?.subscription?.is_active}>
+              <Card 
+              //disabled={!userData?.subscription?.is_active}
+              >
                 <h3 className="text-2xl text-indigo-600" style={{ fontFamily: "NanumSquareExtraBold" }}>
                   데이터 등록
                 </h3>
@@ -246,7 +253,7 @@ const MainPageWithMenu = () => {
                 <div className="flex justify-center items-center">
                   <Button
                     icon={ClipboardList}
-                    disabled={!userData?.subscription?.is_active}
+                    //disabled={!userData?.subscription?.is_active}
                     onClick={() => handleActionWithSubscriptionCheck(() => setIsEditDataModalOpen(true))}
                   >
                     데이터 등록

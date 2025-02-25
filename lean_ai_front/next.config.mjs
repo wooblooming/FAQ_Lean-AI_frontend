@@ -1,12 +1,16 @@
+// next.config.js
+
 /** @type {import('next').NextConfig} */
 
-import fs from 'fs';
+// import fs from 'fs'; // fs가 필요하다면 주석 해제
 
 const nextConfig = {
-  reactStrictMode: false,  
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
-  assetPrefix: process.env.NODE_ENV === 'dev' ? '' : '',
+  reactStrictMode: false,
 
+  images: {
+    unoptimized: true,
+    // domains: ['mumulai.com'],  // 필요하다면 추가
+  },
 };
 
 export default nextConfig;
