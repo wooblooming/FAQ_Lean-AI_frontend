@@ -5,7 +5,7 @@ import { ChevronLeft, X } from "lucide-react";
 import useMyPage from "@/hooks/useMyPage";
 import { fetchPublicUser } from "@/fetch/fetchPublicUser";
 import { useAuth } from "@/contexts/authContext";
-import { useStore } from "2/contexts/storeContext";
+import { useStore } from "@/contexts/storeContext";
 import { usePublic } from "@/contexts/publicContext";
 import UserProfileForm from "@/components/component/commons/userProfile";
 import QrCodeSection from "@/components/component/commons/qrCode";

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft, Check } from "lucide-react";
 import axios from "axios";
-import { fetchPublicComplaintCustomer } from ".@/fetch/fetchPublicComplaintCustomer";
+import { fetchPublicComplaintCustomer } from "@/fetch/fetchPublicComplaintCustomer";
 import ModalMSG from "@/components/modal/modalMSG";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 import VerificationModal from "@/components/modal/verificationModal";

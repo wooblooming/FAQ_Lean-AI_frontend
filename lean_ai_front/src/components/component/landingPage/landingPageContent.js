@@ -122,7 +122,7 @@ const LandingPageContent = () => {
       <motion.div
         name="introduction"
         className="fixed bottom-24 right-2"
-        style={{ zIndex: 50 }}
+        style={{ zIndex: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >

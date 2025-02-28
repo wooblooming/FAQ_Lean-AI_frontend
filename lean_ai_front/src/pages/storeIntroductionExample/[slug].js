@@ -11,7 +11,7 @@ import { fetchStoreData } from '@/fetch/fetchStoreData';
 import { fetchStoreMenu } from '@/fetch/fetchStoreMenu';
 import { fetchFeedImage } from '@/fetch/fetchStoreFeed';
 import ModalErrorMSG from '@/components/modal/modalErrorMSG';
-import Chatbot from '../chatBotMSG';
+import Chatbot from '@/pages/chatBotMSG';
 
 const StoreIntroductionExample = () => {
   const router = useRouter();
@@ -229,13 +229,5 @@ const StoreIntroductionExample = () => {
     </div>
   );
 };
-
-export async function getServerSideProps() {
-  return {
-    props: {
-      chatbotEnabled: false, // Chatbot을 비활성화
-    },
-  };
-}
 
 export default StoreIntroductionExample;
