@@ -101,3 +101,7 @@ df-messenger .button.material-icons.close-action {
     @apply bg-background text-foreground;
   }
 }
+
+.grecaptcha-badge {
+  visibility: hidden;
+}

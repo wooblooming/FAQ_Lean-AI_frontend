@@ -230,4 +230,12 @@ const StoreIntroductionExample = () => {
   );
 };
 
+export async function getServerSideProps() {
+  return {
+    props: {
+      chatbotEnabled: false, // Chatbot을 비활성화
+    },
+  };
+}
+
 export default StoreIntroductionExample;
