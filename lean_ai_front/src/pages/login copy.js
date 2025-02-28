@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import axios from "axios";
-import ReCAPTCHA from "react-google-recaptcha";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/authContext";
@@ -13,9 +12,8 @@ import ConvertSwitch from "@/components/component/ui/convertSwitch1";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
-const RECAPTCHA_V2_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_V2_SITE_KEY;
 
-const Login = () => {
+const Login = () => {  
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -24,52 +22,14 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { saveToken, token } = useAuth();
   const { storeID, setStoreID } = useStore();
-  const [requireCaptcha, setRequireCaptcha] = useState(false);
-  const [captchaV2Token, setCaptchaV2Token] = useState("");
   const { executeRecaptcha } = useGoogleReCaptcha(); // reCAPTCHA 실행 함수
-  const [loginLock, setLoginLock] = useState(false); //  reCAPTCHA 0.3 미만이면 로그인 잠금
-  const [remainingTime, setRemainingTime] = useState(0); // 로그인 잠금 풀리는 시간 (timestamp)
   const { isPublicOn, togglePublicOn } = usePublic();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState("");
 
-  useEffect(() => {
-    const fixReCaptchaAccessibility = () => {
-      const reCaptchaContainer = document.querySelector(
-        "#rc-imageselect-target"
-      );
-      if (reCaptchaContainer) {
-        reCaptchaContainer.removeAttribute("aria-hidden");
-      }
-    };
-
-    const observer = new MutationObserver(fixReCaptchaAccessibility);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    return () => observer.disconnect();
-  }, []);
-
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
   };
-
-  // 로그인 잠금 상태 일때 남은 시간 표시
-  useEffect(() => {
-    let interval;
-
-    if (loginLock && remainingTime > 0) {
-      interval = setInterval(() => {
-        setRemainingTime((prevTime) => Math.max(0, prevTime - 1)); // 1초씩 감소
-      }, 1000);
-    }
-
-    // 시간이 0초가 되면 로그인 잠금 해제
-    if (remainingTime === 0) {
-      setLoginLock(false);
-    }
-
-    return () => clearInterval(interval);
-  }, [loginLock, remainingTime]);
 
   // 로그인 요청 함수
   const handleLoginClick = async () => {
@@ -79,13 +39,8 @@ const Login = () => {
     }
 
     try {
-      let captchaToken;
-      if (requireCaptcha && captchaV2Token) {
-        captchaToken = captchaV2Token; // reCAPTCHA v2 토큰 사용
-      } else {
-        captchaToken = await executeRecaptcha("login"); // reCAPTCHA v3 토큰 생성
-      }
-      //console.log(captchaToken);
+      const captchaToken = await executeRecaptcha("login"); // 'login' 액션에 대한 reCAPTCHA 실행
+      console.log(captchaToken);
 
       const url = isPublicOn
         ? `${API_DOMAIN}/public/login/`
@@ -95,12 +50,11 @@ const Login = () => {
         username,
         password,
         captcha: captchaToken,
-        // test_mode: false,
       });
 
       const { access, public_id, store_id, user_data } = response.data;
 
-      //console.log("서버 응답:", response.data);
+      console.log("서버 응답:", response.data);
 
       // 토큰 저장
       await saveToken(access);
@@ -111,27 +65,6 @@ const Login = () => {
       setStoreID(id);
     } catch (error) {
       console.error("로그인 요청 중 오류 발생:", error);
-      let require_captcha = error.response?.data?.require_captcha;
-      let login_lock = error.response?.data?.login_lock;
-
-      // 서버에서 reCAPTCHA v2가 필요하다고 판단하면 활성화
-      if (require_captcha) {
-        setRequireCaptcha(true);
-        setErrorMessage(
-          "의심스러운 로그인 시도가 감지되었습니다. \nreCAPTCHA를 완료해주세요."
-        );
-        setShowErrorMessageModal(true);
-        return;
-      }
-
-      if (login_lock) {
-        setLoginLock(true);
-        setRemainingTime(180); // 3분 (180초) 잠금
-        setErrorMessage("의심스러운 로그인 시도가 감지되었습니다.\n3분 동안 로그인을 할 수 없습니다.");
-        setShowErrorMessageModal(true);
-        return;
-      }
-
       const errorMsg = error.response?.data?.error || "로그인에 실패했습니다";
       setErrorMessage(errorMsg);
       setShowErrorMessageModal(true);
@@ -244,19 +177,9 @@ const Login = () => {
             />
           </div>
 
-          {requireCaptcha && (
-            <div className="flex justify-center">
-              <ReCAPTCHA
-                size="normal"
-                sitekey={RECAPTCHA_V2_SITE_KEY}
-                onChange={(token) => setCaptchaV2Token(token)}
-              />
-            </div>
-          )}
-
           <div className="w-full flex flex-col items-center text-center justify-center">
             {/* SNS 로그인 텍스트 & 구분선 */}
-            <div className="w-full flex items-center my-3">
+            <div className="w-full flex items-center my-4">
               <div className="flex-grow border-t border-gray-300"></div>
               <span className="px-4 text-gray-600 whitespace-nowrap">
                 SNS 로그인
@@ -307,13 +230,10 @@ const Login = () => {
           </div>
 
           <button
-            className={`bg-indigo-500 text-white text-lg font-semibold py-2 px-4 rounded-full w-full ${
-              loginLock ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className="bg-indigo-500 text-white text-lg font-semibold py-2 px-4 rounded-full w-full"
             onClick={handleLoginClick}
-            disabled={loginLock}
           >
-            {loginLock ? `로그인 차단 (${remainingTime}초)` : "로그인"}
+            로그인
           </button>
         </div>
 
