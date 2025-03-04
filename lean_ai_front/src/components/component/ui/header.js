@@ -1,27 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import axios from 'axios';
-import { useAuth } from '@/contexts/authContext';
-import { useStore } from '@/contexts/storeContext';
-import { usePublic } from '@/contexts/publicContext';
-import { Menu, X } from 'lucide-react';
-import LogoutModal from '@/components/modal/logout'; // 로그아웃 모달 컴포넌트 가져오기
-import ModalErrorMSG from '@/components/modal/modalErrorMSG'; // 에러 메시지 모달 컴포넌트
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import axios from "axios";
+import { useAuth } from "@/contexts/authContext";
+import { useStore } from "@/contexts/storeContext";
+import { usePublic } from "@/contexts/publicContext";
+import { Menu, X } from "lucide-react";
+import { fetchAllStoreData } from "@/fetch/fetchAllStoreData";
+import StoreSwitcher from "@/components/component/ui/storeSwitcher";
+import LogoutModal from "@/components/modal/logout";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
-const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN; // config 파일에서 API URL 등을 가져오기
+const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
-const Header = ({ isLoggedIn, setIsLoggedIn }) => {
-  const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null); // QR 코드 이미지 URL 관리
-  const [storeName, setStoreName] = useState(''); // 스토어 이름 관리
-  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 관리
-  const [menuOpen, setMenuOpen] = useState(false); // 메뉴 열림/닫힘 상태 관리
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // 로그아웃 모달 열림/닫힘 상태 관리
-  const [isLoading, setIsLoading] = useState(false); // QR 코드 이미지 로딩 상태
-  const [showQrModal, setShowQrModal] = useState(false); // QR 코드 모달 열림/닫힘 상태 관리
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 열림/닫힘 상태 관리
+const Header = ({ isLoggedIn, setIsLoggedIn, isMainPage }) => {
+  const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null);
+  const [storeName, setStoreName] = useState("");
+  const [storeList, setStoreList] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
 
-  const qrCanvasRef = useRef(null); // QR 코드 이미지를 캔버스에 그리기 위한 참조 생성
+  const qrCanvasRef = useRef(null);
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
@@ -31,21 +34,25 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
   useEffect(() => {
     const handleScroll = () => setScrollPosition(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // QR 코드를 서버에서 가져오는 함수
+  useEffect(() => {
+    if(token&&isMainPage)
+      fetchAllStoreData(token, setStoreList, setErrorMessage, setShowErrorMessageModal);
+  }, [token, isMainPage]);
+
   const fetchQRCode = async () => {
     const url = isPublicOn
       ? `${API_DOMAIN}/public/qrCodeImage/`
       : `${API_DOMAIN}/api/qrCodeImage/`;
 
     try {
-      setIsLoading(true); // 로딩 시작
+      setIsLoading(true);
       const response = await axios.post(
         url,
-        { public_id: storeID }, 
+        { public_id: storeID },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,85 +63,75 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       if (response.data.qr_code_image_url) {
         const mediaUrl = decodeURIComponent(response.data.qr_code_image_url);
         setQrCodeImageUrl(mediaUrl);
-        setStoreName(response.data.store_name || '');
+        setStoreName(response.data.store_name || "");
       } else {
         setQrCodeImageUrl(null);
-        router.push('/myPage'); // QR 코드 URL이 없으면 /myPage로 리다이렉트
+        router.push("/myPage");
       }
     } catch (error) {
-      console.error('Error fetching QR code:', error);
-      setErrorMessage('QR 코드 로딩 중 오류가 발생했습니다.');
+      console.error("Error fetching QR code:", error);
+      setErrorMessage("QR 코드 로딩 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
     } finally {
-      setIsLoading(false); // 로딩 종료
+      setIsLoading(false);
     }
   };
 
-
-  // QR 코드 이미지를 저장하는 함수
   const handleSaveQRCode = () => {
     const canvas = qrCanvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const img = new Image();
-    img.crossOrigin = "anonymous"; // CORS 문제 방지
-    img.src = qrCodeImageUrl; // QR 코드 이미지 URL 설정
+    img.crossOrigin = "anonymous";
+    img.src = qrCodeImageUrl;
 
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
-      ctx.drawImage(img, 0, 0); // QR 코드 이미지를 캔버스에 그리기
-      const dataUrl = canvas.toDataURL('image/png'); // 이미지를 데이터 URL로 변환
+      ctx.drawImage(img, 0, 0);
+      const dataUrl = canvas.toDataURL("image/png");
 
-      // 이미지 다운로드 링크 생성 및 클릭
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `${storeName}_qr_code.png`; // 스토어 이름을 포함한 파일명 설정
-      link.click(); // 다운로드 트리거
+      link.download = `${storeName}_qr_code.png`;
+      link.click();
     };
   };
 
-  // 로그인/로그아웃 클릭 시 동작 함수
   const handleLoginLogoutClick = () => {
     if (isLoggedIn) {
       setMenuOpen(false);
       setShowLogoutModal(true);
     } else {
-      router.push('/login'); // 로그인 상태가 아니면 로그인 페이지로 이동
+      router.push("/login");
     }
   };
 
-  // 로그아웃 확인 시 동작 함수
   const handleLogoutConfirm = () => {
-    setIsLoggedIn(false); // 로그인 상태 변경
-    setShowLogoutModal(false); // 로그아웃 모달 닫기
+    setIsLoggedIn(false);
+    setShowLogoutModal(false);
     removeToken();
     removeStoreID();
     resetPublicOn();
-    router.push('/'); // 홈으로 이동
+    router.push("/");
   };
 
-  // 로그아웃 취소 시 동작 함수
   const handleLogoutCancel = () => {
     setShowLogoutModal(false);
   };
 
-  // 메뉴 토글 함수
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen); // 메뉴 열림/닫힘 상태 토글
+    setMenuOpen(!menuOpen);
   };
 
-  // QR 코드 모달을 여는 함수
   const goToQRCode = async () => {
     setShowQrModal(true);
     await fetchQRCode();
   };
 
   const goToMyPage = () => {
-    if (isPublicOn)
-      router.push('/myPagePublic');
-    else
-      router.push('/myPage');
-  }
+    if (isPublicOn) router.push("/myPagePublic");
+    else router.push("/myPage");
+  };
 
   return (
     <div>
@@ -142,30 +139,51 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       <header
         className="bg-indigo-600 fixed w-full z-20 transition-all duration-300 px-4"
         style={{
-          boxShadow: scrollPosition > 50 ? '0 4px 6px rgba(0,0,0,0.1)' : 'none',
+          boxShadow: scrollPosition > 50 ? "0 4px 6px rgba(0,0,0,0.1)" : "none",
         }}
       >
         {/* 로고 */}
         <div className="container md:mx-auto px-6 md:px-0 py-5">
-          <div className="flex items-center justify-between" style={{ fontFamily: 'NanumSquareBold' }}>
-            <Link href="/" className="text-2xl md:text-4xl font-bold text-white cursor-pointer" style={{ fontFamily: 'NanumSquareExtraBold' }}>
+          <div
+            className="flex items-center justify-between"
+            style={{ fontFamily: "NanumSquareBold" }}
+          >
+            <Link
+              href="/"
+              className="text-2xl md:text-4xl font-bold text-white cursor-pointer"
+              style={{ fontFamily: "NanumSquareExtraBold" }}
+            >
               MUMUL
             </Link>
 
-            {/* 햄버거 메뉴 버튼 */}
-            <button
-              id="menuToggle"
-              className="text-xl flex items-center justify-center focus:outline-none md:hidden z-50"
-              onClick={toggleMenu}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                position: 'relative',
-                zIndex: 50,
-              }}
-            >
-              {menuOpen ? <X size={30} color="white" /> : <Menu size={30} color="white" />} {/* 햄버거 메뉴 아이콘 */}
-            </button>
+            {/* 햄버거 메뉴와 스토어 선택 버튼을 함께 배치 */}
+            <div className="flex items-center space-x-2 md:space-x-10 ">
+              {/* 메인 페이지 매장 전환 드롭 다운 */}
+              {isMainPage && (
+                <div className="mr-2">
+                  <StoreSwitcher storeList={storeList} />
+                </div>
+              )}
+
+              {/* 햄버거 메뉴 버튼 */}
+              <button
+                id="menuToggle"
+                className="text-xl flex items-center justify-center focus:outline-none md:hidden z-50"
+                onClick={toggleMenu}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  position: "relative",
+                  zIndex: 50,
+                }}
+              >
+                {menuOpen ? (
+                  <X size={30} color="white" />
+                ) : (
+                  <Menu size={30} color="white" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -175,13 +193,13 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
         <button
           onClick={toggleMenu}
           style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            zIndex: 100, // X 버튼이 오버레이 위에 위치하도록 설정
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: 100,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
           }}
         >
           <X size={28} className="text-black " />
@@ -190,15 +208,24 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
       {/* 오버레이 메뉴 */}
       {menuOpen && (
-        <div id="fullscreenOverlay" className="fullscreen-overlay fixed inset-0 flex flex-col justify-center items-center text-center z-20">
+        <div
+          id="fullscreenOverlay"
+          className="fullscreen-overlay fixed inset-0 flex flex-col justify-center items-center text-center z-20"
+        >
           <ul className="space-y-4 text-black text-center text-2xl font-semibold font-sans">
             <li>
-              <p className="mt-2 cursor-pointer " onClick={handleLoginLogoutClick}>
-                {isLoggedIn ? 'Log out' : 'Log in'}
+              <p
+                className="mt-2 cursor-pointer "
+                onClick={handleLoginLogoutClick}
+              >
+                {isLoggedIn ? "Log out" : "Log in"}
               </p>
             </li>
             <li>
-              <p className="mt-2 cursor-pointer " onClick={() => router.push('/')}>
+              <p
+                className="mt-2 cursor-pointer "
+                onClick={() => router.push("/")}
+              >
                 Home
               </p>
             </li>
@@ -238,7 +265,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
               <p>로딩 중입니다...</p>
             ) : (
               <div>
-                <canvas ref={qrCanvasRef} style={{ display: 'none' }} />
+                <canvas ref={qrCanvasRef} style={{ display: "none" }} />
                 <img src={qrCodeImageUrl} alt="QR Code" className="mx-auto" />
                 <p
                   className="font-semibold underline cursor-pointer mt-2"
@@ -253,8 +280,12 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
       )}
 
       {/* 에러 메시지 모달 */}
-      <ModalErrorMSG show={showErrorMessageModal} onClose={() => setShowErrorMessageModal(false)} title="Error">
-        <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+      <ModalErrorMSG
+        show={showErrorMessageModal}
+        onClose={() => setShowErrorMessageModal(false)}
+        title="Error"
+      >
+        <p style={{ whiteSpace: "pre-line" }}>{errorMessage}</p>
       </ModalErrorMSG>
 
       <style jsx>{`

@@ -128,7 +128,7 @@ const MainPageWithMenu = () => {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-        },
+        }, 
       })
       const data = await response.json()
       //console.log("data.data : ", data.data);
@@ -174,6 +174,7 @@ const MainPageWithMenu = () => {
           errorMessage={errorMessage}
           showErrorMessageModal={showErrorMessageModal}
           handleErrorMessageModalClose={() => setShowErrorMessageModal(false)}
+          isMainPage={true}
         />
 
         {/* 메인 콘텐츠 */}
