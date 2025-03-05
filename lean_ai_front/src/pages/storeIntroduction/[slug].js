@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "@/contexts/authContext";
 import { useSwipeable } from "react-swipeable";
 import {
   Quote,  Triangle,  Home,
@@ -34,8 +33,7 @@ const StoreIntroduce = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (slug) {
-      
+    if ( slug) {
       fetchStoreData(
         { slug },
         null,
@@ -43,7 +41,6 @@ const StoreIntroduce = () => {
         setErrorMessage,
         setShowErrorMessageModal
       );
-
       fetchStoreMenu(
         { slug },
         null,
@@ -51,7 +48,6 @@ const StoreIntroduce = () => {
         setErrorMessage,
         setShowErrorMessageModal
       );
-
       fetchFeedImage({ slug }, null, setImages);
     }
   }, [slug]);
@@ -119,7 +115,7 @@ const StoreIntroduce = () => {
           {/* Custom Banner with Back Button */}
           <StoreBanner
             banner={storeData.banner}
-            onBack={() => router.push("/mainPage")}
+            onBack={() => router.push("/")}
             isOwner={false}
           />
 
