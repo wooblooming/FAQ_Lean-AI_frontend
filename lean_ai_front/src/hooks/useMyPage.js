@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
+
 const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData, updateProfileUrl, updateProfilePhotoUrl, generateQrCodeUrl, deactivateAccountUrl }) => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [showEventAlertModal, setShowEventAlertModal] = useState(false);
@@ -7,12 +9,6 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const [snsList, setSnsList] = useState([
-    { name: 'kakao', displayName: '카카오', isConnected: false },
-    { name: 'naver', displayName: '네이버', isConnected: false },
-    { name: 'google', displayName: '구글', isConnected: false },
-  ]);
 
   const [userData, setUserData] = useState({});
   const [profileImage, setProfileImage] = useState('');
@@ -22,14 +18,14 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
   const [message, setMessage] = useState('');
   const [qrUrl, setQrUrl] = useState('');
   const [initialData, setInitialData] = useState({});
-
-  const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
-
+  const [isLoading, setIsLoading] = useState(true);
 
   // 초기 사용자 정보 가져오기
   useEffect(() => {
     if (token && storeID) {
-      fetchUserData({ storeID }, token, setUserData, setErrorMessage, setShowErrorMessageModal);
+      setIsLoading(true); // 데이터 요청 전에 로딩 시작
+      fetchUserData({ storeID }, token, setUserData, setErrorMessage, setShowErrorMessageModal)
+        .finally(() => setIsLoading(false)); // 데이터 로드 완료 후 로딩 상태 해제
     }
   }, [token, storeID]);
 
@@ -316,7 +312,7 @@ const useMyPage = ({ token, removeToken, storeID, removeStoreID , fetchUserData,
     showQrCode, qrUrl, setQrUrl, handleGenerateQrCode, handleDownloadQrCode, toggleQrCode,
     isEventOn, toggleEventOn, showEventAlertModal, handleEventAlertModalClose,
     handleConfirmAccountDeletion, handleAccountDeletionClick, setShowDeleteModal, showDeleteModal,
-    handleSaveChanges, isChanged,
+    handleSaveChanges, isChanged, isLoading, 
     showMessageModal, message, handleMessageModalClose,
     showErrorMessageModal, errorMessage, handleErrorMessageModalClose
   };

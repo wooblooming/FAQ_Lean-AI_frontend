@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft, X } from "lucide-react";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import useMyPage from "@/hooks/useMyPage";
 import { fetchStoreUser } from "@/fetch/fetchStoreUser";
 import { useAuth } from "@/contexts/authContext";
@@ -47,6 +48,7 @@ const MyPage = () => {
     showDeleteModal,
     handleSaveChanges,
     isChanged,
+    isLoading,
     showMessageModal,
     message,
     handleMessageModalClose,
@@ -64,6 +66,15 @@ const MyPage = () => {
     generateQrCodeUrl: `${API_DOMAIN}/api/generate-qr-code/`,
     deactivateAccountUrl: `${API_DOMAIN}/api/deactivate-account/`,
   });
+
+  if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <LoadingSpinner />
+          <p style={{ fontFamily: "NanumSquareBold" }}>사용자 정보를 가져 오는 중입니다!</p>
+        </div>
+      );
+    }
 
   return (
     <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">

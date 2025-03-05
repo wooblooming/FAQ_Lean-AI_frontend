@@ -61,7 +61,7 @@ const StoreIntroductionOwnerPublic = () => {
     // publicData가 업데이트되면 agentId 설정 및 로딩 상태 해제
     if (publicData) {
       //console.log("publicData : ",publicData);
-      setAgentId(publicData.agentId); // agentId 설정
+      setAgentId(publicData.agent_id); // agentId 설정
       setIsLoading(false); // 로딩 상태 해제
     }
   }, [publicData]);

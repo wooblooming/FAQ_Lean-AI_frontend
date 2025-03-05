@@ -20,7 +20,7 @@ export const fetchPublicDetailData = async (slug, token, setPublicData, setError
       }
     );
 
-    // console.log("fetch public detail - response data : ", response.data);
+     //console.log("fetch public detail - response data : ", response.data);
     if (response.data) {
       setPublicData(response.data); // 데이터 설정
     } else {
