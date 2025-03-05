@@ -113,7 +113,7 @@ const StoreIntroduceOwner = () => {
         {...handlers}
         className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50"
       >
-        <div className="bg-white rounded-2xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[400px] md:max-w-[30%]" >
+        <div className="bg-white rounded-2xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[420px] md:max-w-[30%]" >
           {/* Custom Banner with Back Button */}
           <StoreBanner
             banner={storeData.banner}

@@ -69,7 +69,7 @@ const PublicIntroduction = () => {
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
       <div
         {...handlers}
-        className="bg-white rounded-3xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[400px] md:max-w-[30%]"
+        className="bg-white rounded-3xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[420px] md:max-w-[30%]"
       >
         {/* 상단 배너 - 원래 코드 유지 */}
         <PublicBanner

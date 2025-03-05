@@ -1,10 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { 
-  X, Camera, Store, Clock, MapPin, Phone, 
-  Info, Download, Plus, Search, Image as ImageIcon,
-  ChevronRight, AlertCircle, Coffee, ShoppingBag, Package
+import {
+  X,
+  Camera,
+  Store,
+  Clock,
+  MapPin,
+  Phone,
+  Info,
+  Download,
+  Plus,
+  Search,
+  Image as ImageIcon,
+  ChevronRight,
+  AlertCircle,
+  Coffee,
+  ShoppingBag,
+  Package,
 } from "lucide-react";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { formatPhoneNumber } from "@/utils/telUtils";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
@@ -20,7 +34,14 @@ const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
 
 // Store Info Item Component - Displays individual information with edit button
-const StoreInfoItem = ({ icon: Icon, label, value, onEdit, noValue, editable = true }) => {
+const StoreInfoItem = ({
+  icon: Icon,
+  label,
+  value,
+  onEdit,
+  noValue,
+  editable = true,
+}) => {
   return (
     <div className="mb-5 group">
       <div className="flex items-center justify-between mb-2">
@@ -31,8 +52,8 @@ const StoreInfoItem = ({ icon: Icon, label, value, onEdit, noValue, editable = t
           <label className="font-semibold text-gray-700">{label}</label>
         </div>
         {editable && (
-          <button 
-            onClick={onEdit} 
+          <button
+            onClick={onEdit}
             className="text-indigo-500 hover:text-indigo-600 p-1.5 rounded-full hover:bg-indigo-50 transition-all duration-200 hover:scale-125"
           >
             <ChevronRight className="w-4 h-4" />
@@ -55,18 +76,41 @@ const StoreInfoItem = ({ icon: Icon, label, value, onEdit, noValue, editable = t
 };
 
 // Menu Action Button Component - Creates consistent button styling
-const MenuActionButton = ({ icon: Icon, title, description, onClick, color = "indigo" }) => (
-  <button 
-    onClick={onClick} 
+const MenuActionButton = ({
+  icon: Icon,
+  title,
+  description,
+  onClick,
+  color = "indigo",
+}) => (
+  <button
+    onClick={onClick}
     className="flex items-center p-4 bg-indigo-50 border border-indigo-100 rounded-xl transition-all duration-300 hover:shadow-md hover:translate-y-[-2px] text-indigo-600 group"
   >
     <div className="bg-white border border-indigo-100 shadow-sm group-hover:bg-indigo-400 group-hover:text-white group-hover:border-indigo-400 p-2.5 rounded-full mr-4 transition-colors duration-300">
       <Icon className="h-5 w-5" />
     </div>
     <div className="flex flex-col items-start">
-      <span className="font-medium text-gray-800 group-hover:text-indigo-700 transition-colors">{title}</span>
+      <span className="font-medium text-gray-800 group-hover:text-indigo-700 transition-colors">
+        {title}
+      </span>
       <span className="text-xs text-gray-500">{description}</span>
     </div>
+  </button>
+);
+
+// Tab Button Component
+const TabButton = ({ active, icon: Icon, label, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center justify-center space-x-2 px-3 py-2 rounded-lg transition-all duration-300 ${
+      active
+        ? "bg-indigo-600 text-white shadow-md"
+        : "bg-white text-gray-700 hover:bg-indigo-50"
+    }`}
+  >
+    <Icon className="h-5 w-5" />
+    <span className="font-medium">{label}</span>
   </button>
 );
 
@@ -75,7 +119,9 @@ const ChangeInfo = () => {
   const { storeID } = useStore();
   const [isOwner, setIsOwner] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isStoreHourEditModalOpen, setIsStoreHourEditModalOpen] = useState(false);
+  const [isStoreHourEditModalOpen, setIsStoreHourEditModalOpen] =
+    useState(false);
+  const [activeTab, setActiveTab] = useState("basic"); // 'basic' or 'product'
 
   const [storeImage, setStoreImage] = useState(null);
   const [previewImage, setPreviewImage] = useState("");
@@ -102,7 +148,7 @@ const ChangeInfo = () => {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const router = useRouter();
   const fileInputRef = useRef(null);
 
@@ -162,12 +208,10 @@ const ChangeInfo = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full w-full p-8 bg-white rounded-lg">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="w-16 h-16 relative">
-            <div className="absolute inset-0 rounded-full border-t-4 border-b-4 border-indigo-500 animate-spin"></div>
-          </div>
-          <p className="mt-4 text-indigo-600 font-semibold">정보를 불러오는 중...</p>
-        </div>
+        <LoadingSpinner />
+        <p className="mt-4 text-indigo-600 font-semibold">
+          정보를 불러오는 중...
+        </p>
       </div>
     );
   }
@@ -177,13 +221,13 @@ const ChangeInfo = () => {
   const closeStoreHourEditModal = () => setIsStoreHourEditModalOpen(false);
   const openImageModal = () => setIsImageModalOpen(true);
   const closeImageModal = () => setIsImageModalOpen(false);
-  
+
   const openEditModal = (elementId) => {
     setCurrentEditElement(elementId);
     setEditText(storeInfo[elementId] || "");
     setIsEditModalOpen(true);
   };
-  
+
   const closeEditModal = () => setIsEditModalOpen(false);
   const goToAddMenu = () => setIsAddMenuModalOpen(true);
   const closeAddMenuModal = () => setIsAddMenuModalOpen(false);
@@ -300,11 +344,14 @@ const ChangeInfo = () => {
 
   // Get the appropriate icon based on store category
   const getCategoryIcon = () => {
-    switch(storeInfo.store_category) {
-      case 'FOOD': return Coffee;
-      case 'RETAIL':
-      case 'UNMANNED': return ShoppingBag;
-      default: return Package;
+    switch (storeInfo.store_category) {
+      case "FOOD":
+        return Coffee;
+      case "RETAIL":
+      case "UNMANNED":
+        return ShoppingBag;
+      default:
+        return Package;
     }
   };
 
@@ -320,7 +367,7 @@ const ChangeInfo = () => {
         accept="image/*"
         className="hidden"
       />
-      
+
       {/* Banner image with overlay gradient for better text visibility */}
       <div className="relative w-full" style={{ height: "200px" }}>
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/60 z-10"></div>
@@ -345,117 +392,144 @@ const ChangeInfo = () => {
         </div>
       </div>
 
-      <div className="flex flex-col flex-grow p-6 overflow-y-auto">
-        {/* Basic Information Section */}
-        <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <div className="w-1.5 h-6 bg-indigo-600 rounded-r mr-2"></div>
-            <h3 className="text-xl text-gray-800 font-bold">기본 정보</h3>
-          </div>
-          
-          <StoreInfoItem 
-            icon={Store} 
-            label="매장 이름" 
-            value={storeInfo.store_name} 
-            onEdit={() => openEditModal("store_name")}
-            noValue={!storeInfo.store_name}
+      {/* Tab Navigation */}
+      <div className="flex items-center justify-center p-2">
+        <div className="flex space-x-3">
+          <TabButton
+            active={activeTab === "basic"}
+            icon={Store}
+            label="기본 정보"
+            onClick={() => setActiveTab("basic")}
           />
-          
-          <StoreInfoItem 
-            icon={Info} 
-            label="매장 소개" 
-            value={storeInfo.store_introduction} 
-            onEdit={() => openEditModal("store_introduction")}
-            noValue={!storeInfo.store_introduction}
+          <TabButton
+            active={activeTab === "product"}
+            icon={CategoryIcon}
+            label={`${menuTitle || "상품"} 정보`}
+            onClick={() => setActiveTab("product")}
           />
-          
-          <StoreInfoItem 
-            icon={Store} 
-            label="비즈니스 종류" 
-            value={businessTypeMap[storeInfo.store_category] || ""} 
-            onEdit={() => openEditModal("store_category")}
-            noValue={!storeInfo.store_category}
-          />
-          
-          <StoreInfoItem 
-            icon={Clock} 
-            label="영업 시간" 
-            value={storeInfo.opening_hours} 
-            onEdit={openStoreHourEditModal}
-            noValue={!storeInfo.opening_hours}
-          />
-          
-          <StoreInfoItem 
-            icon={MapPin} 
-            label="매장 위치" 
-            value={storeInfo.store_address} 
-            onEdit={() => openEditModal("store_address")}
-            noValue={!storeInfo.store_address}
-          />
-          
-          <StoreInfoItem 
-            icon={Phone} 
-            label="매장 번호" 
-            value={formatPhoneNumber(storeInfo.store_tel)} 
-            onEdit={() => openEditModal("store_tel")}
-            noValue={!storeInfo.store_tel}
-          />
-          
-          <StoreInfoItem 
-            icon={Info} 
-            label="매장 정보" 
-            value={storeInfo.store_information} 
-            onEdit={() => openEditModal("store_information")}
-            noValue={!storeInfo.store_information}
-          />
-        </div>
-        
-        {/* Menu/Product Information Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <div className="w-1.5 h-6 bg-indigo-600 rounded-r mr-2"></div>
-              <div className="flex items-center">
-                <h3 className="text-xl text-gray-800 font-bold">{menuTitle || "상품"} 정보</h3>
-              </div>
-            </div>
-          </div>
-          
-          {/* Menu Action Buttons */}
-          <div className="grid gap-4 mt-4">
-            <MenuActionButton 
-              icon={Plus} 
-              title={`${menuTitle || "상품"} 추가`}
-              description={`새로운 ${menuTitle || "상품"}을 추가하고 관리하세요`}
-              onClick={goToAddMenu}
-            />
-            
-            <MenuActionButton 
-              icon={Search} 
-              title={`${menuTitle || "상품"} 보기`}
-              description={`등록된 ${menuTitle || "상품"} 목록을 확인하세요`}
-              onClick={goToViewMenu}
-            />
-            
-            <MenuActionButton 
-              icon={ImageIcon} 
-              title="피드 추가"
-              description="피드를 추가하여 고객들의 관심을 끌어보세요"
-              onClick={goToModifyFeed}
-            />
-          </div>
         </div>
       </div>
 
+      <div className="flex flex-col flex-grow px-4 py-2 overflow-y-auto">
+        {/* Basic Information Section */}
+        {activeTab === "basic" && (
+          <div className="animate-fadeIn">
+            <div className="flex items-center mb-4">
+              <div className="w-1.5 h-6 bg-indigo-600 rounded-r mr-2"></div>
+              <h3 className="text-2xl text-gray-800 font-bold">기본 정보</h3>
+            </div>
+
+            <StoreInfoItem
+              icon={Store}
+              label="매장 이름"
+              value={storeInfo.store_name}
+              onEdit={() => openEditModal("store_name")}
+              noValue={!storeInfo.store_name}
+            />
+
+            <StoreInfoItem
+              icon={Info}
+              label="매장 소개"
+              value={storeInfo.store_introduction}
+              onEdit={() => openEditModal("store_introduction")}
+              noValue={!storeInfo.store_introduction}
+            />
+
+            <StoreInfoItem
+              icon={Store}
+              label="비즈니스 종류"
+              value={businessTypeMap[storeInfo.store_category] || ""}
+              onEdit={() => openEditModal("store_category")}
+              noValue={!storeInfo.store_category}
+            />
+
+            <StoreInfoItem
+              icon={Clock}
+              label="영업 시간"
+              value={storeInfo.opening_hours}
+              onEdit={openStoreHourEditModal}
+              noValue={!storeInfo.opening_hours}
+            />
+
+            <StoreInfoItem
+              icon={MapPin}
+              label="매장 위치"
+              value={storeInfo.store_address}
+              onEdit={() => openEditModal("store_address")}
+              noValue={!storeInfo.store_address}
+            />
+
+            <StoreInfoItem
+              icon={Phone}
+              label="매장 번호"
+              value={formatPhoneNumber(storeInfo.store_tel)}
+              onEdit={() => openEditModal("store_tel")}
+              noValue={!storeInfo.store_tel}
+            />
+
+            <StoreInfoItem
+              icon={Info}
+              label="매장 정보"
+              value={storeInfo.store_information}
+              onEdit={() => openEditModal("store_information")}
+              noValue={!storeInfo.store_information}
+            />
+          </div>
+        )}
+
+        {/* Menu/Product Information Section */}
+        {activeTab === "product" && (
+          <div className="animate-fadeIn">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="w-1.5 h-6 bg-indigo-600 rounded-r mr-2"></div>
+                <div className="flex items-center">
+                  <h3 className="text-2xl text-gray-800 font-bold">
+                    {menuTitle || "상품"} 정보
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            {/* Menu Action Buttons */}
+            <div className="grid gap-4 mt-4">
+              <MenuActionButton
+                icon={Plus}
+                title={`${menuTitle || "상품"} 추가`}
+                description={`새로운 ${
+                  menuTitle || "상품"
+                }을 추가하고 관리하세요`}
+                onClick={goToAddMenu}
+              />
+
+              <MenuActionButton
+                icon={Search}
+                title={`${menuTitle || "상품"} 보기`}
+                description={`등록된 ${menuTitle || "상품"} 목록을 확인하세요`}
+                onClick={goToViewMenu}
+              />
+
+              <MenuActionButton
+                icon={ImageIcon}
+                title="피드 추가"
+                description="피드를 추가하여 고객들의 관심을 끌어보세요"
+                onClick={goToModifyFeed}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Save Button */}
+      {activeTab === "basic" && (
       <div className="p-5 border-t border-indigo-100">
         <button
           onClick={saveAllChanges}
           disabled={isSaving}
           className={`w-full flex items-center justify-center space-x-2 py-4 rounded-xl text-white font-semibold text-lg transition-all ${
-            isSaving 
-              ? "bg-indigo-400 cursor-not-allowed" 
-              : "bg-indigo-600  hover:bg-indigo-700 active:from-indigo-800 active:to-indigo-900 shadow-md hover:shadow-lg"
+            isSaving
+              ? "bg-indigo-400 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700 active:from-indigo-800 active:to-indigo-900 shadow-md hover:shadow-lg"
           }`}
         >
           {isSaving ? (
@@ -471,16 +545,19 @@ const ChangeInfo = () => {
           )}
         </button>
       </div>
+    )}
 
       {/* Banner Image Change Modal */}
       {isImageModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 animate-fadeIn">
-          <div 
+          <div
             className="bg-white p-6 rounded-xl shadow-xl w-80 transform transition-all animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">배너 사진 설정</h2>
+              <h2 className="text-xl font-bold text-gray-800">
+                배너 사진 설정
+              </h2>
               <button
                 onClick={closeImageModal}
                 className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
@@ -488,7 +565,7 @@ const ChangeInfo = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            
+
             <div className="space-y-3 mt-4">
               <button
                 onClick={chooseImage}
@@ -497,7 +574,7 @@ const ChangeInfo = () => {
                 <Camera className="h-5 w-5" />
                 <span>앨범에서 사진 선택</span>
               </button>
-              
+
               <button
                 onClick={applyDefaultImage}
                 className="w-full py-3 px-4 flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors"
@@ -505,7 +582,7 @@ const ChangeInfo = () => {
                 <Store className="h-5 w-5" />
                 <span>기본 이미지 적용</span>
               </button>
-              
+
               <button
                 onClick={closeImageModal}
                 className="w-full py-3 px-4 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mt-2"
@@ -520,21 +597,28 @@ const ChangeInfo = () => {
       {/* Store Info Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 animate-fadeIn">
-          <div 
+          <div
             className="bg-white p-6 rounded-xl shadow-xl w-96 transform transition-all animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">
                 {(() => {
-                  switch(currentEditElement) {
-                    case 'store_name': return '매장 이름';
-                    case 'store_introduction': return '매장 소개';
-                    case 'store_category': return '비즈니스 종류';
-                    case 'store_address': return '매장 위치';
-                    case 'store_tel': return '매장 번호';
-                    case 'store_information': return '매장 정보';
-                    default: return '내용 수정';
+                  switch (currentEditElement) {
+                    case "store_name":
+                      return "매장 이름";
+                    case "store_introduction":
+                      return "매장 소개";
+                    case "store_category":
+                      return "비즈니스 종류";
+                    case "store_address":
+                      return "매장 위치";
+                    case "store_tel":
+                      return "매장 번호";
+                    case "store_information":
+                      return "매장 정보";
+                    default:
+                      return "내용 수정";
                   }
                 })()}
               </h2>
@@ -545,7 +629,7 @@ const ChangeInfo = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            
+
             {currentEditElement === "store_category" ? (
               <select
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700 bg-white mt-2"
@@ -564,16 +648,21 @@ const ChangeInfo = () => {
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
                 placeholder={`${
-                  currentEditElement === 'store_name' ? '매장 이름을 입력하세요' :
-                  currentEditElement === 'store_introduction' ? '매장 소개를 입력하세요' :
-                  currentEditElement === 'store_address' ? '매장 위치를 입력하세요' :
-                  currentEditElement === 'store_tel' ? '매장 번호를 입력하세요' :
-                  currentEditElement === 'store_information' ? '매장 정보를 입력하세요' :
-                  '내용을 입력하세요'
+                  currentEditElement === "store_name"
+                    ? "매장 이름을 입력하세요"
+                    : currentEditElement === "store_introduction"
+                    ? "매장 소개를 입력하세요"
+                    : currentEditElement === "store_address"
+                    ? "매장 위치를 입력하세요"
+                    : currentEditElement === "store_tel"
+                    ? "매장 번호를 입력하세요"
+                    : currentEditElement === "store_information"
+                    ? "매장 정보를 입력하세요"
+                    : "내용을 입력하세요"
                 }`}
               />
             )}
-            
+
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={deleteElement}
@@ -641,11 +730,11 @@ const ChangeInfo = () => {
         .animate-fadeIn {
           animation: fadeIn 0.2s ease-out forwards;
         }
-        
+
         .animate-scaleIn {
           animation: scaleIn 0.2s ease-out forwards;
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -654,7 +743,7 @@ const ChangeInfo = () => {
             opacity: 1;
           }
         }
-        
+
         @keyframes scaleIn {
           from {
             transform: scale(0.95);

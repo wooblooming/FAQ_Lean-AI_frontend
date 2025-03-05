@@ -17,7 +17,7 @@ const ImageZoomModal = ({ isOpen, imageUrl, onClose }) => {
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-4 text-white text-2xl font-bold cursor-pointer"
+          className="absolute top-4 right-4 text-white text-2xl font-bold cursor-pointer"
         >
           <X className="bg-indigo-500 rounded-full text-white p-1" />
         </button>

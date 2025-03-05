@@ -7,11 +7,11 @@ import {
   Info,
   RotateCcw,
   Search,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import AllergyModal from "@/components/modal/allergyModal";
 import { paginate } from "@/utils/pagingUtils";
+import Pagination from "@/components/ui/pagination"; // 페이지네이션 UI 추가
+
 
 const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
 
@@ -37,23 +37,9 @@ const MenuList = ({ menu, storeCategory, menuTitle }) => {
         ? prev.filter((cat) => cat !== category)
         : [...prev, category]
     );
+    // 필터 변경 시 첫 페이지로 이동
+    setCurrentPage(1);
   };
-
-  // 검색 및 필터링된 메뉴 아이템
-  const filteredMenuItems = menu.filter((item) => {
-    // 검색어 필터링
-    const matchesSearch =
-      searchQuery === "" ||
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.description &&
-        item.description.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    // 카테고리 필터링
-    const matchesCategory =
-      activeFilters.length === 0 || activeFilters.includes(item.category);
-
-    return matchesSearch && matchesCategory;
-  });
 
   // paginate 유틸 함수 사용하여 현재 페이지 데이터 가져오기
   const { paginatedItems, totalPages, hasNextPage, hasPrevPage } = paginate(
@@ -61,15 +47,6 @@ const MenuList = ({ menu, storeCategory, menuTitle }) => {
     currentPage,
     ITEMS_PER_PAGE
   );
-
-  // 페이지 변경 핸들러
-  const nextPage = () => {
-    if (hasNextPage) setCurrentPage((prev) => prev + 1);
-  };
-
-  const prevPage = () => {
-    if (hasPrevPage) setCurrentPage((prev) => prev - 1);
-  };
 
   // 알레르기 모달 토글
   const toggleAllergyModal = () => {
@@ -81,21 +58,33 @@ const MenuList = ({ menu, storeCategory, menuTitle }) => {
     setShowItemDetail((prev) => (prev === item ? null : item));
   };
 
+  // 페이지 변경 핸들러
+  const handlePageChange = (page) => {
+    // 유효한 페이지 번호인지 확인
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      // 페이지 변경 시 스크롤을 상단으로 이동 (선택적)
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* 헤더: 타이틀과 알레르기 정보 버튼 */}
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center"
+        >
           <div className="w-1.5 h-8 bg-gradient-to-b from-indigo-500 to-indigo-600 rounded-r mr-3"></div>
-          <motion.h2
-            className="text-2xl font-bold text-gray-800 flex items-center min-w-0"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center min-w-0">
             {menuTitle} 정보
-          </motion.h2>
-        </div>
+          </h2>
+        </motion.div>
 
         {storeCategory === "FOOD" && (
           <button
@@ -141,7 +130,10 @@ const MenuList = ({ menu, storeCategory, menuTitle }) => {
             {/* 초기화 버튼 (오른쪽 끝 정렬) */}
             {activeFilters.length > 0 && (
               <button
-                onClick={() => setActiveFilters([])}
+                onClick={() => {
+                  setActiveFilters([]);
+                  setCurrentPage(1); // 필터 초기화 시 첫 페이지로 이동
+                }}
                 className="px-3 py-1 rounded-full text-sm font-semibold text-gray-500 bg-white 
                     hover:bg-gray-500 hover:text-white transition-all flex items-center"
               >
@@ -170,34 +162,16 @@ const MenuList = ({ menu, storeCategory, menuTitle }) => {
               ))}
             </div>
 
-            {/* 페이지네이션 버튼 */}
+            {/* 페이지네이션 컴포넌트 */}
             {totalPages > 1 && (
-              <div className="flex justify-between items-center mt-4">
-                <button
-                  onClick={prevPage}
-                  disabled={!hasPrevPage}
-                  className={`p-2 rounded-full ${
-                    !hasPrevPage
-                      ? "text-gray-300 cursor-not-allowed"
-                      : "text-indigo-600 hover:bg-indigo-50"
-                  }`}
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <span className="font-semibold text-gray-700">
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  onClick={nextPage}
-                  disabled={!hasNextPage}
-                  className={`p-2 rounded-full ${
-                    !hasNextPage
-                      ? "text-gray-300 cursor-not-allowed"
-                      : "text-indigo-600 hover:bg-indigo-50"
-                  }`}
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
+              <div className="mt-6 mb-4">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  hasPrevPage={hasPrevPage}
+                  hasNextPage={hasNextPage}
+                  onPageChange={handlePageChange}
+                />
               </div>
             )}
           </>
