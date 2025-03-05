@@ -165,7 +165,7 @@ const StoreIntroduceOwner = () => {
           {/* Content Area */}
           <div
             className="py-4 px-4 font-sans"
-            style={{ height: "calc(100vh - 200px)", overflowY: "auto" }}
+            style={{ height: "calc(97vh - 300px)", overflowY: "auto" }}
           >
             {activeTab === "home" && (
               <>
@@ -248,7 +248,7 @@ const StoreIntroduceOwner = () => {
 
             {activeTab === "image" && (
               <div className="">
-                <FeedList images={images} />
+                <FeedList images={images} storeCategory={storeCategory}/>
               </div>
             )}
           </div>

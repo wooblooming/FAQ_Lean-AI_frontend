@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import ImageZoomModal from "@/components/modal/imageZoomModal";
+import Pagination from "@/components/ui/pagination"; // 페이지네이션 UI 추가
+import { paginate } from "@/utils/pagingUtils"; // 페이지네이션 함수 가져오기
 
 const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL; // 환경 변수에서 MEDIA_URL 가져오기
 
-const FeedList = ({ images }) => {
+const ITEMS_PER_PAGE = 6; // 한 페이지당 보여줄 이미지 개수
+
+const FeedList = ({ images, storeCategory }) => {
   const [selectedImage, setSelectedImage] = useState(null); // 선택한 이미지 상태
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
 
   const openModal = (image) => {
     setSelectedImage(image);
@@ -17,6 +22,11 @@ const FeedList = ({ images }) => {
     setSelectedImage(null);
     setIsModalOpen(false);
   };
+
+  // 페이지네이션 적용
+  const paginatedData = paginate(images, currentPage, ITEMS_PER_PAGE);
+  const { paginatedItems, totalPages, hasNextPage, hasPrevPage } =
+    paginatedData;
 
   if (!images || images.length === 0) {
     return (
@@ -35,35 +45,74 @@ const FeedList = ({ images }) => {
             피드
           </span>
         </motion.h2>
-        <p className="p-2">저장된 피드가 없습니다.</p>
+        <motion.p
+          className="text-gray-600 text-sm mt-2 px-3 whitespace-pre-line"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {storeCategory === "FOOD"
+            ? "우리 매장의 대표 메뉴와 신메뉴를 소개합니다! \n 신선한 재료와 정성을 담아 준비한 요리를 확인해 보세요."
+            : storeCategory === "RETAIL" || storeCategory === "UNMANNED"
+            ? "우리 매장에서 판매하는 인기 제품과 신상품을 확인해 보세요.\n 매장에서 직접 구매할 수 있는 다양한 상품과 특별 할인 정보를 제공합니다."
+            : "현재 진행 중인 다양한 이벤트와 프로모션을 소개합니다.\n 매장 방문 고객을 위한 특별한 혜택과 한정 이벤트를 놓치지 마세요."}
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="p-2"
+        >
+          저장된 피드가 없습니다.
+        </motion.p>
       </div>
     );
   }
 
   return (
-    <div>
-      <motion.h2
-        className="text-2xl font-bold text-gray-800 flex items-center min-w-0"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="w-1 h-6 bg-indigo-500 rounded-full mr-2 flex-shrink-0"></div>
-        <span
-          className="whitespace-nowrap overflow-hidden text-ellipsis"
-          style={{ fontFamily: "NanumSquareExtraBold" }}
+    <div className="flex flex-col h-full">
+      <div className="flex flex-col items-start mb-2">
+        <motion.h2
+          className="text-2xl font-bold text-gray-800 flex items-center min-w-0"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          피드
-        </span>
-      </motion.h2>
+          <div className="w-1 h-6 bg-indigo-500 rounded-full mr-2 flex-shrink-0"></div>
+          <span
+            className="whitespace-nowrap overflow-hidden text-ellipsis"
+            style={{ fontFamily: "NanumSquareExtraBold" }}
+          >
+            피드
+          </span>
+        </motion.h2>
 
+        <motion.p
+          className="text-gray-600 text-sm mt-2 px-3 whitespace-pre-line"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {storeCategory === "FOOD"
+            ? "우리 매장의 대표 메뉴와 신메뉴를 소개합니다! \n 신선한 재료와 정성을 담아 준비한 요리를 확인해 보세요."
+            : storeCategory === "RETAIL" || storeCategory === "UNMANNED"
+            ? "우리 매장에서 판매하는 인기 제품과 신상품을 확인해 보세요.\n 매장에서 직접 구매할 수 있는 다양한 상품과 특별 할인 정보를 제공합니다."
+            : "현재 진행 중인 다양한 이벤트와 프로모션을 소개합니다.\n 매장 방문 고객을 위한 특별한 혜택과 한정 이벤트를 놓치지 마세요."}
+        </motion.p>
+      </div>
+
+      {/* 피드 이미지 리스트 (페이지네이션 적용) */}
       <div className="grid grid-cols-3 gap-1 p-2">
-        {images.map((image, index) => {
+        {paginatedItems.map((image, index) => {
           const fullImageUrl = `${MEDIA_URL}/media/${image.path}`; // 전체 이미지 URL 생성
           const fileName = image.name; // 이미지 파일 이름
 
           return (
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
               key={index}
               className="relative group"
               onClick={() => openModal(fullImageUrl)}
@@ -77,17 +126,28 @@ const FeedList = ({ images }) => {
               <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
                 <p className="text-white text-sm">{fileName}</p>
               </div>
-            </div>
+            </motion.div>
           );
         })}
-
-        {/* 이미지 확대 모달달 */}
-        <ImageZoomModal
-          isOpen={isModalOpen}
-          imageUrl={selectedImage}
-          onClose={closeModal}
-        />
       </div>
+
+      {/* 페이지네이션 (6개 이상일 경우에만 표시) */}
+      {images.length > ITEMS_PER_PAGE && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasPrevPage={hasPrevPage}
+          hasNextPage={hasNextPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
+
+      {/* 이미지 확대 모달 */}
+      <ImageZoomModal
+        isOpen={isModalOpen}
+        imageUrl={selectedImage}
+        onClose={closeModal}
+      />
     </div>
   );
 };

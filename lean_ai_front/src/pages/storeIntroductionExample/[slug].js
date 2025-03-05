@@ -21,7 +21,6 @@ import Chatbot from "../chatBotMSG";
 const StoreIntroduceExample = () => {
   const router = useRouter();
   const { slug } = router.query;
-  const { token } = useAuth();
   const [storeData, setStoreData] = useState(null);
   const [images, setImages] = useState([]);
   const [storeCategory, setStoreCategory] = useState(null);
@@ -35,24 +34,27 @@ const StoreIntroduceExample = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (token && slug) {
+    if (slug) {
+      
       fetchStoreData(
         { slug },
-        token,
+        null,
         setStoreData,
         setErrorMessage,
         setShowErrorMessageModal
       );
+
       fetchStoreMenu(
         { slug },
-        token,
+        null,
         setMenu,
         setErrorMessage,
         setShowErrorMessageModal
       );
-      fetchFeedImage({ slug }, token, setImages);
+
+      fetchFeedImage({ slug }, null, setImages);
     }
-  }, [token, slug]);
+  }, [slug]);
 
   useEffect(() => {
     if (storeData) {
@@ -113,7 +115,7 @@ const StoreIntroduceExample = () => {
         {...handlers}
         className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50"
       >
-        <div className="bg-white rounded-2xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[400px] md:max-w-[30%]">
+        <div className="bg-white rounded-2xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[400px] md:max-w-[30%]" >
           {/* Custom Banner with Back Button */}
           <StoreBanner
             banner={storeData.banner}
@@ -165,7 +167,7 @@ const StoreIntroduceExample = () => {
           {/* Content Area */}
           <div
             className="py-4 px-4 font-sans"
-            style={{ height: "calc(100vh - 220px)", overflowY: "auto" }}
+            style={{ height: "calc(97vh - 300px)", overflowY: "auto" }}
           >
             {activeTab === "home" && (
               <>
@@ -248,7 +250,7 @@ const StoreIntroduceExample = () => {
 
             {activeTab === "image" && (
               <div className="">
-                <FeedList images={images} />
+                <FeedList images={images} storeCategory={storeCategory}/>
               </div>
             )}
           </div>

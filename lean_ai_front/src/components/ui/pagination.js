@@ -10,7 +10,7 @@ const Pagination = ({
   onPageChange,
 }) => {
   return (
-    <div className="flex justify-center items-center mt-6 space-x-4">
+    <div className="flex justify-center items-center mt-3 space-x-4">
       <motion.div
         whileHover={{ scale: 1.3 }}
         whileTap={{ scale: 0.9 }}
@@ -25,7 +25,7 @@ const Pagination = ({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={!hasPrevPage}
         >
-          <ChevronLeft />
+          <ChevronLeft className="h-5 w-5"/>
         </button>
       </motion.div>
 
@@ -47,7 +47,7 @@ const Pagination = ({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={!hasNextPage}
         >
-          <ChevronRight />
+          <ChevronRight className="h-5 w-5"/>
         </button>
       </motion.div>
     </div>
