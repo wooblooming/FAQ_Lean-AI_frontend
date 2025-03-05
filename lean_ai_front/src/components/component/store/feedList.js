@@ -37,13 +37,8 @@ const FeedList = ({ images, storeCategory }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="w-1 h-6 bg-indigo-500 rounded-full mr-2 flex-shrink-0"></div>
-          <span
-            className="whitespace-nowrap overflow-hidden text-ellipsis"
-            style={{ fontFamily: "NanumSquareExtraBold" }}
-          >
-            피드
-          </span>
+          <div className="w-1.5 h-8 bg-indigo-600 rounded-r mr-3"></div>
+          <span style={{ fontFamily: "NanumSquareExtraBold" }}>피드</span>
         </motion.h2>
         <motion.p
           className="text-gray-600 text-sm mt-2 px-3 whitespace-pre-line"
@@ -79,7 +74,7 @@ const FeedList = ({ images, storeCategory }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="w-1 h-6 bg-indigo-500 rounded-full mr-2 flex-shrink-0"></div>
+          <div className="w-1.5 h-8 bg-indigo-600 rounded-r mr-3"></div>
           <span
             className="whitespace-nowrap overflow-hidden text-ellipsis"
             style={{ fontFamily: "NanumSquareExtraBold" }}
@@ -89,10 +84,11 @@ const FeedList = ({ images, storeCategory }) => {
         </motion.h2>
 
         <motion.p
-          className="text-gray-600 text-sm mt-2 px-3 whitespace-pre-line"
+          className="text-gray-600 px-3 whitespace-pre-line"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          style={{ fontFamily: "NanumSquare", fontSize: "15px" }}
         >
           {storeCategory === "FOOD"
             ? "우리 매장의 대표 메뉴와 신메뉴를 소개합니다! \n 신선한 재료와 정성을 담아 준비한 요리를 확인해 보세요."
