@@ -17,15 +17,18 @@ export const StoreProvider = ({ children }) => {
 
     // storeID 또는 publicID를 sessionStorage에 저장하는 함수
     const saveStoreID = (id) => {
+        //console.log("🔄 [saveStoreID 호출됨]:", id);
         setStoreID(id);
+        
         if (isPublicOn) {
             sessionStorage.setItem("publicID", id);
-            sessionStorage.removeItem("storeID"); // 다른 ID 제거
+            sessionStorage.removeItem("storeID");
         } else {
             sessionStorage.setItem("storeID", id);
-            sessionStorage.removeItem("publicID"); // 다른 ID 제거
+            sessionStorage.removeItem("publicID");
         }
     };
+    
 
     // storeID 또는 publicID를 초기화하고 sessionStorage에서 제거하는 함수
     const removeStoreID = () => {

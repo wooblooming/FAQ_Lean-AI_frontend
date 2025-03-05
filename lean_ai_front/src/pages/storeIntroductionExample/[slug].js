@@ -1,52 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useSwipeable } from 'react-swipeable';
-import { Quote, Triangle } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "@/contexts/authContext";
+import { useSwipeable } from "react-swipeable";
+import {
+  Quote,  Triangle,  Home,
+  Image as ImageIcon,  CookingPot,
+  ShoppingBag,  Package,
+} from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import StoreBanner from '@/components/ui/storeBanner';
-import StoreInfo from '@/components/component/store/storeInfo';
-import MenuList from '@/components/component/store/menuList';
-import FeedList from '@/components/component/store/feedList';
-import { fetchStoreData } from '@/fetch/fetchStoreData';
-import { fetchStoreMenu } from '@/fetch/fetchStoreMenu';
-import { fetchFeedImage } from '@/fetch/fetchStoreFeed';
-import ModalErrorMSG from '@/components/modal/modalErrorMSG';
-import Chatbot from '@/pages/chatBotMSG';
+import StoreBanner from "@/components/ui/storeBanner";
+import StoreInfo from "@/components/component/store/storeInfo";
+import MenuList from "@/components/component/store/menuList";
+import FeedList from "@/components/component/store/feedList";
+import { fetchStoreData } from "@/fetch/fetchStoreData";
+import { fetchStoreMenu } from "@/fetch/fetchStoreMenu";
+import { fetchFeedImage } from "@/fetch/fetchStoreFeed";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
+import Chatbot from "../chatBotMSG";
 
-const StoreIntroductionExample = () => {
+const StoreIntroduceExample = () => {
   const router = useRouter();
   const { slug } = router.query;
+  const { token } = useAuth();
   const [storeData, setStoreData] = useState(null);
   const [images, setImages] = useState([]);
   const [storeCategory, setStoreCategory] = useState(null);
   const [agentId, setAgentId] = useState(null);
-  const [menu, setMenu] = useState(null);
+  const [menu, setMenu] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("home");
-  const tabOrder = ["home", "menu", "image"];
+  const tabOrder = ["home", "menu", "image"]; // 탭 순서 배열
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (slug) {
+    if (token && slug) {
       fetchStoreData(
         { slug },
-        null,
+        token,
         setStoreData,
         setErrorMessage,
         setShowErrorMessageModal
       );
       fetchStoreMenu(
         { slug },
-        null,
+        token,
         setMenu,
         setErrorMessage,
         setShowErrorMessageModal
       );
-      fetchFeedImage({ slug }, null, setImages);
+      fetchFeedImage({ slug }, token, setImages);
     }
-  }, [slug]);
+  }, [token, slug]);
 
   useEffect(() => {
     if (storeData) {
@@ -70,6 +76,7 @@ const StoreIntroductionExample = () => {
       }
     },
     trackTouch: true,
+    preventDefaultTouchmoveEvent: true,
   });
 
   if (isLoading) return <LoadingSpinner />;
@@ -84,150 +91,251 @@ const StoreIntroductionExample = () => {
 
   const menuTitle = getMenuTitle(storeCategory);
 
+  // Get the appropriate icon based on store category
+  const getCategoryIcon = () => {
+    switch (storeCategory) {
+      case "FOOD":
+        return CookingPot;
+      case "RETAIL":
+        return Package;
+      case "UNMANNED":
+        return ShoppingBag;
+      default:
+        return Package;
+    }
+  };
+
+  const CategoryIcon = getCategoryIcon();
+
   return (
-    <div className="modal-wrapper">
-      <div {...handlers} className="modal-content">
-        <StoreBanner
-          banner={storeData.banner}
-          onBack={() => router.push("/")}
-          isOwner={true}
-        />
+    <div className="h-screen w-screen bg-gray-100 flex items-center justify-center">
+      <div
+        {...handlers}
+        className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50"
+      >
+        <div className="bg-white rounded-2xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[400px] md:max-w-[30%]">
+          {/* Custom Banner with Back Button */}
+          <StoreBanner
+            banner={storeData.banner}
+            onBack={() => router.push("/mainPage")}
+            isOwner={true}
+          />
 
-        {/* Enhanced store introduction section */}
-        <div className="flex flex-col mt-3 px-4">
-          {storeData?.store_name && (
-            <h1 className="font-bold text-3xl text-gray-800 mb-2">
-              {storeData.store_name}
-            </h1>
-          )}
-
-          {storeData?.store_introduction && (
-            <div className="bg-gray-50 rounded-lg p-2 relative">
-            <Quote className="text-indigo-500 absolute top-2 left-2" size={18} />
-            <div
-              className={`mt-4 text-gray-600 leading-relaxed ${
-                isExpanded ? "max-h-full" : "max-h-16"
-              } overflow-hidden transition-all duration-300`}
-            >
-              <p className="whitespace-pre-line pl-6">{storeData.store_introduction}</p>
-            </div>
-          
-            {storeData.store_introduction.length > 100 && (
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-indigo-500 font-bold text-lg"></span>
+          {/* Tab Navigation */}
+          <div className="px-2 bg-white shadow-sm">
+            <div className="flex justify-around -mt-6 mb-2 relative z-20">
+              <div className="flex space-x-1 bg-white rounded-full p-1 shadow-lg">
                 <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="flex items-center justify-end w-6"
+                  className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
+                    activeTab === "home"
+                      ? "bg-indigo-600 text-white shadow-md"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveTab("home")}
                 >
-                  <Triangle
-                    size={16}
-                    className={`text-indigo-500 transform transition-transform duration-300 ${
-                      isExpanded ? "" : "rotate-180"
-                    }`}
-                  />
+                  <Home className="h-4 w-4" />
+                  <span className="font-medium">홈</span>
                 </button>
+                <button
+                  className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
+                    activeTab === "menu"
+                      ? "bg-indigo-600 text-white shadow-md"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveTab("menu")}
+                >
+                  <CategoryIcon className="h-4 w-4" />
+                  <span className="font-medium">{menuTitle}</span>
+                </button>
+                <button
+                  className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
+                    activeTab === "image"
+                      ? "bg-indigo-600 text-white shadow-md"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveTab("image")}
+                >
+                  <ImageIcon className="h-4 w-4" />
+                  <span className="font-medium">피드</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Area */}
+          <div
+            className="py-4 px-4 font-sans"
+            style={{ height: "calc(100vh - 220px)", overflowY: "auto" }}
+          >
+            {activeTab === "home" && (
+              <>
+                <div className="flex flex-col mb-6 space-y-4">
+                  {storeData?.store_name && (
+                    <div className="flex items-center justify-between">
+                      <h1
+                        className="font-bold text-3xl text-gray-800"
+                        style={{ fontFamily: "NanumSquareExtraBold" }}
+                      >
+                        {storeData.store_name}
+                      </h1>
+                      <div
+                        className="px-3 py-1 bg-indigo-50 rounded-full text-indigo-700 font-medium"
+                        style={{ fontFamily: "NanumSquareBold" }}
+                      >
+                        {storeCategory === "FOOD"
+                          ? "음식점"
+                          : storeCategory === "RETAIL"
+                          ? "판매점"
+                          : storeCategory === "UNMANNED"
+                          ? "무인매장"
+                          : "기타"}
+                      </div>
+                    </div>
+                  )}
+
+                  {storeData?.store_introduction && (
+                    <div className="bg-gray-50 rounded-lg p-2 relative">
+                      <Quote
+                        className="text-indigo-500 absolute top-2 left-2"
+                        size={18}
+                      />
+                      <div
+                        className={`mt-4 text-gray-600 leading-relaxed ${
+                          isExpanded ? "max-h-full" : "max-h-16"
+                        } overflow-hidden transition-all duration-300`}
+                      >
+                        <p className="whitespace-pre-line pl-6">
+                          {storeData.store_introduction}
+                        </p>
+                      </div>
+
+                      {storeData.store_introduction.length > 100 && (
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="text-indigo-500 font-bold text-lg"></span>
+                          <button
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="flex items-center justify-end w-6"
+                          >
+                            <Triangle
+                              size={16}
+                              className={`text-indigo-500 transform transition-transform duration-300 ${
+                                isExpanded ? "" : "rotate-180"
+                              }`}
+                            />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Store Info with styled container */}
+                <div className="px-2 py-4 border-t border-gray-200">
+                  <StoreInfo storeData={storeData} />
+                </div>
+              </>
+            )}
+
+            {activeTab === "menu" && (
+              <div className="">
+                <MenuList
+                  menu={menu}
+                  storeCategory={storeCategory}
+                  menuTitle={menuTitle}
+                />
+              </div>
+            )}
+
+            {activeTab === "image" && (
+              <div className="">
+                <FeedList images={images} />
               </div>
             )}
           </div>
-          
+
+          {/* Chatbot positioned at the bottom */}
+          {agentId && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-6 pb-2 px-4">
+              <Chatbot agentId={agentId} />
+            </div>
           )}
         </div>
-
-        <div className="tabs">
-          <button
-            className={`tab-btn ${activeTab === "home" ? "active" : ""}`}
-            onClick={() => setActiveTab("home")}
-          >
-            홈
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "menu" ? "active" : ""}`}
-            onClick={() => setActiveTab("menu")}
-          >
-            {menuTitle}
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "image" ? "active" : ""}`}
-            onClick={() => setActiveTab("image")}
-          >
-            피드
-          </button>
-        </div>
-
-        <div className="scrollable-tab-content">
-          {activeTab === "home" && <StoreInfo storeData={storeData} />}
-          {activeTab === "menu" && <MenuList menu={menu} />}
-          {activeTab === "image" && <FeedList images={images} />}
-        </div>
-
-        {agentId && <Chatbot agentId={agentId} />}
       </div>
 
       <ModalErrorMSG
         show={showErrorMessageModal}
         onClose={() => setShowErrorMessageModal(false)}
       >
-        <p style={{ whiteSpace: "pre-line" }}>{errorMessage}</p>
+        <p style={{ whiteSpace: "pre-line" }}>
+          {typeof errorMessage === "object"
+            ? Object.entries(errorMessage).map(([key, value]) => (
+                <span key={key}>
+                  {key}:{" "}
+                  {Array.isArray(value) ? value.join(", ") : value.toString()}
+                  <br />
+                </span>
+              ))
+            : errorMessage}
+        </p>
       </ModalErrorMSG>
 
       <style jsx>{`
-        .modal-wrapper {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
+        html,
+        body {
           overflow: hidden;
+          height: 100%;
         }
 
-        .modal-content {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 90%;
-          max-width: 430px;
-          height: 95%;
-          max-height: 900px;
-          overflow: hidden;
-          background: white;
+        /* Custom scrollbar */
+        div[style*="overflow-y: auto"] {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+
+        div[style*="overflow-y: auto"]::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        div[style*="overflow-y: auto"]::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        div[style*="overflow-y: auto"]::-webkit-scrollbar-thumb {
+          background-color: rgba(156, 163, 175, 0.5);
           border-radius: 6px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .tabs {
-          display: flex;
-          justify-content: space-around;
-          border-bottom: 2px solid #ccc;
-          font-weight: bold;
+        /* Animations */
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
 
-        .tab-btn {
-          padding: 10px 20px;
-          flex: 1;
-          text-align: center;
-          font-size: 16px;
-          cursor: pointer;
-          transition: all 0.2s;
+        @keyframes slideUp {
+          from {
+            transform: translateY(10px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
         }
 
-        .tab-btn.active {
-          color: #4f46e5;
-          font-size: 18px;
-          font-weight: bold;
-          border-bottom: 4px solid #4f46e5;
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
         }
 
-        .scrollable-tab-content {
-          overflow-y: auto;
-          max-height: 50vh;
-          padding: 16px;
-          box-sizing: border-box;
+        .animate-slideUp {
+          animation: slideUp 0.4s ease-out forwards;
         }
       `}</style>
     </div>
   );
 };
 
-export default StoreIntroductionExample;
+export default StoreIntroduceExample;
