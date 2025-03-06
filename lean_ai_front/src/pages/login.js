@@ -127,7 +127,9 @@ const Login = () => {
       if (login_lock) {
         setLoginLock(true);
         setRemainingTime(180); // 3분 (180초) 잠금
-        setErrorMessage("의심스러운 로그인 시도가 감지되었습니다.\n3분 동안 로그인을 할 수 없습니다.");
+        setErrorMessage(
+          "의심스러운 로그인 시도가 감지되었습니다.\n3분 동안 로그인을 할 수 없습니다."
+        );
         setShowErrorMessageModal(true);
         return;
       }
@@ -339,17 +341,7 @@ const Login = () => {
           show={showErrorMessageModal}
           onClose={handleErrorMessageModalClose}
         >
-          <p style={{ whiteSpace: "pre-line" }}>
-            {typeof errorMessage === "object"
-              ? Object.entries(errorMessage).map(([key, value]) => (
-                  <span key={key}>
-                    {key}:{" "}
-                    {Array.isArray(value) ? value.join(", ") : value.toString()}
-                    <br />
-                  </span>
-                ))
-              : errorMessage}
-          </p>
+          {errorMessage}
         </ModalErrorMSG>
       </div>
     </div>

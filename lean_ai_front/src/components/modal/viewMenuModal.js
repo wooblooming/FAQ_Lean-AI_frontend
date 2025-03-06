@@ -15,9 +15,10 @@ import ConfirmDeleteModal from "../modal/confirmDeleteModal";
 import styles from "../../styles/viewMenu.module.css";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
+const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
 
 const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
-  const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
+
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,8 +32,6 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setMessage] = useState("");
-
-  const storeSlug = encodeURIComponent(slug);
   const fileInputRef = useRef(null);
   const { token } = useAuth();
 

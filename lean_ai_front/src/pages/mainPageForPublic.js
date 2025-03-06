@@ -4,8 +4,6 @@ import axios from "axios";
 import Header from "@/components/component/ui/header";
 import {
   Eye,
-  ChevronDown,
-  ChevronUp,
   Send,
   SquareCheckBig,
 } from "lucide-react";
@@ -65,6 +63,7 @@ const MainPageWithMenuPublic = () => {
   const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 상태
   const [isRequestDataModalOpen, setIsRequestDataModalOpen] = useState(false); // 데이터 요청 모달 상태
   const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 상태
+  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
   const [publicData, setPublicData] = useState("");
@@ -96,12 +95,25 @@ const MainPageWithMenuPublic = () => {
 
   // 컴포넌트 마운트 시 공공기관, 통계 정보 불러오기
   useEffect(() => {
-    if (token) {
-      // token이 존재할 때만 API 호출
-      fetchPublicInfo();
-      fetchStatistics();
+    if (!token) {
+      setIsLoading(false);
+      return;
     }
-  }, [token]);
+
+    setIsLoading(true);
+
+    // token이 존재할 때만 API 호출
+    if (storeID) {
+      Promise.all([
+        fetchPublicInfo(), // 세미콜론 제거
+        fetchStatistics(),
+      ]).finally(() => {
+        setIsLoading(false);
+      });
+    } else {
+      setIsLoading(false);
+    }
+  }, [token, storeID]);
 
   useEffect(() => {
     if (publicData) {
@@ -197,6 +209,17 @@ const MainPageWithMenuPublic = () => {
     callback();
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
+        <LoadingSpinner />
+        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
+          데이터를 가져오는 중입니다.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-violet-50">
       <div className="flex-grow font-sans ">
@@ -229,7 +252,7 @@ const MainPageWithMenuPublic = () => {
             <main className="container md:mx-auto px-2 md:px-0 py-0 md:py-5 justify-center items-center text-center font-sans">
               <div className="grid md:grid-cols-3 gap-2 md:gap-4">
                 {/* 챗봇 미리보기 카드 */}
-                <Card 
+                <Card
                 //disabled={!publicData?.billing_key?.is_active}
                 >
                   <h3
@@ -255,7 +278,7 @@ const MainPageWithMenuPublic = () => {
                 </Card>
 
                 {/* 민원 확인 카드 */}
-                <Card 
+                <Card
                 //disabled={!publicData?.billing_key?.is_active}
                 >
                   <h3

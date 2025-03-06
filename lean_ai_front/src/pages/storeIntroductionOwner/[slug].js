@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "@/contexts/authContext";
 import { useSwipeable } from "react-swipeable";
 import {
-  Quote,  Triangle,  Home,
-  Image as ImageIcon,  CookingPot,
-  ShoppingBag,  Package,
+  Quote, Triangle, Home,
+  Image as ImageIcon, CookingPot,
+  ShoppingBag, Package
 } from "lucide-react";
+import { useAuth } from "@/contexts/authContext";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StoreBanner from "@/components/ui/storeBanner";
 import StoreInfo from "@/components/component/store/storeInfo";
@@ -15,53 +15,26 @@ import FeedList from "@/components/component/store/feedList";
 import { fetchStoreData } from "@/fetch/fetchStoreData";
 import { fetchStoreMenu } from "@/fetch/fetchStoreMenu";
 import { fetchFeedImage } from "@/fetch/fetchStoreFeed";
-import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 import Chatbot from "../chatBotMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const StoreIntroduceOwner = () => {
   const router = useRouter();
-  const { slug } = router.query;
-  const { token } = useAuth();
-  const [storeData, setStoreData] = useState(null);
-  const [images, setImages] = useState([]);
-  const [storeCategory, setStoreCategory] = useState(null);
-  const [agentId, setAgentId] = useState(null);
-  const [menu, setMenu] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("home");
+  const { slug } = router.query; // URL에서 store slug 가져오기
+  const { token } = useAuth(); // token 
+  const [storeData, setStoreData] = useState(null); // 상점 데이터 저장
+  const [images, setImages] = useState([]); // 상점 피드 이미지 저장
+  const [storeCategory, setStoreCategory] = useState(null); // 상점 카테고리 저장
+  const [agentId, setAgentId] = useState(null); // 챗봇 ID 저장
+  const [menu, setMenu] = useState([]); // 상점 메뉴 저장
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+  const [activeTab, setActiveTab] = useState("home"); // 현재 활성화된 탭 ('home', 'menu', 'image')
   const tabOrder = ["home", "menu", "image"]; // 탭 순서 배열
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 저장
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 모달 표시 여부
+  const [isExpanded, setIsExpanded] = useState(false); // 설명글 확장 여부
 
-  useEffect(() => {
-    if (token && slug) {
-      fetchStoreData(
-        { slug },
-        token,
-        setStoreData,
-        setErrorMessage,
-        setShowErrorMessageModal
-      );
-      fetchStoreMenu(
-        { slug },
-        token,
-        setMenu,
-        setErrorMessage,
-        setShowErrorMessageModal
-      );
-      fetchFeedImage({ slug }, token, setImages);
-    }
-  }, [token, slug]);
-
-  useEffect(() => {
-    if (storeData) {
-      setStoreCategory(storeData.store_category);
-      setAgentId(storeData.agent_id);
-      setIsLoading(false);
-    }
-  }, [storeData]);
-
+  // 스와이프 이벤트 (홈 ↔ 민원 탭 이동)
   const handlers = useSwipeable({
     onSwipedLeft: () => {
       const currentIndex = tabOrder.indexOf(activeTab);
@@ -79,8 +52,49 @@ const StoreIntroduceOwner = () => {
     preventDefaultTouchmoveEvent: true,
   });
 
-  if (isLoading) return <LoadingSpinner />;
+  // 매장과 사용자 데이터 가져오기
+  useEffect(() => {
+    if (slug) {
+      fetchStoreData(
+        { slug },
+        token,
+        setStoreData,
+        setErrorMessage,
+        setShowErrorMessageModal
+      );
+      fetchStoreMenu(
+        { slug },
+        token,
+        setMenu,
+        setErrorMessage,
+        setShowErrorMessageModal
+      );
+      fetchFeedImage({ slug }, token, setImages);
+    }
+  }, [slug, token]);
 
+  // storeData가 변경될 때 상태 업데이트
+  useEffect(() => {
+    if (storeData) {
+      setStoreCategory(storeData.store_category); // 상점 카테고리 설정
+      setAgentId(storeData.agent_id); // 챗봇 ID 설정
+      setIsLoading(false); // 로딩 종료
+    }
+  }, [storeData]);
+
+  // 로딩 중일 때 스피너 표시
+  if (isLoading) {
+    return (
+      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
+        <LoadingSpinner />
+        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
+          데이터를 가져오는 중입니다.
+        </p>
+      </div>
+    );
+  }
+
+  // 카테고리에 따라 메뉴 탭 제목 설정
   const getMenuTitle = (storeCategory) => {
     return storeCategory === "FOOD"
       ? "메뉴"
@@ -88,10 +102,10 @@ const StoreIntroduceOwner = () => {
       ? "상품"
       : "기타";
   };
-
   const menuTitle = getMenuTitle(storeCategory);
 
-  // Get the appropriate icon based on store category
+
+  // 카테고리에 따라 아이콘 반환
   const getCategoryIcon = () => {
     switch (storeCategory) {
       case "FOOD":
@@ -104,7 +118,6 @@ const StoreIntroduceOwner = () => {
         return Package;
     }
   };
-
   const CategoryIcon = getCategoryIcon();
 
   return (
@@ -113,18 +126,20 @@ const StoreIntroduceOwner = () => {
         {...handlers}
         className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50"
       >
-        <div className="bg-white rounded-2xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[420px] md:max-w-[30%]" >
-          {/* Custom Banner with Back Button */}
+        <div className="bg-white rounded-2xl shadow-2xl relative overflow-hidden w-[95%] h-[90%] md:min-w-[420px] md:max-w-[30%]">
+          {/* 상점 배너 */}
           <StoreBanner
             banner={storeData.banner}
             onBack={() => router.push("/mainPage")}
             isOwner={true}
           />
 
-          {/* Tab Navigation */}
+           {/* 탭 네비게이션 */}
           <div className="px-2 bg-white shadow-sm">
             <div className="flex justify-around -mt-6 mb-2 relative z-20">
               <div className="flex space-x-1 bg-white rounded-full p-1 shadow-lg">
+
+                 {/* 홈 탭 버튼 */}
                 <button
                   className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
                     activeTab === "home"
@@ -136,6 +151,8 @@ const StoreIntroduceOwner = () => {
                   <Home className="h-4 w-4" />
                   <span className="font-medium">홈</span>
                 </button>
+
+                 {/* 메뉴 탭 버튼 */}
                 <button
                   className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
                     activeTab === "menu"
@@ -147,6 +164,8 @@ const StoreIntroduceOwner = () => {
                   <CategoryIcon className="h-4 w-4" />
                   <span className="font-medium">{menuTitle}</span>
                 </button>
+
+                 {/* 피드 탭 버튼 */}
                 <button
                   className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
                     activeTab === "image"
@@ -162,11 +181,12 @@ const StoreIntroduceOwner = () => {
             </div>
           </div>
 
-          {/* Content Area */}
+          {/* 콘텐츠 영역 */}
           <div
             className="py-4 px-4 font-sans"
             style={{ height: "calc(97vh - 300px)", overflowY: "auto" }}
           >
+            {/* 홈 탭 내용 */}
             {activeTab === "home" && (
               <>
                 <div className="flex flex-col mb-6 space-y-4">
@@ -229,13 +249,13 @@ const StoreIntroduceOwner = () => {
                   )}
                 </div>
 
-                {/* Store Info with styled container */}
                 <div className="px-2 py-4 border-t border-gray-200">
                   <StoreInfo storeData={storeData} />
                 </div>
               </>
             )}
 
+            {/* 메뉴뉴 탭 내용 */}
             {activeTab === "menu" && (
               <div className="">
                 <MenuList
@@ -246,14 +266,15 @@ const StoreIntroduceOwner = () => {
               </div>
             )}
 
+            {/* 이미지 탭 내용 */}
             {activeTab === "image" && (
               <div className="">
-                <FeedList images={images} storeCategory={storeCategory}/>
+                <FeedList images={images} storeCategory={storeCategory} />
               </div>
             )}
           </div>
 
-          {/* Chatbot positioned at the bottom */}
+          {/* 챗봇 표시 */}
           {agentId && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-6 pb-2 px-4">
               <Chatbot agentId={agentId} />
@@ -262,21 +283,12 @@ const StoreIntroduceOwner = () => {
         </div>
       </div>
 
+      {/* 에러 메시지 모달 */}
       <ModalErrorMSG
         show={showErrorMessageModal}
         onClose={() => setShowErrorMessageModal(false)}
       >
-        <p style={{ whiteSpace: "pre-line" }}>
-          {typeof errorMessage === "object"
-            ? Object.entries(errorMessage).map(([key, value]) => (
-                <span key={key}>
-                  {key}:{" "}
-                  {Array.isArray(value) ? value.join(", ") : value.toString()}
-                  <br />
-                </span>
-              ))
-            : errorMessage}
-        </p>
+        <p>{errorMessage}</p>
       </ModalErrorMSG>
 
       <style jsx>{`

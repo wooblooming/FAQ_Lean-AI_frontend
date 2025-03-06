@@ -9,9 +9,9 @@ const ITEMS_PER_PAGE = 6;
 
 // 카테고리별 설명 텍스트를 상수로 정의
 const CATEGORY_DESCRIPTIONS = {
-  FOOD: "우리 매장의 대표 메뉴와 신메뉴를 소개합니다!\n신선한 재료와 정성을 담아 준비한 요리를 확인해 보세요.",
-  RETAIL: "우리 매장에서 판매하는 인기 제품과 신상품을 확인해 보세요.\n매장에서 직접 구매할 수 있는 다양한 상품과 특별 할인 정보를 제공합니다.",
-  UNMANNED: "우리 매장에서 판매하는 인기 제품과 신상품을 확인해 보세요.\n매장에서 직접 구매할 수 있는 다양한 상품과 특별 할인 정보를 제공합니다.",
+  FOOD: "매장의 대표 메뉴와 신메뉴를 소개합니다!\n신선한 재료와 정성을 담아 준비한 요리를 확인해 보세요.",
+  RETAIL: "매장 판매하는 인기 제품과 신상품을 확인해 보세요.\n매장에서 직접 구매할 수 있는 다양한 상품과 할인 정보를 제공합니다.",
+  UNMANNED: "매장에서 판매하는 인기 제품과 신상품을 확인해 보세요.\n매장에서 직접 구매할 수 있는 다양한 상품과 할인 정보를 제공합니다.",
   DEFAULT: "현재 진행 중인 다양한 이벤트와 프로모션을 소개합니다.\n매장 방문 고객을 위한 특별한 혜택과 한정 이벤트를 놓치지 마세요."
 };
 
@@ -108,7 +108,7 @@ const FeedList = ({ images, storeCategory }) => {
         </motion.h2>
 
         <motion.p
-          className="text-gray-600 px-4 whitespace-pre-line"
+          className="text-gray-600 px-5 whitespace-pre-line"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}

@@ -1,12 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLocationDot,
   faClock,
   faPhone,
   faStore,
 } from "@fortawesome/free-solid-svg-icons";
+import { StoreInfoItem } from "@/components/component/ui/infoItem";
 import { formatPhoneNumber } from "@/utils/telUtils";
 
 const StoreInfo = ({ storeData }) => (
@@ -37,46 +37,23 @@ const StoreInfo = ({ storeData }) => (
         className="flex flex-col space-y-4 p-2 text-lg"
       >
         {storeData.store_address && (
-          <InfoItem icon={faLocationDot} text={storeData.store_address} />
+          <StoreInfoItem icon={faLocationDot} text={storeData.store_address} />
         )}
         {storeData.store_hours && (
-          <InfoItem icon={faClock} text={storeData.store_hours} />
+          <StoreInfoItem icon={faClock} text={storeData.store_hours} />
         )}
         {storeData.store_tel && (
-          <InfoItem
+          <StoreInfoItem
             icon={faPhone}
             text={formatPhoneNumber(storeData.store_tel)}
           />
         )}
         {storeData.store_information && (
-          <InfoItem icon={faStore} text={storeData.store_information} />
+          <StoreInfoItem icon={faStore} text={storeData.store_information} />
         )}
       </motion.div>
     </div>
   </div>
 );
-
-const InfoItem = ({ icon, text }) => {
-  const isLongText = text.length > 20;
-
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, x: -20 },
-        visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
-      }}
-      className="flex items-center space-x-4"
-    >
-      <FontAwesomeIcon icon={icon} className="text-indigo-500 text-xl" />
-      <p
-        className={`leading-normal ${
-          isLongText ? "whitespace-pre-line" : "whitespace-nowrap"
-        }`}
-      >
-        {text}
-      </p>
-    </motion.div>
-  );
-};
 
 export default StoreInfo;
