@@ -1,172 +1,300 @@
-import { useState, useRef } from 'react';
-import { ArrowDown, Upload } from "lucide-react";
-import { useAuth } from '@/contexts/authContext';
-import ModalMSG from '@/components/modal/modalMSG';
-import ModalErrorMSG from '@/components/modal/modalErrorMSG';
- 
+import { useState, useRef } from "react";
+import {
+  Download,
+  Upload,
+  FileText,
+  FileUp,
+  CheckCircle,
+  AlertCircle,
+  CloudUpload,
+} from "lucide-react";
+import { useAuth } from "@/contexts/authContext";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
+
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export default function RegisterStoreData() {
   const { token } = useAuth();
-  const [fileNames, setFileNames] = useState([]); // 업로드된 파일 이름 목록 상태
-  const [message, setMessage] = useState(''); // 성공 메시지 상태
-  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 상태
-  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 모달 상태
-  const [showMessageModal, setShowMessageModal] = useState(false); // 성공 모달 상태
+  const [fileNames, setFileNames] = useState([]);
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const fileInputRef = useRef(null); // 파일 입력 참조
+  const fileInputRef = useRef(null);
 
-  // 파일 변경 시 호출되는 함수
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files); // 파일을 배열로 변환
-    const names = files.map((file) => file.name); // 파일 이름만 추출
-    setFileNames(names);  // 파일 이름 상태 업데이트
+    const files = Array.from(event.target.files);
+    const names = files.map((file) => file.name);
+    setFileNames(names);
   };
 
-  // 파일 입력을 초기화하는 함수
   const resetForm = () => {
     setFileNames([]);
-    if (fileInputRef.current) fileInputRef.current.value = ''; // 파일 입력 값 초기화
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
-  
-  // 양식 파일을 다운로드하는 함수
+
   const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/templates/mumul_service_data_guideline_2.xlsx'; // 다운로드할 파일 경로
-    
-    // 다운로드 파일명 설정
-    link.download = '[무물] 초기 데이터 입력 양식.xlsx';
-    
-    document.body.appendChild(link); // a 태그를 DOM에 추가
-    link.click(); // 파일 다운로드 실행
-    document.body.removeChild(link); // 클릭 후 a 태그 삭제
+    const link = document.createElement("a");
+    link.href = "/templates/mumul_service_data_guideline_2.xlsx";
+    link.download = "[무물] 초기 데이터 입력 양식.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
-  
-  // 업로드된 파일을 서버로 제출하는 함수
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const files = Array.from(e.dataTransfer.files);
+      const names = files.map((file) => file.name);
+      setFileNames(names);
+      if (fileInputRef.current) {
+        fileInputRef.current.files = e.dataTransfer.files;
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     const files = fileInputRef.current?.files;
-  
+
     if (!files || files.length === 0) {
-      setErrorMessage('파일을 업로드 해주세요.');
+      setErrorMessage("파일을 업로드 해주세요.");
       setShowErrorMessageModal(true);
       return;
     }
-  
+
+    setIsLoading(true);
     const formData = new FormData();
-    Array.from(files).forEach((file) => formData.append('files', file));
-  
+    Array.from(files).forEach((file) => formData.append("files", file));
+
     try {
       const response = await fetch(`${API_DOMAIN}/api/register-data/`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
         headers: {
-          'Authorization': `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-  
+
       if (response.ok) {
         const result = await response.json();
-  
+
         const successMessages = result.results
           .filter((r) => r.status === "success")
           .map((r) => `✅ ${r.file}: \n ${r.message}`)
-          .join('\n');
-  
+          .join("\n");
+
         const errorMessages = result.results
           .filter((r) => r.status === "error")
           .map((r) => `❌ ${r.file}: \n ${r.message}`)
-          .join('\n');
-  
+          .join("\n");
+
         if (errorMessages) {
-          setErrorMessage(`다음 파일 처리 중 오류가 발생했습니다:\n${errorMessages}`);
+          setErrorMessage(
+            `다음 파일 처리 중 오류가 발생했습니다:\n${errorMessages}`
+          );
           setShowErrorMessageModal(true);
         }
-  
+
         if (successMessages) {
           setMessage(`성공적으로 업로드되었습니다.`);
           setShowMessageModal(true);
         }
-  
+
         resetForm();
       } else {
         const errorData = await response.json();
-        setErrorMessage(
-          errorData.error || '파일 업로드에 실패했습니다.'
-        );
+        setErrorMessage(errorData.error || "파일 업로드에 실패했습니다.");
         setShowErrorMessageModal(true);
       }
     } catch (error) {
-      console.error('요청 전송 중 오류 발생:', error);
-      setErrorMessage('전송 중 오류가 발생했습니다.');
+      console.error("요청 전송 중 오류 발생:", error);
+      setErrorMessage("전송 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
+    } finally {
+      setIsLoading(false);
     }
   };
-  
-  return (
-    <div className="flex flex-col space-y-10 w-full max-w-md p-8 bg-white rounded-lg items-center justify-center space-y-5">
-      {/* 페이지 제목 */}
-      <h1 className="text-3xl font-bold text-indigo-600 text-center mt-7" style={{ fontFamily: 'NanumSquareExtraBold' }}>
-        데이터 등록하기
-      </h1>
 
-      <main className=" space-y-6">
+  return (
+    <div className="flex flex-col w-full max-w-md p-6 bg-white rounded-xl items-center justify-center">
+      {/* 페이지 제목 */}
+      <div className="w-full">
+        <div className="py-2 mb-4">
+          <div className="flex flex-col items-center justify-center">
+            <h1
+              className="text-2xl font-bold text-gray-700"
+              style={{ fontFamily: "NanumSquareExtraBold" }}
+            >
+              데이터 등록하기
+            </h1>
+            <p className="text-gray-500 text-sm mt-1 text-center">
+              매장의 정보를 쉽고 빠르게 등록하세요
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <main className="w-full space-y-4 ">
         {/* 양식 다운로드 섹션 */}
-        <div className="space-y-3 py-8">
-          <h2 className="text-xl font-semibold">데이터 등록 양식 다운로드</h2>
-          <p className="text-sm text-gray-500">
-            데이터 등록에 필요한 양식을 <br /> 다운로드하려면 아래 버튼을 클릭하세요.
-          </p>
-          <button
-            onClick={handleDownload}
-            className="w-full py-2 px-4 rounded flex bg-indigo-500 text-white items-center justify-center transition duration-300"
-          >
-            <ArrowDown className="mr-2 h-4 w-4" /> <span className="font-medium hover:font-bold hover:underline"> 양식 다운로드 </span>
-          </button>
+        <div className="bg-indigo-50 rounded-xl p-4 transition-all duration-300 hover:shadow-sm">
+          <div className="flex items-start">
+            <div className="bg-indigo-100 p-2 rounded-lg mr-3">
+              <FileText className="h-5 w-5 text-indigo-600" />
+            </div>
+            <div className="flex-1">
+              <h2
+                className="text-lg font-semibold text-gray-800 mb-2"
+                style={{ fontFamily: "NanumSquareExtraBold" }}
+              >
+                데이터 등록 양식 다운로드
+              </h2>
+              <p className="text-sm text-gray-600 mb-3">
+                데이터 등록에 필요한 양식을 다운로드하여 작성 후 업로드해주세요.
+              </p>
+              <button
+                onClick={handleDownload}
+                className="w-full py-2 px-4 rounded-lg bg-indigo-600 text-white font-medium flex items-center justify-center transition duration-300 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
+              >
+                <Download className="mr-2 h-4 w-4" /> 양식 다운로드
+              </button>
+            </div>
+          </div>
         </div>
 
-        <hr className="border-t-2 border-gray-300 w-full " />
+        <hr className="border-t border-gray-200 w-full" />
 
         {/* 파일 업로드 섹션 */}
-        <div className="space-y-3 py-8 ">
-          <h2 className="text-xl font-semibold">파일 업로드</h2>
-          <p className="text-sm text-gray-500">
-            작성한 양식을 업로드하려면 <br /> 파일을 선택하고 업로드 버튼을 클릭하세요.
-          </p>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <input
-              ref={fileInputRef} // 파일 입력 참조
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-md file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-indigo-50 file:text-gray-700
-                  hover:file:bg-indigo-100 cursor-pointer"
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            disabled={fileNames.length === 0} // 파일이 없는 경우 비활성화
-            className={`w-full py-2 px-4 rounded flex items-center justify-center transition duration-300 ${
-              fileNames.length > 0
-                ? 'bg-indigo-500 hover:bg-indigo-600 text-white font-bold' // 활성화 스타일
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed' // 비활성화 스타일
-            }`}
-          >
-            <Upload className="mr-2 h-4 w-4" /> 파일 업로드
-          </button>
+        <div className="bg-gray-50 rounded-xl p-4 transition-all duration-300 hover:shadow-sm">
+          <div className="flex items-start">
+            <div className="bg-gray-200 p-2 rounded-lg mr-3">
+              <FileUp className="h-5 w-5 text-gray-700" />
+            </div>
+            <div className="flex-1">
+              <h2
+                className="text-lg font-semibold text-gray-800 mb-2"
+                style={{ fontFamily: "NanumSquareExtraBold" }}
+              >
+                파일 업로드
+              </h2>
+              <p className="text-sm text-gray-600 mb-3">
+                작성한 양식을 업로드하여 시스템에 데이터를 등록하세요.
+              </p>
 
-          {/* 업로드된 파일 목록 표시 */}
-          {fileNames.length > 0 && (
-            <ul className="mt-2 text-sm text-gray-600">
-            {fileNames.map((file, index) => (
-              <li key={index}>{file}</li>
-            ))}
-          </ul>
-          )}
+              {/* 파일 업로드 영역 */}
+              <div className="mb-3">
+                <div
+                  className={`border-2 border-dashed rounded-lg p-4 text-center transition-all duration-200 cursor-pointer ${
+                    isDragging
+                      ? "border-indigo-500 bg-indigo-50"
+                      : "border-gray-300 hover:border-indigo-300 bg-white"
+                  }`}
+                  onClick={() => fileInputRef.current.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <div className="flex flex-col items-center justify-center">
+                    <CloudUpload className="h-8 w-8 text-gray-400 mb-2" />
+                    <p
+                      className="text-sm text-gray-500 mb-1"
+                      style={{ fontFamily: "NanumSquareBold" }}
+                    >
+                      파일을 끌어다 놓거나 클릭하여 선택하세요
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Excel 파일만 업로드 가능합니다
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 업로드된 파일 목록 */}
+              {fileNames.length > 0 && (
+                <div className="mb-3 bg-gray-100 rounded-lg p-2">
+                  <p className="text-xs font-medium text-gray-700 mb-1">
+                    선택된 파일:
+                  </p>
+                  <ul className="space-y-1">
+                    {fileNames.map((file, index) => (
+                      <li
+                        key={index}
+                        className="text-xs text-gray-600 flex items-center"
+                      >
+                        <FileText className="h-3 w-3 mr-1 text-indigo-500" />
+                        {file}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* 업로드 버튼 */}
+              <button
+                onClick={handleSubmit}
+                disabled={fileNames.length === 0 || isLoading}
+                className={`w-full py-2 px-4 rounded-lg flex items-center justify-center transition duration-300 ${
+                  fileNames.length > 0 && !isLoading
+                    ? "bg-indigo-600 hover:bg-indigo-700 text-white font-medium"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    업로드 중...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="mr-2 h-4 w-4" /> 파일 업로드
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
+        <div className="w-full py-3 px-4 rounded-lg"/>
       </main>
 
       {/* 성공 메시지 모달 */}
@@ -175,7 +303,10 @@ export default function RegisterStoreData() {
         onClose={() => setShowMessageModal(false)}
         title="Success"
       >
-        <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
+        <div className="flex items-center">
+          <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+          <p style={{ whiteSpace: "pre-line" }}>{message}</p>
+        </div>
       </ModalMSG>
 
       {/* 에러 메시지 모달 */}
@@ -184,8 +315,65 @@ export default function RegisterStoreData() {
         onClose={() => setShowErrorMessageModal(false)}
         title="Error"
       >
-        <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        <div className="flex items-center">
+          <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+          <p style={{ whiteSpace: "pre-line" }}>{errorMessage}</p>
+        </div>
       </ModalErrorMSG>
+
+      <style jsx global>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
+        }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* iOS 스타일 패딩 제거 */
+        input,
+        textarea,
+        select,
+        button {
+          -webkit-appearance: none;
+          border-radius: 0.5rem;
+        }
+
+        /* 입력필드 포커스 시 아웃라인 스타일 */
+        input:focus,
+        textarea:focus,
+        select:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+      `}</style>
     </div>
   );
 }

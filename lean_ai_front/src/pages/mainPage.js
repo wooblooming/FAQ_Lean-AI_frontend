@@ -402,6 +402,7 @@ const MainPageWithMenu = () => {
                 >
                   통계 및 분석
                 </h2>
+                
                 {isLoadingStatistics ? (
                   <p className="text-gray-700 px-0 md:px-4">
                     데이터 로딩 중...

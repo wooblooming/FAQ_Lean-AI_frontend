@@ -53,7 +53,7 @@ const Statistics = () => {
         className="max-w-4xl mx-auto py-12 px-6 shadow-md rounded-lg"
         style={{ backgroundColor: "#fff", borderRadius: "50px 0 50px 0" }}
       >
-        <div className="flex items-center mb-12">
+        <div className="flex items-center mb-8">
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <ChevronLeft
               className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
@@ -67,8 +67,16 @@ const Statistics = () => {
             통계 및 분석
           </h1>
         </div>
-
-        {/* 통계 데이터 표시 */}
+        <div className="flex flex-col space-y-5 px-5">
+          <h2
+            className="text-2xl font-bold text-start text-gray-600"
+            style={{ fontFamily: "NanumSquareExtraBold" }}
+          >
+            - 리뷰 및 피드백
+          </h2>
+          <img src="/리뷰 및 피드백 워드 클라우드.png" className="h-[60vh]"/>
+        </div>
+        {/* 통계 데이터 표시 
         {isLoadingStatistics ? (
           <p>데이터 로딩 중...</p>
         ) : (
@@ -83,9 +91,9 @@ const Statistics = () => {
               </ul>
             ) : (
               <p>데이터가 준비 중입니다.</p>
-            )}
+            )}*/}
 
-            {/* 이미지 표시 */}
+        {/* 이미지 표시
             {imageUrl && (
               <div className="mt-8 text-center">
                 <img
@@ -97,7 +105,7 @@ const Statistics = () => {
               </div>
             )}
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

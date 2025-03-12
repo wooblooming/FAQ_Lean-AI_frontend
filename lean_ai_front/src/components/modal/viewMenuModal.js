@@ -1,24 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
-  Pencil as EditIcon,
-  Check as CheckIcon,
-  X as CancelIcon,
+  Pencil,
+  Check,
+  X,
   Trash,
   ChevronDown,
+  ChevronUp,
   CircleMinus,
+  Image as ImageIcon,
+  Menu as MenuIcon,
 } from "lucide-react";
-import { useAuth } from "../../contexts/authContext";
-import ModalMSG from "../modal/modalMSG.js";
-import ModalErrorMSG from "../modal/modalErrorMSG";
-import ConfirmDeleteModal from "../modal/confirmDeleteModal";
-import styles from "../../styles/viewMenu.module.css";
+import { useAuth } from "@/contexts/authContext";
+import { getMenuTitle } from "@/utils/storeUtils";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
+import ModalMSG from "@/components/modal/modalMSG.js";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
+import ConfirmDeleteModal from "@/components/modal/confirmDeleteModal";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL;
 
-const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
-
+const ViewMenuModal = ({ isOpen, onClose, slug, storeCategory }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,8 +37,9 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
   const [message, setMessage] = useState("");
   const fileInputRef = useRef(null);
   const { token } = useAuth();
+  const menuTitle = getMenuTitle(storeCategory); // 메뉴 제목 설정
 
-  // 메뉴 데이터를 가져오기
+  // Fetch menu data
   useEffect(() => {
     if (isOpen && slug && token) {
       fetchMenuItems();
@@ -51,20 +55,20 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         },
         params: {
           action: "view",
-          slug: slug, // 슬러그를 URL 파라미터로 전달
+          slug: slug,
         },
       });
 
       const data = response.data;
       if (Array.isArray(data) && data.length > 0) {
-        setMenuItems(data);
         setUpdatedMenuItems(data);
+        // Initialize all categories as expanded for better visibility
         const categories = [...new Set(data.map((item) => item.category))];
         setExpandedCategories(
-          categories.reduce(
-            (acc, category) => ({ ...acc, [category]: false }),
-            {}
-          )
+          categories.reduce((acc, category, index) => {
+            acc[category] = index === 0; // 첫 번째 카테고리만 true
+            return acc;
+          }, {})
         );
       } else {
         setError("메뉴 데이터가 비어있거나 올바르지 않습니다.");
@@ -84,18 +88,16 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     }
   };
 
-  // 카테고리 확장/축소 상태 토글
+  // Toggle category expansion
   const toggleCategory = (category) => {
     setExpandedCategories((prev) => ({ ...prev, [category]: !prev[category] }));
   };
 
-  // 이미지 URL 가져오기 함수 (미리보기 또는 기본 이미지)
+  // Get image URL
   const getImageSrc = (menu) => {
-    // 파일 객체인지 확인하여 URL 생성
     if (menu.image instanceof File) {
       return URL.createObjectURL(menu.image);
     }
-    // 기본 이미지 로직 유지
     return menu.image &&
       typeof menu.image === "string" &&
       menu.image.startsWith("http")
@@ -133,11 +135,9 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         }
       );
 
-      // Axios에서는 status로 성공 여부 확인
       if (response.status === 200 && response.data.updated_menu) {
         const updatedMenu = response.data.updated_menu;
 
-        // 이미지 처리
         const updatedImage =
           menuItem.image instanceof File
             ? `${MEDIA_URL}${updatedMenu.image}`
@@ -192,6 +192,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
           : item
       );
       setUpdatedMenuItems(updatedItems);
+      setPreviewImage(URL.createObjectURL(file));
     }
   };
 
@@ -199,7 +200,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     setConfirmDeleteItem(menuItem);
   };
 
-  // 개별 아이템 삭제
+  // Delete individual item
   const confirmDelete = async () => {
     try {
       await axios.delete(
@@ -229,7 +230,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
     }
   };
 
-  // 카테고리별 삭제
+  // Delete category
   const confirmDeleteCategoryHandler = async () => {
     if (!confirmDeleteCategory) return;
 
@@ -240,8 +241,8 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
           "Content-Type": "application/json",
         },
         data: {
-          slug: slug, // 삭제할 스토어의 slug
-          category: confirmDeleteCategory, // 삭제할 카테고리 이름
+          slug: slug,
+          category: confirmDeleteCategory,
         },
       });
 
@@ -272,143 +273,223 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
   if (!isOpen) return null;
 
   return (
-    <div className={`${styles.modalOverlay} z-30`}>
-      <div className={`${styles.modalContent} relative mx-2 overflow-y-auto`}>
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 "
-          style={{ padding: "10px", cursor: "pointer" }}
-          aria-label="Close"
-        >
-          <CancelIcon className="bg-indigo-500 rounded-full text-white p-1" />
-        </button>
-        <div className={styles.modalHeader}>{menuTitle} 목록</div>
-        <div className={`${styles.modalBody}`}>
-          {/* 로딩 중 일때 */}
-          {loading ? (
-            <p>{menuTitle} 데이터를 불러오는 중...</p>
-          ) : error ? (
-            <p className="error">{error}</p>
-          ) : Object.keys(groupedMenuItems).length === 0 ? (
-            <p>등록된 {menuTitle}이/가 없습니다.</p>
-          ) : (
-            Object.entries(groupedMenuItems).map(([category, items]) => (
-              <div key={category} className={`${styles.categoryGroup} `}>
-                <h3
-                  onClick={() => toggleCategory(category)}
-                  className={`${styles.categoryHeader} flex items-center justify-between`}
-                >
-                  {category}{" "}
-                  {expandedCategories[category] ? (
-                    <button
-                      className={`${styles.deleteCategoryButton} ml-auto`}
-                      onClick={(e) => {
-                        e.stopPropagation(); // 부모 요소 클릭 이벤트 방지
-                        setConfirmDeleteCategory(category);
-                      }}
-                    >
-                      <CircleMinus />
-                    </button>
-                  ) : (
-                    <ChevronDown />
-                  )}
-                </h3>
-                {expandedCategories[category] && (
-                  <ul>
-                    {items.map((menu) => (
-                      <li key={menu.menu_number} className={styles.menuItem}>
-                        {editingItem === menu.menu_number ? (
-                          <div className={styles.editMenuItem}>
-                            <div className={styles.imageWrapper}>
-                              <img
-                                src={previewImage || getImageSrc(menu)}
-                                alt={menu.name}
-                                className={styles.menuEditImage}
-                                onClick={() => fileInputRef.current.click()}
-                                style={{ cursor: "pointer" }}
-                              />
-                            </div>
-                            <input
-                              type="file"
-                              className={styles.menuEditImageInput}
-                              ref={fileInputRef}
-                              style={{ display: "none" }}
-                              onChange={(e) => handleImageChange(e, menu)}
-                            />
-                            <input
-                              type="text"
-                              className={styles.menuEditInput}
-                              value={menu.name}
-                              onChange={(e) =>
-                                handleInputChange(e, menu, "name")
-                              }
-                            />
-                            <input
-                              type="number"
-                              className={styles.menuEditInput}
-                              value={Number(menu.price).toFixed(0)}
-                              onChange={(e) =>
-                                handleInputChange(e, menu, "price")
-                              }
-                            />
-                            <div className={styles.editButtons}>
-                              <button
-                                className={styles.saveButton}
-                                onClick={() => handleSaveEdit(menu)}
-                              >
-                                <CheckIcon />
-                              </button>
-                              <button
-                                className={styles.cancelButton}
-                                onClick={handleCancelEdit}
-                              >
-                                <CancelIcon />
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="displayMenuItem flex justify-between items-center w-full">
-                            <div className="flex items-center">
-                              <img
-                                src={getImageSrc(menu)}
-                                alt={menu.name}
-                                className={styles.menuImage}
-                              />
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col animate-fadeIn">
+        {/* Header */}
+        <div className="bg-indigo-600 p-5 text-white relative">
+          <div className="flex items-center">
+            <MenuIcon className="mr-3" />
+            <h2 className="text-2xl font-bold">{menuTitle} 목록</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors duration-200"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
-                              <div className={`${styles.menuDetails} ml-4`}>
-                                <p className={styles.menuName}>{menu.name}</p>
-                                <p className={styles.menuPrice}>
-                                  {Number(menu.price).toFixed(0)}원
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex space-x-4 items-center mr-6">
-                              <button
-                                className={styles.editButton}
-                                onClick={() => handleEditClick(menu)}
-                              >
-                                <EditIcon className="w-5 h-5" />
-                              </button>
-                              <button
-                                className={styles.deleteButton}
-                                onClick={() => handleDeleteClick(menu)}
-                              >
-                                <Trash className="w-5 h-5" />
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-10">
+              <LoadingSpinner />
+              <p className="mt-4 text-indigo-600 font-medium" style={{ fontFamily: "NanumSquareBold" }}>
+                {menuTitle} 데이터를 불러오는 중...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600" style={{ fontFamily: "NanumSquareBold" }}>
+              <p>{error}</p>
+            </div>
+          ) : Object.keys(groupedMenuItems).length === 0 ? (
+            <div className="text-center py-10" style={{ fontFamily: "NanumSquareBold" }}>
+              <div className="bg-indigo-50 rounded-full p-4 inline-flex mb-4">
+                <MenuIcon className="h-8 w-8 text-indigo-500" />
               </div>
-            ))
+              <p className="text-gray-500 text-lg">
+                등록된 {menuTitle}이/가 없습니다.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6" style={{ fontFamily: "NanumSquareBold" }}>
+              {Object.entries(groupedMenuItems).map(
+                ([category, items], index) => (
+                  <div
+                    key={category}
+                    className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
+                  >
+                    {/* Category Header */}
+                    <div
+                      onClick={() => toggleCategory(category)}
+                      className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                    >
+                      <div className="flex items-center">
+                        {/* index+1을 카테고리 앞에 표시 */}
+                        <div className="flex items-center justify-center w-6 h-6 text-indigo-500 text-2xl font-bold mr-1.5" style={{ fontFamily: "NanumSquareExtraBold" }}>
+                          {index + 1}.
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "NanumSquareExtraBold" }}>
+                          {category}
+                        </h3>
+                        <span className="ml-2 text-sm text-gray-500 font-medium bg-gray-200 rounded-full px-2">
+                          {items.length}개의 {menuTitle}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        {expandedCategories[category] && (
+                          <button
+                            className="p-1.5 mr-2 text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfirmDeleteCategory(category);
+                            }}
+                          >
+                            <CircleMinus className="h-5 w-5" />
+                          </button>
+                        )}
+                        {expandedCategories[category] ? (
+                          <ChevronUp className="h-5 w-5 text-gray-400" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-gray-400" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Menu Items */}
+                    {expandedCategories[category] && (
+                      <div className="divide-y divide-gray-100">
+                        {items.map((menu) => (
+                          <div key={menu.menu_number} className="p-4">
+                            {editingItem === menu.menu_number ? (
+                              <div className="animate-scaleIn">
+                                <div className="flex flex-col md:flex-row gap-4">
+                                  {/* Image Edit */}
+                                  <div className="relative w-full md:w-32 h-32 group">
+                                    <img
+                                      src={previewImage || getImageSrc(menu)}
+                                      alt={menu.name}
+                                      className="w-full h-full object-cover rounded-lg border-2 border-indigo-300"
+                                    />
+                                    <div
+                                      className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg cursor-pointer"
+                                      onClick={() =>
+                                        fileInputRef.current.click()
+                                      }
+                                    >
+                                      <ImageIcon className="h-8 w-8 text-white" />
+                                    </div>
+                                    <input
+                                      type="file"
+                                      ref={fileInputRef}
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        handleImageChange(e, menu)
+                                      }
+                                    />
+                                  </div>
+
+                                  {/* Form Fields */}
+                                  <div className="flex-1 space-y-4">
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        이름
+                                      </label>
+                                      <input
+                                        type="text"
+                                        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                                        value={menu.name}
+                                        onChange={(e) =>
+                                          handleInputChange(e, menu, "name")
+                                        }
+                                        placeholder="상품명 입력"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        가격 (원)
+                                      </label>
+                                      <input
+                                        type="number"
+                                        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                                        value={Number(menu.price).toFixed(0)}
+                                        onChange={(e) =>
+                                          handleInputChange(e, menu, "price")
+                                        }
+                                        placeholder="가격 입력"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex justify-end space-x-2 mt-4">
+                                  <button
+                                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg flex items-center transition-colors duration-200"
+                                    onClick={handleCancelEdit}
+                                  >
+                                    <X className="h-4 w-4 mr-1" />
+                                    취소
+                                  </button>
+                                  <button
+                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center transition-colors duration-200"
+                                    onClick={() => handleSaveEdit(menu)}
+                                  >
+                                    <Check className="h-4 w-4 mr-1" />
+                                    저장
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-between group">
+                                {/* Item Information */}
+                                <div className="flex items-center">
+                                  <img
+                                    src={getImageSrc(menu)}
+                                    alt={menu.name}
+                                    className="w-16 h-16 object-cover rounded-lg shadow-sm"
+                                  />
+                                  <div className="ml-4">
+                                    <h4 className="font-semibold text-gray-900">
+                                      {menu.name}
+                                    </h4>
+                                    <div className="flex items-center text-indigo-600 font-medium mt-1">
+                                      {Number(menu.price).toLocaleString()}원
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                  <button
+                                    className="p-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg transition-colors duration-200"
+                                    onClick={() => handleEditClick(menu)}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </button>
+                                  <button
+                                    className="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200"
+                                    onClick={() => handleDeleteClick(menu)}
+                                  >
+                                    <Trash className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
           )}
         </div>
       </div>
 
-      {/* item 삭제 확인 모달 */}
+      {/* Delete Item Confirmation Modal */}
       <ConfirmDeleteModal
         show={!!confirmDeleteItem}
         onClose={() => setConfirmDeleteItem(null)}
@@ -416,7 +497,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         itemName={confirmDeleteItem?.name}
       />
 
-      {/* 카테고리 삭제 확인 모달 */}
+      {/* Delete Category Confirmation Modal */}
       <ConfirmDeleteModal
         show={!!confirmDeleteCategory}
         onClose={() => setConfirmDeleteCategory(null)}
@@ -424,7 +505,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         itemName={confirmDeleteCategory}
       />
 
-      {/* 성공 메시지 모달 */}
+      {/* Success Message Modal */}
       <ModalMSG
         show={showMessageModal}
         onClose={() => setShowMessageModal(false)}
@@ -433,7 +514,7 @@ const ViewMenuModal = ({ isOpen, onClose, slug, menuTitle }) => {
         <p style={{ whiteSpace: "pre-line" }}>{message}</p>
       </ModalMSG>
 
-      {/* 에러 메시지 모달 */}
+      {/* Error Message Modal */}
       <ModalErrorMSG
         show={showErrorMessageModal}
         onClose={() => setShowErrorMessageModal(false)}

@@ -378,7 +378,7 @@ const ChangeInfo = () => {
           setMenu([...menu, newMenu]); // 새 메뉴 항목 추가
         }}
         slug={slug}
-        menuTitle={menuTitle}
+        storeCategory={storeInfo.store_category}
       />
 
       {/* 메뉴 보기 모달 */}
@@ -386,7 +386,7 @@ const ChangeInfo = () => {
         isOpen={modalState.viewMenu}
         onClose={closeViewMenu}
         slug={slug}
-        menuTitle={menuTitle}
+        storeCategory={storeInfo.store_category}
       />
 
       {/* 성공 메시지 모달 */}
