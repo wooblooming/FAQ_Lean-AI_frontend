@@ -23,6 +23,7 @@ const SignupStep2 = () => {
     store_category: "",
     store_name: "",
     store_address: "",
+    marketingAccepted :""
   });
   const [isOAuthUser, setIsOAuthUser] = useState(false);
   const { convertToJwtToken } = useConvertToJwtToken(); // JWT 변환 훅 사용
@@ -37,7 +38,7 @@ const SignupStep2 = () => {
     const storedUserData = sessionStorage.getItem("signupUserData");
     setIsOAuthUser(sessionStorage.getItem("isOAuthUser") === "true");
 
-    //console.log("storedUserData: ", storedUserData);
+    console.log("storedUserData: ", storedUserData);
 
     if (storedUserData) {
       const parsedData = JSON.parse(storedUserData);
@@ -83,6 +84,7 @@ const SignupStep2 = () => {
       store_category,
       store_name,
       store_address,
+      marketingAccepted
     } = formData;
 
     if (!store_category || !store_name || !store_address) {
@@ -126,6 +128,7 @@ const SignupStep2 = () => {
           store_category,
           store_name,
           store_address,
+          marketingAccepted : marketing
         },
         {
           headers: { "Content-Type": "application/json" },

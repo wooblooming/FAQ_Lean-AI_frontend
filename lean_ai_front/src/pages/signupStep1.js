@@ -21,6 +21,7 @@ const SignupStep1 = () => {
     phone: "",
     verificationCode: "",
     email: "",
+    marketingAccepted: "",
   });
   const [idChecked, setIdChecked] = useState(false); // 아이디 중복 검사 여부 저장
   const [codeSent, setCodeSent] = useState(false); // 인증 번호 전송 여부 저장
@@ -33,7 +34,6 @@ const SignupStep1 = () => {
   const [showIdCheckModal, setShowIdCheckModal] = useState(false); // 아이디 중복 검사 모달 상태 관리
   const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
-  const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
 
   const [showTermsModal, setShowTermsModal] = useState(false); // 이용약관 모달 상태
   const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
@@ -60,10 +60,10 @@ const SignupStep1 = () => {
 
   // 입력값에 대해 변화를 감지하여 상태 업데이트 및 추가적인 검증 로직 수행
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value, // 체크박스일 경우 checked 값을 사용
     });
 
     if (name === "password") {
@@ -98,7 +98,15 @@ const SignupStep1 = () => {
 
   // 회원가입 버튼 클릭 시 필수 정보 확인 후 다음 페이지로 이동
   const handleNextStep = () => {
-    const { username, password, confirmPassword, name, dob, phone } = formData;
+    const {
+      username,
+      password,
+      confirmPassword,
+      name,
+      dob,
+      phone,
+      marketingAccepted,
+    } = formData;
 
     if (!username || !password || !confirmPassword || !name || !dob || !phone) {
       setErrorMessage("필수 항목들을 기입해주시길 바랍니다");
@@ -437,8 +445,8 @@ const SignupStep1 = () => {
             <div className="flex items-center justify-center space-x-2">
               <input
                 type="checkbox"
-                checked={marketingAccepted}
-                onChange={() => setMarketingAccepted(!marketingAccepted)}
+                checked={formData.marketingAccepted}
+                onChange={handleInputChange}
                 className="form-checkbox h-4 w-4 text-blue-600"
               />
               <label
@@ -510,7 +518,9 @@ const SignupStep1 = () => {
           <MarketingModal
             show={showMarketingModal}
             onClose={() => setShowMarketingModal(false)}
-            onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
+            onAgree={(isAgreed) =>
+              setFormData({ ...formData, marketingAccepted: isAgreed })
+            }
           />
 
           {/* 에러메시지 모달 */}

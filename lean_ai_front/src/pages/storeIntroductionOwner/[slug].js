@@ -76,9 +76,10 @@ const StoreIntroduceOwner = () => {
   // storeData가 변경될 때 상태 업데이트
   useEffect(() => {
     if (storeData) {
-      setStoreCategory(storeData.store_category); // 상점 카테고리 설정
-      setAgentId(storeData.agent_id); // 챗봇 ID 설정
-      setIsLoading(false); // 로딩 종료
+      //console.log("store data : ",storeData);
+      setStoreCategory(storeData.store_category);
+      setAgentId(storeData.agent_id);
+      setIsLoading(false);
     }
   }, [storeData]);
 
