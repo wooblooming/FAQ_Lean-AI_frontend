@@ -103,7 +103,7 @@ const MainPageWithMenu = () => {
     }
 
     setIsLoading(true);
-    fetchStatistics();    // 통계 데이터 가져오기
+    fetchStatistics(); // 통계 데이터 가져오기
 
     if (storeID) {
       setIsOwner(true);
@@ -124,7 +124,7 @@ const MainPageWithMenu = () => {
           setUserData,
           setErrorMessage,
           setShowErrorMessageModal
-        )
+        ),
       ]).finally(() => {
         setIsLoading(false);
       });
@@ -195,7 +195,9 @@ const MainPageWithMenu = () => {
     return (
       <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
         <LoadingSpinner />
-        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>데이터를 가져오는 중입니다.</p>
+        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
+          데이터를 가져오는 중입니다.
+        </p>
       </div>
     );
   }
@@ -402,7 +404,7 @@ const MainPageWithMenu = () => {
                 >
                   통계 및 분석
                 </h2>
-                
+
                 {isLoadingStatistics ? (
                   <p className="text-gray-700 px-0 md:px-4">
                     데이터 로딩 중...
@@ -455,26 +457,20 @@ const MainPageWithMenu = () => {
       )}
 
       {/* 데이터 편집 모달 */}
-      {isEditDataModalOpen && (
-        <Modal
-          onClose={() => {
-            setIsEditDataModalOpen(false);
-          }}
-        >
-          <RegisterStoreData />
-        </Modal>
-      )}
+      <RegisterStoreData
+        show={isEditDataModalOpen}
+        onClose={() => {
+          setIsEditDataModalOpen(false);
+        }}
+      />
 
       {/* 데이터 요청 모달 */}
-      {isRequestDataModalOpen && (
-        <Modal
-          onClose={() => {
-            setIsRequestDataModalOpen(false);
-          }}
-        >
-          <RequestService />
-        </Modal>
-      )}
+      <RequestService
+        show={isRequestDataModalOpen}
+        onClose={() => {
+          setIsRequestDataModalOpen(false);
+        }}
+      />
 
       {/* 에러 메시지 모달 */}
       <ModalErrorMSG

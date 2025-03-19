@@ -7,6 +7,7 @@ import {
   Send,
   SquareCheckBig,
 } from "lucide-react";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
 import { usePublic } from "@/contexts/publicContext";
@@ -72,7 +73,7 @@ const MainPageWithMenuPublic = () => {
 
   const router = useRouter();
   const { token, removeToken } = useAuth();
-  const { removeStoreID } = useStore();
+  const { storeID, removeStoreID } = useStore();
   const { resetPublicOn } = usePublic();
   const lastNotifications = getLastNotifications(); // 최신 공지사항 가져오기
 

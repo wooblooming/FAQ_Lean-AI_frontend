@@ -58,7 +58,7 @@ const SignupPublicStep2 = () => {
       fetchPublicInstitutions();
     } else {
       // 만약 데이터가 없으면 첫 단계로 리다이렉트
-      router.push("/signupPublicStep1");
+      //router.push("/signupPublicStep1");
     }
   }, []);
 
