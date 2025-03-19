@@ -23,7 +23,7 @@ const SignupStep2 = () => {
     store_category: "",
     store_name: "",
     store_address: "",
-    marketingAccepted :""
+    marketingAccepted: "N",
   });
   const [isOAuthUser, setIsOAuthUser] = useState(false);
   const { convertToJwtToken } = useConvertToJwtToken(); // JWT 변환 훅 사용
@@ -33,6 +33,7 @@ const SignupStep2 = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [showDobModal, setShowDobModal] = useState(false); // 생년월일 입력 모달
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const storedUserData = sessionStorage.getItem("signupUserData");
@@ -42,12 +43,15 @@ const SignupStep2 = () => {
 
     if (storedUserData) {
       const parsedData = JSON.parse(storedUserData);
-      setFormData((prev) => ({ ...prev, ...parsedData }));
+      setFormData((prev) => ({
+        ...prev,
+        ...parsedData,
+        marketingAccepted: parsedData.marketingAccepted || "N",
+      }));
 
       if (!parsedData.dob) {
         setShowDobModal(true);
       }
-  
     } else {
       router.push("/signupStep1");
     }
@@ -74,6 +78,7 @@ const SignupStep2 = () => {
 
   // 회원가입 처리 함수
   const handleSignup = async () => {
+    setLoading(true);
     const {
       username,
       password,
@@ -84,7 +89,7 @@ const SignupStep2 = () => {
       store_category,
       store_name,
       store_address,
-      marketingAccepted
+      marketingAccepted,
     } = formData;
 
     if (!store_category || !store_name || !store_address) {
@@ -112,6 +117,7 @@ const SignupStep2 = () => {
     } else {
       setErrorMessage("생년월일을 YYMMDD 형태로 입력해 주세요.");
       setShowErrorMessageModal(true);
+      setLoading(false);
       return;
     }
 
@@ -128,7 +134,7 @@ const SignupStep2 = () => {
           store_category,
           store_name,
           store_address,
-          marketingAccepted : marketing
+          marketingAccepted,
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -159,6 +165,7 @@ const SignupStep2 = () => {
       );
       setShowErrorMessageModal(true);
     }
+    setLoading(false);
   };
 
   const handleErrorMessageModalClose = () => {
@@ -249,10 +256,41 @@ const SignupStep2 = () => {
 
           {/* 회원가입 버튼 */}
           <button
-            className="w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold"
+            className={`w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold flex items-center justify-center transition-all duration-300 ${
+              loading
+                ? "bg-indigo-400 cursor-not-allowed"
+                : "hover:bg-indigo-600"
+            }`}
             onClick={handleSignup}
+            disabled={loading}
           >
-            회원가입
+            {loading ? (
+              <div className="flex items-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <span>계정 생성 중입니다</span>
+              </div>
+            ) : (
+              "회원가입"
+            )}
           </button>
 
           <DOBModal

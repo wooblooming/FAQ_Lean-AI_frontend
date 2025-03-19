@@ -21,7 +21,7 @@ const SignupStep1 = () => {
     phone: "",
     verificationCode: "",
     email: "",
-    marketingAccepted: "",
+    marketingAccepted: "N",
   });
   const [idChecked, setIdChecked] = useState(false); // 아이디 중복 검사 여부 저장
   const [codeSent, setCodeSent] = useState(false); // 인증 번호 전송 여부 저장
@@ -63,7 +63,7 @@ const SignupStep1 = () => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value, // 체크박스일 경우 checked 값을 사용
+      [name]: type === "checkbox" ? (checked ? "Y" : "N") : value, // 체크박스일 경우 checked 값을 사용, 체크하면 "Y", 해제하면 "N"
     });
 
     if (name === "password") {
@@ -445,7 +445,8 @@ const SignupStep1 = () => {
             <div className="flex items-center justify-center space-x-2">
               <input
                 type="checkbox"
-                checked={formData.marketingAccepted}
+                name="marketingAccepted"
+                checked={formData.marketingAccepted === "Y"} // "Y"일 때 체크됨
                 onChange={handleInputChange}
                 className="form-checkbox h-4 w-4 text-blue-600"
               />
@@ -519,7 +520,7 @@ const SignupStep1 = () => {
             show={showMarketingModal}
             onClose={() => setShowMarketingModal(false)}
             onAgree={(isAgreed) =>
-              setFormData({ ...formData, marketingAccepted: isAgreed })
+              setFormData({ ...formData, marketingAccepted: isAgreed ? "Y" : "N" })
             }
           />
 
