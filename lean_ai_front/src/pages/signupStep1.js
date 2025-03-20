@@ -107,7 +107,7 @@ const signupStep1 = () => {
       return;
     }
 
-    sessionStorage.setItem("signupPublicUserData", JSON.stringify(formData));
+    sessionStorage.setItem("signupUserData", JSON.stringify(formData));
     router.push("/signupStep2");
   };
 

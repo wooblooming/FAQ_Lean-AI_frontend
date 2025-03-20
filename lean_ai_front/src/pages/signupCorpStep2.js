@@ -40,7 +40,7 @@ function InfoItem({ icon, label, value }) {
   );
 }
 
-const SignupPublicStep2 = () => {
+const SignupCorpStep2 = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({});
   const [department, setDepartment] = useState("");
@@ -52,15 +52,15 @@ const SignupPublicStep2 = () => {
   const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
   const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 환영 모달 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-  const [isRegisterPublicModalOpen, setIsRegisterPublicModalOpen] =
+  const [ isRegisterCorpModalOpen, setIsRegisterCorpModalOpen] =
     useState(false); // 기관 데이터 입력 모달 상태
-  const [publicInstitutions, setPublicInstitutions] = useState([]); // 기관 목록
-  const [selectedInstitutionId, setSelectedInstitutionId] = useState(null); // 선택된 기관 ID
-  const [selectedInstitution, setSelectedInstitution] = useState(null); // 선택된 기관 정보
+  const [ corporations, setCorporations] = useState([]); // 기관 목록
+  const [selectedCorpId, setSelectedCorpId] = useState(null); // 선택된 기관 ID
+  const [selectedCorp, setSelectedCorp] = useState(null); // 선택된 기관 정보
 
   useEffect(() => {
     // sessionStorage에서 사용자 정보를 불러오기
-    const storedUserData = sessionStorage.getItem("signupPublicUserData");
+    const storedUserData = sessionStorage.getItem("signupCorpUserData");
     if (storedUserData) {
       setFormData(JSON.parse(storedUserData));
       fetchPublicInstitutions();
@@ -73,8 +73,8 @@ const SignupPublicStep2 = () => {
   // 기관 목록을 가져오는 함수
   const fetchPublicInstitutions = async () => {
     try {
-      const response = await axios.get(`${API_DOMAIN}/public/publics/`);
-      setPublicInstitutions(response.data);
+      const response = await axios.get(`${API_DOMAIN}/corp/corporations/`);
+      setCorporations(response.data);
     } catch (error) {
       console.error("Error fetching institutions:", error);
       setErrorMessage("기관 정보를 불러오는 중 오류가 발생했습니다.");
@@ -90,7 +90,7 @@ const SignupPublicStep2 = () => {
         `${API_DOMAIN}/public/publics/${institutionId}/`
       );
 
-      setSelectedInstitution(response.data); // 선택된 기관의 상세 정보를 상태에 저장
+      setSelectedCorp(response.data); // 선택된 기관의 상세 정보를 상태에 저장
     } catch (error) {
       console.error("Error fetching institution details:", error);
       setErrorMessage("기관 상세 정보를 불러오는 중 오류가 발생했습니다.");
@@ -99,13 +99,13 @@ const SignupPublicStep2 = () => {
   };
 
   // 드롭다운에서 기관 선택 시 호출되는 함수
-  const handleInstitutionSelect = (e) => {
-    const institutionId = e.target.value;
-    setSelectedInstitutionId(institutionId);
-    if (institutionId) {
-      fetchInstitutionDetails(institutionId); // 선택된 기관의 상세 정보 호출
+  const handleCorporationSelect = (e) => {
+    const corpId = e.target.value;
+    setSelectedCorpId(corpId);
+    if (corpId) {
+      fetchCorporationDetails(corpId); // 선택된 기관의 상세 정보 호출
     } else {
-      setSelectedInstitution(null); // 기관 선택 초기화
+      setSelectedCorp(null); // 기관 선택 초기화
     }
   };
 
@@ -156,7 +156,7 @@ const SignupPublicStep2 = () => {
       dob: dobFormatted,
       phone,
       email: email || null,
-      institution_id: selectedInstitutionId,
+      corp_id: selectedCorpId,
       marketing: marketingValue,
       department: department,
     };
@@ -221,22 +221,22 @@ const SignupPublicStep2 = () => {
         </div>
 
         <div className="px-5 space-y-4">
-          {/* 기관 선택 - 드롭다운 */}
+          {/* 기업업 선택 - 드롭다운 */}
           <div className="space-y-2">
             <div className="flex flex-row">
               <select
-                name="institution"
-                value={selectedInstitutionId || ""}
-                onChange={handleInstitutionSelect}
+                name="corporation"
+                value={selectedCorpId || ""}
+                onChange={handleCorporationSelect}
                 className="w-full border rounded-md p-2"
               >
-                <option value="">기관을 선택해주세요</option>
-                {publicInstitutions.map((institution) => (
+                <option value="">기업업을 선택해주세요</option>
+                {corporations.map((corporation) => (
                   <option
-                    key={institution.public_id}
-                    value={institution.public_id}
+                    key={corporation.corp_id}
+                    value={corporation.corp_id}
                   >
-                    {institution.public_name}
+                    {corporation.corp_name}
                   </option>
                 ))}
               </select>
@@ -253,14 +253,14 @@ const SignupPublicStep2 = () => {
               style={{ fontFamily: "NanumSquareBold" }}
             >
               <p className="text-sm text-gray-600">
-                <span className="text-red-500 mr-1">*</span>기관 정보가 없다면
-                기관을 등록해주세요!
+                <span className="text-red-500 mr-1">*</span>기업 정보가 없다면
+                기업업을 등록해주세요!
               </p>
               <button
                 className="text-sm text-indigo-500 hover:underline"
-                onClick={() => setIsRegisterPublicModalOpen(true)}
+                onClick={() => setIsRegisterCorpModalOpen(true)}
               >
-                기관 정보 등록
+                기업업 정보 등록
               </button>
             </div>
           </div>
@@ -271,29 +271,29 @@ const SignupPublicStep2 = () => {
               style={{ fontFamily: "NanumSquareExtraBold" }}
             >
               {" "}
-              기관 정보
+              기업업 정보
             </h3>
             {/* 선택된 기관 정보 출력 */}
             <div className="space-y-3 px-2">
               <InfoItem
                 icon={<Building2 className="h-5 w-5" />}
-                label="기관명"
-                value={selectedInstitution?.public_name}
+                label="기업업명"
+                value={selectedCorp?.public_name}
               />
               <InfoItem
                 icon={<Clock className="h-5 w-5" />}
                 label="운영 시간"
-                value={selectedInstitution?.opening_hours}
+                value={selectedCorp?.opening_hours}
               />
               <InfoItem
                 icon={<Phone className="h-5 w-5" />}
                 label="대표 번호"
-                value={selectedInstitution?.public_tel}
+                value={selectedCorp?.public_tel}
               />
               <InfoItem
                 icon={<MapPin className="h-5 w-5" />}
                 label="주소"
-                value={selectedInstitution?.public_address}
+                value={selectedCorp?.public_address}
               />
             </div>
 
@@ -355,8 +355,8 @@ const SignupPublicStep2 = () => {
           </div>
 
           {/* 기관 정보 등록 모달 */}
-          {isRegisterPublicModalOpen && (
-            <Modal onClose={() => setIsRegisterPublicModalOpen(false)}>
+          {isRegisterCorpModalOpen && (
+            <Modal onClose={() => setIsRegisterCorpModalOpen(false)}>
               <RegisterPublic />
             </Modal>
           )}
@@ -436,4 +436,4 @@ const SignupPublicStep2 = () => {
   );
 };
 
-export default SignupPublicStep2;
+export default SignupCorpStep2;

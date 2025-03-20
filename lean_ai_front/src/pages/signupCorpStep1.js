@@ -9,7 +9,7 @@ import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
-const signupCorporateStep1 = () => {
+const SignupCorpStep1 = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -107,7 +107,7 @@ const signupCorporateStep1 = () => {
       return;
     }
 
-    sessionStorage.setItem("signupPublicUserData", JSON.stringify(formData));
+    sessionStorage.setItem("signupCorpUserData", JSON.stringify(formData));
     router.push("/signupPublicStep2");
   };
 
@@ -130,7 +130,7 @@ const signupCorporateStep1 = () => {
 
     // 인증 요청하여 백엔드에서 인증번호 전송
     try {
-      const response = await fetch(`${API_DOMAIN}/public/send-code/`, {
+      const response = await fetch(`${API_DOMAIN}/corp/send-code/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +161,7 @@ const signupCorporateStep1 = () => {
   // 받은 인증번호가 백엔드에서 보낸 인증번호와 일치하는지 확인
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch(`${API_DOMAIN}/public/verify-code/`, {
+      const response = await fetch(`${API_DOMAIN}/corp/verify-code/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -466,4 +466,4 @@ const signupCorporateStep1 = () => {
   );
 };
 
-export default signupCorporateStep1;
+export default SignupCorpStep1;

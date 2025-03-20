@@ -69,7 +69,7 @@ const SignupType = () => {
             title="기업"
             description={"기업에서 \n근무하고 계신가요?"}
             icon={<Building2 className="text-white h-20 w-20" />}
-            onClick={() => router.push("/signupCorporateStep1")}
+            onClick={() => router.push("/signupCorpStep1")}
           />
           <Card
             title="공공기관"

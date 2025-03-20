@@ -6,6 +6,8 @@ import axios from "axios";
 import { useStore } from "@/contexts/storeContext";
 import useConvertToJwtToken from "@/hooks/useConvertToJwtToken";
 import DOBModal from "@/components/modal/dobModal";
+import TermsOfServiceModal from "@/components/modal/termsOfServiceModal";
+import MarketingModal from "@/components/modal/marketingModal";
 import ModalMSG from "@/components/modal/modalMSG";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
@@ -32,6 +34,8 @@ const SignupStep2 = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showWarning, setShowWarning] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false); // 이용약관 모달 상태
+  const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false);
   const [showDobModal, setShowDobModal] = useState(false); // 생년월일 입력 모달
   const [loading, setLoading] = useState(false);
@@ -96,6 +100,8 @@ const SignupStep2 = () => {
     if (!store_category || !store_name || !store_address) {
       setErrorMessage("필수 항목들을 기입해 주세요.");
       setShowErrorMessageModal(true);
+      setLoading(false);
+
       return;
     }
 
@@ -103,12 +109,16 @@ const SignupStep2 = () => {
     if (!termsAccepted) {
       setErrorMessage("이용약관 및 개인정보 수집 동의는 필수입니다.");
       setShowErrorMessageModal(true);
+      setLoading(false);
+
       return;
     }
 
     if (!dob) {
       setErrorMessage("생년 월일을 기입해 주세요.");
       setShowDobModal(true);
+      setLoading(false);
+
       return;
     }
 
@@ -146,7 +156,8 @@ const SignupStep2 = () => {
 
     try {
       const response = await axios.post(
-        `${API_DOMAIN}${signupEndpoint}`, payload,
+        `${API_DOMAIN}${signupEndpoint}`,
+        payload,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -179,14 +190,14 @@ const SignupStep2 = () => {
     setLoading(false);
   };
 
-    // 약관 동의 상태 변경
-    const handleTermsCheckboxChange = () => {
-      if (!termsAccepted) {
-        setShowTermsModal(true);
-      } else {
-        setTermsAccepted(!termsAccepted);
-      }
-    };
+  // 약관 동의 상태 변경
+  const handleTermsCheckboxChange = () => {
+    if (!termsAccepted) {
+      setShowTermsModal(true);
+    } else {
+      setTermsAccepted(!termsAccepted);
+    }
+  };
 
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
@@ -346,7 +357,6 @@ const SignupStep2 = () => {
               "회원가입"
             )}
           </button>
-          
 
           <DOBModal
             show={showDobModal}
@@ -354,6 +364,20 @@ const SignupStep2 = () => {
             onSubmit={handleDobSubmit}
             initialDOB={formData.dob}
             setErrorMessage={setErrorMessage}
+          />
+
+          {/* 이용약관 모달 */}
+          <TermsOfServiceModal
+            show={showTermsModal}
+            onClose={() => setShowTermsModal(false)}
+            onAgree={(isAgreed) => setTermsAccepted(isAgreed)}
+          />
+
+          {/* 마케팅 약관 모달 */}
+          <MarketingModal
+            show={showMarketingModal}
+            onClose={() => setShowMarketingModal(false)}
+            onAgree={(isAgreed) => setMarketingAccepted(isAgreed)}
           />
 
           {/* 에러 메시지 모달 */}
