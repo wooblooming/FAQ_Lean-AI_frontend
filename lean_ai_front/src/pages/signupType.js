@@ -1,13 +1,12 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import { ChevronLeft, Store, Building2 } from "lucide-react";
+import { ChevronLeft, Store, Building2, Landmark } from "lucide-react";
 
 const Card = ({ title, description, icon, onClick }) => {
   return (
     <div
-      className="flex flex-col items-center justify-center space-y-2 p-8 rounded-lg 
-                 border border-gray-200 hover:border-2 hover:border-indigo-400 cursor-pointer transition-all duration-300"
+      className="flex flex-col items-center justify-center space-y-2 p-8 rounded-lg border border-gray-200 hover:border-2 hover:border-indigo-400 cursor-pointer transition-all duration-300"
       onClick={onClick}
     >
       <div className="h-28 w-28 flex items-center justify-center rounded-full bg-indigo-400">
@@ -59,17 +58,23 @@ const SignupType = () => {
           회원 유형을 선택해주세요
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-center items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center">
           <Card
             title="음식점/판매점"
-            description={"음식점이나 판매점을 \n운영 중이시라면?"}
+            description={"소상공인으로 \n매장을 운영 중이신가요?"}
             icon={<Store className="text-white h-20 w-20" />}
             onClick={() => router.push("/signupStep1")}
           />
           <Card
-            title="공공기관"
-            description={"공공기관에서 \n업무 중이시라면?"}
+            title="기업"
+            description={"기업에서 \n근무하고 계신가요?"}
             icon={<Building2 className="text-white h-20 w-20" />}
+            onClick={() => router.push("/signupCorporateStep1")}
+          />
+          <Card
+            title="공공기관"
+            description={"공공기관에서 \n업무를 담당하고 계신가요?"}
+            icon={<Landmark className="text-white h-20 w-20" />}
             onClick={() => router.push("/signupPublicStep1")}
           />
         </div>

@@ -11,7 +11,7 @@ import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
-const SignupStep2 = () => {
+const SignupCorporateStep2 = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
@@ -23,9 +23,8 @@ const SignupStep2 = () => {
     store_category: "",
     store_name: "",
     store_address: "",
+    marketingAccepted: "N",
   });
-  const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
-  const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
   const [isOAuthUser, setIsOAuthUser] = useState(false);
   const { convertToJwtToken } = useConvertToJwtToken(); // JWT 변환 훅 사용
   const { setStoreID } = useStore();
@@ -99,13 +98,6 @@ const SignupStep2 = () => {
       return;
     }
 
-    // 약관 동의 확인
-    if (!termsAccepted) {
-      setErrorMessage("이용약관 및 개인정보 수집 동의는 필수입니다.");
-      setShowErrorMessageModal(true);
-      return;
-    }
-
     if (!dob) {
       setErrorMessage("생년 월일을 기입해 주세요.");
       setShowDobModal(true);
@@ -129,24 +121,21 @@ const SignupStep2 = () => {
       return;
     }
 
-    const marketingValue = marketingAccepted ? "Y" : "N";
-
-    const payload = {
-      username,
-      password: isOAuthUser ? undefined : password, // 소셜 로그인 사용자는 비밀번호 제외
-      name,
-      dob: dobFormatted,
-      phone,
-      email: email || null,
-      store_category,
-      store_name,
-      store_address,
-      marketing: marketingValue,
-    };
-
     try {
       const response = await axios.post(
-        `${API_DOMAIN}${signupEndpoint}`, payload,
+        `${API_DOMAIN}${signupEndpoint}`,
+        {
+          username,
+          password: isOAuthUser ? undefined : password, // 소셜 로그인 사용자는 비밀번호 제외
+          name,
+          dob: dobFormatted,
+          phone,
+          email: email || null,
+          store_category,
+          store_name,
+          store_address,
+          marketingAccepted,
+        },
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -178,15 +167,6 @@ const SignupStep2 = () => {
     }
     setLoading(false);
   };
-
-    // 약관 동의 상태 변경
-    const handleTermsCheckboxChange = () => {
-      if (!termsAccepted) {
-        setShowTermsModal(true);
-      } else {
-        setTermsAccepted(!termsAccepted);
-      }
-    };
 
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
@@ -274,40 +254,6 @@ const SignupStep2 = () => {
             </label>
           </div>
 
-          {/* 약관 및 마케팅 동의 체크박스 */}
-          <div className="space-y-2">
-            {/* 약관 및 마케팅 동의 체크박스 */}
-            <div className="flex items-center justify-center space-x-2">
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={handleTermsCheckboxChange}
-                className="form-checkbox h-4 w-4 text-blue-600"
-              />
-              <label
-                className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
-                onClick={handleTermsCheckboxChange}
-              >
-                이용약관 및 개인정보 수집 동의(필수)
-              </label>
-            </div>
-
-            <div className="flex items-center justify-center space-x-2">
-              <input
-                type="checkbox"
-                checked={marketingAccepted}
-                onChange={() => setMarketingAccepted(!marketingAccepted)}
-                className="form-checkbox h-4 w-4 text-blue-600"
-              />
-              <label
-                className="text-sm font-medium underline hover:text-blue-600"
-                onClick={() => setShowMarketingModal(true)}
-              >
-                마케팅 활용 동의 및 광고 수신 동의(선택)
-              </label>
-            </div>
-          </div>
-
           {/* 회원가입 버튼 */}
           <button
             className={`w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold flex items-center justify-center transition-all duration-300 ${
@@ -346,7 +292,6 @@ const SignupStep2 = () => {
               "회원가입"
             )}
           </button>
-          
 
           <DOBModal
             show={showDobModal}
@@ -390,4 +335,4 @@ const SignupStep2 = () => {
   );
 };
 
-export default SignupStep2;
+export default SignupCorporateStep1;

@@ -2,7 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { ChevronLeft, RotateCw, Building2, Clock, Phone, MapPin, Users } from "lucide-react";
+import {
+  ChevronLeft,
+  RotateCw,
+  Building2,
+  Clock,
+  Phone,
+  MapPin,
+  Users,
+} from "lucide-react";
 import TermsOfServiceModal from "@/components/modal/termsOfServiceModal";
 import RegisterPublic from "./registerPublic";
 import Modal from "@/components/modal/modal";
@@ -38,6 +46,7 @@ const SignupPublicStep2 = () => {
   const [department, setDepartment] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
   const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
+  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 저장
   const [showTermsModal, setShowTermsModal] = useState(false); // 이용약관 모달 상태
   const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
@@ -45,7 +54,6 @@ const SignupPublicStep2 = () => {
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
   const [isRegisterPublicModalOpen, setIsRegisterPublicModalOpen] =
     useState(false); // 기관 데이터 입력 모달 상태
-
   const [publicInstitutions, setPublicInstitutions] = useState([]); // 기관 목록
   const [selectedInstitutionId, setSelectedInstitutionId] = useState(null); // 선택된 기관 ID
   const [selectedInstitution, setSelectedInstitution] = useState(null); // 선택된 기관 정보
@@ -108,6 +116,7 @@ const SignupPublicStep2 = () => {
 
   // 회원가입 처리 함수
   const handleSignup = async () => {
+    setLoading(true);
     const { username, password, name, dob, phone, email } = formData;
 
     // 약관 동의 확인
@@ -128,6 +137,7 @@ const SignupPublicStep2 = () => {
     } else {
       setErrorMessage("생년 월일을 YYMMDD 형태로 입력해 주세요.");
       setShowErrorMessageModal(true);
+      setLoading(false);
       return;
     }
 
@@ -168,6 +178,7 @@ const SignupPublicStep2 = () => {
       setErrorMessage("회원가입 요청 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
     }
+    setLoading(false);
   };
 
   // 약관 동의 상태 변경
@@ -352,10 +363,41 @@ const SignupPublicStep2 = () => {
 
           {/* 회원가입 버튼 */}
           <button
-            className="w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold"
+            className={`w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold flex items-center justify-center transition-all duration-300 ${
+              loading
+                ? "bg-indigo-400 cursor-not-allowed"
+                : "hover:bg-indigo-600"
+            }`}
             onClick={handleSignup}
+            disabled={loading}
           >
-            회원가입
+            {loading ? (
+              <div className="flex items-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <span>계정 생성 중입니다</span>
+              </div>
+            ) : (
+              "회원가입"
+            )}
           </button>
 
           {/* 이용약관 모달 */}

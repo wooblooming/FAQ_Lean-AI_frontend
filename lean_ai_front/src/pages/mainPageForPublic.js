@@ -12,10 +12,9 @@ import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
 import { usePublic } from "@/contexts/publicContext";
 import { notifications } from "/public/text/notification.js";
-import RequestData from "./requestService";
 import SubscriptionActive from "@/components/component/subscriptions/subscriptionActive";
 import SubscriptionSignup from "@/components/component/subscriptions/subscriptionSignup";
-import Modal from "@/components/modal/modal";
+import RequestService from "./requestService";
 import ModalErrorMSG from "../components/modal/modalErrorMSG";
 import Footer from "../components/component/ui/footer";
 
@@ -437,15 +436,12 @@ const MainPageWithMenuPublic = () => {
       <Footer className="w-full mt-auto hidden md:block" isMobile={isMobile} />
 
       {/* 데이터 요청 모달 */}
-      {isRequestDataModalOpen && (
-        <Modal
-          onClose={() => {
-            setIsRequestDataModalOpen(false);
-          }}
-        >
-          <RequestData />
-        </Modal>
-      )}
+            <RequestService
+              show={isRequestDataModalOpen}
+              onClose={() => {
+                setIsRequestDataModalOpen(false);
+              }}
+            />
 
       {/* 에러 메시지 모달 */}
       <ModalErrorMSG

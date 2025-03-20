@@ -9,7 +9,8 @@ import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
 import { usePublic } from "@/contexts/publicContext";
-import ConvertSwitch from "@/components/component/ui/convertSwitch1";
+import { useCorporate } from "@/contexts/corporateContext";
+import TypeButton from "@/components/component/ui/typeButton";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
@@ -24,12 +25,13 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { saveToken, token } = useAuth();
   const { storeID, setStoreID } = useStore();
+  const { isPublicOn } = usePublic();
+  const { isCorporateOn } = useCorporate();
   const [requireCaptcha, setRequireCaptcha] = useState(false);
   const [captchaV2Token, setCaptchaV2Token] = useState("");
   const { executeRecaptcha } = useGoogleReCaptcha(); // reCAPTCHA 실행 함수
   const [loginLock, setLoginLock] = useState(false); //  reCAPTCHA 0.3 미만이면 로그인 잠금
   const [remainingTime, setRemainingTime] = useState(0); // 로그인 잠금 풀리는 시간 (timestamp)
-  const { isPublicOn, togglePublicOn } = usePublic();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState("");
 
@@ -87,9 +89,14 @@ const Login = () => {
       }
       //console.log(captchaToken);
 
-      const url = isPublicOn
-        ? `${API_DOMAIN}/public/login/`
-        : `${API_DOMAIN}/api/login/`;
+      let url;
+      if (isPublicOn) {
+        url = `${API_DOMAIN}/public/login/`;
+      } else if (isCorporateOn) {
+        url = `${API_DOMAIN}/corporate/login/`;
+      } else {
+        url = `${API_DOMAIN}/api/login/`;
+      }
 
       const response = await axios.post(url, {
         username,
@@ -98,7 +105,8 @@ const Login = () => {
         // test_mode: false,
       });
 
-      const { access, public_id, store_id, user_data } = response.data;
+      const { access, public_id, corporate_id, store_id, user_data } =
+        response.data;
 
       //console.log("서버 응답:", response.data);
 
@@ -107,7 +115,11 @@ const Login = () => {
 
       // 사용자 데이터 및 storeID 설정
       setUserData(user_data);
-      const id = isPublicOn ? public_id : store_id;
+      const id = isPublicOn
+        ? public_id
+        : isCorporateOn
+        ? corporate_id
+        : store_id;
       setStoreID(id);
     } catch (error) {
       console.error("로그인 요청 중 오류 발생:", error);
@@ -167,15 +179,15 @@ const Login = () => {
 
   useEffect(() => {
     if (token && storeID) {
-      // 구독 여부에 따라 페이지 이동
-
       if (isPublicOn) {
         router.push("/mainPageForPublic");
+      } else if (isCorporateOn) {
+        router.push("/mainPageForCorporate");
       } else {
         router.push("/mainPage");
       }
     }
-  }, [token, storeID, isPublicOn]);
+  }, [token, storeID, isPublicOn, isCorporateOn]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -219,10 +231,7 @@ const Login = () => {
           MUMUL
         </h1>
         <div className="space-y-4">
-          <ConvertSwitch
-            isPublicOn={isPublicOn}
-            togglePublicOn={togglePublicOn} // toggle 함수 전달
-          />
+          <TypeButton />
           <div className="flex items-center border rounded-md px-4 py-2">
             <FontAwesomeIcon icon={faUser} />
             <input
