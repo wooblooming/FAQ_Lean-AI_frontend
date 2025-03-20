@@ -11,7 +11,7 @@ import SubscriptionActive from "@/components/component/subscriptions/subscriptio
 import SubscriptionSignup from "@/components/component/subscriptions/subscriptionSignup";
 import { notifications } from "/public/text/notification";
 import ChangeInfo from "./changeInfo";
-import RegisterStoreData from "./registerStoreData";
+import RegisterStoreData from "../components/modal/registerStoreDataModal";
 import RequestService from "./requestService";
 import Modal from "@/components/modal/modal";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";

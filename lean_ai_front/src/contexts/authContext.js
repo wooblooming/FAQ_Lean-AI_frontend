@@ -8,10 +8,10 @@ export const AuthProvider = ({ children }) => {
     const router = useRouter();
 
     // 예외 페이지 배열
-    const exceptionPages = ['/', '/storeIntroduction/[slug]', '/publicIntroduction/[slug]', '/corporateIntroduction/[slug]', '/storeIntroductionExample/[slug]',
+    const exceptionPages = ['/', '/storeIntroduction/[slug]', '/publicIntroduction/[slug]', '/corpIntroduction/[slug]', '/storeIntroductionExample/[slug]',
                             '/timeline', '/news', '/notice', '/faq', '/signupType',
                             '/signupStep1', '/signupStep2' , '/signupPublicStep1', '/signupPublicStep2', 
-                            '/signupCorporateStep1', '/signupCorporateStep2',
+                            '/signupCorpStep1', '/signupCorpStep2', '/mainPageForCorp',
                             '/findAccount', '/findAccountResult', '/registerPublic',
                             '/complaintRegister', '/complaintStatusLookup'
                             ,'/subscriptionPlansIntroduce','/terms-of-service',

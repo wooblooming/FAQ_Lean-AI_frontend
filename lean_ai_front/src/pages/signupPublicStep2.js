@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import TermsOfServiceModal from "@/components/modal/termsOfServiceModal";
 import MarketingModal from "@/components/modal/marketingModal";
-import RegisterPublic from "./registerPublic";
+import RegisterPublicModal from "../components/modal/registerPublicModal";
 import Modal from "@/components/modal/modal";
 import ModalMSG from "@/components/modal/modalMSG";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
@@ -123,6 +123,8 @@ const SignupPublicStep2 = () => {
     if (!termsAccepted) {
       setErrorMessage("이용약관 및 개인정보 수집 동의는 필수입니다.");
       setShowErrorMessageModal(true);
+      setLoading(false);
+
       return;
     }
 
@@ -146,6 +148,8 @@ const SignupPublicStep2 = () => {
     if (!department) {
       setErrorMessage("소속된 부서를 입력해 주세요.");
       setShowErrorMessageModal(true);
+      setLoading(false);
+
       return;
     }
 
@@ -173,6 +177,7 @@ const SignupPublicStep2 = () => {
       } else {
         setErrorMessage(response.data.message || "회원가입에 실패했습니다.");
         setShowErrorMessageModal(true);
+        setLoading(false);
       }
     } catch (error) {
       setErrorMessage("회원가입 요청 중 오류가 발생했습니다.");
@@ -355,11 +360,10 @@ const SignupPublicStep2 = () => {
           </div>
 
           {/* 기관 정보 등록 모달 */}
-          {isRegisterPublicModalOpen && (
-            <Modal onClose={() => setIsRegisterPublicModalOpen(false)}>
-              <RegisterPublic />
-            </Modal>
-          )}
+          <RegisterPublicModal
+            show={isRegisterPublicModalOpen}
+            onClose={() => setIsRegisterPublicModalOpen(false)}
+          />
 
           {/* 회원가입 버튼 */}
           <button

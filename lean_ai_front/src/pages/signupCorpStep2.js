@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import TermsOfServiceModal from "@/components/modal/termsOfServiceModal";
 import MarketingModal from "@/components/modal/marketingModal";
-import RegisterPublic from "./registerPublic";
+import RegisterCorpModal from "../components/modal/registerCorpModal";
 import Modal from "@/components/modal/modal";
 import ModalMSG from "@/components/modal/modalMSG";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
@@ -52,9 +52,8 @@ const SignupCorpStep2 = () => {
   const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
   const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 환영 모달 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-  const [ isRegisterCorpModalOpen, setIsRegisterCorpModalOpen] =
-    useState(false); // 기관 데이터 입력 모달 상태
-  const [ corporations, setCorporations] = useState([]); // 기관 목록
+  const [isRegisterCorpModalOpen, setIsRegisterCorpModalOpen] = useState(false); // 기관 데이터 입력 모달 상태
+  const [corporations, setCorporations] = useState([]); // 기관 목록
   const [selectedCorpId, setSelectedCorpId] = useState(null); // 선택된 기관 ID
   const [selectedCorp, setSelectedCorp] = useState(null); // 선택된 기관 정보
 
@@ -63,37 +62,37 @@ const SignupCorpStep2 = () => {
     const storedUserData = sessionStorage.getItem("signupCorpUserData");
     if (storedUserData) {
       setFormData(JSON.parse(storedUserData));
-      fetchPublicInstitutions();
+      fetchCorporations();
     } else {
       // 만약 데이터가 없으면 첫 단계로 리다이렉트
       //router.push("/signupPublicStep1");
     }
   }, []);
 
-  // 기관 목록을 가져오는 함수
-  const fetchPublicInstitutions = async () => {
+  // 기업 목록을 가져오는 함수
+  const fetchCorporations = async () => {
     try {
       const response = await axios.get(`${API_DOMAIN}/corp/corporations/`);
       setCorporations(response.data);
     } catch (error) {
       console.error("Error fetching institutions:", error);
-      setErrorMessage("기관 정보를 불러오는 중 오류가 발생했습니다.");
+      setErrorMessage("기업 정보를 불러오는 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
     }
   };
 
-  // 선택된 기관의 상세 정보를 가져오는 함수
-  const fetchInstitutionDetails = async (institutionId) => {
-    //console.log("institutionId : ", institutionId);
+  // 선택된 기업의 상세 정보를 가져오는 함수
+  const fetchCorporationDetails = async (cordId) => {
+    //console.log("cordId : ", cordId);
     try {
       const response = await axios.get(
-        `${API_DOMAIN}/public/publics/${institutionId}/`
+        `${API_DOMAIN}/corp/corporations/${cordId}/`
       );
 
       setSelectedCorp(response.data); // 선택된 기관의 상세 정보를 상태에 저장
     } catch (error) {
-      console.error("Error fetching institution details:", error);
-      setErrorMessage("기관 상세 정보를 불러오는 중 오류가 발생했습니다.");
+      console.error("Error fetching corp details:", error);
+      setErrorMessage("기업 상세 정보를 불러오는 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
     }
   };
@@ -123,6 +122,8 @@ const SignupCorpStep2 = () => {
     if (!termsAccepted) {
       setErrorMessage("이용약관 및 개인정보 수집 동의는 필수입니다.");
       setShowErrorMessageModal(true);
+      setLoading(false);
+
       return;
     }
 
@@ -146,6 +147,8 @@ const SignupCorpStep2 = () => {
     if (!department) {
       setErrorMessage("소속된 부서를 입력해 주세요.");
       setShowErrorMessageModal(true);
+      setLoading(false);
+
       return;
     }
 
@@ -164,7 +167,7 @@ const SignupCorpStep2 = () => {
 
     try {
       const response = await axios.post(
-        `${API_DOMAIN}/public/signup/`,
+        `${API_DOMAIN}/corp/signup/`,
         payload
       );
 
@@ -173,6 +176,7 @@ const SignupCorpStep2 = () => {
       } else {
         setErrorMessage(response.data.message || "회원가입에 실패했습니다.");
         setShowErrorMessageModal(true);
+        setLoading(false);
       }
     } catch (error) {
       setErrorMessage("회원가입 요청 중 오류가 발생했습니다.");
@@ -221,7 +225,7 @@ const SignupCorpStep2 = () => {
         </div>
 
         <div className="px-5 space-y-4">
-          {/* 기업업 선택 - 드롭다운 */}
+          {/* 기업 선택 - 드롭다운 */}
           <div className="space-y-2">
             <div className="flex flex-row">
               <select
@@ -230,19 +234,16 @@ const SignupCorpStep2 = () => {
                 onChange={handleCorporationSelect}
                 className="w-full border rounded-md p-2"
               >
-                <option value="">기업업을 선택해주세요</option>
+                <option value="">기업을 선택해주세요</option>
                 {corporations.map((corporation) => (
-                  <option
-                    key={corporation.corp_id}
-                    value={corporation.corp_id}
-                  >
+                  <option key={corporation.corp_id} value={corporation.corp_id}>
                     {corporation.corp_name}
                   </option>
                 ))}
               </select>
               <button
                 className="text-gray-600 px-3"
-                onClick={fetchPublicInstitutions}
+                onClick={fetchCorporations}
               >
                 <RotateCw className="h-6 w-6" />
               </button>
@@ -254,13 +255,13 @@ const SignupCorpStep2 = () => {
             >
               <p className="text-sm text-gray-600">
                 <span className="text-red-500 mr-1">*</span>기업 정보가 없다면
-                기업업을 등록해주세요!
+                기업을 등록해주세요!
               </p>
               <button
                 className="text-sm text-indigo-500 hover:underline"
                 onClick={() => setIsRegisterCorpModalOpen(true)}
               >
-                기업업 정보 등록
+                기업 정보 등록
               </button>
             </div>
           </div>
@@ -271,13 +272,13 @@ const SignupCorpStep2 = () => {
               style={{ fontFamily: "NanumSquareExtraBold" }}
             >
               {" "}
-              기업업 정보
+              기업 정보
             </h3>
             {/* 선택된 기관 정보 출력 */}
             <div className="space-y-3 px-2">
               <InfoItem
                 icon={<Building2 className="h-5 w-5" />}
-                label="기업업명"
+                label="기업명"
                 value={selectedCorp?.public_name}
               />
               <InfoItem
@@ -354,13 +355,6 @@ const SignupCorpStep2 = () => {
             </div>
           </div>
 
-          {/* 기관 정보 등록 모달 */}
-          {isRegisterCorpModalOpen && (
-            <Modal onClose={() => setIsRegisterCorpModalOpen(false)}>
-              <RegisterPublic />
-            </Modal>
-          )}
-
           {/* 회원가입 버튼 */}
           <button
             className={`w-full bg-indigo-500 text-white py-2 rounded-lg text-lg font-semibold flex items-center justify-center transition-all duration-300 ${
@@ -399,6 +393,12 @@ const SignupCorpStep2 = () => {
               "회원가입"
             )}
           </button>
+
+          {/* 기업 정보 등록 모달 */}
+          <RegisterCorpModal
+            show={isRegisterCorpModalOpen}
+            onClose={() => setIsRegisterCorpModalOpen(false)}
+          />
 
           {/* 이용약관 모달 */}
           <TermsOfServiceModal

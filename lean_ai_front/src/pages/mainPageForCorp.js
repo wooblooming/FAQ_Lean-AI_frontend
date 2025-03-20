@@ -56,7 +56,7 @@ const getLastNotifications = () => {
     .slice(0, 3); // 상위 3개만 선택
 };
 
-const MainPageWithMenuPublic = () => {
+const MainPageWithMenuCorp = () => {
   const [isMobile, setIsMobile] = useState(false); // 모바일 화면 여부 상태
   const [isRequestDataModalOpen, setIsRequestDataModalOpen] = useState(false); // 데이터 요청 모달 상태
   const [isEditDataModalOpen, setIsEditDataModalOpen] = useState(false); // 데이터 편집 모달 상태
@@ -282,10 +282,10 @@ const MainPageWithMenuPublic = () => {
                     className="text-2xl text-indigo-600"
                     style={{ fontFamily: "NanumSquareExtraBold" }}
                   >
-                    민원 확인
+                    문의 확인
                   </h3>
                   <p className="h-16">
-                    고객들의 민원 내용을 <br /> 편하게 확인하세요.
+                    고객들의 문의 내용을 <br /> 편하게 확인하세요.
                   </p>
                   <div className="flex justify-center items-center">
                     <Button
@@ -495,4 +495,4 @@ const MainPageWithMenuPublic = () => {
   );
 };
 
-export default MainPageWithMenuPublic;
+export default MainPageWithMenuCorp;
