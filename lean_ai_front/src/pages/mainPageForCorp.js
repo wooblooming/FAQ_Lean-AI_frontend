@@ -6,7 +6,7 @@ import { Eye, Send, SquareCheckBig, ClipboardList } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { usePublic } from "@/contexts/publicContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import { notifications } from "/public/text/notification.js";
 import SubscriptionActive from "@/components/component/subscriptions/subscriptionActive";
 import SubscriptionSignup from "@/components/component/subscriptions/subscriptionSignup";
@@ -70,7 +70,7 @@ const MainPageWithMenuCorp = () => {
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { resetCorpOn } = usePublic();
+  const { resetLoginType } = useLoginType();
   const lastNotifications = getLastNotifications(); // 최신 공지사항 가져오기
 
   // 통계 관련 상태
@@ -102,7 +102,7 @@ const MainPageWithMenuCorp = () => {
     // token이 존재할 때만 API 호출
     if (storeID) {
       Promise.all([
-        fetchCorpInfo(), // 세미콜론 제거
+        fetchCorpInfo(), 
         fetchStatistics(),
       ]).finally(() => {
         setIsLoading(false);
@@ -114,7 +114,7 @@ const MainPageWithMenuCorp = () => {
 
   useEffect(() => {
     if (corpData) {
-      //console.log("corpData : ", corpData);
+      console.log("corpData : ", corpData);
       setCorpName(corpData.corp_name); // 상점 이름 설정
       setCorpSlug(corpData.slug); // 상점 슬러그 설정
     }
@@ -142,10 +142,9 @@ const MainPageWithMenuCorp = () => {
         setIsLoggedIn(false);
         removeToken();
         removeStoreID();
-        resetCorpOn();
+        resetLoginType();
         router.push("/login");
         return;
-        
       }
 
       setCorpData(response.data.corp);
@@ -240,7 +239,7 @@ const MainPageWithMenuCorp = () => {
               안녕하세요!{" "}
               <span
                 className="hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer"
-                onClick={() => router.push("/myPagePublic")}
+                onClick={() => router.push("/myPageCorp")}
               >
                 {corpName}님
               </span>
@@ -366,10 +365,7 @@ const MainPageWithMenuCorp = () => {
                     {corpData?.billing_key?.is_active ? (
                       <SubscriptionActive subscriptionData={billing_key} />
                     ) : (
-                      <SubscriptionSignup
-                        token={token}
-                        corpData={corpData}
-                      />
+                      <SubscriptionSignup token={token} corpData={corpData} />
                     )}
                   </div>
                 </div>

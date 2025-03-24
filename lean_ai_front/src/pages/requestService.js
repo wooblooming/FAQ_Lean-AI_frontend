@@ -10,7 +10,7 @@ import {
   CloudUpload,
 } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
-import { usePublic } from "@/contexts/publicContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import ModalMSG from "@/components/modal/modalMSG";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
@@ -18,7 +18,7 @@ const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export default function RequestService({ show, onClose }) {
   const { token } = useAuth();
-  const { isPublicOn } = usePublic();
+  const { loginType } = useLoginType();
   const [title, setTitle] = useState(""); // 제목 상태
   const [content, setContent] = useState(""); // 요청 내용 상태
   const [fileNames, setFileNames] = useState([]); // 파일 이름 목록 상태
@@ -97,9 +97,12 @@ export default function RequestService({ show, onClose }) {
     let fetchUrl; // URL 변수를 선언
 
     try {
-      fetchUrl = isPublicOn
-        ? `${API_DOMAIN}/public/request-service/`
-        : `${API_DOMAIN}/api/request-service/`;
+      const fetchUrl =
+        loginType === "public"
+          ? `${API_DOMAIN}/public`
+          : loginType === "corporation"
+          ? `${API_DOMAIN}/corp`
+          : `${API_DOMAIN}/api`;
 
       const response = await fetch(fetchUrl, {
         method: "POST",
@@ -348,9 +351,14 @@ export default function RequestService({ show, onClose }) {
           onClose={() => setShowMessageModal(false)}
           title="Success"
         >
-          <div className="flex items-center text-center justify-center text-lg" >
+          <div className="flex items-center text-center justify-center text-lg">
             <CheckCircle className="h-6 w-6 text-green-500 mr-2" />
-            <p className="whitespace-pre-line text-sm md:text-base" style={{ fontFamily: "NanumSquareBold" }}>{message}</p>
+            <p
+              className="whitespace-pre-line text-sm md:text-base"
+              style={{ fontFamily: "NanumSquareBold" }}
+            >
+              {message}
+            </p>
           </div>
         </ModalMSG>
 
@@ -362,7 +370,12 @@ export default function RequestService({ show, onClose }) {
         >
           <div className="flex items-center text-center justify-center text-lg">
             <AlertCircle className="h-6 w-6 text-red-500 mr-2" />
-            <p className="whitespace-pre-line text-sm md:text-base"style={{ fontFamily: "NanumSquareBold" }}>{errorMessage}</p>
+            <p
+              className="whitespace-pre-line text-sm md:text-base"
+              style={{ fontFamily: "NanumSquareBold" }}
+            >
+              {errorMessage}
+            </p>
           </div>
         </ModalErrorMSG>
 

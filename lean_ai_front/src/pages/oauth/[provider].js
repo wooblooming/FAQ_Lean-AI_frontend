@@ -2,13 +2,13 @@ import { useRouter } from "next/router";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { usePublic } from "@/contexts/publicContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import { useStore } from "@/contexts/storeContext";
 import useConvertToJwtToken from "@/hooks/useConvertToJwtToken";
 
 const OAuthPage = () => {
-  const router = useRouter(); 
-  const { isPublicOn } = usePublic(); // Public 페이지 여부 확인 
+  const router = useRouter();
+  const { loginType } = useLoginType();
   const { setStoreID } = useStore(); // 스토어 ID 상태 설정
   const [isRedirecting, setIsRedirecting] = useState(false); // 리디렉션 진행 여부 상태
   const { convertToJwtToken } = useConvertToJwtToken(); // JWT 변환 훅 사용
@@ -27,7 +27,7 @@ const OAuthPage = () => {
     }
 
     // OAuth 인증 처리 함수
-    const handleOAuth = async () => {        
+    const handleOAuth = async () => {
       setIsRedirecting(true); // 리디렉션 상태 활성화
 
       try {
@@ -39,7 +39,8 @@ const OAuthPage = () => {
         );
 
         // 응답 데이터에서 필요한 값 추출
-        const { access_token, user_data, social_signup, store_id } = response.data;
+        const { access_token, user_data, social_signup, store_id } =
+          response.data;
 
         // access_token이 없으면 오류 처리
         if (!access_token) throw new Error("❌ [ERROR] 토큰이 없습니다.");
@@ -69,16 +70,29 @@ const OAuthPage = () => {
             const hasSubscription = user_data?.billing_key?.is_active || false;
 
             // 구독 여부에 따라 이동할 페이지 결정 -> 구독 설정 후 추가
-/*
-            redirectPath = hasSubscription
-              ? isPublicOn
-                ? "/mainPageForPublic"
-                : "/mainPage"
-              : "/subscriptionPlans";
+            /*
+           let redirectPath;
+
+            if (hasSubscription) {
+              redirectPath =
+                loginType === "public"
+                  ? "/mainPageForPublic"
+                  : loginType === "corporation"
+                  ? "/mainPageForCorp"
+                  : "/mainPage";
+            } else {
+              redirectPath = "/subscriptionPlans";
+            }
 */
 
             // 현재는 구독 여부와 상관없이 메인 페이지로 이동
-            redirectPath = isPublicOn ? "/mainPageForPublic" : "/mainPage";
+            if (loginType === "public") {
+              redirectPath = "/mainPageForPublic";
+            } else if (loginType === "corporation") {
+              redirectPath = "/mainPageForCorp";
+            } else {
+              redirectPath = "/mainPage";
+            }
           }
         }
 

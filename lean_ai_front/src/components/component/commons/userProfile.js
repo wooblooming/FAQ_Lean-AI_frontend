@@ -14,8 +14,7 @@ const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const UserProfileForm = ({
   userData = {},
-  isPublicOn,
-  isCorporateOn,
+  loginType,
   token,
   storeID,
   onUpdateUserData,
@@ -41,16 +40,25 @@ const UserProfileForm = ({
   const [departOptions, setDepartOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
 
-  const fetchUrl = isPublicOn
-    ? `${API_DOMAIN}/public`
-    : isCorporateOn
-    ? `${API_DOMAIN}/corp`
-    : `${API_DOMAIN}/api`;
+  const isPublic = loginType === "public";
+  const isCorporation = loginType === "corporation";
+
+  const fetchUrl =
+    loginType === "public"
+      ? `${API_DOMAIN}/public`
+      : loginType === "corporation"
+      ? `${API_DOMAIN}/corp`
+      : `${API_DOMAIN}/api`;
 
   const getDepartmentApiBaseUrl = () => {
-    if (isPublicOn) return `${API_DOMAIN}/public/departments`;
-    if (isCorporateOn) return `${API_DOMAIN}/corp/departments`;
-    return `${API_DOMAIN}/api/departments`; // fallback (optional)
+    switch (loginType) {
+      case "public":
+        return `${API_DOMAIN}/public/departments`;
+      case "corporation":
+        return `${API_DOMAIN}/corp/departments`;
+      default:
+        return `${API_DOMAIN}/api/departments`;
+    }
   };
 
   useEffect(() => {
@@ -59,7 +67,7 @@ const UserProfileForm = ({
       setEmail(userData.email || "");
       setPhoneNumber(userData.phone_number || "");
 
-      if (isPublicOn || isCorporateOn) {
+      if (isPublic || isCorporation) {
         //console.log("user department: ", userData?.department?.department_name || "부서 정보 없음");
         if (userData.department) {
           setDepart(userData.department.department_name || "부서 정보 없음");
@@ -81,17 +89,14 @@ const UserProfileForm = ({
 
   useEffect(() => {
     if (editing && storeID && token) {
-      if (isPublicOn) {
-        fetchPublicDepartment({ storeID }, null, (data) => {
-          setDepartments(Array.isArray(data) ? data : []);
-        });
-      } else if (isCorporateOn) {
-        fetchCorpDepartment({ storeID }, null, (data) => {
-          setDepartments(Array.isArray(data) ? data : []);
-        });
-      }
+      const fetchDepartment = isPublic
+        ? fetchPublicDepartment
+        : fetchCorpDepartment;
+      fetchDepartment({ storeID }, null, (data) => {
+        setDepartments(Array.isArray(data) ? data : []);
+      });
     }
-  }, [editing, isPublicOn, isCorporateOn, storeID, token]);
+  }, [editing, loginType, storeID, token]);
 
   useEffect(() => {
     //console.log("department list : ", departments);
@@ -167,8 +172,8 @@ const UserProfileForm = ({
     try {
       const payload = {
         department_name: newDepartment,
-        ...(isPublicOn && { public_id: storeID }),
-        ...(isCorporateOn && { corp_id: storeID }),
+        ...(isPublic && { public_id: storeID }),
+        ...(isCorporation && { corp_id: storeID }),
       };
 
       const response = await axios.post(
@@ -445,7 +450,7 @@ const UserProfileForm = ({
         </div>
 
         {/* 소속부서 입력 필드 */}
-        {(isPublicOn || isCorporateOn) && (
+        {(isPublic || isCorporation) && (
           <div className="flex flex-col">
             <div
               className="text-sm text-gray-400 mr-1.5 text-left"

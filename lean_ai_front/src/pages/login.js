@@ -103,8 +103,7 @@ const Login = () => {
         // test_mode: false,
       });
 
-      const { access, public_id, corporate_id, store_id, user_data } =
-        response.data;
+      const { access, public_id, corp_id, store_id, user_data } = response.data;
 
       //console.log("서버 응답:", response.data);
 
@@ -113,12 +112,19 @@ const Login = () => {
 
       // 사용자 데이터 및 storeID 설정
       setUserData(user_data);
-      const id = isPublicOn
-        ? public_id
-        : isCorporateOn
-        ? corporate_id
-        : store_id;
-      setStoreID(id);
+      let id;
+      switch (loginType) {
+        case "public":
+          id = public_id;
+          break;
+        case "corporation":
+          id = corp_id;
+          break;
+        default:
+          id = store_id;
+      }
+      setStoreID(id, loginType);
+
     } catch (error) {
       console.error("로그인 요청 중 오류 발생:", error);
       let require_captcha = error.response?.data?.require_captcha;

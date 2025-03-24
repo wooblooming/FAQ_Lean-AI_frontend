@@ -7,8 +7,7 @@ import useMyPage from "@/hooks/useMyPage";
 import { fetchCorpUser } from "@/fetch/fetchCorpUser";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { useCorporate } from "@/contexts/corporateContext";
-
+import { useLoginType } from "@/contexts/loginTypeContext";
 import UserProfileForm from "@/components/component/commons/userProfile";
 import QrCodeSection from "@/components/component/commons/qrCode";
 import EventSwitch from "@/components/component/ui/event";
@@ -22,7 +21,7 @@ const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 const MyPageCorp = () => {
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { isCorporateOn, resetCorporateOn } = useCorporate();
+  const { loginType } = useLoginType();
   const router = useRouter();
 
   const {
@@ -62,15 +61,15 @@ const MyPageCorp = () => {
     storeID,
     removeStoreID,
     fetchUserData: fetchCorpUser,
-    updateProfileUrl: `${API_DOMAIN}/corps/user-profile/`,
-    updateProfilePhotoUrl: `${API_DOMAIN}/corps/update-profile-photo/`,
-    generateQrCodeUrl: `${API_DOMAIN}/corps/generate-qr-code/`,
-    deactivateAccountUrl: `${API_DOMAIN}/corps/deactivate-account/`,
+    updateProfileUrl: `${API_DOMAIN}/corp/user-profile/`,
+    updateProfilePhotoUrl: `${API_DOMAIN}/corp/update-profile-photo/`,
+    generateQrCodeUrl: `${API_DOMAIN}/corp/generate-qr-code/`,
+    deactivateAccountUrl: `${API_DOMAIN}/corp/deactivate-account/`,
   });
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen space-x-3 ">
         <LoadingSpinner />
         <p style={{ fontFamily: "NanumSquareBold" }}>
           사용자 정보를 가져 오는 중입니다!
@@ -131,7 +130,7 @@ const MyPageCorp = () => {
         {/* 사용자 정보 입력 필드 */}
         {userData && (
           <UserProfileForm
-            isCorporateOn={isCorporateOn}
+            loginType={loginType}
             token={token}
             storeID={storeID}
             userData={userData} // 유효한 userData만 전달

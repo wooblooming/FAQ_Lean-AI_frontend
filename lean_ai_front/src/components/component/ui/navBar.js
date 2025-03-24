@@ -4,8 +4,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { usePublic } from "@/contexts/publicContext";
-import { useCorporate } from "@/contexts/corporateContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import LogoutModal from "@/components/modal/logout";
 
 const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
@@ -17,8 +16,8 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { removeStoreID } = useStore();
-  const { resetPublicOn } = usePublic();
-  const { resetCorporateOn } = useCorporate();
+  const { resetLoginType } = useLoginType();
+
 
   // 네비게이션 항목 설정
   const navItems = [
@@ -87,8 +86,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
     setShowLogoutModal(false); // 로그아웃 모달 닫기
     removeToken();
     removeStoreID();
-    resetPublicOn();
-    resetCorporateOn();
+    resetLoginType();
     router.push("/"); // 홈으로 이동
   };
 

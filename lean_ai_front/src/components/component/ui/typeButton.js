@@ -19,7 +19,7 @@ const TypeButton = () => {
   };
 
   return (
-    <div className="mb-3">
+    <div className="">
       <div className="flex space-x-1 rounded-md">
         {userTypes.map((type) => (
           <button

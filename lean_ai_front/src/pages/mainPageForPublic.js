@@ -6,7 +6,7 @@ import { Eye, Send, SquareCheckBig, ClipboardList } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { usePublic } from "@/contexts/publicContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import { notifications } from "/public/text/notification.js";
 import SubscriptionActive from "@/components/component/subscriptions/subscriptionActive";
 import SubscriptionSignup from "@/components/component/subscriptions/subscriptionSignup";
@@ -70,7 +70,7 @@ const MainPageWithMenuPublic = () => {
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { resetPublicOn } = usePublic();
+  const { resetLoginType } = useLoginType();
   const lastNotifications = getLastNotifications(); // 최신 공지사항 가져오기
 
   // 통계 관련 상태
@@ -142,7 +142,7 @@ const MainPageWithMenuPublic = () => {
         setIsLoggedIn(false);
         removeToken();
         removeStoreID();
-        resetPublicOn();
+        resetLoginType();
         router.push("/login");
         return;
       }

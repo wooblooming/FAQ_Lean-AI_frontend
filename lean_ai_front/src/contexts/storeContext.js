@@ -7,24 +7,20 @@ export const StoreProvider = ({ children }) => {
   const [storeID, setStoreID] = useState(null);
   const { loginType } = useLoginType();
 
-  const { isPublicOn } = usePublic();
-  const { isCorporateOn } = useCorporate();
-
   // sessionStorage에서 storeID, publicID, corporateID 가져와 초기화
   useEffect(() => {
-    if(loginType == 'public'){
+    if (loginType === "public") {
       const savedPublicID = sessionStorage.getItem("publicID");
       if (savedPublicID) setStoreID(savedPublicID);
-    }
-    else if(loginType=='corporation'){
-        const savedCorporateID = sessionStorage.getItem("corporateID");
-      if (savedCorporateID) setStoreID(savedCorporateID);
-    }
-    else {
-        const savedStoreID = sessionStorage.getItem("storeID");
+    } else if (loginType === "corporation") {
+      const savedCorpID = sessionStorage.getItem("corpID");
+      if (savedCorpID) setStoreID(savedCorpID);
+    } else if (loginType === "store") {
+      const savedStoreID = sessionStorage.getItem("storeID");
       if (savedStoreID) setStoreID(savedStoreID);
     }
-  }, []);
+  }, [loginType]); // ✅ loginType이 바뀔 때마다 실행
+  
 
 
   // storeID, corporateID, publicID 저장하는 함수

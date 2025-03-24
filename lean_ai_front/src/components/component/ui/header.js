@@ -4,8 +4,7 @@ import Link from "next/link";
 import axios from "axios";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { usePublic } from "@/contexts/publicContext";
-import { useCorporate } from "@/contexts/corporateContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import { Menu, X } from "lucide-react";
 import { fetchAllStoreData } from "@/fetch/fetchAllStoreData";
 import StoreSwitcher from "@/components/component/ui/storeSwitcher";
@@ -29,9 +28,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn, isMainPage }) => {
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { isPublicOn, resetPublicOn } = usePublic();
-    const { isCorporateOn, resetCorporateOn } = useCorporate();
-  
+  const { loginType, resetLoginType } = useLoginType();  
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -114,8 +111,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn, isMainPage }) => {
     setShowLogoutModal(false);
     removeToken();
     removeStoreID();
-    resetPublicOn();
-    resetCorporateOn();
+    resetLoginType();
     router.push("/");
   };
 
@@ -133,9 +129,13 @@ const Header = ({ isLoggedIn, setIsLoggedIn, isMainPage }) => {
   };
 
   const goToMyPage = () => {
-    if (isPublicOn) router.push("/myPagePublic");
-    else if(isCorporateOn) router.push("/myPageCorp");
-    else router.push("/myPage");
+    if (loginType === "public") {
+      router.push("/myPagePublic");
+    } else if (loginType === "corporation") {
+      router.push("/myPageCorp");
+    } else {
+      router.push("/myPage");
+    }
   };
 
   return (

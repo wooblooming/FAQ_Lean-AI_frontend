@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { usePublic } from "@/contexts/publicContext";
-import { useCorporate } from "@/contexts/corporateContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import { useAuth } from "@/contexts/authContext";
 
 const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
@@ -11,8 +10,7 @@ const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
 const DesktopLayout = () => {
   const router = useRouter();
   const { token } = useAuth();
-  const { isPublicOn } = usePublic();
-  const { isCorporateOn } = useCorporate();
+  const { loginType } = useLoginType();
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
 
   // 세션 스토리지에서 토큰 확인하여 로그인 상태 설정
@@ -30,9 +28,9 @@ const DesktopLayout = () => {
   const handleClick = () => {
     if (isLoggedIn) {
       // 로그인 상태에 따라 페이지 이동
-      if (isPublicOn) {
+      if (loginType === "public") {
         router.push("/mainPageForPublic");
-      } else if (isCorporateOn) {
+      } else if (loginType === "corporation") {
         router.push("/mainPageForCorp");
       } else {
         router.push("/mainPage");

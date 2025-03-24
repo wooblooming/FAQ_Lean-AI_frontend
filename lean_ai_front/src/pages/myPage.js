@@ -7,7 +7,7 @@ import useMyPage from "@/hooks/useMyPage";
 import { fetchStoreUser } from "@/fetch/fetchStoreUser";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { usePublic } from "@/contexts/publicContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import UserProfileForm from "@/components/component/commons/userProfile";
 import QrCodeSection from "@/components/component/commons/qrCode";
 import EventSwitch from "@/components/component/ui/event";
@@ -21,7 +21,7 @@ const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 const MyPage = () => {
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { isPublicOn } = usePublic();
+  const { loginType } = useLoginType();
   const router = useRouter();
 
   const {
@@ -68,13 +68,15 @@ const MyPage = () => {
   });
 
   if (isLoading) {
-      return (
-        <div className="flex items-center justify-center h-screen">
-          <LoadingSpinner />
-          <p style={{ fontFamily: "NanumSquareBold" }}>사용자 정보를 가져 오는 중입니다!</p>
-        </div>
-      );
-    }
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <LoadingSpinner />
+        <p style={{ fontFamily: "NanumSquareBold" }}>
+          사용자 정보를 가져 오는 중입니다!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-violet-50 flex flex-col items-center justify-center relative font-sans min-h-screen">
@@ -128,7 +130,7 @@ const MyPage = () => {
         {/* 사용자 정보 입력 필드 */}
         {userData && (
           <UserProfileForm
-            isPublicOn={isPublicOn}
+            loginType={loginType}
             token={token}
             storeID={storeID}
             userData={userData} // 유효한 userData만 전달
@@ -138,9 +140,6 @@ const MyPage = () => {
 
         {/* QR 코드 섹션 */}
         <QrCodeSection
-          isPublicOn={isPublicOn}
-          token={token}
-          storeID={storeID}
           userData={userData}
           qrUrl={qrUrl}
           setQrUrl={setQrUrl}
