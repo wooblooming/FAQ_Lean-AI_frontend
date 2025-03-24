@@ -1,38 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import CreatableSelect from 'react-select/creatable';
-import makeAnimated from 'react-select/animated';
-import { formatPhoneNumber } from '@/utils/telUtils';
-import ModalMSG from '@/components/modal/modalMSG';
-import ModalErrorMSG from '@/components/modal/modalErrorMSG';
-import VerificationModal from '@/components/modal/verificationModal';
-import { fetchPublicDepartment } from '@/fetch/fetchPublicDepart';
-import styles from '@/styles/selectStyles.module.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import CreatableSelect from "react-select/creatable";
+import makeAnimated from "react-select/animated";
+import { formatPhoneNumber } from "@/utils/telUtils";
+import ModalMSG from "@/components/modal/modalMSG";
+import ModalErrorMSG from "@/components/modal/modalErrorMSG";
+import VerificationModal from "@/components/modal/verificationModal";
+import { fetchPublicDepartment } from "@/fetch/fetchPublicDepart";
+import { fetchCorpDepartment } from "@/fetch/fetchCorpDepart";
+import styles from "@/styles/selectStyles.module.css";
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 const UserProfileForm = ({
   userData = {},
   isPublicOn,
+  isCorporateOn,
   token,
   storeID,
-  onUpdateUserData
+  onUpdateUserData,
 }) => {
-
   if (!userData) {
     return <div>사용자 데이터를 불러오는 중입니다...</div>;
   }
 
   // State 관리
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지 내용
-  const [message, setMessage] = useState(''); // 일반 메시지 내용
+  const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 내용
+  const [message, setMessage] = useState(""); // 일반 메시지 내용
   const [showMessageModal, setShowMessageModal] = useState(false); // 일반 메시지 모달의 열림/닫힘 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달의 열림/닫힘 상태
-  const [verificationCode, setVerificationCode] = useState(''); // 입력된 인증번호
+  const [verificationCode, setVerificationCode] = useState(""); // 입력된 인증번호
   const [showCodeModal, setShowCodeModal] = useState(false); // 인증번호 입력 모달 상태 관리
   const [editing, setEditing] = useState(false); // 수정 상태
   const [depart, setDepart] = useState(); // 초기값을 빈 배열로 설정
@@ -40,43 +41,57 @@ const UserProfileForm = ({
   const [departOptions, setDepartOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
 
-  const fetchUrl = isPublicOn ? `${API_DOMAIN}/public` : `${API_DOMAIN}/api`;
+  const fetchUrl = isPublicOn
+    ? `${API_DOMAIN}/public`
+    : isCorporateOn
+    ? `${API_DOMAIN}/corp`
+    : `${API_DOMAIN}/api`;
+
+  const getDepartmentApiBaseUrl = () => {
+    if (isPublicOn) return `${API_DOMAIN}/public/departments`;
+    if (isCorporateOn) return `${API_DOMAIN}/corp/departments`;
+    return `${API_DOMAIN}/api/departments`; // fallback (optional)
+  };
 
   useEffect(() => {
     if (userData) {
-      setName(userData.name || '');
-      setEmail(userData.email || '');
-      setPhoneNumber(userData.phone_number || '');
+      setName(userData.name || "");
+      setEmail(userData.email || "");
+      setPhoneNumber(userData.phone_number || "");
 
-      if (isPublicOn) {
+      if (isPublicOn || isCorporateOn) {
         //console.log("user department: ", userData?.department?.department_name || "부서 정보 없음");
         if (userData.department) {
           setDepart(userData.department.department_name || "부서 정보 없음");
         } else {
           setDepart("부서 정보 없음");
         }
-      
       }
     }
   }, [userData]);
 
   const handleChange = (field, value) => {
     const updatedData = { ...userData, [field]: value };
-    if (field === 'name') setName(value);
-    if (field === 'email') setEmail(value);
-    if (field === 'phone_number') setPhoneNumber(value);
+    if (field === "name") setName(value);
+    if (field === "email") setEmail(value);
+    if (field === "phone_number") setPhoneNumber(value);
 
     onUpdateUserData(updatedData); // 변경 사항 상위로 전달
   };
 
-
   useEffect(() => {
-    if (editing && isPublicOn && storeID && token) {
-      fetchPublicDepartment({ storeID }, null, (data) => {
-        setDepartments(Array.isArray(data) ? data : []); // 항상 배열로 설정
-      });
+    if (editing && storeID && token) {
+      if (isPublicOn) {
+        fetchPublicDepartment({ storeID }, null, (data) => {
+          setDepartments(Array.isArray(data) ? data : []);
+        });
+      } else if (isCorporateOn) {
+        fetchCorpDepartment({ storeID }, null, (data) => {
+          setDepartments(Array.isArray(data) ? data : []);
+        });
+      }
     }
-  }, [editing, isPublicOn, storeID, token]);
+  }, [editing, isPublicOn, isCorporateOn, storeID, token]);
 
   useEffect(() => {
     //console.log("department list : ", departments);
@@ -89,53 +104,51 @@ const UserProfileForm = ({
     } else {
       setDepartOptions([]); // departments가 배열이 아닐 경우 대비
     }
-  }, [departments]);  
+  }, [departments]);
 
   const handleEditToggle = async () => {
     if (editing && selectedDepartment) {
       try {
         const response = await axios.put(
-          `${API_DOMAIN}/public/departments/update/`,
+          `${getDepartmentApiBaseUrl()}/update/`,
           {
             department_name: selectedDepartment.value,
             public_id: storeID,
           },
           {
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }
         );
-  
+
         if (response.status === 200 && response.data.message) {
           const newDepartment = selectedDepartment.value;
-  
-          // 부서 업데이트와 상위 컴포넌트 동기화
+
           const updatedUserData = {
             ...userData,
             department: { department_name: newDepartment },
           };
-          onUpdateUserData(updatedUserData); // 즉시 상위 컴포넌트에 전달
-  
-          // 로컬 상태 업데이트
+          onUpdateUserData(updatedUserData);
           setDepart(newDepartment);
-  
-          setMessage(response.data.message || "부서가 성공적으로 변경되었습니다.");
+          setMessage(
+            response.data.message || "부서가 성공적으로 변경되었습니다."
+          );
           setShowMessageModal(true);
         } else {
-          throw new Error("부서 변경 중 문제가 발생했습니다."); // 성공하지 않은 응답 처리
+          throw new Error("부서 변경 중 문제가 발생했습니다.");
         }
       } catch (error) {
-        const errorMsg = error.response?.data?.error || "부서 변경 중 문제가 발생했습니다.";
+        const errorMsg =
+          error.response?.data?.error || "부서 변경 중 문제가 발생했습니다.";
         setErrorMessage(errorMsg);
         setShowErrorMessageModal(true);
       }
     }
-  
-    setEditing((prev) => !prev); // 수정 모드 토글
+
+    setEditing((prev) => !prev);
   };
-  
 
   const handleDepartmentChange = (selectedOption) => {
     setSelectedDepartment(selectedOption);
@@ -152,12 +165,18 @@ const UserProfileForm = ({
 
   const handleCreateDepartment = async (newDepartment) => {
     try {
+      const payload = {
+        department_name: newDepartment,
+        ...(isPublicOn && { public_id: storeID }),
+        ...(isCorporateOn && { corp_id: storeID }),
+      };
+
       const response = await axios.post(
-        `${API_DOMAIN}/public/departments/`,
-        { department_name: newDepartment, public_id: storeID },
+        `${getDepartmentApiBaseUrl()}/`,
+        payload,
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -170,41 +189,40 @@ const UserProfileForm = ({
       setDepartOptions((prev) => [...prev, newOption]);
       setSelectedDepartment(newOption);
     } catch (error) {
-      console.error('부서 추가 중 오류 발생:', error);
+      console.error("부서 추가 중 오류 발생:", error);
     }
   };
 
   // 일반 메시지 모달 닫기 & 초기화
   const handleMessageModalClose = () => {
     setShowMessageModal(false);
-    setMessage('');
+    setMessage("");
   };
-
 
   // 에러 메시지 모달 닫기 & 초기화
   const handleErrorMessageModalClose = () => {
     setShowErrorMessageModal(false);
-    setErrorMessage('');
+    setErrorMessage("");
   };
 
   // 핸드폰 번호로 인증번호 전송 요청
   const handleSendCode = async () => {
     const phoneRegex = /^\d{11}$/; // 핸드폰 번호 형식 검증 (11자리 숫자)
     if (!phoneRegex.test(phoneNumber)) {
-      setErrorMessage('핸드폰 번호를 확인해 주세요');
+      setErrorMessage("핸드폰 번호를 확인해 주세요");
       setShowErrorMessageModal(true);
       return;
     }
 
     try {
       const response = await fetch(`${fetchUrl}/send-code/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           phone: phoneNumber,
-          type: 'mypage',
+          type: "mypage",
           user_id: userData.user_id,
         }),
       });
@@ -212,14 +230,14 @@ const UserProfileForm = ({
       const data = await response.json();
 
       if (data.success) {
-        setVerificationCode(''); // 모달을 열 때 인증번호 초기화
+        setVerificationCode(""); // 모달을 열 때 인증번호 초기화
         setShowCodeModal(true); // 인증번호 입력 모달 열기
       } else {
         setErrorMessage(data.message);
         setShowErrorMessageModal(true);
       }
     } catch (error) {
-      setErrorMessage('인증 번호 요청 중 오류가 발생했습니다.');
+      setErrorMessage("인증 번호 요청 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
     }
   };
@@ -238,12 +256,12 @@ const UserProfileForm = ({
         {
           phone: phoneNumber,
           code: verificationCode, // 입력된 인증번호
-          type: 'mypage', // 용도 구분 (예: mypage)
+          type: "mypage", // 용도 구분 (예: mypage)
           user_id: userData.user_id, // 사용자 ID 전달
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -265,29 +283,27 @@ const UserProfileForm = ({
     }
   };
 
-
   // 핸드폰 인증번호 입력 모달에서 "확인" 버튼 클릭 시 호출
   const handleVerifyPhoneNumber = async () => {
     handleChangePhoneNumber(); // 핸드폰 번호 변경 처리 함수 호출
   };
 
-
   // 인증번호 모달을 닫을 때 에러 메시지 초기화
   const handleCodeModalClose = () => {
     setShowCodeModal(false);
-    setVerificationCode(''); // 인증번호 초기화
+    setVerificationCode(""); // 인증번호 초기화
   };
 
   // CreatableSelect 디자인
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      borderBottom: '1.5px solid #6366f1',
-      borderTop: 'none',
-      borderLeft: 'none',
-      borderRight: 'none',
+      borderBottom: "1.5px solid #6366f1",
+      borderTop: "none",
+      borderLeft: "none",
+      borderRight: "none",
       borderRadius: 0,
-      boxShadow: 'none',
+      boxShadow: "none",
       className: styles.selectControl, // CSS 모듈 클래스 추가
     }),
     valueContainer: (provided) => ({
@@ -299,7 +315,7 @@ const UserProfileForm = ({
       className: styles.input,
     }),
     indicatorSeparator: () => ({
-      display: 'none',
+      display: "none",
       className: styles.indicatorSeparator,
     }),
     dropdownIndicator: (provided) => ({
@@ -313,7 +329,7 @@ const UserProfileForm = ({
     option: (provided, state) => ({
       ...provided,
       className: `
-        ${state.isSelected ? styles.optionSelected : ''} 
+        ${state.isSelected ? styles.optionSelected : ""} 
         ${state.isFocused ? styles.optionFocused : styles.option}
       `,
     }),
@@ -321,74 +337,101 @@ const UserProfileForm = ({
 
   return (
     <div className="flex flex-col items-start py-4 font-sans space-y-2 w-full">
-      <div className='font-semibold text-lg' style={{ fontFamily: "NanumSquareExtraBold" }}>사용자 정보</div>
+      <div
+        className="font-semibold text-lg"
+        style={{ fontFamily: "NanumSquareExtraBold" }}
+      >
+        사용자 정보
+      </div>
 
       {/* 사용자 정보 입력 필드 */}
-      <div className='flex flex-col px-2 space-y-4'>
+      <div className="flex flex-col px-2 space-y-4">
         {/* 이름 입력 필드 */}
-        <div className='flex flex-col '>
-          <div className='text-sm text-gray-400 mr-1.5 whitespace-nowrap text-left' style={{ fontFamily: "NanumSquare" }}>이름</div>
+        <div className="flex flex-col ">
+          <div
+            className="text-sm text-gray-400 mr-1.5 whitespace-nowrap text-left"
+            style={{ fontFamily: "NanumSquare" }}
+          >
+            이름
+          </div>
           <input
             type="text"
-            value={name || ''}
-            onChange={(e) => handleChange('name', e.target.value)}
+            value={name || ""}
+            onChange={(e) => handleChange("name", e.target.value)}
             style={{
-              border: 'none',
-              borderBottom: '1.5px solid #6366f1',
-              outline: 'none',
-              padding: '2px 0',
-              width: '90%',
+              border: "none",
+              borderBottom: "1.5px solid #6366f1",
+              outline: "none",
+              padding: "2px 0",
+              width: "90%",
             }}
           />
         </div>
 
         {/* ID 표시 필드 */}
-        <div className='flex flex-col '>
-          <div className='text-sm text-gray-400 mr-1.5 text-left' style={{ fontFamily: "NanumSquare" }}> 아이디</div>
+        <div className="flex flex-col ">
+          <div
+            className="text-sm text-gray-400 mr-1.5 text-left"
+            style={{ fontFamily: "NanumSquare" }}
+          >
+            {" "}
+            아이디
+          </div>
           <div
             type="id"
             style={{
-              border: 'none',
-              borderBottom: '1.5px solid #6366f1',
-              outline: 'none',
-              padding: '2px 0',
-              width: '90%',
+              border: "none",
+              borderBottom: "1.5px solid #6366f1",
+              outline: "none",
+              padding: "2px 0",
+              width: "90%",
             }}
           >
-            <div className='text-left'>{userData.user_id}</div> {/* ID는 수정 불가 */}
+            <div className="text-left">{userData.user_id}</div>{" "}
+            {/* ID는 수정 불가 */}
           </div>
         </div>
 
         {/* 이메일 입력 필드 */}
-        <div className='flex flex-col'>
-          <div className='text-sm text-gray-400 text-left' style={{ fontFamily: "NanumSquare" }}>이메일</div>
+        <div className="flex flex-col">
+          <div
+            className="text-sm text-gray-400 text-left"
+            style={{ fontFamily: "NanumSquare" }}
+          >
+            이메일
+          </div>
           <input
             type="email"
-            value={email || ''}
-            onChange={(e) => handleChange('email', e.target.value)}
+            value={email || ""}
+            onChange={(e) => handleChange("email", e.target.value)}
             style={{
-              border: 'none',
-              borderBottom: '1.5px solid #6366f1',
-              outline: 'none',
-              padding: '2px 0',
-              width: '90%',
+              border: "none",
+              borderBottom: "1.5px solid #6366f1",
+              outline: "none",
+              padding: "2px 0",
+              width: "90%",
             }}
           />
         </div>
 
         {/* 전화번호 입력 필드 및 인증번호 받기 버튼 */}
-        <div className='flex flex-col w-full'>
-          <div className='text-sm text-gray-400 text-left' style={{ fontFamily: "NanumSquare" }}>전화번호</div>
-          <div className='flex flex-row w-full space-x-4'>
+        <div className="flex flex-col w-full">
+          <div
+            className="text-sm text-gray-400 text-left"
+            style={{ fontFamily: "NanumSquare" }}
+          >
+            전화번호
+          </div>
+          <div className="flex flex-row w-full space-x-4">
             <input
               type="text"
-              value={formatPhoneNumber(phoneNumber) || ''}
-              onChange={(e) => handleChange('phone_number', e.target.value)}
+              value={formatPhoneNumber(phoneNumber) || ""}
+              onChange={(e) => handleChange("phone_number", e.target.value)}
               style={{
-                border: 'none',
-                borderBottom: '1.5px solid #6366f1',
-                outline: 'none',
-                padding: '2px 0',
+                border: "none",
+                borderBottom: "1.5px solid #6366f1",
+                outline: "none",
+                padding: "2px 0",
               }}
             />
             <button
@@ -402,10 +445,17 @@ const UserProfileForm = ({
         </div>
 
         {/* 소속부서 입력 필드 */}
-        {isPublicOn &&
+        {(isPublicOn || isCorporateOn) && (
           <div className="flex flex-col">
-            <div className='text-sm text-gray-400 mr-1.5 text-left' style={{ fontFamily: "NanumSquare" }}>소속 부서</div>
-            <div className="flex items-center space-x-2"> {/* 부서 정보와 버튼을 같은 줄에 배치 */}
+            <div
+              className="text-sm text-gray-400 mr-1.5 text-left"
+              style={{ fontFamily: "NanumSquare" }}
+            >
+              소속 부서
+            </div>
+            <div className="flex items-center space-x-2">
+              {" "}
+              {/* 부서 정보와 버튼을 같은 줄에 배치 */}
               {editing ? (
                 <CreatableSelect
                   components={makeAnimated()}
@@ -415,12 +465,18 @@ const UserProfileForm = ({
                   isClearable
                   placeholder="부서를 선택해주세요"
                   onCreateOption={handleCreateDepartment}
-                  formatCreateLabel={(inputValue) => `"${inputValue}" 부서 추가`}
+                  formatCreateLabel={(inputValue) =>
+                    `"${inputValue}" 부서 추가`
+                  }
                   className="flex-grow"
                   styles={customStyles}
                 />
               ) : (
-                <div id='department' className='text-left flex-grow' style={{ fontFamily: "NanumSquare" }}>
+                <div
+                  id="department"
+                  className="text-left flex-grow"
+                  style={{ fontFamily: "NanumSquare" }}
+                >
                   {depart || "부서 정보 없음"}
                 </div>
               )}
@@ -434,8 +490,7 @@ const UserProfileForm = ({
               </button>
             </div>
           </div>
-
-        }
+        )}
       </div>
 
       {/* 핸드폰 인증번호 입력 모달 */}
@@ -454,9 +509,7 @@ const UserProfileForm = ({
         onClose={handleMessageModalClose}
         title="Success"
       >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {message}
-        </p>
+        <p style={{ whiteSpace: "pre-line" }}>{message}</p>
       </ModalMSG>
 
       {/* 에러 메시지 모달 */}
@@ -465,9 +518,7 @@ const UserProfileForm = ({
         onClose={handleErrorMessageModalClose}
         title="Error"
       >
-        <p style={{ whiteSpace: 'pre-line' }}>
-          {errorMessage}
-        </p>
+        <p style={{ whiteSpace: "pre-line" }}>{errorMessage}</p>
       </ModalErrorMSG>
     </div>
   );

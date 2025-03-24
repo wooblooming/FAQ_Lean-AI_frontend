@@ -53,10 +53,10 @@ export default function RegisterCorpModal({ show, onClose }) {
             }
 
             const formPayload = new FormData();
-            formPayload.append('corp_name', formData.publicName);
+            formPayload.append('corp_name', formData.corpName);
             formPayload.append('corp_address', formData.corpAddress);
             formPayload.append('corp_tel', formData.corpTel);
-            if (formData.publicLogo) {
+            if (formData.corpLogo) {
                 formPayload.append('logo', formData.corpLogo);
             }
 

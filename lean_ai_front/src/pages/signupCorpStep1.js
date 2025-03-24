@@ -108,7 +108,7 @@ const SignupCorpStep1 = () => {
     }
 
     sessionStorage.setItem("signupCorpUserData", JSON.stringify(formData));
-    router.push("/signupPublicStep2");
+    router.push("/signupCorpStep2");
   };
 
   // 에러 메시지 모달을 닫음
@@ -428,7 +428,7 @@ const SignupCorpStep1 = () => {
               }
             }}
             username={formData.username}
-            isPublic="true"
+            type="corp"
           />
 
           {/* 핸드폰 이용하여 본인 인증하는 모달 */}

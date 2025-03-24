@@ -31,7 +31,7 @@ function InfoItem({ icon, label, value }) {
         <span className="text-gray-600">{label}:</span>
         <span
           className="ml-2 text-gray-800"
-          style={{ fontFamily: "NanumSquareExtraBold" }}
+          style={{ fontFamily: "NanumSquareBold" }}
         >
           {value || "-"}
         </span>

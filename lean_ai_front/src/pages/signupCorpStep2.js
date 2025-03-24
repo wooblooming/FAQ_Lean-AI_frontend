@@ -31,7 +31,7 @@ function InfoItem({ icon, label, value }) {
         <span className="text-gray-600">{label}:</span>
         <span
           className="ml-2 text-gray-800"
-          style={{ fontFamily: "NanumSquareExtraBold" }}
+          style={{ fontFamily: "NanumSquareBold" }}
         >
           {value || "-"}
         </span>
@@ -68,6 +68,12 @@ const SignupCorpStep2 = () => {
       //router.push("/signupPublicStep1");
     }
   }, []);
+
+  useEffect(() => {
+    if (selectedCorp) {
+      console.log("selectedCorp : ", selectedCorp);
+    }
+  }, [selectedCorp]);
 
   // 기업 목록을 가져오는 함수
   const fetchCorporations = async () => {
@@ -279,22 +285,17 @@ const SignupCorpStep2 = () => {
               <InfoItem
                 icon={<Building2 className="h-5 w-5" />}
                 label="기업명"
-                value={selectedCorp?.public_name}
-              />
-              <InfoItem
-                icon={<Clock className="h-5 w-5" />}
-                label="운영 시간"
-                value={selectedCorp?.opening_hours}
+                value={selectedCorp?.corp_name}
               />
               <InfoItem
                 icon={<Phone className="h-5 w-5" />}
                 label="대표 번호"
-                value={selectedCorp?.public_tel}
+                value={selectedCorp?.corp_tel}
               />
               <InfoItem
                 icon={<MapPin className="h-5 w-5" />}
                 label="주소"
-                value={selectedCorp?.public_address}
+                value={selectedCorp?.corp_address}
               />
             </div>
 

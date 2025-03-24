@@ -8,8 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { usePublic } from "@/contexts/publicContext";
-import { useCorporate } from "@/contexts/corporateContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import TypeButton from "@/components/component/ui/typeButton";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
@@ -25,8 +24,7 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { saveToken, token } = useAuth();
   const { storeID, setStoreID } = useStore();
-  const { isPublicOn } = usePublic();
-  const { isCorporateOn } = useCorporate();
+  const { loginType } = useLoginType();
   const [requireCaptcha, setRequireCaptcha] = useState(false);
   const [captchaV2Token, setCaptchaV2Token] = useState("");
   const { executeRecaptcha } = useGoogleReCaptcha(); // reCAPTCHA 실행 함수
@@ -90,10 +88,10 @@ const Login = () => {
       //console.log(captchaToken);
 
       let url;
-      if (isPublicOn) {
+      if (loginType === "public") {
         url = `${API_DOMAIN}/public/login/`;
-      } else if (isCorporateOn) {
-        url = `${API_DOMAIN}/corporate/login/`;
+      } else if (loginType === "corporation") {
+        url = `${API_DOMAIN}/corp/login/`;
       } else {
         url = `${API_DOMAIN}/api/login/`;
       }
@@ -179,15 +177,15 @@ const Login = () => {
 
   useEffect(() => {
     if (token && storeID) {
-      if (isPublicOn) {
+      if (loginType === "public") {
         router.push("/mainPageForPublic");
-      } else if (isCorporateOn) {
-        router.push("/mainPageForCorporate");
+      } else if (loginType === "corporation") {
+        router.push("/mainPageForCorp");
       } else {
         router.push("/mainPage");
       }
     }
-  }, [token, storeID, isPublicOn, isCorporateOn]);
+  }, [token, storeID, loginType]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {

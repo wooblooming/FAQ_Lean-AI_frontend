@@ -64,13 +64,13 @@ const MainPageWithMenuCorp = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 상태
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 메시지 모달 상태
-  const [publicData, setPublicData] = useState("");
-  const [publicName, setPublicName] = useState(""); // 상점 이름 상태
-  const [slug, setPublicSlug] = useState(""); // 상점 슬러그 상태
+  const [corpData, setCorpData] = useState("");
+  const [corpName, setCorpName] = useState(""); // 상점 이름 상태
+  const [slug, setCorpSlug] = useState(""); // 상점 슬러그 상태
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { resetPublicOn } = usePublic();
+  const { resetCorpOn } = usePublic();
   const lastNotifications = getLastNotifications(); // 최신 공지사항 가져오기
 
   // 통계 관련 상태
@@ -102,7 +102,7 @@ const MainPageWithMenuCorp = () => {
     // token이 존재할 때만 API 호출
     if (storeID) {
       Promise.all([
-        fetchPublicInfo(), // 세미콜론 제거
+        fetchCorpInfo(), // 세미콜론 제거
         fetchStatistics(),
       ]).finally(() => {
         setIsLoading(false);
@@ -113,18 +113,18 @@ const MainPageWithMenuCorp = () => {
   }, [token, storeID]);
 
   useEffect(() => {
-    if (publicData) {
-      //console.log("publicData : ", publicData);
-      setPublicName(publicData.public_name); // 상점 이름 설정
-      setPublicSlug(publicData.slug); // 상점 슬러그 설정
+    if (corpData) {
+      //console.log("corpData : ", corpData);
+      setCorpName(corpData.corp_name); // 상점 이름 설정
+      setCorpSlug(corpData.slug); // 상점 슬러그 설정
     }
-  }, [publicData]);
+  }, [corpData]);
 
   // 공공기관 정보 API 호출
-  const fetchPublicInfo = async () => {
+  const fetchCorpInfo = async () => {
     try {
       const response = await axios.post(
-        `${API_DOMAIN}/public/publics/user_info/`,
+        `${API_DOMAIN}/corp/corporations/user_info/`,
         {},
         {
           headers: {
@@ -142,12 +142,13 @@ const MainPageWithMenuCorp = () => {
         setIsLoggedIn(false);
         removeToken();
         removeStoreID();
-        resetPublicOn();
+        resetCorpOn();
         router.push("/login");
         return;
+        
       }
 
-      setPublicData(response.data.public);
+      setCorpData(response.data.corp);
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("로딩 중에 에러가 발생 했습니다.");
@@ -158,7 +159,7 @@ const MainPageWithMenuCorp = () => {
   // 통계 데이터 API 호출
   const fetchStatistics = async () => {
     try {
-      const response = await fetch(`${API_DOMAIN}/public/statistics/`, {
+      const response = await fetch(`${API_DOMAIN}/corp/statistics/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -185,19 +186,19 @@ const MainPageWithMenuCorp = () => {
   const goToChatbot = () => {
     if (slug) {
       const encodedSlug = encodeURIComponent(slug);
-      router.push(`/publicIntroductionOwner/${encodedSlug}`);
+      router.push(`/corpIntroductionOwner/${encodedSlug}`);
     }
   };
 
   // 민원 확인인 페이지로 이동하는 함수
   const goToComplaintsDashboard = () => {
-    router.push("/complaintsDashboard");
+    router.push("/complaintsDashboardForCorp");
   };
 
   // 구독 여부 확인 후 실행할 함수
   const handleActionWithSubscriptionCheck = (callback) => {
     /*
-    if (!publicData?.billing_key?.is_active) {
+    if (!corpData?.billing_key?.is_active) {
       setErrorMessage("구독을 먼저 신청해주세요.");
       setShowErrorMessageModal(true);
       return;
@@ -241,7 +242,7 @@ const MainPageWithMenuCorp = () => {
                 className="hover:text-indigo-600 hover:font-bold hover:underline cursor-pointer"
                 onClick={() => router.push("/myPagePublic")}
               >
-                {publicName}님
+                {corpName}님
               </span>
             </h2>
 
@@ -250,7 +251,7 @@ const MainPageWithMenuCorp = () => {
               <div className="grid grid-cols-1 gap-6 w-full md:grid-cols-2 lg:grid-cols-4 md:gap-4">
                 {/* 챗봇 미리보기 카드 */}
                 <Card
-                //disabled={!publicData?.billing_key?.is_active}
+                //disabled={!corpData?.billing_key?.is_active}
                 >
                   <h3
                     className="text-2xl text-indigo-600"
@@ -264,7 +265,7 @@ const MainPageWithMenuCorp = () => {
                   <div className="flex justify-center items-center">
                     <Button
                       icon={Eye}
-                      //disabled={!publicData?.billing_key?.is_active}
+                      //disabled={!corpData?.billing_key?.is_active}
                       onClick={() =>
                         handleActionWithSubscriptionCheck(goToChatbot)
                       }
@@ -276,7 +277,7 @@ const MainPageWithMenuCorp = () => {
 
                 {/* 민원 확인 카드 */}
                 <Card
-                //disabled={!publicData?.billing_key?.is_active}
+                //disabled={!corpData?.billing_key?.is_active}
                 >
                   <h3
                     className="text-2xl text-indigo-600"
@@ -290,7 +291,7 @@ const MainPageWithMenuCorp = () => {
                   <div className="flex justify-center items-center">
                     <Button
                       icon={SquareCheckBig}
-                      //disabled={!publicData?.billing_key?.is_active}
+                      //disabled={!corpData?.billing_key?.is_active}
                       onClick={() =>
                         handleActionWithSubscriptionCheck(
                           goToComplaintsDashboard
@@ -362,12 +363,12 @@ const MainPageWithMenuCorp = () => {
                     정기 구독
                   </h2>
                   <div>
-                    {publicData?.billing_key?.is_active ? (
+                    {corpData?.billing_key?.is_active ? (
                       <SubscriptionActive subscriptionData={billing_key} />
                     ) : (
                       <SubscriptionSignup
                         token={token}
-                        publicData={publicData}
+                        corpData={corpData}
                       />
                     )}
                   </div>

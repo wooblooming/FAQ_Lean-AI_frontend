@@ -88,7 +88,7 @@ const PublicIntroduction = () => {
       >
         {/* 상단 배너 */}
         <PublicBanner
-          banner={publicData.banner}
+          banner={publicData.logo}
           onBack={() => router.push("/mainPageForPublic")}
           isOwner={false}
         />

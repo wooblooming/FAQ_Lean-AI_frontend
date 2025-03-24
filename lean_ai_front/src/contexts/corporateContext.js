@@ -1,35 +1,38 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-const CorporateContext = createContext(); // 🔥 대문자로 수정
+const CorporateContext = createContext();
 
 export const CorporateProvider = ({ children }) => {
-    const [isCorporateOn, setIsCorporateOn] = useState(false);
+  const [isCorporateOn, setIsCorporateOn] = useState(false);
 
-    useEffect(() => {
-        const storedCorporateStatus = sessionStorage.getItem("isCorporateOn");
-        if (storedCorporateStatus) {
-            setIsCorporateOn(JSON.parse(storedCorporateStatus));
-        }
-    }, []);
+  useEffect(() => {
+    const storedCorporateStatus = sessionStorage.getItem("isCorporateOn");
+    if (storedCorporateStatus) {
+      setIsCorporateOn(JSON.parse(storedCorporateStatus));
+    }
+  }, []);
 
-    const toggleCorporateOn = () => {
-        setIsCorporateOn((prev) => {
-            const newStatus = !prev;
-            sessionStorage.setItem("isCorporateOn", JSON.stringify(newStatus));
-            return newStatus;
-        });
-    };
+  const activateCorporate = () => {
+    setIsCorporateOn(true);
+    sessionStorage.setItem("isCorporateOn", "true");
+  };
 
-    const resetCorporateOn = () => {
-        setIsCorporateOn(false);
-        sessionStorage.removeItem("isCorporateOn");
-    };
+  const deactivateCorporate = () => {
+    setIsCorporateOn(false);
+    sessionStorage.removeItem("isCorporateOn");
+  };
 
-    return (
-        <CorporateContext.Provider value={{ isCorporateOn, toggleCorporateOn, resetCorporateOn }}>
-            {children}
-        </CorporateContext.Provider>
-    );
+  return (
+    <CorporateContext.Provider
+      value={{
+        isCorporateOn,
+        setIsCorporateOn: activateCorporate,
+        resetCorporateOn: deactivateCorporate,
+      }}
+    >
+      {children}
+    </CorporateContext.Provider>
+  );
 };
 
 export const useCorporate = () => useContext(CorporateContext);

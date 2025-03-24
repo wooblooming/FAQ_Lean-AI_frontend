@@ -428,7 +428,7 @@ const signupPublicStep1 = () => {
               }
             }}
             username={formData.username}
-            isPublic="true"
+            type="public"
           />
 
           {/* 핸드폰 이용하여 본인 인증하는 모달 */}

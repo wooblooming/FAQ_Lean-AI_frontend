@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import { ChevronLeft, X } from "lucide-react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import useMyPage from "@/hooks/useMyPage";
-import { fetchPublicUser } from "@/fetch/fetchPublicUser";
+import { fetchCorpUser } from "@/fetch/fetchCorpUser";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
-import { usePublic } from "@/contexts/publicContext";
+import { useCorporate } from "@/contexts/corporateContext";
+
 import UserProfileForm from "@/components/component/commons/userProfile";
 import QrCodeSection from "@/components/component/commons/qrCode";
 import EventSwitch from "@/components/component/ui/event";
@@ -18,10 +19,10 @@ import ConfirmDeleteAccountModal from "@/components/modal/confirmDeleteAccountMo
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
-const MyPagePublic = () => {
+const MyPageCorp = () => {
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { isPublicOn } = usePublic();
+  const { isCorporateOn, resetCorporateOn } = useCorporate();
   const router = useRouter();
 
   const {
@@ -60,18 +61,20 @@ const MyPagePublic = () => {
     removeToken,
     storeID,
     removeStoreID,
-    fetchUserData: fetchPublicUser,
-    updateProfileUrl: `${API_DOMAIN}/public/user-profile/`,
-    updateProfilePhotoUrl: `${API_DOMAIN}/public/update-profile-photo/`,
-    generateQrCodeUrl: `${API_DOMAIN}/public/generate-qr-code/`,
-    deactivateAccountUrl: `${API_DOMAIN}/public/deactivate-account/`,
+    fetchUserData: fetchCorpUser,
+    updateProfileUrl: `${API_DOMAIN}/corps/user-profile/`,
+    updateProfilePhotoUrl: `${API_DOMAIN}/corps/update-profile-photo/`,
+    generateQrCodeUrl: `${API_DOMAIN}/corps/generate-qr-code/`,
+    deactivateAccountUrl: `${API_DOMAIN}/corps/deactivate-account/`,
   });
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <LoadingSpinner />
-        <p style={{ fontFamily: "NanumSquareBold" }}>사용자 정보를 가져 오는 중입니다!</p>
+        <p style={{ fontFamily: "NanumSquareBold" }}>
+          사용자 정보를 가져 오는 중입니다!
+        </p>
       </div>
     );
   }
@@ -83,7 +86,7 @@ const MyPagePublic = () => {
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <ChevronLeft
               className="h-8 w-8 text-indigo-700 cursor-pointer mr-2"
-              onClick={() => router.push("/mainPageForPublic")}
+              onClick={() => router.push("/mainPageForCorp")}
             />
           </motion.div>
           <p className="font-semibold mt-2.5"> </p>
@@ -128,7 +131,7 @@ const MyPagePublic = () => {
         {/* 사용자 정보 입력 필드 */}
         {userData && (
           <UserProfileForm
-            isPublicOn={isPublicOn}
+            isCorporateOn={isCorporateOn}
             token={token}
             storeID={storeID}
             userData={userData} // 유효한 userData만 전달
@@ -157,8 +160,6 @@ const MyPagePublic = () => {
         >
           회원탈퇴
         </button>
-
-
 
         {/* 이미지 모달 */}
         {isImageModalOpen && (
@@ -240,4 +241,4 @@ const MyPagePublic = () => {
   );
 };
 
-export default MyPagePublic;
+export default MyPageCorp;

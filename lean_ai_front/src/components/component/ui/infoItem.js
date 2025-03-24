@@ -67,6 +67,33 @@ export function PublicInfoItem({ icon: Icon, text, label }) {
   );
 }
 
+
+export function CorpInfoItem({ icon: Icon, text, label }) {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, x: -20 },
+        visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+      }}
+      className="flex items-center space-x-4"
+    >
+      <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-full shadow-sm">
+        <Icon className="text-indigo-600 w-5 h-5" />
+      </div>
+      <div className="flex-1">
+        {label === "기업명" ? (
+          <p className="text-2xl font-bold text-gray-800 flex items-center">{text}</p>
+        ) : (
+          <>
+            <p className="text-sm text-indigo-500 font-medium mb-1">{label}</p>
+            <p className="text-base text-gray-800">{text}</p>
+          </>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 /**
  * 매장 정보 아이템 (Store Info Item)
  */
