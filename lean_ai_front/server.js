@@ -1,9 +1,13 @@
 // server.js
+require('dotenv').config({ path: '.env.local' });
+
 const { createServer } = require('https');
 const { parse } = require('url');
 const next = require('next');
 const fs = require('fs');
-const PORT = process.env.NEXT_FRONT_PORT;
+const port = process.env.NEXT_FRONT_PORT;
+console.log('ENV PORT:', process.env.NEXT_FRONT_PORT);
+
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -18,8 +22,8 @@ app.prepare().then(() => {
   createServer(httpsOptions, (req, res) => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
-  }).listen(PORT, (err) => {
+  }).listen(port, (err) => {
     if (err) throw err;
-    console.log(`> Ready on https://localhost:${PORT}`);
+    console.log(`> Ready on https://localhost:${port}`);
   });
 });

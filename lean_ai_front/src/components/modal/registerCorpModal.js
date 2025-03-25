@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import axios from 'axios';
 import ModalMSG from '@/components/modal/modalMSG';
 import ModalErrorMSG from '@/components/modal/modalErrorMSG';
-import OpeningHoursSelector from '@/components/component/ui/openingHours';
 import FileInput from '@/components/component/ui/fileInput';
 import TextInput from '@/components/component/ui/textInput';
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
-export default function RegisterCorpModal({ show, onClose }) {
-    const router = useRouter();
+export default function RegisterCorpModal({ show, onRegisterSuccess, onClose }) {
     const [formData, setFormData] = useState({
         corpName: '',
         corpAddress: '',
@@ -28,7 +25,9 @@ export default function RegisterCorpModal({ show, onClose }) {
         setShowMessageModal(false);
         setMessage('');
         onClose();
-        router.reload();
+        if (onRegisterSuccess) {
+            onRegisterSuccess(); // ✅ 등록 성공 시 콜백 실행
+        }
     };
 
     const handleErrorModalClose = () => {

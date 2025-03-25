@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   RotateCw,
   Building2,
-  Clock,
   Phone,
   MapPin,
   Users,
@@ -14,7 +13,7 @@ import {
 import TermsOfServiceModal from "@/components/modal/termsOfServiceModal";
 import MarketingModal from "@/components/modal/marketingModal";
 import RegisterCorpModal from "../components/modal/registerCorpModal";
-import Modal from "@/components/modal/modal";
+import { formatPhoneNumber } from "@/utils/telUtils";
 import ModalMSG from "@/components/modal/modalMSG";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
@@ -47,6 +46,7 @@ const SignupCorpStep2 = () => {
   const [termsAccepted, setTermsAccepted] = useState(false); // 약관 동의 상태
   const [marketingAccepted, setMarketingAccepted] = useState(false); // 마케팅 동의 상태
   const [loading, setLoading] = useState(false);
+  const [isCorpLoading, setIsCorpLoading] = useState(false); // 기업 정보 로딩 상태
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 저장
   const [showTermsModal, setShowTermsModal] = useState(false); // 이용약관 모달 상태
   const [showMarketingModal, setShowMarketingModal] = useState(false); // 마케팅 약관 모달 상태
@@ -56,6 +56,7 @@ const SignupCorpStep2 = () => {
   const [corporations, setCorporations] = useState([]); // 기관 목록
   const [selectedCorpId, setSelectedCorpId] = useState(null); // 선택된 기관 ID
   const [selectedCorp, setSelectedCorp] = useState(null); // 선택된 기관 정보
+  const [isFetchingCorps, setIsFetchingCorps] = useState(false); // 기업 목록 로딩 상태
 
   useEffect(() => {
     // sessionStorage에서 사용자 정보를 불러오기
@@ -71,6 +72,7 @@ const SignupCorpStep2 = () => {
 
   // 기업 목록을 가져오는 함수
   const fetchCorporations = async () => {
+    setIsFetchingCorps(true);
     try {
       const response = await axios.get(`${API_DOMAIN}/corp/corporations/`);
       setCorporations(response.data);
@@ -78,22 +80,27 @@ const SignupCorpStep2 = () => {
       console.error("Error fetching institutions:", error);
       setErrorMessage("기업 정보를 불러오는 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
+    } finally {
+      setIsFetchingCorps(false);
     }
   };
 
   // 선택된 기업의 상세 정보를 가져오는 함수
-  const fetchCorporationDetails = async (cordId) => {
-    //console.log("cordId : ", cordId);
+  const fetchCorporationDetails = async (corpId) => {
+    setIsCorpLoading(true); // 로딩 시작
+    setSelectedCorp(null); // 로딩 시 이전 데이터 초기화
+
     try {
       const response = await axios.get(
-        `${API_DOMAIN}/corp/corporations/${cordId}/`
+        `${API_DOMAIN}/corp/corporations/${corpId}/`
       );
-
       setSelectedCorp(response.data); // 선택된 기관의 상세 정보를 상태에 저장
     } catch (error) {
       console.error("Error fetching corp details:", error);
       setErrorMessage("기업 상세 정보를 불러오는 중 오류가 발생했습니다.");
       setShowErrorMessageModal(true);
+    } finally {
+      setIsCorpLoading(false); // 로딩 완료
     }
   };
 
@@ -123,7 +130,6 @@ const SignupCorpStep2 = () => {
       setErrorMessage("이용약관 및 개인정보 수집 동의는 필수입니다.");
       setShowErrorMessageModal(true);
       setLoading(false);
-
       return;
     }
 
@@ -148,7 +154,13 @@ const SignupCorpStep2 = () => {
       setErrorMessage("소속된 부서를 입력해 주세요.");
       setShowErrorMessageModal(true);
       setLoading(false);
+      return;
+    }
 
+    if (!selectedCorpId) {
+      setErrorMessage("소속 기업을 선택해 주세요.");
+      setShowErrorMessageModal(true);
+      setLoading(false);
       return;
     }
 
@@ -163,26 +175,25 @@ const SignupCorpStep2 = () => {
       marketing: marketingValue,
       department: department,
     };
-    //console.log('Sending payload:', payload);
 
     try {
-      const response = await axios.post(
-        `${API_DOMAIN}/corp/signup/`,
-        payload
-      );
+      const response = await axios.post(`${API_DOMAIN}/corp/signup/`, payload);
 
       if (response.data.success) {
         setShowWelcomeModal(true); // 성공 시 환영 모달 표시
       } else {
         setErrorMessage(response.data.message || "회원가입에 실패했습니다.");
         setShowErrorMessageModal(true);
-        setLoading(false);
       }
     } catch (error) {
-      setErrorMessage("회원가입 요청 중 오류가 발생했습니다.");
+      console.error("Signup error:", error);
+      setErrorMessage(
+        error.response?.data?.message || "회원가입 요청 중 오류가 발생했습니다."
+      );
       setShowErrorMessageModal(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // 약관 동의 상태 변경
@@ -206,7 +217,7 @@ const SignupCorpStep2 = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-violet-50 px-2 md:px-0">
-      <div className="bg-white px-3 py-6 rounded-md shadow-lg max-w-md w-full space-y-4 ">
+      <div className="bg-white px-3 py-6 rounded-md shadow-lg max-w-md w-full space-y-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center">
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -227,12 +238,13 @@ const SignupCorpStep2 = () => {
         <div className="px-5 space-y-4">
           {/* 기업 선택 - 드롭다운 */}
           <div className="space-y-2">
-            <div className="flex flex-row">
+            <div className="flex flex-row items-center">
               <select
                 name="corporation"
                 value={selectedCorpId || ""}
                 onChange={handleCorporationSelect}
                 className="w-full border rounded-md p-2"
+                disabled={isFetchingCorps}
               >
                 <option value="">기업을 선택해주세요</option>
                 {corporations.map((corporation) => (
@@ -242,8 +254,11 @@ const SignupCorpStep2 = () => {
                 ))}
               </select>
               <button
-                className="text-gray-600 px-3"
+                className={`text-gray-600 px-3 ${
+                  isFetchingCorps ? "animate-spin text-indigo-500" : ""
+                }`}
                 onClick={fetchCorporations}
+                disabled={isFetchingCorps}
               >
                 <RotateCw className="h-6 w-6" />
               </button>
@@ -266,38 +281,103 @@ const SignupCorpStep2 = () => {
             </div>
           </div>
 
-          <div name="storedData" className="space-y-2 ">
+          <div name="storedData" className="space-y-2">
             <h3
               className="text-lg font-semibold text-gray-800"
               style={{ fontFamily: "NanumSquareExtraBold" }}
             >
-              {" "}
               기업 정보
             </h3>
+
             {/* 선택된 기관 정보 출력 */}
-            <div className="space-y-3 px-2">
-              <InfoItem
-                icon={<Building2 className="h-5 w-5" />}
-                label="기업명"
-                value={selectedCorp?.corp_name}
-              />
-              <InfoItem
-                icon={<Phone className="h-5 w-5" />}
-                label="대표 번호"
-                value={selectedCorp?.corp_tel}
-              />
-              <InfoItem
-                icon={<MapPin className="h-5 w-5" />}
-                label="주소"
-                value={selectedCorp?.corp_address}
-              />
+            <div className="space-y-3 px-2 min-h-[120px]">
+              {isCorpLoading ? (
+                // 로딩 중일 때 표시할 스켈레톤 UI
+                <div className="space-y-3 animate-pulse">
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-full bg-gray-300 h-5 w-5"></div>
+                    <div className="flex space-x-2 items-center">
+                      <div className="h-4 bg-gray-300 rounded w-16"></div>
+                      <div className="h-4 bg-gray-300 rounded w-24"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-full bg-gray-300 h-5 w-5"></div>
+                    <div className="flex space-x-2 items-center">
+                      <div className="h-4 bg-gray-300 rounded w-20"></div>
+                      <div className="h-4 bg-gray-300 rounded w-32"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="rounded-full bg-gray-300 h-5 w-5"></div>
+                    <div className="flex space-x-2 items-center">
+                      <div className="h-4 bg-gray-300 rounded w-12"></div>
+                      <div className="h-4 bg-gray-300 rounded w-40"></div>
+                    </div>
+                  </div>
+                </div>
+              ) : selectedCorpId && !selectedCorp ? (
+                // 선택은 했지만 데이터가 아직 없을 때
+                <div className="flex justify-center items-center py-4">
+                  <div className="text-center text-gray-500">
+                    <svg
+                      className="animate-spin h-6 w-6 mx-auto text-indigo-500 mb-2"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <p>기업 정보를 가져오는 중입니다!</p>
+                  </div>
+                </div>
+              ) : !selectedCorpId ? (
+                // 선택된 기업이 없을 때
+                <div className="flex justify-center items-center py-4">
+                  <div className="text-center text-gray-500">
+                    <Building2 className="h-6 w-6 mx-auto mb-2" />
+                    <p>기업을 선택하면 정보가 표시됩니다</p>
+                  </div>
+                </div>
+              ) : (
+                // 데이터가 있을 때 정보 표시
+                <>
+                  <InfoItem
+                    icon={<Building2 className="h-5 w-5" />}
+                    label="기업명"
+                    value={selectedCorp?.corp_name}
+                  />
+                  <InfoItem
+                    icon={<Phone className="h-5 w-5" />}
+                    label="대표 번호"
+                    value={formatPhoneNumber(selectedCorp?.corp_tel)}
+                  />
+                  <InfoItem
+                    icon={<MapPin className="h-5 w-5" />}
+                    label="주소"
+                    value={selectedCorp?.corp_address}
+                  />
+                </>
+              )}
             </div>
 
             {/* 소속 부서 입력 필드 */}
             <div className="pt-4 border-t border-gray-200">
               <label
                 htmlFor="department"
-                className=" font-medium  mb-2 block"
+                className="font-medium mb-2 block"
                 style={{ fontFamily: "NanumSquareExtraBold" }}
               >
                 소속 부서
@@ -342,7 +422,7 @@ const SignupCorpStep2 = () => {
                 className="form-checkbox h-4 w-4 text-blue-600"
               />
               <label
-                className="text-sm font-medium underline hover:text-blue-600"
+                className="text-sm font-medium underline hover:text-blue-600 cursor-pointer"
                 onClick={() => setShowMarketingModal(true)}
               >
                 마케팅 활용 동의 및 광고 수신 동의(선택)
@@ -393,6 +473,10 @@ const SignupCorpStep2 = () => {
           <RegisterCorpModal
             show={isRegisterCorpModalOpen}
             onClose={() => setIsRegisterCorpModalOpen(false)}
+            onRegisterSuccess={() => {
+              setIsRegisterCorpModalOpen(false); // 모달 닫기
+              fetchCorporations(); // ✅ 등록 후 목록 다시 불러오기
+            }}
           />
 
           {/* 이용약관 모달 */}

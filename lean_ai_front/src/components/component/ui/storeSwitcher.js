@@ -46,12 +46,6 @@ const StoreSwitcher = ({ storeList = [], setStoreList }) => {
     router.reload();
   };
 
-  // 🔴 스토어 삭제 후 storeList 업데이트
-  const handleStoreDelete = (deletedStoreID) => {
-    setStoreList((prevList) =>
-      prevList.filter((store) => store.store_id !== deletedStoreID)
-    );
-  };
 
   // 외부 클릭 감지하여 드롭다운 닫기
   useEffect(() => {
@@ -65,7 +59,7 @@ const StoreSwitcher = ({ storeList = [], setStoreList }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (storeList.length <= 1 || !currentStore) return null;
+  if (storeList.length <= 0 || !currentStore) return null;
 
   return (
     <div className="relative" ref={dropdownRef}>

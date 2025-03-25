@@ -28,7 +28,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn, isMainPage }) => {
   const router = useRouter();
   const { token, removeToken } = useAuth();
   const { storeID, removeStoreID } = useStore();
-  const { loginType, resetLoginType } = useLoginType();  
+  const { loginType, resetLoginType } = useLoginType();
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -39,20 +39,29 @@ const Header = ({ isLoggedIn, setIsLoggedIn, isMainPage }) => {
   }, []);
 
   useEffect(() => {
-    if(token&&isMainPage)
-      fetchStoreDataAll(token, setStoreList, setErrorMessage, setShowErrorMessageModal);
+    if (token && isMainPage)
+      fetchStoreDataAll(
+        token,
+        setStoreList,
+        setErrorMessage,
+        setShowErrorMessageModal
+      );
   }, [token, isMainPage]);
 
   const fetchQRCode = async () => {
-    const url = isPublicOn
-      ? `${API_DOMAIN}/public/qrCodeImage/`
-      : `${API_DOMAIN}/api/qrCodeImage/`;
+    let url;
+    if(loginType==='public')
+      url = `${API_DOMAIN}/public/qrCodeImage/`;
+    else if (loginType==='corp')
+      url = `${API_DOMAIN}/corp/qrCodeImage/`;
+    else
+    url =  `${API_DOMAIN}/api/qrCodeImage/`;
 
     try {
       setIsLoading(true);
       const response = await axios.post(
         url,
-        { public_id: storeID },
+        { store_id: storeID },
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -1,5 +1,5 @@
 import axios from 'axios';
- 
+
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
 export const fetchStoreDataAll = async (token, setStoreList, setErrorMessage, setShowErrorMessageModal) => {

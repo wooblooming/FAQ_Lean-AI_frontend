@@ -220,6 +220,7 @@ const MainPageWithMenuPublic = () => {
           errorMessage={errorMessage}
           showErrorMessageModal={showErrorMessageModal}
           handleErrorMessageModalClose={() => setShowErrorMessageModal(false)}
+          isMainPage={false}
         />
 
         {/* 메인 콘텐츠 */}
