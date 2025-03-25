@@ -3,6 +3,7 @@ const { createServer } = require('https');
 const { parse } = require('url');
 const next = require('next');
 const fs = require('fs');
+const PORT = process.env.NEXT_FRONT_PORT;
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -17,8 +18,8 @@ app.prepare().then(() => {
   createServer(httpsOptions, (req, res) => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
-  }).listen(3004, (err) => {
+  }).listen(PORT, (err) => {
     if (err) throw err;
-    console.log('> Ready on https://localhost:3004');
+    console.log(`> Ready on https://localhost:${PORT}`);
   });
 });

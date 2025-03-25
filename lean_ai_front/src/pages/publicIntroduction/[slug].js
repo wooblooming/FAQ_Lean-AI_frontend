@@ -18,7 +18,7 @@ import {
   Phone,
 } from "lucide-react";
 import { fetchPublicDetailData } from "@/fetch/fetchPublicDetailData";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import PublicBanner from "@/components/ui/publicBanner";
 import { PublicInfoItem } from "@/components/component/ui/infoItem";
 import Chatbot from "../chatBotMSG";
@@ -50,7 +50,7 @@ const PublicIntroduction = () => {
       setIsOwner(false);
       fetchPublicDetailData(
         slug,
-        null,
+        null, // token 없음 (공개 접근)
         setPublicData,
         setErrorMessage,
         setShowErrorMessageModal,
@@ -70,14 +70,7 @@ const PublicIntroduction = () => {
 
   // 로딩 중인 경우 로딩 스피너 표시
   if (isLoading) {
-    return (
-      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
-        <LoadingSpinner />
-        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
-          데이터를 가져오는 중입니다.
-        </p>
-      </div>
-    );
+    return <LoadingSection message="데이터를 가져오는 중 입니다!"/>
   }
 
   return (
@@ -110,7 +103,7 @@ const PublicIntroduction = () => {
                 <span className="font-medium text-lg">홈</span>
               </button>
 
-              {/* 민원원 탭 버튼 */}
+              {/* 민원 탭 버튼 */}
               <button
                 className={`flex items-center justify-center space-x-1.5 py-2 px-4 rounded-full transition-all duration-300 ${
                   activeTab === "complaint"
@@ -132,7 +125,7 @@ const PublicIntroduction = () => {
           style={{ height: "calc(97vh - 300px)", overflowY: "auto" }}
         >
           <AnimatePresence mode="wait">
-            {/* 홈 탭 내용용 */}
+            {/* 홈 탭 내용 */}
             {activeTab === "home" && (
               <motion.div
                 key="home"
@@ -150,7 +143,7 @@ const PublicIntroduction = () => {
                 }}
                 className="flex flex-col space-y-6"
               >
-                {/* 기관 정보보 */}
+                {/* 기관 정보 */}
                 <div
                   className="flex items-center"
                   style={{ fontFamily: "NanumSquareExtraBold" }}

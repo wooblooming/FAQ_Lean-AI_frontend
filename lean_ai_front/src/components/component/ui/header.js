@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
 import { useLoginType } from "@/contexts/loginTypeContext";
 import { Menu, X } from "lucide-react";
-import { fetchAllStoreData } from "@/fetch/fetchAllStoreData";
+import { fetchStoreDataAll } from "@/fetch/fetchStoreDataAll";
 import StoreSwitcher from "@/components/component/ui/storeSwitcher";
 import LogoutModal from "@/components/modal/logout";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
@@ -40,7 +40,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn, isMainPage }) => {
 
   useEffect(() => {
     if(token&&isMainPage)
-      fetchAllStoreData(token, setStoreList, setErrorMessage, setShowErrorMessageModal);
+      fetchStoreDataAll(token, setStoreList, setErrorMessage, setShowErrorMessageModal);
   }, [token, isMainPage]);
 
   const fetchQRCode = async () => {

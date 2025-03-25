@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Camera, Store, Download } from "lucide-react";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import { getCategoryIcon, getMenuTitle } from "@/utils/storeUtils";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
@@ -232,14 +232,7 @@ const ChangeInfo = () => {
 
   // 로딩 상태 UI
   if (isLoading) {
-    return (
-      <div className="flex flex-col space-x-3 justify-center items-center h-full w-full p-8 bg-white">
-        <LoadingSpinner />
-        <p className="mt-4 text-indigo-600 font-semibold">
-          정보를 불러오는 중...
-        </p>
-      </div>
-    );
+    return <LoadingSection message="매장 데이터를 가져오는 중 입니다!"/>
   }
 
   return (

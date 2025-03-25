@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSwipeable } from "react-swipeable";
 import {
-  Quote, Triangle, Home,
-  Image as ImageIcon, CookingPot,
-  ShoppingBag, Package
+  Quote,
+  Triangle,
+  Home,
+  Image as ImageIcon,
+  CookingPot,
+  ShoppingBag,
+  Package,
 } from "lucide-react";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import StoreBanner from "@/components/ui/storeBanner";
 import StoreInfo from "@/components/component/store/storeInfo";
 import MenuList from "@/components/component/store/menuList";
@@ -55,14 +59,14 @@ const StoreIntroduceExample = () => {
     if (slug) {
       fetchStoreData(
         { slug },
-        null,
+        null, // token 없음 (공개 접근)
         setStoreData,
         setErrorMessage,
         setShowErrorMessageModal
       );
       fetchStoreMenu(
         { slug },
-        null,
+        null, // token 없음 (공개 접근)
         setMenu,
         setErrorMessage,
         setShowErrorMessageModal
@@ -82,14 +86,7 @@ const StoreIntroduceExample = () => {
 
   // 로딩 중일 때 스피너 표시
   if (isLoading) {
-    return (
-      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
-        <LoadingSpinner />
-        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
-          데이터를 가져오는 중입니다.
-        </p>
-      </div>
-    );
+    return <LoadingSection message="데이터를 가져오는 중 입니다!" />;
   }
 
   // 카테고리에 따라 메뉴 탭 제목 설정
@@ -101,7 +98,6 @@ const StoreIntroduceExample = () => {
       : "기타";
   };
   const menuTitle = getMenuTitle(storeCategory);
-
 
   // 카테고리에 따라 아이콘 반환
   const getCategoryIcon = () => {
@@ -132,12 +128,11 @@ const StoreIntroduceExample = () => {
             isOwner={true}
           />
 
-           {/* 탭 네비게이션 */}
+          {/* 탭 네비게이션 */}
           <div className="px-2 bg-white shadow-sm">
             <div className="flex justify-around -mt-6 mb-2 relative z-20">
               <div className="flex space-x-1 bg-white rounded-full p-1 shadow-lg">
-
-                 {/* 홈 탭 버튼 */}
+                {/* 홈 탭 버튼 */}
                 <button
                   className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
                     activeTab === "home"
@@ -150,7 +145,7 @@ const StoreIntroduceExample = () => {
                   <span className="font-medium">홈</span>
                 </button>
 
-                 {/* 메뉴 탭 버튼 */}
+                {/* 메뉴 탭 버튼 */}
                 <button
                   className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
                     activeTab === "menu"
@@ -163,7 +158,7 @@ const StoreIntroduceExample = () => {
                   <span className="font-medium">{menuTitle}</span>
                 </button>
 
-                 {/* 피드 탭 버튼 */}
+                {/* 피드 탭 버튼 */}
                 <button
                   className={`flex items-center justify-center space-x-1 py-2 px-4 rounded-full transition-all duration-300 ${
                     activeTab === "image"

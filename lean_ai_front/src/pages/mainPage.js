@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Edit3, Eye, ClipboardList, Send } from "lucide-react";
 import Header from "@/components/component/ui/header";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
 import { fetchStoreData } from "@/fetch/fetchStoreData";
@@ -192,14 +192,7 @@ const MainPageWithMenu = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
-        <LoadingSpinner />
-        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
-          데이터를 가져오는 중입니다.
-        </p>
-      </div>
-    );
+    return <LoadingSection message="데이터를 가져오는 중 입니다!" />;
   }
 
   return (

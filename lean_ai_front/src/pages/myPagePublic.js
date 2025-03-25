@@ -2,7 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { ChevronLeft, X } from "lucide-react";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import useMyPage from "@/hooks/useMyPage";
 import { fetchPublicUser } from "@/fetch/fetchPublicUser";
 import { useAuth } from "@/contexts/authContext";
@@ -68,14 +68,7 @@ const MyPagePublic = () => {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <LoadingSpinner />
-        <p style={{ fontFamily: "NanumSquareBold" }}>
-          사용자 정보를 가져 오는 중입니다!
-        </p>
-      </div>
-    );
+    return <LoadingSection message="사용자 데이터를 가져오는 중 입니다!" />;
   }
 
   return (

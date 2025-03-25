@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import Header from "@/components/component/ui/header";
 import { Eye, Send, SquareCheckBig, ClipboardList } from "lucide-react";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
 import { useLoginType } from "@/contexts/loginTypeContext";
@@ -207,14 +207,7 @@ const MainPageWithMenuPublic = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
-        <LoadingSpinner />
-        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
-          데이터를 가져오는 중입니다.
-        </p>
-      </div>
-    );
+    return <LoadingSection message="데이터를 가져오는 중 입니다!" />;
   }
 
   return (

@@ -5,16 +5,23 @@ import { useRouter } from "next/router";
 import { useSwipeable } from "react-swipeable";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Headset, User, MailCheck,
-  Home, MessageSquareWarning, Send,
-  SearchCheck, Clock, MapPin,
-  Building2, Phone
+  Headset,
+  User,
+  MailCheck,
+  Home,
+  MessageSquareWarning,
+  Send,
+  SearchCheck,
+  Clock,
+  MapPin,
+  Building2,
+  Phone,
 } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 import { fetchPublicDetailData } from "@/fetch/fetchPublicDetailData";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import PublicBanner from "@/components/ui/publicBanner";
-import { PublicInfoItem  } from "@/components/component/ui/infoItem";
+import { PublicInfoItem } from "@/components/component/ui/infoItem";
 import { formatPhoneNumber } from "@/utils/telUtils";
 import Chatbot from "../chatBotMSG";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
@@ -22,7 +29,7 @@ import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 const PublicIntroductionOwner = () => {
   const router = useRouter();
   const { slug } = router.query; // URL에서 기관 식별자(slug) 가져오기
-  const { token } = useAuth(); // token 
+  const { token } = useAuth(); // token
   const [isOwner, setIsOwner] = useState(true); // 기관 소유자인지 여부 (현재 기본값 true)
   const [publicData, setPublicData] = useState([]); // 기관 데이터 저장
   const [agentId, setAgentId] = useState(null); // 챗봇 ID 저장
@@ -36,7 +43,7 @@ const PublicIntroductionOwner = () => {
     onSwipedLeft: () => activeTab === "home" && setActiveTab("complaint"),
     onSwipedRight: () => activeTab === "complaint" && setActiveTab("home"),
     preventDefaultTouchmoveEvent: true,
-    trackMouse: true
+    trackMouse: true,
   });
 
   // 공공기관 데이터 가져오기
@@ -54,7 +61,7 @@ const PublicIntroductionOwner = () => {
     }
   }, [slug, token, isOwner]);
 
-   // publicData가 변경되었을 때 에이전트 ID 설정 및 로딩 상태 업데이트
+  // publicData가 변경되었을 때 에이전트 ID 설정 및 로딩 상태 업데이트
   useEffect(() => {
     if (publicData) {
       //console.log("publicData : ", publicData);
@@ -65,12 +72,7 @@ const PublicIntroductionOwner = () => {
 
   // 로딩 중인 경우 로딩 스피너 표시
   if (isLoading) {
-    return (
-      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
-        <LoadingSpinner />
-        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>데이터를 가져오는 중입니다.</p>
-      </div>
-    );
+    return <LoadingSection message="데이터를 가져오는 중 입니다!" />;
   }
 
   return (
@@ -90,7 +92,6 @@ const PublicIntroductionOwner = () => {
         <div className="px-4 py-2 bg-white/80 backdrop-blur-md shadow-md">
           <div className="flex justify-around -mt-6 mb-2 relative z-20">
             <div className="flex space-x-3 bg-white rounded-full p-1.5 shadow-lg">
-
               {/* 홈 탭 버튼 */}
               <button
                 className={`flex items-center justify-center space-x-1.5 py-2 px-4 rounded-full transition-all duration-300 ${
@@ -126,7 +127,6 @@ const PublicIntroductionOwner = () => {
           style={{ height: "calc(97vh - 300px)", overflowY: "auto" }}
         >
           <AnimatePresence mode="wait">
-
             {/* 홈 탭 내용용 */}
             {activeTab === "home" && (
               <motion.div
@@ -146,40 +146,44 @@ const PublicIntroductionOwner = () => {
                 className="flex flex-col space-y-6"
               >
                 {/* 기관 정보보 */}
-                <div className="flex items-center" style={{ fontFamily: "NanumSquareExtraBold" }} >
+                <div
+                  className="flex items-center"
+                  style={{ fontFamily: "NanumSquareExtraBold" }}
+                >
                   <div className="w-1.5 h-8 bg-indigo-600 rounded-r mr-3"></div>
                   <h2 className="text-2xl font-bold text-gray-800 flex items-center min-w-0">
                     기관 정보
                   </h2>
                 </div>
-                
+
                 {/* 기관 정보 목록 */}
-                <div className="flex flex-col space-y-5 text-lg px-3 bg-white rounded-xl p-5 shadow-md"
-                      style={{ fontFamily: "NanumSquareBold" }}
+                <div
+                  className="flex flex-col space-y-5 text-lg px-3 bg-white rounded-xl p-5 shadow-md"
+                  style={{ fontFamily: "NanumSquareBold" }}
                 >
                   {publicData.public_name && (
-                    <PublicInfoItem 
+                    <PublicInfoItem
                       icon={Building2}
                       text={publicData.public_name}
                       label="기관명"
                     />
                   )}
                   {publicData.public_address && (
-                    <PublicInfoItem 
+                    <PublicInfoItem
                       icon={MapPin}
                       text={publicData.public_address}
                       label="주소"
                     />
                   )}
                   {publicData.opening_hours && (
-                    <PublicInfoItem  
-                      icon={Clock} 
+                    <PublicInfoItem
+                      icon={Clock}
                       text={publicData.opening_hours}
-                      label="운영시간" 
+                      label="운영시간"
                     />
                   )}
                   {publicData.public_tel && (
-                    <PublicInfoItem 
+                    <PublicInfoItem
                       icon={Phone}
                       text={formatPhoneNumber(publicData.public_tel)}
                       label="연락처"
@@ -245,25 +249,43 @@ const PublicIntroductionOwner = () => {
                       >
                         {/* 헤더 */}
                         <div className={`${color} h-2 w-full`}></div>
-                        
+
                         {/* 숫자 및 아이콘 */}
                         <div className="px-3 py-3 flex justify-between items-center">
-                          <div className={`${color} bg-opacity-10 rounded-full w-7 h-7 flex items-center justify-center`}>
-                            <span className={`text-sm font-bold ${color.replace('bg-', 'text-')}`}>{step}</span>
+                          <div
+                            className={`${color} bg-opacity-10 rounded-full w-7 h-7 flex items-center justify-center`}
+                          >
+                            <span
+                              className={`text-sm font-bold ${color.replace(
+                                "bg-",
+                                "text-"
+                              )}`}
+                            >
+                              {step}
+                            </span>
                           </div>
-                          <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
+                          <Icon
+                            className={`w-6 h-6 ${color.replace(
+                              "bg-",
+                              "text-"
+                            )}`}
+                          />
                         </div>
-                        
+
                         {/* 내용 */}
                         <div className="px-3 pb-3">
                           <h4 className="font-bold text-gray-800">{title}</h4>
-                        <p className="text-gray-500 text-sm mt-1 leading-relaxed whitespace-pre-line" style={{ fontFamily: "NanumSquareBold" }} >{text}</p>
+                          <p
+                            className="text-gray-500 text-sm mt-1 leading-relaxed whitespace-pre-line"
+                            style={{ fontFamily: "NanumSquareBold" }}
+                          >
+                            {text}
+                          </p>
                         </div>
                       </motion.div>
                     ))}
                   </div>
                 </div>
-                
 
                 {/* 민원 접수/조회 버튼 */}
                 <motion.div
@@ -290,12 +312,21 @@ const PublicIntroductionOwner = () => {
                         </div>
                         <span className="font-bold text-xl">민원 접수하기</span>
                       </div>
-                      
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </button>
-                    
+
                     {/* 민원 조회 버튼 */}
                     <button
                       className="w-full px-5 py-4 rounded-xl bg-white border border-gray-200 text-gray-700 font-medium flex items-center justify-between shadow-sm hover:bg-gray-50 transition-colors"
@@ -305,11 +336,22 @@ const PublicIntroductionOwner = () => {
                         <div className="bg-indigo-100 p-2 rounded-full">
                           <SearchCheck className="w-5 h-5 text-indigo-500" />
                         </div>
-                        <span className="font-medium text-xl">민원 조회하기</span>
+                        <span className="font-medium text-xl">
+                          민원 조회하기
+                        </span>
                       </div>
-                      
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-gray-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </button>
                   </div>

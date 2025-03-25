@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 import { fetchCorpDetailData } from "@/fetch/fetchCorpDetailData";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSection from "@/components/component/commons/loadingSection";
 import CorpBanner from "@/components/ui/publicBanner";
 import { CorpInfoItem } from "@/components/component/ui/infoItem";
 import { formatPhoneNumber } from "@/utils/telUtils";
@@ -28,8 +28,8 @@ import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 const CorpIntroductionOwner = () => {
   const router = useRouter();
   const { slug } = router.query; // URL에서 기관 식별자(slug) 가져오기
-  const { token } = useAuth(); // token
-  const [isOwner, setIsOwner] = useState(true); // 기관 소유자인지 여부 (현재 기본값 true)
+    const { token } = useAuth(); // token
+  const [isOwner, setIsOwner] = useState(true);  // 기업 소유자인지 여부 (false면 방문자)
   const [corpData, setCorpData] = useState([]); // 기관 데이터 저장
   const [agentId, setAgentId] = useState(null); // 챗봇 ID 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
@@ -45,10 +45,10 @@ const CorpIntroductionOwner = () => {
     trackMouse: true,
   });
 
-  // 공공기관 데이터 가져오기
+  // slug가 있는 경우 기업 정보 가져오기
   useEffect(() => {
     if (slug) {
-      setIsOwner(true);
+      setIsOwner(false);
       fetchCorpDetailData(
         slug,
         token,
@@ -60,7 +60,7 @@ const CorpIntroductionOwner = () => {
     }
   }, [slug, token, isOwner]);
 
-  // corpData 변경되었을 때 에이전트 ID 설정 및 로딩 상태 업데이트
+  // 기업 데이터가 업데이트되면 agentId 설정 및 로딩 종료
   useEffect(() => {
     if (corpData) {
       //console.log("corpData : ", corpData);
@@ -69,16 +69,9 @@ const CorpIntroductionOwner = () => {
     }
   }, [corpData]);
 
-  // 로딩 중인 경우 로딩 스피너 표시
+   // 로딩 중이라면 LoadingSection 표시
   if (isLoading) {
-    return (
-      <div className="flex flex-col space-y-2 justify-center items-center min-h-screen bg-violet-50">
-        <LoadingSpinner />
-        <p className="text-lg" style={{ fontFamily: "NanumSquareBold" }}>
-          데이터를 가져오는 중입니다.
-        </p>
-      </div>
-    );
+    return <LoadingSection message="데이터를 가져오는 중 입니다!" />;
   }
 
   return (
@@ -91,7 +84,7 @@ const CorpIntroductionOwner = () => {
         <CorpBanner
           banner={corpData.logo}
           onBack={() => router.push("/mainPageForCorp")}
-          isOwner={true}
+          isOwner={false}
         />
 
         {/* 탭 네비게이션 */}
@@ -192,7 +185,7 @@ const CorpIntroductionOwner = () => {
               </motion.div>
             )}
 
-            {/* 민원 탭 내용 */}
+            {/* 문의 탭 내용 */}
             {activeTab === "complaint" && (
               <motion.div
                 key="complaint"
@@ -212,7 +205,7 @@ const CorpIntroductionOwner = () => {
                   </h2>
                 </div>
 
-                {/* 민원 접수 과정 */}
+                {/* 문의 접수 과정 */}
                 <div className="mb-4">
                   <div className="grid grid-cols-3 gap-3">
                     {[
