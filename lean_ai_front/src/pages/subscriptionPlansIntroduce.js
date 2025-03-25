@@ -148,7 +148,7 @@ const SubscriptionPlansIntroduce = () => {
                   scale: [1, 1.05, 1],
                 }}
                 transition={{
-                  duration: 0.25,
+                  duration: 2,
                   repeat: Infinity,
                   repeatType: "loop",
                   ease: "easeInOut",

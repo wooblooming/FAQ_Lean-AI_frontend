@@ -113,6 +113,10 @@ export default function Chatbot({ agentId }) {
                     project-id="lean-ai-faq"
                     agent-id={agentId}
                     language-code="ko"
+                    enable-speech-input="true"
+                    enable-speech-output="true"
+                    enable-speech-input-language="ko"
+                    enable-speech-output-language="ko"  
                     session-id={sessionId}
                     session-persistence="true"
                     style={{
@@ -170,6 +174,10 @@ export default function Chatbot({ agentId }) {
                         bot-actor-image="/images/chatbot.png"
                         bot-writing-text="응답을 생성중입니다. 잠시만 기다려주세요😊" 
                         allow-fullscreen="always"
+                        enable-speech-input="true"
+                        enable-speech-output="true"
+                        enable-speech-input-language="ko"
+                        enable-speech-output-language="ko"
                     ></df-messenger-chat-bubble>
                 </df-messenger>
             )}

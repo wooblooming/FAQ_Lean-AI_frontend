@@ -13,7 +13,7 @@
       "alias" : "CORP",
       "price": 500000,
       "description": "기업용 구독",
-      "features": ["AI 챗봇 (CS 응대)", "사내 챗봇", "문서 관리"]
+      "features": ["AI 챗봇 (CS 응대)", "사내 챗봇", "문서 관리", "문의 분석"]
     },
     { 
       "id": 3,
