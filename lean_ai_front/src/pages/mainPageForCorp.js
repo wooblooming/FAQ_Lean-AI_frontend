@@ -111,7 +111,7 @@ const MainPageWithMenuCorp = () => {
 
   useEffect(() => {
     if (corpData) {
-      console.log("corpData : ", corpData);
+      //console.log("corpData : ", corpData);
       setCorpName(corpData.corp_name); // 상점 이름 설정
       setCorpSlug(corpData.slug); // 상점 슬러그 설정
     }

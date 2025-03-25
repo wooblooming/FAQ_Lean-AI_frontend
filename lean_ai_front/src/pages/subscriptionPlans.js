@@ -69,8 +69,8 @@ const SubscriptionPlans = () => {
 
   /** ✅ KCP 결제창 호출 함수 */
   const handlePayment = () => {
-    console.log("현재 사용 중인 KCP site_cd:", TEST_CD);
-    console.log("KCP 결제 모듈 확인:", window.KCP_Pay_Execute_Web);
+    //console.log("현재 사용 중인 KCP site_cd:", TEST_CD);
+    //console.log("KCP 결제 모듈 확인:", window.KCP_Pay_Execute_Web);
 
     if (!window.KCP_Pay_Execute_Web) {
       reject(new Error("KCP 결제 모듈이 로드되지 않았습니다."));
@@ -98,7 +98,7 @@ const SubscriptionPlans = () => {
       buyr_name: userData?.name || "홍길동",
     };
 
-    console.log("paymentData :", paymentData);
+    //console.log("paymentData :", paymentData);
 
     Object.keys(paymentData).forEach((key) => {
       const input = document.createElement("input");

@@ -44,7 +44,7 @@ const SignupStep2 = () => {
     const storedUserData = sessionStorage.getItem("signupUserData");
     setIsOAuthUser(sessionStorage.getItem("isOAuthUser") === "true");
 
-    console.log("storedUserData: ", storedUserData);
+    //console.log("storedUserData: ", storedUserData);
 
     if (storedUserData) {
       const parsedData = JSON.parse(storedUserData);

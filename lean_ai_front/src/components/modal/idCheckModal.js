@@ -16,18 +16,15 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, type }) => {
     if (type == "public") url = `${API_DOMAIN}/public/check-username/`;
     else if (type == "corp") url = `${API_DOMAIN}/corp/check-username/`;
     else url = `${API_DOMAIN}/api/check-username/`;
-    console.log("[DEBUG] API URL: ", url);
     return url;
   };
 
   const handleIdCheck = async () => {
-    console.log("[DEBUG] handleIdCheck 실행");
-    console.log("[DEBUG] 요청할 username: ", username);
 
     setLoading(true);
     try {
       const apiUrl = APIUrl();
-      console.log("[DEBUG] API 요청 URL: ", apiUrl);
+      //console.log("[DEBUG] API 요청 URL: ", apiUrl);
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -37,10 +34,10 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, type }) => {
         body: JSON.stringify({ username: username }),
       });
 
-      console.log("[DEBUG] 서버 응답 상태 코드: ", response.status);
+      //console.log("[DEBUG] 서버 응답 상태 코드: ", response.status);
 
       const result = await response.json();
-      console.log("[DEBUG] 서버 응답 데이터: ", result);
+      //console.log("[DEBUG] 서버 응답 데이터: ", result);
 
       if (response.status === 409) {
         console.warn("[WARN] 이미 사용 중인 사용자 아이디");
@@ -59,7 +56,7 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, type }) => {
         setErrorMessage(errorMessage);
         setShowErrorModal(true);
       } else if (response.status === 200) {
-        console.log("[SUCCESS] 아이디 사용 가능");
+        //console.log("[SUCCESS] 아이디 사용 가능");
         onIdCheckComplete(true);
         setMessage(result.message);
       } else {
@@ -73,14 +70,13 @@ const IdCheckModal = ({ show, onClose, username, onIdCheckComplete, type }) => {
       setErrorMessage("아이디 중복 검사 중 오류가 발생했습니다.");
       setShowErrorModal(true);
     } finally {
-      console.log("[DEBUG] handleIdCheck 종료");
+      //console.log("[DEBUG] handleIdCheck 종료");
       setLoading(false);
     }
   };
 
   useEffect(() => {
     if (show) {
-      console.log("[DEBUG] Modal이 열려서 handleIdCheck 실행");
       handleIdCheck();
     }
   }, [show]);

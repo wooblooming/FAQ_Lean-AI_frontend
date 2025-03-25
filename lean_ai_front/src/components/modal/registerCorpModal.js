@@ -22,6 +22,7 @@ export default function RegisterCorpModal({ show, onClose }) {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [message, setMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태 추가
 
     const handleMessageModalClose = () => {
         setShowMessageModal(false);
@@ -52,6 +53,8 @@ export default function RegisterCorpModal({ show, onClose }) {
                 return;
             }
 
+            setIsLoading(true); // ✅ 로딩 시작
+
             const formPayload = new FormData();
             formPayload.append('corp_name', formData.corpName);
             formPayload.append('corp_address', formData.corpAddress);
@@ -76,11 +79,12 @@ export default function RegisterCorpModal({ show, onClose }) {
             if (error.response && error.response.status === 400) {
                 const errorMsg = error.response.data.public_name || '기업 등록 중 오류가 발생했습니다. 다시 시도해주세요.';
                 setErrorMessage(errorMsg);
-                setShowErrorModal(true);
             } else {
                 setErrorMessage('기업 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
-                setShowErrorModal(true);
             }
+            setShowErrorModal(true);
+        } finally {
+            setIsLoading(false); // ✅ 로딩 종료
         }
     };
 
@@ -89,7 +93,7 @@ export default function RegisterCorpModal({ show, onClose }) {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                <div className="text-center mb-4" >
+                <div className="text-center mb-4">
                     <h1 className="text-2xl font-bold text-indigo-600 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>기업 등록</h1>
                     <p className="text-gray-600" style={{ fontFamily: "NanumSquareBold" }}>기업 정보를 기입해주세요</p>
                 </div>
@@ -100,7 +104,7 @@ export default function RegisterCorpModal({ show, onClose }) {
                         name="corpName"
                         label="기업 이름"
                         placeholder="기업명"
-                        value={formData.corp}
+                        value={formData.corpName}
                         onChange={handleInputChange}
                     />
                     <TextInput
@@ -131,14 +135,24 @@ export default function RegisterCorpModal({ show, onClose }) {
                     <button
                         className="w-1/2 bg-gray-400 text-white font-medium py-2 px-4 rounded-lg mr-2"
                         onClick={onClose}
+                        disabled={isLoading}
                     >
                         취소
                     </button>
                     <button
-                        className="w-1/2 bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg"
+                        className={`w-1/2 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600'} text-white font-medium py-2 px-4 rounded-lg`}
                         onClick={handleRegisterPublic}
+                        disabled={isLoading}
                     >
-                        등록하기
+                        {isLoading ? (
+                            <div className="flex items-center justify-center">
+                                <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                                등록 중...
+                            </div>
+                        ) : '등록하기'}
                     </button>
                 </div>
 

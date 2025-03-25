@@ -3,28 +3,25 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import ModalMSG from '@/components/modal/modalMSG';
 import ModalErrorMSG from '@/components/modal/modalErrorMSG';
-import OpeningHoursSelector from '@/components/component/ui/openingHours';
 import FileInput from '@/components/component/ui/fileInput';
 import TextInput from '@/components/component/ui/textInput';
 
 const API_DOMAIN = process.env.NEXT_PUBLIC_API_DOMAIN;
 
-export default function RegisterPublicModal({ show, onClose }) {
+export default function RegisterCorpModal({ show, onClose }) {
     const router = useRouter();
     const [formData, setFormData] = useState({
-        publicName: '',
-        publicAddress: '',
-        publicTel: '',
-        publicLogo: null,
+        corpName: '',
+        corpAddress: '',
+        corpTel: '',
+        corpLogo: null,
     });
 
-    const [weekdayHours, setWeekdayHours] = useState({ startHour: '09', startMinute: '00', endHour: '18', endMinute: '00' });
-    const [weekendHours, setWeekendHours] = useState({ startHour: '09', startMinute: '00', endHour: '13', endMinute: '00' });
-    const [isWeekendEnabled, setIsWeekendEnabled] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [showMessageModal, setShowMessageModal] = useState(false);
     const [message, setMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // ✅ 로딩 상태 추가
 
     const handleMessageModalClose = () => {
         setShowMessageModal(false);
@@ -44,50 +41,49 @@ export default function RegisterPublicModal({ show, onClose }) {
     };
 
     const handleFileChange = (file) => {
-        setFormData({ ...formData, publicLogo: file });
+        setFormData({ ...formData, corpLogo: file });
     };
 
     const handleRegisterPublic = async () => {
         try {
-            const formattedHours = `평일: ${weekdayHours.startHour}:${weekdayHours.startMinute}-${weekdayHours.endHour}:${weekdayHours.endMinute}, ${isWeekendEnabled ? 
-                `주말: ${weekendHours.startHour}:${weekendHours.startMinute}-${weekendHours.endHour}:${weekendHours.endMinute}` : '주말: 휴무'}`;
-
-            if (!formData.publicName || !formattedHours || !formData.publicAddress || !formData.publicTel) {
+            if (!formData.corpName || !formData.corpAddress || !formData.corpTel) {
                 setErrorMessage('필수 항목들을 기입해주시길 바랍니다');
                 setShowErrorModal(true);
                 return;
             }
 
+            setIsLoading(true); // ✅ 로딩 시작
+
             const formPayload = new FormData();
-            formPayload.append('public_name', formData.publicName);
-            formPayload.append('opening_hours', formattedHours);
-            formPayload.append('public_address', formData.publicAddress);
-            formPayload.append('public_tel', formData.publicTel);
-            if (formData.publicLogo) {
-                formPayload.append('logo', formData.publicLogo);
+            formPayload.append('corp_name', formData.corpName);
+            formPayload.append('corp_address', formData.corpAddress);
+            formPayload.append('corp_tel', formData.corpTel);
+            if (formData.corpLogo) {
+                formPayload.append('logo', formData.corpLogo);
             }
 
-            const response = await axios.post(`${API_DOMAIN}/public/publics/`, formPayload, {
+            const response = await axios.post(`${API_DOMAIN}/corp/corporations/`, formPayload, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
             if (response.data.status === "success") {
-                setMessage('입력하신 기관 정보가 등록되었습니다.');
+                setMessage('입력하신 기업 정보가 등록되었습니다.');
                 setShowMessageModal(true);
             } else {
                 throw new Error('등록 중 오류가 발생했습니다.');
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                const errorMsg = error.response.data.public_name || '기관 등록 중 오류가 발생했습니다. 다시 시도해주세요.';
+                const errorMsg = error.response.data.public_name || '기업 등록 중 오류가 발생했습니다. 다시 시도해주세요.';
                 setErrorMessage(errorMsg);
-                setShowErrorModal(true);
             } else {
-                setErrorMessage('기관 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
-                setShowErrorModal(true);
+                setErrorMessage('기업 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
             }
+            setShowErrorModal(true);
+        } finally {
+            setIsLoading(false); // ✅ 로딩 종료
         }
     };
 
@@ -97,47 +93,39 @@ export default function RegisterPublicModal({ show, onClose }) {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <div className="text-center mb-4">
-                    <h1 className="text-2xl font-bold text-indigo-600 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>기관 등록</h1>
-                    <p className="text-gray-600" style={{ fontFamily: "NanumSquareBold" }}>기관 정보를 기입해주세요</p>
+                    <h1 className="text-2xl font-bold text-indigo-600 mb-2" style={{ fontFamily: "NanumSquareExtraBold" }}>기업 등록</h1>
+                    <p className="text-gray-600" style={{ fontFamily: "NanumSquareBold" }}>기업 정보를 기입해주세요</p>
                 </div>
 
                 <div className="space-y-3" style={{ fontFamily: "NanumSquareBold" }}>
                     <TextInput 
-                        id="publicName"
-                        name="publicName"
-                        label="기관 이름"
-                        placeholder="기관명"
-                        value={formData.publicName}
+                        id="corpName"
+                        name="corpName"
+                        label="기업 이름"
+                        placeholder="기업명"
+                        value={formData.corpName}
                         onChange={handleInputChange}
                     />
-                    <OpeningHoursSelector
-                        weekdayHours={weekdayHours}
-                        setWeekdayHours={setWeekdayHours}
-                        weekendHours={weekendHours}
-                        setWeekendHours={setWeekendHours}
-                        isWeekendEnabled={isWeekendEnabled}
-                        setIsWeekendEnabled={setIsWeekendEnabled}
-                    />
                     <TextInput
-                        id="publicAddress"
-                        name="publicAddress"
+                        id="corpAddress"
+                        name="corpAddress"
                         label="주소"
                         placeholder="주소"
-                        value={formData.publicAddress}
+                        value={formData.corpAddress}
                         onChange={handleInputChange}
                     />
                     <TextInput
-                        id="publicTel"
-                        name="publicTel"
-                        label="대표 번호"
-                        placeholder="대표 번호"
-                        value={formData.publicTel}
+                        id="corpTel"
+                        name="corpTel"
+                        label="대표번호"
+                        placeholder="대표번호"
+                        value={formData.corpTel}
                         onChange={handleInputChange}
                     />
                     <FileInput
-                        id="publicLogo"
-                        name="publicLogo"
-                        label="기관 로고"
+                        id="corpLogo"
+                        name="corpLogo"
+                        label="기업 로고"
                         onChange={handleFileChange}
                     />
                 </div>
@@ -146,14 +134,24 @@ export default function RegisterPublicModal({ show, onClose }) {
                     <button
                         className="w-1/2 bg-gray-400 text-white font-medium py-2 px-4 rounded-lg mr-2"
                         onClick={onClose}
+                        disabled={isLoading}
                     >
                         취소
                     </button>
                     <button
-                        className="w-1/2 bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg"
+                        className={`w-1/2 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600'} text-white font-medium py-2 px-4 rounded-lg`}
                         onClick={handleRegisterPublic}
+                        disabled={isLoading}
                     >
-                        등록하기
+                        {isLoading ? (
+                            <div className="flex items-center justify-center">
+                                <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                등록 중...
+                            </div>
+                        ) : '등록하기'}
                     </button>
                 </div>
 

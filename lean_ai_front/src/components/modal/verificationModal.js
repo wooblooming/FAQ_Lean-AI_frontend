@@ -89,7 +89,7 @@ const VerificationModal = ({ isOpen, onClose, onSubmit, verificationCode, onChan
                         {isVerifying ? (
                             <>
                                 <Loader2 className="animate-spin mr-2" size={20} />
-                                인증번호 확인 중 입니다
+                                인증번호 확인 중...
                             </>
                         ) : (
                             "확인"

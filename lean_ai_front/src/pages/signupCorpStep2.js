@@ -69,12 +69,6 @@ const SignupCorpStep2 = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (selectedCorp) {
-      console.log("selectedCorp : ", selectedCorp);
-    }
-  }, [selectedCorp]);
-
   // 기업 목록을 가져오는 함수
   const fetchCorporations = async () => {
     try {
