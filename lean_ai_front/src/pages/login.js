@@ -78,6 +78,13 @@ const Login = () => {
       return;
     }
 
+    if (!loginType) {
+      setErrorMessage("가입유형을 선택해주세요.");
+      setShowErrorMessageModal(true);
+      return;
+    }
+    
+
     try {
       let captchaToken;
       if (requireCaptcha && captchaV2Token) {

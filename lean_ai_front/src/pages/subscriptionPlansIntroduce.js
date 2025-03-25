@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import plans from "/public/text/plan.json";
 import { useAuth } from "@/contexts/authContext";
 import { useStore } from "@/contexts/storeContext";
+import { useLoginType } from "@/contexts/loginTypeContext";
 import { fetchStoreUser } from "@/fetch/fetchStoreUser";
 import ModalErrorMSG from "@/components/modal/modalErrorMSG";
 
@@ -12,6 +13,7 @@ const SubscriptionPlansIntroduce = () => {
   const router = useRouter();
   const { token } = useAuth();
   const { storeID } = useStore();
+  const { loginType } = useLoginType();
   const [isRulesOpen, setIsRulesOpen] = useState(false);
   const [userData, setUserData] = useState(null); // 유저 데이터 상태
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 상태
@@ -36,7 +38,13 @@ const SubscriptionPlansIntroduce = () => {
       //console.log(userData);
 
       if (userData?.subscription?.is_active) {
-        router.push("/mainPage");
+        if (loginType === "public") {
+          router.push("/mainPageForPublic");
+        } else if (loginType === "corporation") {
+          router.push("/mainPageForCorp");
+        } else {
+          router.push("/mainPage");
+        }
       } else {
         router.push("/subscriptionPlans");
       }
@@ -73,7 +81,7 @@ const SubscriptionPlansIntroduce = () => {
           className="flex flex-col space-y-10"
         >
           {/* 플랜 그리드 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plans.map((plan) => (
               <div
                 key={plan.id}
@@ -134,14 +142,23 @@ const SubscriptionPlansIntroduce = () => {
               >
                 지금 바로 시작하세요!
               </p>
-              <button
+              <motion.button
                 onClick={handleSubscriptionButton}
-                className="bg-indigo-500 text-white px-10 py-5 rounded-2xl text-2xl
-                         hover:bg-indigo-600 transition-colors duration-200 shadow-lg"
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 0.25,
+                  repeat: Infinity,
+                  repeatType: "loop",
+                  ease: "easeInOut",
+                }}
+                className="bg-indigo-500 text-white px-10 py-5 rounded-2xl text-2xl 
+                            hover:bg-indigo-600 transition-colors duration-200 shadow-lg"
                 style={{ fontFamily: "NanumSquareExtraBold" }}
               >
                 구독 신청하러 가기
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -150,7 +167,7 @@ const SubscriptionPlansIntroduce = () => {
             <button
               onClick={toggleRules}
               className={`flex justify-between items-center w-full text-left text-indigo-600 
-               font-semibold px-6 py-4 transition-all
+                          font-semibold px-6 py-4 transition-all
               ${isRulesOpen ? "rounded-t-md" : "rounded-md"}  
             `}
             >

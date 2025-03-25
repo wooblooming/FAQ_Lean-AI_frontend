@@ -1,12 +1,28 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSwipeable } from "react-swipeable";
 import { useInView } from "react-intersection-observer";
-import {  Utensils, Monitor, ShoppingCart, Landmark, ChevronLeft,
-          ChevronRight, UserPlus, PencilLine, Store, QrCode, Bot,
-          FileCode2, HelpCircle, Brain, FileText, AppWindow 
-        } from "lucide-react";
+import {
+  Utensils,
+  Monitor,
+  ShoppingCart,
+  Landmark,
+  ChevronLeft,
+  ChevronRight,
+  UserPlus,
+  PencilLine,
+  Store,
+  QrCode,
+  Bot,
+  FileCode2,
+  HelpCircle,
+  Brain,
+  FileText,
+  AppWindow,
+} from "lucide-react";
 
 // Features Data (서비스 소개 섹션 데이터)
 const features = [
@@ -150,7 +166,7 @@ const CacheBustedImage = ({ src, alt, width, height, priority, ...props }) => {
   return (
     <div style={{ position: "relative" }}>
       <Image
-        src={cacheBustSrc}
+        src={cacheBustSrc || "/placeholder.svg"}
         alt={alt}
         width={width}
         height={height}
@@ -255,6 +271,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
   const [featureIndex, setFeatureIndex] = useState(0); // Features 섹션 슬라이드 인덱스 관리
   const [usecaseStores, setUsecaseStores] = useState([]); // 도입 사례 매장
   const [visibleStoreId, setVisibleStoreId] = useState(false); // 도입 사례 버튼
+  const [activeImageIndex, setActiveImageIndex] = useState(0); // 선택된 이미지 인덱스
 
   // 단계별 데이터 설정 (업주/고객에 따라)
   const steps = isOwnerStep ? ownerSteps : customerSteps;
@@ -294,12 +311,44 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
     trackMouse: true,
   });
 
+  // 도입 사례 이미지 슬라이드용 swipeable 설정
+  const swipeHandlersForCaseImages = useSwipeable({
+    onSwipedLeft: () => {
+      if (visibleStoreId) {
+        const store = usecaseStores.find((s) => s.id === visibleStoreId);
+        if (store && store.images.length > 1) {
+          setActiveImageIndex((prev) =>
+            prev === store.images.length - 1 ? 0 : prev + 1
+          );
+        }
+      }
+    },
+    onSwipedRight: () => {
+      if (visibleStoreId) {
+        const store = usecaseStores.find((s) => s.id === visibleStoreId);
+        if (store && store.images.length > 1) {
+          setActiveImageIndex((prev) =>
+            prev === 0 ? store.images.length - 1 : prev - 1
+          );
+        }
+      }
+    },
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
+
   useEffect(() => {
     // JSON 파일 로드
     fetch("/text/usecase.json")
       .then((response) => response.json())
       .then((data) => setUsecaseStores(data));
   }, []);
+
+  // 도입 사례 버튼 클릭시 상태 초기화
+  useEffect(() => {
+    // visibleStoreId가 변경될 때 activeImageIndex 초기화
+    setActiveImageIndex(0);
+  }, [visibleStoreId]);
 
   // 도입 사례 버튼
   const handleButtonClick = (id) => {
@@ -365,7 +414,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
               className="py-4 text-2xl font-semibold text-indigo-800 whitespace-nowrap"
               style={{ fontFamily: "NanumSquareExtraBold" }}
             >
-              {feature.text}
+              {feature.title}
             </h2>
             <div
               className="text-xl font-semibold text-gray-700 h-32"
@@ -573,7 +622,6 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
         </div>
 
         {/* 실제 사용 사례 */}
-        
         <div className="bg-violet-200 rounded-lg px-6 py-10 flex flex-col space-y-4">
           <h2
             className="text-center font-semibold m-8 text-4xl text-gray-700"
@@ -591,37 +639,36 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
                   onClick={() => handleButtonClick(store.id)}
                 >
                   <button
-                    className="text-indigo-500 whitespace-pre-line"
-                    style={{ fontFamily: "NanumSquareExtraBold", fontSize: "22px" }}
+                    className="text-indigo-500 whitespace-nowrap"
+                    style={{
+                      fontFamily: "NanumSquareExtraBold",
+                      fontSize: "22px",
+                    }}
                   >
                     {store.name}
                   </button>
-                  {visibleStoreId === store.id && (
-                    <p className="text-lg text-gray-700 leading-relaxed">
-                      {store.description}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
 
-            <div className="w-2/3">
-              <div className="flex flex-row gap-4">
+            <div className="w-2/3 bg-white bg-opacity-50 rounded-md p-3">
+              <div className="flex flex-row gap-4 ">
                 {usecaseStores
                   .filter((store) => store.id === visibleStoreId)
-                  .flatMap((store) => store.images.map((image, index) => (
-                    <CacheBustedImage
-                      key={index}
-                      src={image}
-                      alt={`${store.name} 이미지 ${index + 1}`}
-                      className="rounded-lg shadow-md"
-                      layout="contain"
-                      width={800} // 이미지의 원본 너비
-                      height={600} // 이미지의 원본 높이
-                      priority
-                    />
-
-                  )))}
+                  .flatMap((store) =>
+                    store.images.map((image, index) => (
+                      <CacheBustedImage
+                        key={index}
+                        src={image}
+                        alt={`${store.name} 이미지 ${index + 1}`}
+                        className="rounded-lg shadow-md"
+                        layout="contain"
+                        width={800} // 이미지의 원본 너비
+                        height={600} // 이미지의 원본 높이
+                        priority
+                      />
+                    ))
+                  )}
               </div>
             </div>
           </div>
@@ -744,7 +791,7 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
 
             <div className="flex justify-center item-center border border-gray-600">
               <img
-                src={steps[currentStep].image}
+                src={steps[currentStep].image || "/placeholder.svg"}
                 alt={steps[currentStep].title}
                 className="w-11/12 object-contain flex justify-center item-center rounded-lg"
               />
@@ -839,52 +886,138 @@ const ServiceSection = ({ isMobile, isTablet, isDesktop }) => {
           </div>
         </div>
 
-        {/* 활용 섹션 */}
-        <div className="bg-violet-200 rounded-lg px-6 py-10 flex flex-col space-y-4">
+        {/* 활용 섹션 - 모바일 최적화 */}
+        <div className="bg-violet-200 rounded-lg p-4 flex flex-col w-full">
           <h2
-            className="text-center font-semibold m-8 text-4xl text-gray-700"
+            className="text-center font-semibold mb-6 text-3xl text-gray-700"
             style={{ fontFamily: "NanumSquareExtraBold" }}
           >
             도입 사례
           </h2>
-          <div className="grid grid-cols-2 space-x-4">
-            {usecaseStores.map((store) => (
-              <div
-                key={store.id}
-                className="bg-white p-4 rounded-xl shadow-lg overflow-auto mt-4"
-                style={{ fontFamily: "NanumSquare" }}
-              >
+
+          {/* 모바일에서는 수직 레이아웃으로 변경 */}
+          <div className="flex flex-col space-y-4 w-full">
+            {/* 버튼 섹션 - 가로 스크롤 가능한 버튼 그룹 */}
+            <div className="overflow-x-auto p-2 flex flex-row space-x-3 no-scrollbar">
+              {usecaseStores.map((store) => (
                 <button
-                  className="mb-2 text-indigo-500"
-                  style={{
-                    fontFamily: "NanumSquareExtraBold",
-                    fontSize: "22px",
-                  }}
+                  key={store.id}
                   onClick={() => handleButtonClick(store.id)}
+                  className={`px-4 py-3 rounded-lg flex-shrink-0 transition-colors ${
+                    visibleStoreId === store.id
+                      ? "bg-indigo-500 text-white"
+                      : "bg-white text-indigo-600"
+                  }`}
+                  style={{ fontFamily: "NanumSquareBold" }}
                 >
-                  {store.name}
+                  <p className="whitespace-pre-line">{store.name}</p>
                 </button>
-                {visibleStoreId === store.id && (
-                  <>
-                    <p className="text-lg text-gray-700 leading-relaxed">
-                      {store.description}
-                    </p>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      {store.images.map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`${store.name} 이미지 ${index + 1}`}
-                          className="rounded-lg shadow-md"
-                        />
-                      ))}
-                    </div>
-                  </>
-                )}
+              ))}
+            </div>
+
+            {/* 이미지 슬라이더 - 선택된 항목의 이미지 */}
+            {visibleStoreId && (
+              <div className="mt-4 w-full">
+                <div {...swipeHandlersForCaseImages} className="w-full">
+                  {usecaseStores
+                    .filter((store) => store.id === visibleStoreId)
+                    .map((store) => (
+                      <div key={store.id} className="w-full">
+                        <div className="relative w-full aspect-square bg-white bg-opacity-50 rounded-xl shadow-lg p-3 mb-4">
+                          <img
+                            src={
+                              store.images[activeImageIndex] ||
+                              "/placeholder.svg"
+                            }
+                            alt={`${store.name} 이미지 ${activeImageIndex + 1}`}
+                            className="w-full h-full object-contain rounded-lg"
+                          />
+
+                          {/* 이미지 네비게이션 버튼 */}
+                          {store.images.length > 1 && (
+                            <>
+                              <motion.button
+                                className="absolute left-2 top-1/2 transform -translate-y-1/2 p-2 "
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveImageIndex((prev) =>
+                                    prev === 0
+                                      ? store.images.length - 1
+                                      : prev - 1
+                                  );
+                                }}
+                                whileHover={{ scale: 1.2 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                              >
+                                <ChevronLeft className="w-5 h-5 text-indigo-700" />
+                              </motion.button>
+                              <motion.button
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveImageIndex(
+                                    (prev) => (prev + 1) % store.images.length
+                                  );
+                                }}
+                                whileHover={{ scale: 1.2 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                              >
+                                <ChevronRight className="w-5 h-5 text-indigo-700" />
+                              </motion.button>
+                            </>
+                          )}
+                        </div>
+
+                        {/* 이미지 썸네일 */}
+                        {store.images.length > 1 && (
+                          <div className="flex justify-center space-x-2 overflow-x-auto py-2 no-scrollbar">
+                            {store.images.map((image, index) => (
+                              <div
+                                key={index}
+                                onClick={() => setActiveImageIndex(index)}
+                                className={`w-16 h-16 flex-shrink-0 rounded-md overflow-hidden cursor-pointer transition-all duration-200 ${
+                                  index === activeImageIndex
+                                    ? "ring-2 ring-indigo-500 scale-110"
+                                    : "opacity-70 border border-gray-300"
+                                }`}
+                              >
+                                <img
+                                  src={image || "/placeholder.svg"}
+                                  alt={`썸네일 ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
               </div>
-            ))}
+            )}
+
+            {/* 선택 안내 메시지 */}
+            {!visibleStoreId && (
+              <div className="flex justify-center items-center h-48 bg-white bg-opacity-50 rounded-lg">
+                <p
+                  className="text-indigo-400 text-lg"
+                  style={{ fontFamily: "NanumSquareBold" }}
+                />
+              </div>
+            )}
           </div>
         </div>
+
+        {/* CSS for hiding scrollbars but allowing scroll */}
+        <style jsx>{`
+          .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
       </div>
     </div>
   );

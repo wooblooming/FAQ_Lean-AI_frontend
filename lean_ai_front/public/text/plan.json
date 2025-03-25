@@ -4,16 +4,24 @@
       "plan": "BASIC",
       "alias" : "BASIC",
       "price": 9900,
-      "description": "기본 구독",
-      "features": ["기본 FAQ 챗봇", "기본 분석 기능"]
+      "description": "기본 소상공인용 구독",
+      "features": ["기본 AI 챗봇", "리뷰 분석"]
     },
     { 
       "id": 2,
-      "plan": "ENTERPRISE",
-      "alias" : "ENT",
+      "plan": "CORPORATION",
+      "alias" : "CORP",
       "price": 500000,
       "description": "기업용 구독",
-      "features": ["CS 응대 챗봇", "사내 챗봇", "고급 분석 기능"]
+      "features": ["AI 챗봇 (CS 응대)", "사내 챗봇", "문서 관리"]
+    },
+    { 
+      "id": 3,
+      "plan": "PUBLIC",
+      "alias" : "PUBLIC",
+      "price": 500000,
+      "description": "관공서용 구독",
+      "features": ["AI 챗봇", "민원 관리", "문서 관리 (법률/조례 서칭)", "민원 분석"]
     }
   ]
   
