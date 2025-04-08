@@ -31,10 +31,30 @@ const StoreIntroduce = () => {
   const [menu, setMenu] = useState([]); // 상점 메뉴 저장
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
   const [activeTab, setActiveTab] = useState("home"); // 현재 활성화된 탭 ('home', 'menu', 'image')
+  const tabOrder = ["home", "menu", "image"]; // 탭 순서 배열
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지 저장
   const [showErrorMessageModal, setShowErrorMessageModal] = useState(false); // 에러 모달 표시 여부
   const [isExpanded, setIsExpanded] = useState(false); // 설명글 확장 여부
 
+  // 스와이프 이벤트 (홈 ↔ 민원 탭 이동)
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      const currentIndex = tabOrder.indexOf(activeTab);
+      if (currentIndex < tabOrder.length - 1) {
+        setActiveTab(tabOrder[currentIndex + 1]);
+      }
+    },
+    onSwipedRight: () => {
+      const currentIndex = tabOrder.indexOf(activeTab);
+      if (currentIndex > 0) {
+        setActiveTab(tabOrder[currentIndex - 1]);
+      }
+    },
+    trackTouch: true,
+    preventDefaultTouchmoveEvent: true,
+  });
+
+  // 매장과 사용자 데이터 가져오기
   useEffect(() => {
     if (slug) {
       fetchStoreData(
