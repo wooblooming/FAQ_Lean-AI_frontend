@@ -3,14 +3,13 @@ import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useMediaQuery } from "react-responsive";
-import { ArrowRight } from "lucide-react";
 import Nav from "../ui/navBar";
 import MobileLayout from "./mobileLayout";
 import TabletLayout from "./tabletLayout";
 import DesktopLayout from "./desktopLayout";
-import CompanySection from "./companySection";
 import ServiceSection from "./serviceSection";
 import Footer from "../ui/footer";
+import ScrollButtons from "@/components/ui/ScrollButtons"; 
 
 const LandingPageContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
@@ -58,24 +57,11 @@ const LandingPageContent = () => {
       />
 
       {/* 메인 섹션 */}
-      <div className="container mx-auto px-4 py-10 mt-12">
+      <div className="py-10 mt-12">
         {isMobile && <MobileLayout />}
         {isTablet && <TabletLayout />}
         {isDesktop && <DesktopLayout />}
       </div>
-
-      {/* 회사 섹션 */}
-      <motion.main
-        ref={companyRef}
-        id="company"
-        name="company"
-        className="flex-grow px-0 md:px-2 pt-12 pb-32 md:pt-20 2xl:pt-72 mx-3 "
-        initial="hidden"
-        animate={companyInView ? "visible" : "hidden"}
-        variants={fadeInUp}
-      >
-        <CompanySection isMobile={isMobile} />
-      </motion.main>
 
       {/* 서비스 섹션 */}
       <motion.main
@@ -147,6 +133,9 @@ const LandingPageContent = () => {
           </motion.div>
         </motion.button>
       </motion.div>
+
+      {/* 스크롤 맨 위/맨 아래 버튼 */}
+      <ScrollButtons />
 
       {/* 푸터 */}
       <Footer isMobile={isMobile} />

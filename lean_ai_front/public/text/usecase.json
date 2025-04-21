@@ -1,25 +1,32 @@
 [
-    {
-      "id": 1,
-      "name": "계림원 누릉지 통닭 \n(구로 구청점)",
-      "description": " ",
-      "images": [
-        "/images/구로구청 1.jpg",
-        "/images/구로구청 2.jpg",
-        "/images/구로구청 3.jpg"
-
-      ]
-    },
-    {
-      "id": 2,
-      "name": "계림원 누릉지 통닭 \n(노량진점)",
-      "description": " ",
-      "images": [
-        "/images/노량진 1.jpg",
-        "/images/노량진 2.jpg",
-        "/images/노량진 3.jpg"
-
-      ]
-    }
-  ]
-  
+  {
+    "id": 1,
+    "name": "계림원 누릉지 통닭 \n(구로 구청점)",
+    "description": "구로구청 인근에 위치한 계림원은 무물 도입 후 매장 내 주문과 테이크아웃 주문을 효율적으로 관리하게 되었습니다.",
+    "images": [
+      "/images/구로구청 1.jpg",
+      "/images/구로구청 2.jpg",
+      "/images/구로구청 3.jpg"
+    ],
+    "icon": "Store",
+    "location" : "서울 구로구 구로동 87-1",
+    "satisfaction": "98%",
+    "category": "음식점",
+    "month": "6개월"
+  },
+  {
+    "id": 2,
+    "name": "계림원 누릉지 통닭 \n(노량진점)",
+    "description": "노량진 지역의 계림원 분점은 학생들의 잦은 질문에 무물 AI가 자동으로 응답하여 주문 대기 시간을 크게 줄였습니다.",
+    "images": [
+      "/images/노량진 1.jpg",
+      "/images/노량진 2.jpg",
+      "/images/노량진 3.jpg"
+    ],
+    "icon": "Store",
+    "location" : "서울 동작구 노량진동 27-13",
+    "satisfaction": "98%",
+    "category": "음식점",
+    "month": "6개월"
+  }
+]

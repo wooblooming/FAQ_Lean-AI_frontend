@@ -19,3 +19,59 @@
     font-weight: 800;
     font-style: normal;
 }
+
+@font-face {
+    font-family: 'BnviitLasik';
+    src: url('./etc/BnviitLasik.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ONE_Mobile_POP';
+    src: url('./etc/ONE_Mobile_POP.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'yang';
+    src: url('./etc/yang.otf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Recipekorea';
+    src: url('./etc/Recipekorea.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'EliceDigitalBaeum';
+    src: url('./etc/EliceDigitalBaeum_Regular.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'EliceDigitalBaeum_Bold';
+    src: url('./etc/EliceDigitalBaeum_Bold.ttf') format('truetype');
+    font-weight: 700; /* 기본 설정 */
+    font-style: normal;
+}
+
+
+@font-face {
+    font-family: 'EliceDXNeolli';
+    src: url('./etc/EliceDXNeolli-Medium.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'EliceDXNeolli-Bold';
+    src: url('./etc/EliceDXNeolli-Bold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}

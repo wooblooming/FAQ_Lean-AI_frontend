@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useLoginType } from "@/contexts/loginTypeContext";
 import { useAuth } from "@/contexts/authContext";
+import HeroMumulSection from "@/components/component/landingPage/HeroSection"
 
 const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN;
 
@@ -62,65 +63,7 @@ const DesktopLayout = () => {
 
   return (
     <div>
-      <div className="flex justify-center items-center">
-        {/* 텍스트 섹션 - PC */}
-        <motion.div
-          className="z-20 "
-          variants={fadeInUp}
-          transition={{ duration: 0.8 }}
-        >
-          <div name="text" className="flex flex-col">
-            <div className="flex flex-col text-center text-gray-800 whitespace-nowrap text-4xl font-semibold mb-8">
-              <p className="mb-3 ">무엇이든 물어보세요</p>
-              <p className="text-5xl font-bold text-indigo-600 mb-8 ">
-                QR코드로
-              </p>
-              <p className="mb-3 ">무엇이든 답해드려요</p>
-              <p className="text-5xl font-bold text-indigo-600">AI챗봇으로</p>
-            </div>
-
-            <div className="flex flex-row space-x-4 z-20">
-              {/* 무물 이용하기 버튼 */}
-              <motion.button
-                className="text-white px-6 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
-                style={{
-                  backgroundColor: "#FF609E",
-                  fontFamily: "NanumSquareExtraBold",
-                }}
-                onClick={handleClick}
-              >
-                무물 이용하기
-              </motion.button>
-
-              {/* 체험하기 버튼 */}
-              <motion.button
-                className="bg-cyan-500 text-white px-6 py-4 mb-2 my-4 rounded-full text-2xl transition-colors whitespace-nowrap"
-                style={{ fontFamily: "NanumSquareExtraBold" }}
-                onClick={() =>
-                  router.push(
-                    `${FRONTEND_DOMAIN}/storeIntroductionExample/무물떡볶이`
-                  )
-                }
-              >
-                무물 체험하기
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* 이미지 섹션 - PC */}
-        <div className=" md:block z-10 w-full" style={{ height: "650px" }}>
-          <CacheBustedImage
-            src="/images/index_desktop.png"
-            alt="mumul"
-            layout="fill"
-            style={{ objectFit: "contain" }}
-            className="rounded-lg"
-            version="v2"
-            priority
-          />
-        </div>
-      </div>
+      <HeroMumulSection/>
     </div>
   );
 };
