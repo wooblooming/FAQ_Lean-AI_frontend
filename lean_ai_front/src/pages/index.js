@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import AnimationComponent from "../components/component/mumul";
-import LandingPageContent from "../components/component/landingPage/landingPageContent";
+import AnimationComponent from "@/components/component/mumul"; // 애니메이션 컴포넌트
+import LandingPageContent from "@/components/component/landingPage/landingPageContent"; // 실제 랜딩 페이지 내용
 
 const LandingPage = () => {
   const [showLandingPage, setShowLandingPage] = useState(false);
