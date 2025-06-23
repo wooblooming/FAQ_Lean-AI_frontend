@@ -1,27 +1,36 @@
 [
-    { 
-      "id": 1, 
-      "plan": "BASIC",
-      "alias" : "BASIC",
-      "price": 9900,
-      "description": "기본 소상공인용 구독",
-      "features": ["기본 AI 챗봇", "리뷰 분석"]
-    },
-    { 
-      "id": 2,
-      "plan": "CORPORATION",
-      "alias" : "CORP",
-      "price": 500000,
-      "description": "기업용 구독",
-      "features": ["AI 챗봇 (CS 응대)", "사내 챗봇", "문서 관리", "문의 분석"]
-    },
-    { 
-      "id": 3,
-      "plan": "PUBLIC",
-      "alias" : "PUBLIC",
-      "price": 500000,
-      "description": "관공서용 구독",
-      "features": ["AI 챗봇", "민원 관리", "문서 관리 (법률/조례 서칭)", "민원 분석"]
-    }
-  ]
-  
+  {
+    "id": 1,
+    "plan": "BASIC",
+    "alias": "BASIC",
+    "price": "1000,000",
+    "description": "기본 소상공인용 구독",
+    "features": ["기본 AI 챗봇", "리뷰 분석"]
+  },
+  {
+    "id": 2,
+    "plan": "CORPORATION",
+    "alias": "CORP",
+    "price": "2,000,000",
+    "description": "기업용 구독",
+    "features": [
+      "AI 챗봇 (CS 응대)",
+      "사내 챗봇(영업/마케팅 자동화)",
+      "문서 관리",
+      "문의 분석"
+    ]
+  },
+  {
+    "id": 3,
+    "plan": "PUBLIC",
+    "alias": "PUBLIC",
+    "price": "2,000,000",
+    "description": "관공서용 구독",
+    "features": [
+      "AI 챗봇",
+      "민원 관리",
+      "문서 관리 (법률/조례 서칭)",
+      "민원 분석"
+    ]
+  }
+]

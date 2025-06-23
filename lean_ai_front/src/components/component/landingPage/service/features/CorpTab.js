@@ -1,15 +1,8 @@
-"use client";
-
-import React from "react";
-import { Building } from "lucide-react";
-import FeatureCards from "./FeatureCards";
-import BenefitList from "./BenefitList";
-import { 
-  FileCode2, 
-  HelpCircle, 
-  Brain, 
-  FileText
-} from "lucide-react";
+"use client"
+import { Building } from "lucide-react"
+import FeatureCards from "./FeatureCards"
+import BenefitList from "./BenefitList"
+import { FileCode2, HelpCircle, Brain, FileText } from "lucide-react"
 
 const CorpTab = () => {
   // 기업용 이점 데이터
@@ -19,36 +12,31 @@ const CorpTab = () => {
     "사내 지식 검색 자동화로 내부 문의 대응 부담 감소",
     "법률/지침/사내 문서도 자연어 검색 가능",
     "챗봇 대화 통계 기반 VOC 인사이트 확보 가능 (예정)",
-  ];
+  ]
 
   // 기업 기능 데이터
   const corpFeatures = [
     {
       icon: FileCode2,
       title: "고객 문의, AI가 24시간 대응",
-      description:
-        "상담 인력이 부족해도 걱정 없어요. AI가 빠르게 고객 질문에 응답해 만족도를 높여줘요.",
+      description: "상담 인력이 부족해도 걱정 없어요. AI가 빠르게 고객 질문에 응답해 만족도를 높여줘요.",
     },
     {
       icon: HelpCircle,
       title: "사내 정보도 빠르게 검색",
-      description:
-        "사규, 문서, 인사 정책 등 내부 정보를 챗봇이 빠르게 찾아줘서 업무 효율이 올라가요.",
+      description: "사규, 문서, 인사 정책 등 내부 정보를 챗봇이 빠르게 찾아줘서 업무 효율이 올라가요.",
     },
     {
       icon: Brain,
       title: "문서 관리와 업무 자동화",
-      description:
-        "기본 양식부터 문서 검색까지 챗봇이 도와줘서 반복 업무에서 해방될 수 있어요.",
+      description: "기본 양식부터 문서 검색까지 챗봇이 도와줘서 반복 업무에서 해방될 수 있어요.",
     },
     {
       icon: FileText,
       title: "문의 분석으로 서비스 개선",
-      description:
-        "고객이 많이 묻는 질문, 자주 발생하는 이슈를 분석해 더 나은 서비스를 만들 수 있어요.",
+      description: "고객이 많이 묻는 질문, 자주 발생하는 이슈를 분석해 더 나은 서비스를 만들 수 있어요.",
     },
-  ];
-  
+  ]
 
   // 색상 설정
   const colors = {
@@ -59,17 +47,13 @@ const CorpTab = () => {
     ultraDark: "#166534",
     gradientFrom: "#6EE7B7",
     gradientTo: "#10B981",
-  };
+  }
 
   return (
-    <div>
+    <div className="space-y-8 sm:space-y-12">
       {/* 기능 카드 섹션 */}
-      <FeatureCards 
-        features={corpFeatures} 
-        colorScheme="emerald" 
-        title="기업을 위한 무물의 특별한 기능"
-      />
-      
+      <FeatureCards features={corpFeatures} colorScheme="emerald" title={<>기업을 위한<br />무물의 특별한 기능</>} />
+
       {/* 이점 섹션 */}
       <BenefitList
         title="기업을 위한 무물"
@@ -79,7 +63,7 @@ const CorpTab = () => {
         icon={Building}
       />
     </div>
-  );
-};
+  )
+}
 
-export default CorpTab;
+export default CorpTab

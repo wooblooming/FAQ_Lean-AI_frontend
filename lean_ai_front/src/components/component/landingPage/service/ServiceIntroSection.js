@@ -1,66 +1,70 @@
 "use client";
-import { Repeat, Clock, Users, ArrowRight, Clock3 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Repeat, Clock, Users } from "lucide-react";
+import { motion } from "framer-motion";
 import TextBeltSection from "@/components/component/landingPage/service/TextBeltSection";
 
 const ServiceIntroSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
   return (
     <section
       className="py-16 md:py-24 px-4 md:px-8 overflow-hidden relative"
       style={{ fontFamily: "NanumSquareBold" }}
     >
-      <div
-        className={`max-w-6xl mx-auto relative transition-all duration-1000 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
+      {/* 스크롤 인/아웃 애니메이션 적용 */}
+      <motion.div
+        className="max-w-6xl mx-auto relative"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -30 }}
+        viewport={{ once: false, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
         {/* Header with glowing effect */}
         <div className="text-center mb-20 relative">
-          <span className="inline-block relative">
-            <h2
-              className="relative text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-violet-500 "
-              style={{ fontFamily: "NanumSquareExtraBold" }}
-            >
-              무물은 이런 고민에서 시작됐습니다
-            </h2>
-          </span>
+          <h2
+            className="relative text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-violet-500"
+            style={{ fontFamily: "NanumSquareExtraBold" }}
+          >
+            무물은 이런 고민에서 시작됐습니다
+          </h2>
         </div>
 
         <div className="grid md:grid-cols-12 gap-6 md:gap-8">
-          {/* Left column with main content */}
+          {/* Left column */}
           <div className="md:col-span-7 space-y-6">
-            <div className="bg-indigo-50/50 rounded-2xl shadow-xl p-6 transform transition-transform duration-300 hover:scale-[1.02] border-t border-l border-indigo-50">
-              <div
-                className="grid md:grid-cols-3 gap-8 mb-16"
-                style={{ fontFamily: "NanumSquare" }}
-              >
-                <div className="bg-white px-3 py-6 rounded-xl shadow-md border border-indigo-100 transform transition-transform hover:scale-105">
-                  <Repeat className="w-8 h-8 text-indigo-600 mb-4" />
-                  <p className="leading-relaxed">
-                    고객의 반복적인 질문에 매번 답변하느라 지친 사장님들
-                  </p>
-                </div>
-                <div className="bg-white px-3 py-6 rounded-xl shadow-md border border-indigo-100 transform transition-transform hover:scale-105">
-                  <Clock className="w-8 h-8 text-indigo-600 mb-4" />
-                  <p className="leading-relaxed">
-                    사내 자료를 찾느라 시간 허비하는 직원들
-                  </p>
-                </div>
-                <div className="bg-white px-3 py-6 rounded-xl shadow-md border border-indigo-100 transform transition-transform hover:scale-105">
-                  <Users className="w-8 h-8 text-indigo-600 mb-4" />
-                  <p className="leading-relaxed">
-                    시민 문의 대응에 인력이 부족한 공무원들
-                  </p>
-                </div>
+            <motion.div
+              className="bg-indigo-50/50 rounded-2xl shadow-xl p-6 hover:scale-[1.02] transition-transform duration-300 border-t border-l border-indigo-50"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <div className="grid md:grid-cols-3 gap-8 mb-16" style={{ fontFamily: "NanumSquare" }}>
+                {[
+                  { icon: Repeat, text: "고객의 반복적인 질문에 매번 답변하느라 지친 사장님들" },
+                  { icon: Clock, text: "사내 자료를 찾느라 시간 허비하는 직원들" },
+                  { icon: Users, text: "시민 문의 대응에 인력이 부족한 공무원들" },
+                ].map(({ icon: Icon, text }, i) => (
+                  <motion.div
+                    key={i}
+                    className="bg-white px-3 py-6 rounded-xl shadow-md border border-indigo-100 hover:scale-105 transition-transform duration-300"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0.2 }}
+                    transition={{ delay: i * 0.2, duration: 0.4, ease: "easeOut" }}
+                  >
+                    <Icon className="w-8 h-8 text-indigo-600 mb-4" />
+                    <p className="leading-relaxed">{text}</p>
+                  </motion.div>
+                ))}
               </div>
 
-              <div className="relative">
+              <motion.div
+                className="relative"
+                initial={{ scale: 0.8, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
                 <div className="absolute inset-0 bg-indigo-600/5 rounded-xl"></div>
                 <div className="relative py-5 px-6 rounded-xl backdrop-blur-sm border border-indigo-100 bg-indigo-500/70">
                   <p className="text-xl font-medium text-white mb-2">
@@ -68,25 +72,32 @@ const ServiceIntroSection = () => {
                   </p>
                   <p className="text-white">이런 생각, 한 번쯤 해보셨죠?</p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            <div className="relative group">
+            <motion.div
+              className="relative group"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+            >
               <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-400 to-violet-500 rounded-2xl blur opacity-30 group-hover:opacity-80 transition duration-1000"></div>
               <div className="relative bg-white rounded-2xl p-8 md:p-10">
                 <p className="text-lg leading-relaxed">
                   그래서 저희는{" "}
                   <span className="text-indigo-600 font-semibold">무물</span>을
                   만들었습니다.
-                  <br />"<strong>묻고 답해주는 챗봇</strong>"이라는 의미로,
+                  <br />
+                  "<strong>묻고 답해주는 챗봇</strong>"이라는 의미로,
                   <br />
                   <strong>'무엇이든 물어보세요'</strong>에서 따온 이름입니다.
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Right column with visual representation */}
+          {/* Right column */}
           <div className="md:col-span-5 relative">
             {/* 3D-looking chat interface mockup */}
             <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-900 to-indigo-700 shadow-2xl transform rotate-2 md:rotate-3 hover:rotate-0 transition-all duration-500 h-full flex flex-col">
@@ -125,10 +136,7 @@ const ServiceIntroSection = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      
-      
+      </motion.div>
     </section>
   );
 };

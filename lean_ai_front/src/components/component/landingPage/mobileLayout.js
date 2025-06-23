@@ -4,6 +4,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useLoginType } from "@/contexts/loginTypeContext";
 import { useAuth } from "@/contexts/authContext";
+import HeroMumulSection from "@/components/component/landingPage/HeroSection"
+
 
 const FRONTEND_DOMAIN = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN
 
@@ -56,66 +58,7 @@ const MobileLayout = () => {
 
   return (
     <div>
-      <div className="relative w-full flex flex-col space-y-10 items-center justify-center md:hidden">
-        {/* 이미지 섹션 - 모바일 */}
-        <div className="w-full h-auto ">
-          <CacheBustedImage
-            src="/images/index_mobile.png"
-            alt="mumul"
-            layout="responsive"
-            width={500}
-            height={300}
-            version="v2"
-            className="rounded-lg"
-            priority
-          />
-        </div>
-
-        {/* 텍스트 섹션 - 모바일 */}
-        <div className="w-full p-6 -skew-y-3 bg-white shadow-lg flex flex-col items-center space-y-4">
-          <div className="text-gray-600 text-center whitespace-nowrap text-xl font-semibold">
-            <p>
-              무엇이든 물어보세요
-              <span className="text-2xl font-bold text-indigo-600 ml-2">
-                QR코드로
-              </span>
-            </p>
-            <p>
-              무엇이든 답해드려요
-              <span className="text-2xl font-bold text-indigo-600 ml-2">
-                AI챗봇으로
-              </span>
-            </p>
-          </div>
-
-          <div className="flex flex-col space-x-2">
-            {/* 무물 이용하기 버튼 */}
-            <motion.button
-              className="text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-pre-line "
-              style={{
-                backgroundColor: "#FF609E",
-                fontFamily: "NanumSquareBold",
-              }}
-              onClick={handleClick}
-            >
-              무물 이용하기
-            </motion.button>
-
-            {/* 체험하기 버튼 */}
-            <motion.button
-              className="bg-cyan-500 text-white px-8 py-3 mb-2 rounded-full text-xl font-semibold transition-colors whitespace-pre-line ㄴㄴ"
-              style={{ fontFamily: "NanumSquareBold" }}
-              onClick={() =>
-                router.push(
-                  `${FRONTEND_DOMAIN}/storeIntroductionExample/무물떡볶이`
-                )
-              }
-            >
-              무물 체험하기
-            </motion.button>
-          </div>
-        </div>
-      </div>
+      <HeroMumulSection/>
     </div>
   );
 };

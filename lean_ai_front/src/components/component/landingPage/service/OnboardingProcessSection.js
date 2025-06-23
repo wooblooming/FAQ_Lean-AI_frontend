@@ -98,7 +98,7 @@ const OnboardingProcessSection = () => {
   };
 
   return (
-    <section className="py-28 px-4bg-gradient-to-b from-white via-indigo-50/30 to-white overflow-hidden relative font-NanumSquareBold">
+    <section className="py-28 px-4 bg-white/50 to-white overflow-hidden relative font-NanumSquareBold">
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Enhanced header with animated elements */}
         <motion.div
@@ -274,7 +274,7 @@ const OnboardingProcessSection = () => {
                       {selectedStep === index && (
                         <motion.div
                           id={`step-details-${index}`}
-                          className="bg-indigo-50 rounded-lg w-full p-2 flex items-center justify-center text-center"
+                          className="border-t border-violet-200 w-full pt-4 flex items-center justify-center text-center"
                           style={{ borderLeftColor: step.accent }}
                           initial={{ opacity: 0, height: 0, y: -20 }}
                           animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -294,7 +294,7 @@ const OnboardingProcessSection = () => {
                                   <span className="text-indigo-600 mt-0.5">
                                     {detail.icon}
                                   </span>
-                                  <span>{detail.text}</span>
+                                  <span className="text-gray-700">{detail.text}</span>
                                 </motion.li>
                               ))}
                             </ul>

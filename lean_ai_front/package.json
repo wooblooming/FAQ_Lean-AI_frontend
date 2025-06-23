@@ -54,6 +54,7 @@
     "react-slick": "^0.30.2",
     "react-swipeable": "^7.0.1",
     "react-time-picker": "^7.0.0",
+    "react-type-animation": "^3.2.0",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.1.14",
     "tailwind-merge": "^2.5.4",
