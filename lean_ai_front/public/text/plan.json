@@ -3,7 +3,7 @@
     "id": 1,
     "plan": "BASIC",
     "alias": "BASIC",
-    "price": "1000,000",
+    "price": "100,000",
     "description": "기본 소상공인용 구독",
     "features": ["기본 AI 챗봇", "리뷰 분석"]
   },
